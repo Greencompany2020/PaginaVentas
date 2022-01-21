@@ -1,0 +1,16 @@
+export { default as minutas } from './minutas';
+export { default as enlacesMenuLateral } from './enlacesMenuLateral';
+export { default as semanalesPlaza } from './semanalesPlaza';
+export { default as compromisosSemanales } from './compromisosSemanales';
+export { default as semanalesTienda } from './semanalesTienda';
+export { default as reporteFechas } from './reporteFechas';
+export { default as ventasDiariasGrupo } from './ventasDiariasGrupo';
+export { meses, tiendasGeneral, plazas, regiones, tiendas } from './valores';
+export { default as tiendaSimpleVentas } from './tiendaSimpleVentas';
+export { default as checkboxLabels } from './checkboxLabels';
+export { ventasMensualesConcentrado, concentradoPlazas } from './ventasMensualesConcentrado';
+export { ventasGrupo, ventasWeb } from './comparativoGrupo';
+export { ventasPlazas, ventasPlazaWeb } from './comparativoPlazas';
+export { default as participacionVentas } from './participacionVentas';
+export { default as crecimientoTabla } from './crecimientoTabla';
+export { default as porcentajesMensuales } from './porcentajesMensuales';

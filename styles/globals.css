@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+details > summary {
+  list-style-type: none;
+}
+/* Icono calendario para input de fechas */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  content: url("/public/images/calendar.png");
+  height: 1.75rem;
+  width: 1.75rem;
+}
+/* Dejar el input vacío */
+input[type="date"]:in-range::-webkit-datetime-edit-year-field,
+input[type="date"]:in-range::-webkit-datetime-edit-month-field,
+input[type="date"]:in-range::-webkit-datetime-edit-day-field,
+input[type="date"]:in-range::-webkit-datetime-edit-text {
+  color: transparent;
+}
+
+table.tfooter tr:last-child {
+  @apply bg-black text-white text-right font-bold;
+}
+
+@media (max-width: 1024px) {
+  aside {
+    height: 100vh;
+  }
+}
+
+.blue-button {
+  @apply bg-sky-500 w-40 rounded-lg h-10 flex justify-center items-center ml-2 mt-1 hover:bg-sky-400 transition-all ease-in-out duration-200;
+}
+
+.select {
+  @apply outline-none border border-gray-300 rounded-md w-32;
+}
+
+table.last-row-bg tr:last-child {
+  @apply bg-black font-bold text-white;
+}
+
+.buttonToggle {
+  @apply px-2 py-1 border border-gray-300 hover:bg-gray-500 hover:text-white rounded-md cursor-pointer transition ease-in-out duration-200;
+}
