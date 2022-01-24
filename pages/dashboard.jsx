@@ -12,7 +12,7 @@ const Dashboard = () => {
       <section className='flex flex-col md:flex-row pt-16 w-screen'>
         <Flex className="flex-col items-center lg:w-2/5 m-auto">
           <div className='text-2xl font-bold lg:pl-14'>
-            <h1>Bienvenido, <span className='text-xl'>Mauricion Rochin</span></h1>
+            <h1>Bienvenido, <span className='text-xl'>Mauricio Rochin</span></h1>
           </div>
           <div className='text-center text-lg space-y-5 mt-5'>
             <DashboardButtonContainer link='/comparativo/grupo'>
