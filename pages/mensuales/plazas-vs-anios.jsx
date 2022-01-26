@@ -44,7 +44,7 @@ const plazasVS = () => {
                 label: '2022',
                 data: [5079, 1469, 1383, 4047, 344, 434, 881],
                 backgroundColor: '#991b1b'
-              },
+              },  
               {
                 id: 2,
                 label: '2021',
