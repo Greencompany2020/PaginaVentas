@@ -12,7 +12,8 @@ const checkboxLabels = {
   TIPO_CAMBIO_TIENDAS: 'Utilizar tipo de Cambio en Tiendas',
   ACUMULADO_SEMANAL: 'Incluir Acumulado Semanal',
   INCLUIR_TOTAL: 'Incluir Total',
-  VENTAS_AL_DIA_MES_ACTUAL: 'Ventas al Dia-Mes Actual'
+  VENTAS_AL_DIA_MES_ACTUAL: 'Ventas al Dia-Mes Actual',
+  DETALLADO_POR_TIENDA: 'Detallado por Tienda'
 
 }
 
