@@ -33,12 +33,49 @@ const todaslastiendas = () => {
         <BarChart
           text='Ventas de la Tienda ____ del año 2017 al año 2021 (mls.dlls.) - iva no incluido'
           data={{
-            labels: ['M1','M2','M3','M4','M5','M6','M9','M10'],
+            labels: ['Enero'],
             datasets: [
               {
-                data: [73,90,59,33,20,19,37,61],
-                backgroundColor: ['#991b1b','#9a3412','#3f6212','#065f46','#155e75','#581c87','#f472b6','#facc15']
+                label: ['M1'],
+                data: [73],
+                backgroundColor: ['#b91c1c']
               },
+              {
+                label: ['M2'],
+                data: [61],
+                backgroundColor: ['#a16207']
+              },
+              {
+                label: ['M3'],
+                data: [90],
+                backgroundColor: ['#4d7c0f']
+              },
+              {
+                label: ['M4'],
+                data: [59],
+                backgroundColor: ['#0369a1']
+              },
+              {
+                label: ['M5'],
+                data: [33],
+                backgroundColor: ['#4338ca']
+              },
+              {
+                label: ['M6'],
+                data: [20],
+                backgroundColor: ['#a21caf']
+              },
+              {
+                label: ['M9'],
+                data: [19],
+                backgroundColor: ['#be123c']
+              },
+              {
+                label: ['M10'],
+                data: [37],
+                backgroundColor: ['#0f172a']
+              },
+              
             ]
           }}
         />
