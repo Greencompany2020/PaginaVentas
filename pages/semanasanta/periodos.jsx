@@ -1,6 +1,6 @@
 import VentasLayout from '@components/layout/VentasLayout';
 import { Parameters, ParametersContainer, SmallContainer } from '@components/containers';
-import { InputContainer,SelectTiendas,SelectPlazas, SelectMonth, SelectToMonth,InputToYear, InputYear, Checkbox } from '@components/inputs';
+import { InputContainer,SelectTiendas, SelectMonth, SelectToMonth,InputToYear, InputYear, Checkbox } from '@components/inputs';
 import { checkboxLabels } from 'utils/data';
 import BarChart from '@components/BarChart';
 import ComparativoVentas from '../../components/table/ComparativoVentas';

@@ -13,7 +13,10 @@ const checkboxLabels = {
   ACUMULADO_SEMANAL: 'Incluir Acumulado Semanal',
   INCLUIR_TOTAL: 'Incluir Total',
   VENTAS_AL_DIA_MES_ACTUAL: 'Ventas al Dia-Mes Actual',
-  DETALLADO_POR_TIENDA: 'Detallado por Tienda'
+  DETALLADO_POR_TIENDA: 'Detallado por Tienda',
+  PORCENTAJE_VENTAS_VS_LOGRO: 'Porcentaje Ventas vs Logro',
+  INCLUIR_FIN_DE_SEMANA_ANTERIOR: 'Incluir fin de semana anterior',
+  INCLUIR_ACUMULADO: 'Incluir Acumulado',
 
 }
 

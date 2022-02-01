@@ -29,9 +29,9 @@ const todaslastiendas = () => {
 
       </ParametersContainer>
 
-      <ComparativoVentas title='Ventas de la Tienda ____ del año 2017 al año 2021 (mls.dlls.) - iva no incluido'>
+      <ComparativoVentas title='Ventas por Mes Tiendas Plaza Mazatlán año 2022 (mls.pesos) -iva no incluido'>
         <BarChart
-          text='Ventas de la Tienda ____ del año 2017 al año 2021 (mls.dlls.) - iva no incluido'
+          text='Ventas por Mes Tiendas Plaza Mazatlán año 2022 (mls.pesos) -iva no incluido'
           data={{
             labels: ['Enero'],
             datasets: [

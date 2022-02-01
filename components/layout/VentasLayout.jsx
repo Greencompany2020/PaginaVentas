@@ -15,7 +15,7 @@ const VentasLayout = ({ children }) => {
           {children}
         </section>
       </div>
-    </>
+    </> 
   )
 }
 

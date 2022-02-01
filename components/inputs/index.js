@@ -9,3 +9,5 @@ export { default as SelectTiendasGeneral } from './SelectTiendasGeneral';
 export { default as InputToYear } from './InputToYear';
 export { default as InputDate } from './InputDate';
 export { default as SelectToMonth} from './SelectToMonth';
+export { default as InputOfTheDate} from './InputOfTheDate';
+export { default as InputVsYear} from './InputVsYear';
