@@ -6,7 +6,9 @@ import BarChart from '@components/BarChart';
 import { useState } from 'react';
 import { checkboxLabels} from 'utils/data';
 
-const grafica = () => {
+const grafica = ({year1,year2}) => {
+  year1 = 1
+  year2 = "year2"
   const [toggleTienda, setToggleTienda] = useState(true);
   const [togglePlaza, setTogglePlaza] = useState(false);
 
@@ -70,7 +72,7 @@ const grafica = () => {
             ],
             datasets: [
               {
-                label: '2018',
+                label: {year1},
                 data: [
                   44, 62, 38, 20, 13, 11, 24, 39, 18, 2, 32, 8, 32, 21, 22, 35, 14, 18,
                   48, 118, 34, 17
@@ -79,7 +81,7 @@ const grafica = () => {
                 backgroundColor: '#155e75'
               },
               {
-                label: '2019',
+                label: {year2},
                 data: [
                   44, 62, 38, 20, 13, 11, 24, 39, 18, 2, 32, 8, 32, 21, 22, 35, 14, 18,
                   48, 118, 34, 17

@@ -1,19 +1,22 @@
 import Link from 'next/link';
 import { Flex, SmallContainer, ParametersContainer, Parameters } from '@components/containers';
 import VentasLayout from '@components/layout/VentasLayout';
-import { VentasTableContainer, VentasTable, TableHead } from '@components/table';
+import { VentasTableContainer, VentasTable, TableHead,AcumuladoSemanaSantaFooter } from '@components/table';
 import { InputContainer, Checkbox, InputOfTheDate, InputVsYear, SelectTiendasGeneral } from '@components/inputs';
 import { semanalesTienda, regiones, checkboxLabels } from 'utils/data';
 
-const acumulado = () => {
+const acumulado = ({day1,day2,year1,year2}) => {
   return (
+    day1 = "day1",
+    day2 = "day2",
+    year1 = "year1",
+    year2 = "year2",
     <VentasLayout>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
           <InputOfTheDate/>
           <InputVsYear/>
-            <SelectTiendasGeneral />
           </InputContainer>
           <InputContainer>
             <Checkbox className='mb-3' labelText={checkboxLabels.VENTAS_IVA} />
@@ -29,42 +32,46 @@ const acumulado = () => {
           </InputContainer>
         </Parameters>
         <SmallContainer>
-          
-        Este reporte muestra la venta del dia y la venta acumulada de la semana santa en la fecha especificada.
+        
+        Este reporte muestra la venta del dia y la venta acumulada de la   semana santa en la fecha especificada.
 
         </SmallContainer>
       </ParametersContainer>
 
       <VentasTableContainer title="Ventas Semana Santa del año 2022 -iva no incluido">
-        <VentasTable className='tfooter'>
+        <VentasTable >
           <TableHead>
             <tr>
               <td rowSpan={3} className='border border-white'>Tienda</td>
-              <td colSpan={15} className='border border-white'>Viernes 08-Abr</td>
+              <td colSpan={10} className='border border-white'>{day1}</td>
+              <td colSpan={4} className='border border-white'>{day2}</td>
             </tr>
             <tr>
-              <td rowSpan={2} className='border border-white'>2020</td>
-              <td rowSpan={2} className='border border-white'>2021</td>
+              <td colSpan={4} className='border border-white'>Venta</td>
+              <td colSpan={3} className='border border-white'>Promedio</td>
+              <td colSpan={3} className='border border-white'>Operaciones</td>
+              <td colSpan={4} className='border border-white'>Venta</td>
+            </tr>
+            <tr>
+              <td rowSpan={2} className='border border-white'>{year1}</td>
+              <td rowSpan={2} className='border border-white'>{year2}</td>
+              <td rowSpan={2} className='border border-white'>PPTO.</td>
               <td rowSpan={2} className='border border-white'>%</td>
-              <td rowSpan={2} className='border border-white'>2020</td>
-              <td colSpan={4} className='border border-white'>operaciones</td>
-              <td colSpan={4} className='border border-white'>promedios</td>
-              <td colSpan={3} className='border border-white'>Articulos Prom.</td>
-            </tr>
-            <tr>
-              <td className='border border-white'>Comp</td>
-              <td className='border border-white'>2022</td>
-              <td className='border border-white'>%</td>
-              <td className='border border-white'>2021</td>
-              <td className='border border-white'>comp</td>
-              <td className='border border-white'>2021</td>
-              <td className='border border-white'>%</td>
-              <td className='border border-white'>2022</td>
-              <td className='border border-white'>2022</td>
-              <td className='border border-white'>%</td>
-              <td className='border border-white'>2021</td>
+              <td rowSpan={2} className='border border-white'>{year1}</td>
+              <td rowSpan={2} className='border border-white'>{year2}</td>
+              <td rowSpan={2} className='border border-white'>%</td>
+              <td rowSpan={2} className='border border-white'>{year1}</td>
+              <td rowSpan={2} className='border border-white'>{year2}</td>
+              <td rowSpan={2} className='border border-white'>%</td>
+              <td rowSpan={2} className='border border-white'>{year1}</td>
+              <td rowSpan={2} className='border border-white'>{year2}</td>
+              <td rowSpan={2} className='border border-white'>PPTO.</td>
+              <td rowSpan={3} className='border border-white'>%</td>
+              
             </tr>
           </TableHead>
+          <AcumuladoSemanaSantaFooter/>
+          
           <tbody className='bg-white'>
             {
               semanalesTienda.map(item => (
@@ -95,11 +102,12 @@ const acumulado = () => {
                   <td>{item.promFechaComp}</td>
                   <td>{item.artFechaActual}</td>
                   <td>{item.porcentajeArt}</td>
-                  <td>{item.artFechaComparar}</td>
+                  
                 </tr>
               ))
             }
           </tbody>
+          
         </VentasTable>
       </VentasTableContainer>
     </VentasLayout>

@@ -17,7 +17,12 @@ const checkboxLabels = {
   PORCENTAJE_VENTAS_VS_LOGRO: 'Porcentaje Ventas vs Logro',
   INCLUIR_FIN_DE_SEMANA_ANTERIOR: 'Incluir fin de semana anterior',
   INCLUIR_ACUMULADO: 'Incluir Acumulado',
-
+  PRESENTAR_PERIODO_COMPLETO: 'Presentar Periodo Completo',
+  CONCENTRADO: 'Concentrado',
+  ACUMULATIVA: 'Acumulativa',
+  PORCENTAJE_VENTAS_VS_COMPROMISO: 'Porcentaje Ventas vs Compromiso',
+  INCLUIR_EVENTOS: 'Incluir Eventos',
+  PROMEDIO: 'Promedio',
 }
 
 export default checkboxLabels;

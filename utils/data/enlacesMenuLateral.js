@@ -185,7 +185,7 @@ const enlaces = [
         linkText: 'Bases'
       },
       {
-        link: 'presupuesto/grupo',
+        link: '/presupuesto/grupo',
         linkText: 'Grupo'
       },
       {

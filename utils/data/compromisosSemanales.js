@@ -18,7 +18,7 @@ const compromisosSemanales = [
     compromisoOperaciones: 409
   },
   {
-    tienda: 'M4',
+    tienda: 'M4', 
     compromisoVenta: '216,928',
     compromisoPromedios: 850.0,
     compromisoOperaciones: 257
