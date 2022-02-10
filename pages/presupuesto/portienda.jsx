@@ -14,7 +14,7 @@ const portienda = () => {
           <SelectTiendas />
           <SelectMonth/>
           <SelectToMonth />
-          <InputYear/>
+          <InputYear value={2022} onChange={() => {}} />
           </InputContainer>
           <InputContainer>
             <Checkbox className='mb-3' labelText={checkboxLabels.ACUMULATIVA} />

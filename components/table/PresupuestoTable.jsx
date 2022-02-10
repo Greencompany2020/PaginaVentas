@@ -1,12 +1,12 @@
-import { SemanaSantaTableFooter, VentasSemanaSantaHead, VentasTable } from ".";
+import { PresupuestoFechasFooter, PresupuestoFechaHead, VentasTable } from ".";
 import ventasDiariasGrupo from "../../utils/data/ventasDiariasGrupo";
 
-const SemanaSantaTable = ({ year1, year2, title }) => {
+const PresupuestoTable = ({ year1, year2, title }) => {
   return (
     <>
       <h1 className="text-center font-bold">{title}</h1>
       <VentasTable className="my-7 ">
-        <VentasSemanaSantaHead year1={year1} year2={year2} />
+      <PresupuestoFechaHead/>
         <tbody className="bg-white text-center">
           {ventasDiariasGrupo.map((item) => (
             <tr key={item.fechaActual}>
@@ -17,10 +17,10 @@ const SemanaSantaTable = ({ year1, year2, title }) => {
             </tr>
           ))}
         </tbody>
-        <SemanaSantaTableFooter />
+        <PresupuestoFechasFooter />
       </VentasTable>
     </>
   );
 };
 
-export default SemanaSantaTable;
+export default PresupuestoTable;

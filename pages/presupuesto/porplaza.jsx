@@ -14,7 +14,7 @@ const todaslastiendas = () => {
           <SelectPlazas/>
           <SelectMonth/>
           <SelectToMonth />
-          <InputYear/>
+          <InputYear value={2022} onChange={() => {}} />
           </InputContainer>
           <InputContainer>
             <Checkbox labelText={checkboxLabels.ACUMULATIVA} />

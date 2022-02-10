@@ -67,9 +67,21 @@ const grupo = () => {
         <SemanaSantaTable title="M4"></SemanaSantaTable>
         <SemanaSantaTable title="M5"></SemanaSantaTable>
         <SemanaSantaTable title="M6"></SemanaSantaTable>
-        <SemanaSantaTable title="M7"></SemanaSantaTable>
-        <SemanaSantaTable title="M8"></SemanaSantaTable>
         <SemanaSantaTable title="M9"></SemanaSantaTable>
+        <SemanaSantaTable title="M10"></SemanaSantaTable>
+        <SemanaSantaTable title="CAB1"></SemanaSantaTable>
+        <SemanaSantaTable title="IS-5"></SemanaSantaTable>
+        <SemanaSantaTable title="OUTLET MCD"></SemanaSantaTable>
+        <SemanaSantaTable title="PYA1"></SemanaSantaTable>
+        <SemanaSantaTable title="PYA4"></SemanaSantaTable>
+        <SemanaSantaTable title="PV2"></SemanaSantaTable>
+        <SemanaSantaTable title="PV4"></SemanaSantaTable>
+        <SemanaSantaTable title="PV6"></SemanaSantaTable>
+        <SemanaSantaTable title="ACA1"></SemanaSantaTable>
+        <SemanaSantaTable title="ACA2"></SemanaSantaTable>
+        <SemanaSantaTable title="ACA5"></SemanaSantaTable>
+        <SemanaSantaTable title="ISM1"></SemanaSantaTable>
+        <SemanaSantaTable title="TOTAL GRUPO"></SemanaSantaTable>
       </VentasTableContainer>
     </VentasLayout>
   );

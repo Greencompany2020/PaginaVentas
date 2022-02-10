@@ -10,7 +10,7 @@ import { VentasTableContainer, SemanaSantaTable, PeriodosSemanaSantaTable } from
 const periodos = () => {
   return (
     <VentasLayout>
-      <VentasTableContainer title="Ventas Semana Santa">
+      <VentasTableContainer>
         <PeriodosSemanaSantaTable title="PERIODOS DE SEMANA SANTA "></PeriodosSemanaSantaTable>
       </VentasTableContainer>
     </VentasLayout>

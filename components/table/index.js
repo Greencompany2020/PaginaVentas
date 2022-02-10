@@ -10,3 +10,8 @@ export { default as SemanaSantaTable} from './SemanaSantaTable';
 export { default as VentasSemanaSantaHead} from './VentasSemanaSantaHead';
 export { default as AcumuladoSemanaSantaFooter} from './AcumuladoSemanaSantaFooter';
 export { default as PeriodosSemanaSantaTable} from './PeriodosSemanaSantaTable';
+export { default as PresupuestoBasesTable} from './PresupuestoBasesTable';
+export { default as PresupuestoBasesTableHead} from './PresupuestoBasesTableHead';
+export { default as PresupuestoTable } from './PresupuestoTable';
+export { default as PresupuestoFechaHead} from './PresupuestoFechaHead';
+export { default as PresupuestoFechasFooter} from './PresupuestoFechasFooter'

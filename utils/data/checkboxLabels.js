@@ -22,7 +22,10 @@ const checkboxLabels = {
   ACUMULATIVA: 'Acumulativa',
   PORCENTAJE_VENTAS_VS_COMPROMISO: 'Porcentaje Ventas vs Compromiso',
   INCLUIR_EVENTOS: 'Incluir Eventos',
-  PROMEDIO: 'Promedio',
+  PROMEDIO: 'Promedio', 
+  INTERCAMBIAR_SEMANA_SANTA: 'Intercambiar Semana Santa',
+  PRESUPUESTO_EN_MESES_NO_EJERCIDOS : 'Presuesto en Meses no ejercidos',
+  OPERACIONES_EN_MILES: 'Operaciones en Miles'
 }
 
 export default checkboxLabels;

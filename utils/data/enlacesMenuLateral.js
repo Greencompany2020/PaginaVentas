@@ -172,8 +172,8 @@ const enlaces = [
         linkText: 'Periodos'
       },
       {
-        link: '/semanasanta/porplazas',
-        linkText: 'Por Plazas'
+        link: '/semanasanta/porplaza',
+        linkText: 'Por Plaza'
       }
     ]
   },
@@ -193,11 +193,11 @@ const enlaces = [
         linkText: 'Por Fecha'
       },
       {
-        link: '/presupuesto/porplazas',
+        link: '/presupuesto/porplaza',
         linkText: 'Por Plaza'
       },
       {
-        link: '/presupuesto/',
+        link: '/presupuesto/portienda',
         linkText: 'Por Tienda'
       }
     ]
@@ -224,22 +224,22 @@ const enlaces = [
     ]
   },
   {
-    summaryText: 'Rangos de ventas',
+    summaryText: 'Rango de ventas',
     links: [
       {
-        link: '/rangosdeventa/degrupo',
+        link: '/rangodeventas/degrupo',
         linkText: 'De Grupo'
       },
       {
-        link: '/rangosdeventa/detallado',
+        link: '/rangodeventas/detallado',
         linkText: 'Detallado'
       },
       {
-        link: '/rangosdeventa/porplaza',
+        link: '/rangodeventas/porplaza',
         linkText: 'Por Plaza'
       },
       {
-        link: '/rangosdeventa/portienda',
+        link: '/rangodeventas/portienda',
         linkText: 'Por tienda'
       },
     ]
