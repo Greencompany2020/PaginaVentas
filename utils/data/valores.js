@@ -1,65 +1,65 @@
 export const meses = [
   {
-    value: "Enero",
+    value: 1,
     text: "Enero"
   },
   {
-    value: "Febrero",
+    value: 2,
     text: "Febrero"
   },
   {
-    value: "Marzo",
+    value: 3,
     text: "Marzo"
   },
   {
-    value: "Abril",
+    value: 4,
     text: "Abril"
   },
   {
-    value: "Mayo",
+    value: 5,
     text: "Mayo"
   },
   {
-    value: "Junio",
+    value: 6,
     text: "Junio"
   },
   {
-    value: "Julio",
+    value: 7,
     text: "Julio"
   },
   {
-    value: "Agosto",
+    value: 8,
     text: "Agosto"
   },
   {
-    value: "Septiembre",
+    value: 9,
     text: "Septiembre"
   },
   {
-    value: "Octubre",
+    value: 10,
     text: "Octubre"
   },
   {
-    value: "Noviembre",
+    value: 11,
     text: "Noviembre"
   },
   {
-    value: "Diciembre",
+    value: 12,
     text: "Diciembre"
   },
 ]
 
 export const tiendasGeneral = [
   {
-    value: "Frogs",
+    value: 0,
     text: "Frogs"
   },
   {
-    value: "Skoro",
+    value: 2,
     text: "Skoro"
   },
   {
-    value: "Web",
+    value: 3,
     text: "Web"
   }
 ]
