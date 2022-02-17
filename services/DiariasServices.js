@@ -26,3 +26,12 @@ export async function getDiariasTienda(body) {
     console.log(error?.response?.data);
   }
 }
+
+export async function getDiariasTiendaSimple(body) {
+  try {
+    const { data } = await ApiProvider.post("/diarias/tiendasimple", body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}

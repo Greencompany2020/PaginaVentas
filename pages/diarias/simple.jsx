@@ -1,19 +1,65 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { ParametersContainer, Parameters, SmallContainer } from '@components/containers';
-import { VentasTableContainer, VentasTable, TableHead } from '@components/table';
-import { SelectTiendas, SelectMonth, InputYear, InputContainer, Checkbox } from '@components/inputs';
-import { tiendaSimpleVentas, checkboxLabels } from 'utils/data';
+import { useEffect, useState } from 'react';
+import VentasLayout from '../../components/layout/VentasLayout';
+import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
+import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
+import { SelectTiendas, SelectMonth, InputYear, InputContainer, Checkbox } from '../../components/inputs';
+import { checkboxLabels, tiendas } from '../../utils/data';
+import { getDiariasTiendaSimple } from '../../services/DiariasServices';
+import { getLastTwoNumbers, getMonth, getTiendaName } from '../../utils/functions';
+import { numberWithCommas } from '../../utils/resultsFormated';
 
-const simple = () => {
+const Simple = () => {
+  const initialTienda = tiendas.find((tienda => tienda.text === "M1")).value;
+
+  const [tiendaSimple, setTiendaSimple] = useState([]);
+  const [tiendaSimpleParametros, setTiendaSimpleParametros] = useState({
+    delMes: new Date(Date.now()).getMonth() + 1,
+    delAgno: new Date(Date.now()).getFullYear(),
+    tienda: initialTienda,
+    conIva: 0,
+  });
+
+  useEffect(() => {
+    getDiariasTiendaSimple(tiendaSimpleParametros)
+      .then(response => setTiendaSimple(response))
+  }, [tiendaSimpleParametros]);
+
+  const handleChange = (e) => {
+    let value = 0;
+    if (e.target.hasOwnProperty('checked')) {
+      value = e.target.checked ? 1 : 0;
+    } else if (e.target.name === "tienda") {
+      value = e.target.value;
+    } else {
+      value = Number(e.target.value);
+    }
+
+    setTiendaSimpleParametros(prev => ({
+      ...prev,
+      [e.target.name]: value
+    }));
+  }
+
   return (
     <VentasLayout>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
-            <SelectTiendas />
-            <InputYear value={2022} onChange={() => { }} />
-            <SelectMonth />
-            <Checkbox className='mb-2' labelText={checkboxLabels.VENTAS_IVA} />
+            <SelectTiendas onChange={handleChange} />
+            <InputYear
+              value={tiendaSimpleParametros.delAgno}
+              onChange={handleChange}
+            />
+            <SelectMonth
+              value={tiendaSimpleParametros.delMes}
+              onChange={handleChange}
+            />
+            <Checkbox
+              className='mb-2'
+              labelText={checkboxLabels.VENTAS_IVA}
+              name="conIva"
+              onChange={handleChange}
+            />
           </InputContainer>
         </Parameters>
         <SmallContainer>
@@ -21,7 +67,9 @@ const simple = () => {
         </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title='Ventas Diarias M1 Ene 2022'>
+      <VentasTableContainer
+        title={`Ventas Diarias ${getTiendaName(tiendaSimpleParametros.tienda)} ${getMonth(tiendaSimpleParametros.delMes)} ${tiendaSimpleParametros.delAgno}`}
+      >
         <VentasTable>
           <TableHead>
             <tr>
@@ -29,22 +77,22 @@ const simple = () => {
               <th colSpan={3} className='border border-white'>Venta por Dia</th>
             </tr>
             <tr>
-              <th className='border border-white'>22</th>
-              <th className='border border-white'>21</th>
-              <th className='border border-white'>2022</th>
-              <th className='border border-white'>2021</th>
+              <th className='border border-white'>{getLastTwoNumbers(tiendaSimpleParametros.delAgno)}</th>
+              <th className='border border-white'>{getLastTwoNumbers(tiendaSimpleParametros.delAgno - 1)}</th>
+              <th className='border border-white'>{tiendaSimpleParametros.delAgno}</th>
+              <th className='border border-white'>{tiendaSimpleParametros.delAgno - 1}</th>
               <th className='border border-white'>Acum</th>
             </tr>
           </TableHead>
-          <tbody className='bg-white text-right'>
+          <tbody className='bg-white text-center'>
             {
-              tiendaSimpleVentas.map(ventas => (
-                <tr key={ventas.fechaActual}>
-                  <td>{ventas.fechaActual}</td>
-                  <td>{ventas.fechaAnterior}</td>
-                  <td>{ventas.ventaFechaActual}</td>
-                  <td>{ventas.ventaFechaActual}</td>
-                  <td>{ventas.fechaAcumulada}</td>
+              tiendaSimple?.map(ventas => (
+                <tr key={ventas.dial}>
+                  <td>{ventas.dia}</td>
+                  <td>{ventas.dia}</td>
+                  <td>{numberWithCommas(ventas.ventaActual)}</td>
+                  <td>{numberWithCommas(ventas.ventaAnterior)}</td>
+                  <td>{numberWithCommas(ventas.acumulado)}</td>
                 </tr>
               ))
             }
@@ -68,4 +116,4 @@ const simple = () => {
   )
 }
 
-export default simple
+export default Simple
