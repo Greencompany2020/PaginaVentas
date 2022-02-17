@@ -1,16 +1,7 @@
-import { meses } from "../../utils/data";
+import { getLastTwoNumbers, getMonth } from "../../utils/functions";
 
 const VentasDiariasTableHead = ({ currentYear, month }) => {
   const lastYear = currentYear - 1;
-
-  const getMonth = (monthNumber) => {
-    const monthObj = meses.find((mes) => mes.value === monthNumber);
-    return monthObj?.text;
-  }
-
-  const getLastTwoNumbers = (date) => {
-    return date?.toString().slice(2);
-  }
 
   return (
     <thead className='bg-black text-white text-center'>

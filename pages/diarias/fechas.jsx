@@ -1,8 +1,26 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { VentasTableContainer, VentasTable, TableHead } from '@components/table';
-import { reporteFechas } from 'utils/data';
+import { useEffect, useState } from 'react';
+import VentasLayout from '../../components/layout/VentasLayout';
+import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
+import { getDiariasFechas } from '../../services/DiariasServices';
+import { meses } from '../../utils/data';
 
-const fechas = () => {
+const Fechas = () => {
+  const [fechas, setFechas] = useState([]);
+
+  useEffect(() => {
+    getDiariasFechas()
+      .then(response => setFechas(response))
+  }, []);
+
+  const formatLastDate = (date) => {
+    let formatedDate = "";
+    let dateParts = date.split("-");
+    let month = meses.find((mes) => mes.value === Number(dateParts[1]))
+    month = month.text.slice(0, 3);
+    formatedDate = `${dateParts[2]}-${month}-${dateParts[0]}`;
+    return formatedDate;
+  }
+
   return (
     <VentasLayout>
       <VentasTableContainer title="Reporte de la ultima fecha de venta registrada por tienda">
@@ -15,10 +33,10 @@ const fechas = () => {
           </TableHead>
           <tbody className='bg-white'>
             {
-              reporteFechas.map(item => (
-                <tr key={item.tienda} className='text-center'>
-                  <td>{item.tienda}</td>
-                  <td>{item.ultimaFecha}</td>
+              fechas?.map((fecha, index) => (
+                <tr key={index} className='text-center'>
+                  <td>{fecha.tienda}</td>
+                  <td>{formatLastDate(fecha.fecha)}</td>
                 </tr>
               ))
             }
@@ -29,4 +47,4 @@ const fechas = () => {
   )
 }
 
-export default fechas
+export default Fechas

@@ -35,3 +35,12 @@ export async function getDiariasTiendaSimple(body) {
     console.log(error?.response?.data);
   }
 }
+
+export async function getDiariasFechas() {
+  try {
+    const { data } = await ApiProvider.get("/diarias/fechas");
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}

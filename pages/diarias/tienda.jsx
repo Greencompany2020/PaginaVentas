@@ -6,6 +6,7 @@ import { InputContainer, SelectMonth, InputYear, SelectTiendas, Checkbox } from 
 import { checkboxLabels, tiendas } from '../../utils/data';
 import { getDiariasTienda } from '../../services/DiariasServices';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
+import { getTiendaName } from '../../utils/functions';
 
 const Tienda = () => {
   const initialTienda = tiendas.find((tienda => tienda.text === "M1")).value;
@@ -39,11 +40,6 @@ const Tienda = () => {
       ...prev,
       [e.target.name]: value
     }));
-  }
-
-  const getTiendaName = (tiendaId) => {
-    const tienda = tiendas.find((tienda) => tienda.value === tiendaId);
-    return tienda?.text;
   }
 
   return (
@@ -115,7 +111,7 @@ const Tienda = () => {
               ))
             }
           </tbody>
-          <VentasDiariasTableFooter />
+          <VentasDiariasTableFooter currentYear={tiendasParametros.delAgno} month={tiendasParametros.delMes} />
         </VentasTable>
       </VentasTableContainer>
     </VentasLayout>

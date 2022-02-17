@@ -144,7 +144,7 @@ const Plaza = () => {
               ))
             }
           </tbody>
-          <VentasDiariasTableFooter />
+          <VentasDiariasTableFooter currentYear={plazaParametros.delAgno} month={plazaParametros.delMes} />
         </VentasTable>
       </VentasTableContainer>
     </VentasLayout>

@@ -140,7 +140,7 @@ const Grupo = () => {
               ))
             }
           </tbody>
-          <VentasDiariasTableFooter />
+          <VentasDiariasTableFooter currentYear={parametrosConsulta.delAgno} month={parametrosConsulta.delMes} />
         </VentasTable>
       </VentasTableContainer>
     </VentasLayout>

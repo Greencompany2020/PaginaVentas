@@ -99,10 +99,10 @@ const Simple = () => {
           </tbody>
           <tfoot className='bg-black text-white text-center font-bold'>
             <tr>
-              <th className='border border-white'>22</th>
-              <th className='border border-white'>21</th>
-              <th className='border border-white'>2022</th>
-              <th className='border border-white'>2021</th>
+              <th className='border border-white'>{getLastTwoNumbers(tiendaSimpleParametros.delAgno)}</th>
+              <th className='border border-white'>{getLastTwoNumbers(tiendaSimpleParametros.delAgno - 1)}</th>
+              <th className='border border-white'>{tiendaSimpleParametros.delAgno}</th>
+              <th className='border border-white'>{tiendaSimpleParametros.delAgno - 1}</th>
               <th className='border border-white'>Acum</th>
             </tr>
             <tr>
