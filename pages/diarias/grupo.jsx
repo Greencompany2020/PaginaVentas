@@ -1,9 +1,10 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { Parameters, ParametersContainer, SmallContainer } from '@components/containers';
+import { useEffect, useState } from 'react';
+import VentasLayout from '../../components/layout/VentasLayout';
+import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, InputYear, SelectMonth, Checkbox, SelectTiendasGeneral } from '../../components/inputs';
-import { VentasTableContainer, VentasTable, VentasDiariasTableFooter, VentasDiariasTableHead } from '@components/table';
-import { ventasDiariasGrupo, checkboxLabels } from 'utils/data';
-import { useState } from 'react';
+import { VentasTableContainer, VentasTable, VentasDiariasTableFooter, VentasDiariasTableHead } from '../../components/table';
+import { checkboxLabels } from '../../utils/data';
+import { getDiariasGrupo } from '../../services/DiariasServices';
 
 const grupo = () => {
   /* eslint-disable */
@@ -17,8 +18,19 @@ const grupo = () => {
     conTiendasCerradas: 0,
     sinAgnoVenta: 0,
     sinTiendasSuspendidas: 0,
-    resultadoPesos: 0
+    resultadosPesos: 0
   });
+
+  const [diariasGrupo, setDiariasGrupo] = useState([]);
+
+  useEffect(() => {
+    if (parametrosConsulta.delAgno.toString().length === 4) {
+      getDiariasGrupo(parametrosConsulta)
+        .then(response => setDiariasGrupo(response))
+        .catch(error => console.log(error))
+    }
+
+  }, [parametrosConsulta]);
 
   const handleChange = (e) => {
     let value = 0;
@@ -28,13 +40,27 @@ const grupo = () => {
       value = Number(e.target.value);
     }
 
-    setParametrosConsulta({
-      ...parametrosConsulta,
+    setParametrosConsulta(prev => ({
+      ...prev,
       [e.target.name]: value
-    });
-
+    }));
   }
-  console.log(parametrosConsulta);
+
+  const formatNumber = (num) => {
+    let numberText = "";
+    if (num <= 0) {
+      numberText = `(${Math.abs(num)})`;
+      return (<td className='text-red-900 font-bold'>{numberText}</td>)
+    } else {
+      numberText = `${Math.abs(num)}`;
+      return (<td className='text-green-900 font-bold'>{numberText}</td>)
+    }
+  }
+
+  const numberWithCommas = (num) => {
+    return num.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+  }
+
   return (
     <VentasLayout>
       <ParametersContainer>
@@ -92,7 +118,7 @@ const grupo = () => {
             />
             <Checkbox
               labelText={checkboxLabels.RESULTADO_PESOS}
-              name="resultadoPesos"
+              name="resultadosPesos"
               onChange={handleChange}
             />
           </InputContainer>
@@ -104,27 +130,27 @@ const grupo = () => {
 
       <VentasTableContainer title='Ventas Diarias Grupo Frogs'>
         <VentasTable>
-          <VentasDiariasTableHead />
-          <tbody className='bg-white text-right'>
+          <VentasDiariasTableHead currentYear={parametrosConsulta.delAgno} month={parametrosConsulta.delMes} />
+          <tbody className='bg-white text-center'>
             {
-              ventasDiariasGrupo.map(item => (
-                <tr key={item.fechaActual}>
-                  <td className='text-center'>{item.fechaActual}</td>
-                  <td className='text-center'>{item.fechaAnterior}</td>
-                  <td>{item.ventaDiariaFechaActual}</td>
-                  <td>{item.ventaDiariaFechaAnterior}</td>
-                  <td>{item.ventaDiariaComp}</td>
-                  <td>{item.ventaDiariaPor}</td>
-                  <td>{item.acumuladoFechaActual}</td>
-                  <td>{item.acumuladoFechaAnterior}</td>
-                  <td>{item.acumuladoComp}</td>
-                  <td>{item.diferenciaAcumulado}</td>
-                  <td>{item.acumuladoPor}</td>
-                  <td>{item.acumuladoAnualFechaActual}</td>
-                  <td>{item.acumuladoAnualFechaAnterior}</td>
-                  <td>{item.acumuladoAnualComp}</td>
-                  <td>{item.acumuladoAnualPor}</td>
-                  <td className='text-center'>{item.fechaActual}</td>
+              diariasGrupo?.map((diaria) => (
+                <tr key={diaria.dia} className='p-1'>
+                  <td className='text-center'>{diaria.dia}</td>
+                  <td className='text-center'>{diaria.dia}</td>
+                  <td>{numberWithCommas(diaria.ventaActual)}</td>
+                  <td>{numberWithCommas(diaria.ventaAnterior)}</td>
+                  <td>{numberWithCommas(diaria.compromisoDiario)}</td>
+                  {formatNumber(diaria.crecimientoDiario)}
+                  <td>{numberWithCommas(diaria.acumMensualActual)}</td>
+                  <td>{numberWithCommas(diaria.acumMensualAnterior)}</td>
+                  <td>{numberWithCommas(diaria.compromisoAcum)}</td>
+                  {formatNumber(diaria.diferencia)}
+                  {formatNumber(diaria.crecimientoMensual)}
+                  <td>{numberWithCommas(diaria.acumAnualActual)}</td>
+                  <td>{numberWithCommas(diaria.acumAnualAnterior)}</td>
+                  <td>{numberWithCommas(diaria.compromisoAnual)}</td>
+                  {formatNumber(diaria.crecimientoAnual)}
+                  <td className='text-center'>{diaria.dia}</td>
                 </tr>
               ))
             }
