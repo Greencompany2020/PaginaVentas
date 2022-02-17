@@ -5,9 +5,9 @@ import { InputContainer, InputYear, SelectMonth, Checkbox, SelectTiendasGeneral 
 import { VentasTableContainer, VentasTable, VentasDiariasTableFooter, VentasDiariasTableHead } from '../../components/table';
 import { checkboxLabels } from '../../utils/data';
 import { getDiariasGrupo } from '../../services/DiariasServices';
+import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 
-const grupo = () => {
-  /* eslint-disable */
+const Grupo = () => {
   const [parametrosConsulta, setParametrosConsulta] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
@@ -44,21 +44,6 @@ const grupo = () => {
       ...prev,
       [e.target.name]: value
     }));
-  }
-
-  const formatNumber = (num) => {
-    let numberText = "";
-    if (num <= 0) {
-      numberText = `(${Math.abs(num)})`;
-      return (<td className='text-red-900 font-bold'>{numberText}</td>)
-    } else {
-      numberText = `${Math.abs(num)}`;
-      return (<td className='text-green-900 font-bold'>{numberText}</td>)
-    }
-  }
-
-  const numberWithCommas = (num) => {
-    return num.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
   }
 
   return (
@@ -162,4 +147,4 @@ const grupo = () => {
   )
 }
 
-export default grupo
+export default Grupo

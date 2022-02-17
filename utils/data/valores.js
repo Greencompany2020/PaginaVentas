@@ -161,59 +161,59 @@ export const tiendas = [
 
 export const plazas = [
   {
-    value: "MAZATLAN",
+    value: 3,
     text: "MAZATLAN"
   },
   {
-    value: "VALLARTA",
+    value: 6,
     text: "VALLARTA"
   },
   {
-    value: "ACAPULCO",
+    value: 7,
     text: "ACAPULCO"
   },
   {
-    value: "CANCUN",
+    value: 5,
     text: "CANCUN"
   },
   {
-    value: "PCARMEN",
+    value: 99,
     text: "PCARMEN"
   },
   {
-    value: "ISM",
+    value: 26,
     text: "ISM"
   },
   {
-    value: "CABOS",
+    value: 96,
     text: "CABOS"
   },
   {
-    value: "TULUM",
+    value: 11,
     text: "TULUM"
   },
   {
-    value: "SK MAZATLAN",
+    value: 94,
     text: "SK MAZATLAN"
   },
   {
-    value: "SK CULIACAN",
+    value: 97,
     text: "SK CULIACAN"
   },
   {
-    value: "SK MEXICALI",
+    value: "093",
     text: "SK MEXICALI"
   },
   {
-    value: "SK CHIHUAHUA",
+    value: "093",
     text: "SK CHIHUAHUA"
   },
   {
-    value: "COZUMEL",
+    value: 108,
     text: "COZUMEL"
   },
   {
-    value: "SK TIJUANA",
+    value: 92,
     text: "SK TIJUANA"
   }
 ]

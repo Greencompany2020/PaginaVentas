@@ -5,6 +5,15 @@ export async function getDiariasGrupo(body) {
     const { data } = await ApiProvider.post("/diarias/grupo", body);
     return data.result;
   } catch (error) {
-    console.log(error.message);
+    console.log(error?.response?.data);
+  }
+}
+
+export async function getDiariasPlazas(body) {
+  try {
+    const { data } = await ApiProvider.post("/diarias/plazas", body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
   }
 }
