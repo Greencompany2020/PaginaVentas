@@ -9,6 +9,7 @@ import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 
 const Plaza = () => {
   const initialPlaza = plazas.find((plaza => plaza.text === "MAZATLAN")).value;
+
   const [diariasPlaza, setDiariasPlaza] = useState([]);
   const [plazaParametros, setPlazaParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
@@ -40,6 +41,11 @@ const Plaza = () => {
       ...prev,
       [e.target.name]: value
     }));
+  }
+
+  const getPlazaName = (plazaId) => {
+    const plaza = plazas.find((plaza) => plaza.value === plazaParametros.plaza);
+    return plaza.text;
   }
 
   return (
@@ -111,7 +117,7 @@ const Plaza = () => {
         </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title='Ventas Diarias Plaza MAZATLAN'>
+      <VentasTableContainer title={`Ventas Diarias Plaza ${getPlazaName(plazaParametros.plaza)}`}>
         <VentasTable>
           <VentasDiariasTableHead currentYear={plazaParametros.delAgno} month={plazaParametros.delMes} />
           <tbody className='bg-white text-center'>

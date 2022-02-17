@@ -66,96 +66,96 @@ export const tiendasGeneral = [
 
 export const tiendas = [
   {
-    value: 'M1',
-    text: 'M1'
+    value: "0301",
+    text: "M1"
   },
   {
-    value: 'M2',
-    text: 'M2'
+    value: "0302",
+    text: "M2"
   },
   {
-    value: 'M3',
-    text: 'M3'
+    value: "0303",
+    text: "M3"
   },
   {
-    value: 'M4',
-    text: 'M4'
+    value: "0304",
+    text: "M4"
   },
   {
-    value: 'M5',
-    text: 'M5'
+    value: "0305",
+    text: "M5"
   },
   {
-    value: 'M6',
-    text: 'M6'
+    value: "0309",
+    text: "M6"
   },
   {
-    value: 'M9',
-    text: 'M9'
+    value: "0309",
+    text: "M9"
   },
   {
-    value: 'M10',
-    text: 'M10'
+    value: "0310",
+    text: "M10"
   },
   {
-    value: 'PV2',
-    text: 'PV2'
+    value: "0602",
+    text: "PV2"
   },
   {
-    value: 'PV4',
-    text: 'PV4'
+    value: "0604",
+    text: "PV4"
   },
   {
-    value: 'PV6',
-    text: 'PV6'
+    value: "0606",
+    text: "PV6"
   },
   {
-    value: 'ACA1',
-    text: 'ACA1'
+    value: "0701",
+    text: "ACA1"
   },
   {
-    value: 'ACA2',
-    text: 'ACA2'
+    value: "0702",
+    text: "ACA2"
   },
   {
-    value: 'ACA5',
-    text: 'ACA5'
+    value: "0705",
+    text: "ACA5"
   },
   {
-    value: 'IS-5',
-    text: 'IS-5'
+    value: "0505",
+    text: "IS-5"
   },
   {
-    value: 'OUTLET MCD',
-    text: 'OUTLET MCD'
+    value: "0506",
+    text: "OUTLET MCD"
   },
   {
-    value: 'FORUM',
-    text: 'FORUM'
+    value: "0507",
+    text: "FORUM"
   },
   {
-    value: 'PYA1',
-    text: 'PYA1'
+    value: "9950",
+    text: "PYA1"
   },
   {
-    value: 'PYA4',
-    text: 'PYA4'
+    value: "9954",
+    text: "PYA4"
   },
   {
-    value: 'ISM1',
-    text: 'ISM1'
+    value: "2601",
+    text: "ISM1"
   },
   {
-    value: 'CAB1',
-    text: 'CAB1'
+    value: "9631",
+    text: "CAB1"
   },
   {
-    value: 'CAB3',
-    text: 'CAB3'
+    value: "9633",
+    text: "CAB3"
   },
   {
-    value: 'WEB-SF',
-    text: 'WEB-SF'
+    value: "9502",
+    text: "WEB-SF"
   },
 ]
 
