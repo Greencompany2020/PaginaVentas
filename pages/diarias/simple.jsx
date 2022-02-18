@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import VentasLayout from '../../components/layout/VentasLayout';
+import { getLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { SelectTiendas, SelectMonth, InputYear, InputContainer, Checkbox } from '../../components/inputs';
@@ -41,7 +41,7 @@ const Simple = () => {
   }
 
   return (
-    <VentasLayout>
+    <>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -112,8 +112,10 @@ const Simple = () => {
           </tfoot>
         </VentasTable>
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
+
+Simple.getLayout = getLayout;
 
 export default Simple

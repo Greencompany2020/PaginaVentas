@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import VentasLayout from '../../components/layout/VentasLayout';
+import VentasLayout, { getLayout } from '../../components/layout/VentasLayout';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, InputYear, SelectMonth, Checkbox, SelectTiendasGeneral } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, VentasDiariasTableFooter, VentasDiariasTableHead } from '../../components/table';
@@ -47,7 +47,7 @@ const Grupo = () => {
   }
 
   return (
-    <VentasLayout>
+    <>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -143,8 +143,10 @@ const Grupo = () => {
           <VentasDiariasTableFooter currentYear={parametrosConsulta.delAgno} month={parametrosConsulta.delMes} />
         </VentasTable>
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
+
+Grupo.getLayout = getLayout;
 
 export default Grupo

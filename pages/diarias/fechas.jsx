@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import VentasLayout from '../../components/layout/VentasLayout';
+import { getLayout } from '../../components/layout/VentasLayout';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { getDiariasFechas } from '../../services/DiariasServices';
 import { meses } from '../../utils/data';
@@ -22,7 +22,7 @@ const Fechas = () => {
   }
 
   return (
-    <VentasLayout>
+    <>
       <VentasTableContainer title="Reporte de la ultima fecha de venta registrada por tienda">
         <VentasTable>
           <TableHead>
@@ -43,8 +43,10 @@ const Fechas = () => {
           </tbody>
         </VentasTable>
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
+
+Fechas.getLayout = getLayout;
 
 export default Fechas

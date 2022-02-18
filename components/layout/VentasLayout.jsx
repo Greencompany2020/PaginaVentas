@@ -15,8 +15,14 @@ const VentasLayout = ({ children }) => {
           {children}
         </section>
       </div>
-    </> 
+    </>
   )
 }
+
+export const getLayout = page => (
+  <VentasLayout>
+    {page}
+  </VentasLayout>
+)
 
 export default VentasLayout

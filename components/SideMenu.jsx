@@ -2,7 +2,7 @@ import DetailsSideBar from '@components/DetailsSideBar';
 import { MenuIcon } from '@heroicons/react/solid';
 import useToggle from 'hooks/useToggle';
 
-import { enlacesMenuLateral } from 'utils/data'
+import { enlacesMenuLateral } from '../utils/data'
 
 const SideMenu = () => {
   const [visible, toggleVisible] = useToggle(true);

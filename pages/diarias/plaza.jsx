@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import VentasLayout from '../../components/layout/VentasLayout';
+import { getLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { VentasTableContainer, VentasTable, VentasDiariasTableHead, VentasDiariasTableFooter } from '../../components/table';
 import { InputContainer, SelectPlazas, SelectMonth, InputYear, Checkbox } from '../../components/inputs';
@@ -44,12 +44,12 @@ const Plaza = () => {
   }
 
   const getPlazaName = (plazaId) => {
-    const plaza = plazas.find((plaza) => plaza.value === plazaParametros.plaza);
+    const plaza = plazas.find((plaza) => plaza.value === plazaId);
     return plaza.text;
   }
 
   return (
-    <VentasLayout>
+    <>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -147,8 +147,10 @@ const Plaza = () => {
           <VentasDiariasTableFooter currentYear={plazaParametros.delAgno} month={plazaParametros.delMes} />
         </VentasTable>
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
+
+Plaza.getLayout = getLayout;
 
 export default Plaza
