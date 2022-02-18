@@ -63,7 +63,7 @@ const Compromiso = () => {
     beginTextDate = `${beginDateParts[2]} de ${beginMonth} del ${beginDateParts[0]}`;
     endTextDate = `${endDateParts[2]} de ${endMonth} del ${endDateParts[0]}`;
 
-    return `Semana del ${beginTextDate} Al ${endTextDate}`;
+    return `del ${beginTextDate} Al ${endTextDate}`;
   }
 
   return (
@@ -110,7 +110,7 @@ const Compromiso = () => {
         </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title={`DEFINICION METAS: ${dateRangeTitle(compromisosParametros.fechaInicio, compromisosParametros.fechaFin)}`}>
+      <VentasTableContainer title={`DEFINICION METAS: Semana ${dateRangeTitle(compromisosParametros.fechaInicio, compromisosParametros.fechaFin)}`}>
         <VentasTable>
           <TableHead>
             <tr>

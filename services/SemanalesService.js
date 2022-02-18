@@ -8,3 +8,12 @@ export async function getSemanalesCompromisos(body) {
     console.log(error?.response?.data);
   }
 }
+
+export async function getSemanalesPlazas(body) {
+  try {
+    const { data } = await ApiProvider.post("/semanales/plazas", body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}

@@ -1,29 +1,99 @@
+import { format, nextSunday, previousMonday } from 'date-fns';
 import Link from 'next/link'
-import { SmallContainer, ParametersContainer, Parameters } from '@components/containers';
-import { InputContainer, InputDateRange, Checkbox } from '@components/inputs'
-import VentasLayout from '@components/layout/VentasLayout';
-import { VentasTableContainer, VentasTable, TableHead } from '@components/table';
-import { semanalesPlaza, checkboxLabels } from 'utils/data'
+import { useEffect, useState } from 'react';
+import { SmallContainer, ParametersContainer, Parameters } from '../../components/containers';
+import { InputContainer, InputDateRange, Checkbox } from '../../components/inputs'
+import { getVentasLayout } from '../../components/layout/VentasLayout';
+import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
+import { getSemanalesPlazas } from '../../services/SemanalesService';
+import { checkboxLabels } from '../../utils/data'
+import { dateRangeTitle, getYearFromDate, validateInputDateRange } from '../../utils/functions';
+import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 
 
-const Informes = () => {
+const Plazas = () => {
+  const [semanalesPlaza, setSemanalesPlaza] = useState([]);
+  const [plazasParametros, setPlazasParametros] = useState({
+    fechaInicio: format(previousMonday(new Date(Date.now())), "yyyy-MM-dd", { weekStartsOn: 1 }),
+    fechaFin: format(nextSunday(new Date(Date.now())), "yyyy-MM-dd", { weekStartsOn: 1 }),
+    conIva: 0,
+    sinAgnoVenta: 0,
+    conVentasEventos: 0,
+    conTiendasCerradas: 0,
+    sinTiendasSuspendidas: 0,
+    resultadosPesos: 1
+  })
+
+  useEffect(() => {
+    if (validateInputDateRange(plazasParametros.fechaInicio, plazasParametros.fechaInicio)) {
+      getSemanalesPlazas(plazasParametros)
+        .then(response => setSemanalesPlaza(response));
+    }
+  }, [plazasParametros])
+
+  const handleChange = (e) => {
+    let value = 0;
+    if (e.target.hasOwnProperty('checked')) {
+      value = e.target.checked ? 1 : 0;
+    } else if (e.target.type === "date") {
+      value = e.target.value;
+    } else {
+      value = Number(e.target.value);
+    }
+
+    setPlazasParametros(prev => ({
+      ...prev,
+      [e.target.name]: value
+    }));
+  }
 
   return (
-    <VentasLayout>
+    <>
       <ParametersContainer>
         <Parameters>
-          <InputDateRange />
+          <InputDateRange
+            onChange={handleChange}
+            beginDate={plazasParametros.fechaInicio}
+            endDate={plazasParametros.fechaFin}
+          />
           <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.VENTAS_IVA} />
-            <Checkbox labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS} />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.VENTAS_IVA}
+              name="conIva"
+              onChange={handleChange}
+            />
+            <Checkbox
+              labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+              name="conVentasEventos"
+              onChange={handleChange}
+            />
           </InputContainer>
           <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS} />
-            <Checkbox labelText={checkboxLabels.EXCLUIR_TIENDAS_VENTAS} />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+              name="conTiendasCerradas"
+            />
+            <Checkbox
+              labelText={checkboxLabels.EXCLUIR_TIENDAS_VENTAS}
+              name="sinAgnoVenta"
+              onChange={handleChange}
+            />
           </InputContainer>
           <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS} />
-            <Checkbox labelText={checkboxLabels.RESULTADO_PESOS} />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
+              name="sinTiendasSuspendidas"
+              onChange={handleChange}
+            />
+            <Checkbox
+              labelText={checkboxLabels.RESULTADO_PESOS}
+              name="resultadosPesos"
+              checked={plazasParametros.resultadosPesos ? 1 : 0}
+              onChange={handleChange}
+            />
           </InputContainer>
         </Parameters>
         <SmallContainer>
@@ -40,13 +110,13 @@ const Informes = () => {
           <TableHead>
             <tr>
               <td rowSpan={3} className='border border-white'>Plaza</td>
-              <td colSpan={12} className='border border-white'>Del 20 de dic al 26 de Dic 2021</td>
+              <td colSpan={12} className='border border-white'>{dateRangeTitle(plazasParametros.fechaInicio, plazasParametros.fechaFin)}</td>
             </tr>
             <tr>
               <td rowSpan={2} className='border border-white'>Comp</td>
-              <td rowSpan={2} className='border border-white'>2021</td>
+              <td rowSpan={2} className='border border-white'>{getYearFromDate(plazasParametros.fechaFin)}</td>
               <td rowSpan={2} className='border border-white'>%</td>
-              <td rowSpan={2} className='border border-white'>2020</td>
+              <td rowSpan={2} className='border border-white'>{getYearFromDate(plazasParametros.fechaFin) - 1}</td>
               <td colSpan={4} className='border border-white'>operaciones</td>
               <td colSpan={4} className='border border-white'>promedios</td>
             </tr>
@@ -61,33 +131,35 @@ const Informes = () => {
               <td className='border border-white'>2020</td>
             </tr>
           </TableHead>
-          <tbody className='bg-white'>
+          <tbody className='bg-white text-center'>
             {
-              semanalesPlaza.map(item => (
-                <tr className='text-right' key={item.plaza}>
+              semanalesPlaza?.map(semPlaza => (
+                <tr key={semPlaza.plaza}>
                   <td className='text-left bg-black text-white underline font-bold'>
-                    <Link href='/informes'><a>{item.plaza}</a></Link>
+                    <Link href='#'><a>{semPlaza.plaza}</a></Link>
                   </td>
-                  <td>{item.comp}</td>
-                  <td>{item.fechaActual}</td>
-                  <td className='text-red-600 font-bold'>{item.porcentaje}</td>
-                  <td>{item.fechaComp}</td>
-                  <td>{item.operacionesComp}</td>
-                  <td>{item.opeFechaActual}</td>
-                  <td className='text-red-600 font-bold'>{item.porcentajeOper}</td>
-                  <td>{item.opeFechaComp}</td>
-                  <td>{item.promedioComp}</td>
-                  <td>{item.promFechaActual}</td>
-                  <td className='text-red-600 font-bold'>{item.porcentajeProm}</td>
-                  <td>{item.promFechaComp}</td>
+                  <td>{numberWithCommas(semPlaza.compromiso)}</td>
+                  <td>{numberWithCommas(semPlaza.ventasActuales)}</td>
+                  {formatNumber(semPlaza.porcentaje)}
+                  <td>{numberWithCommas(semPlaza.ventasAnterior)}</td>
+                  <td>{numberWithCommas(semPlaza.operacionesComp)}</td>
+                  <td>{numberWithCommas(semPlaza.operacionesActual)}</td>
+                  {formatNumber(semPlaza.porcentajeOperaciones)}
+                  <td>{numberWithCommas(semPlaza.operacionesAnterior)}</td>
+                  <td>{numberWithCommas(semPlaza.promedioComp)}</td>
+                  <td>{numberWithCommas(semPlaza.promedioActual)}</td>
+                  {formatNumber(semPlaza.porcentajePromedios)}
+                  <td>{numberWithCommas(semPlaza.promedioAnterior)}</td>
                 </tr>
               ))
             }
           </tbody>
         </VentasTable>
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
 
-export default Informes
+Plazas.getLayout = getVentasLayout;
+
+export default Plazas
