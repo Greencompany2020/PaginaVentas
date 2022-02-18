@@ -17,3 +17,12 @@ export async function getSemanalesPlazas(body) {
     console.log(error?.response?.data);
   }
 }
+
+export async function getSemanalesTiendas(body) {
+  try {
+    const { data } = await ApiProvider.post("/semanales/tiendas", body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}
