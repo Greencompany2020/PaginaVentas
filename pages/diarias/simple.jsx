@@ -3,20 +3,18 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { SelectTiendas, SelectMonth, InputYear, InputContainer, Checkbox } from '../../components/inputs';
-import { checkboxLabels, tiendas } from '../../utils/data';
+import { checkboxLabels } from '../../utils/data';
 import { getDiariasTiendaSimple } from '../../services/DiariasServices';
-import { getLastTwoNumbers, getTiendaName } from '../../utils/functions';
+import { getInitialTienda, getLastTwoNumbers, getTiendaName } from '../../utils/functions';
 import { numberWithCommas } from '../../utils/resultsFormated';
 import { getMonthByNumber } from '../../utils/dateFunctions';
 
 const Simple = () => {
-  const initialTienda = tiendas.find((tienda => tienda.text === "M1")).value;
-
   const [tiendaSimple, setTiendaSimple] = useState([]);
   const [tiendaSimpleParametros, setTiendaSimpleParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
-    tienda: initialTienda,
+    tienda: getInitialTienda(),
     conIva: 0,
   });
 

@@ -1,14 +1,14 @@
-import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { SmallContainer, ParametersContainer, Parameters } from '../../components/containers';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { InputContainer, InputDateRange, Checkbox, SelectTiendasGeneral } from '../../components/inputs';
+import RegionesPlazaTableRow from '../../components/table/RegionesPlazaTableRow';
 import { regiones, checkboxLabels, plazas } from '../../utils/data';
 import { getCurrentWeekDateRange, getYearFromDate } from '../../utils/dateFunctions';
 import { dateRangeTitle, validateInputDateRange } from '../../utils/functions';
 import { getSemanalesTiendas } from '../../services/SemanalesService';
-import RegionesPlazaTableRow from '../../components/table/RegionesPlazaTableRow';
+import { inputNames } from '../../utils/data/checkboxLabels';
 
 const Tiendas = () => {
   const [beginDate, endDate] = getCurrentWeekDateRange();
@@ -77,12 +77,12 @@ const Tiendas = () => {
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.VENTAS_IVA}
-              name="conIva"
+              name={inputNames.CON_IVA}
               onChange={handleChange}
             />
             <Checkbox
               labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
-              name="conVentasEventos"
+              name={inputNames.CON_VENTAS_EVENTOS}
               onChange={handleChange}
             />
           </InputContainer>
@@ -90,12 +90,12 @@ const Tiendas = () => {
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
-              name="conTiendasCerradas"
+              name={inputNames.CON_TIENDAS_CERRADAS}
               onChange={handleChange}
             />
             <Checkbox
-              labelText={checkboxLabels.EXCLUIR_TIENDAS_VENTAS}
-              name="sinAgnoVenta"
+              labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
+              name={inputNames.SIN_AGNO_VENTA}
               onChange={handleChange}
             />
           </InputContainer>
@@ -103,12 +103,12 @@ const Tiendas = () => {
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
-              name="sinTiendasSuspendidas"
+              name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
               onChange={handleChange}
             />
             <Checkbox
               labelText={checkboxLabels.RESULTADO_PESOS}
-              name="resultadosPesos"
+              name={inputNames.RESULTADOS_PESOS}
               onChange={handleChange}
             />
           </InputContainer>

@@ -1,5 +1,3 @@
-import { format, nextSunday, previousMonday } from 'date-fns';
-import Link from 'next/link'
 import { useEffect, useState } from 'react';
 import { SmallContainer, ParametersContainer, Parameters } from '../../components/containers';
 import { InputContainer, InputDateRange, Checkbox } from '../../components/inputs'
@@ -7,6 +5,7 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { getSemanalesPlazas } from '../../services/SemanalesService';
 import { checkboxLabels } from '../../utils/data'
+import { inputNames } from '../../utils/data/checkboxLabels';
 import { getCurrentWeekDateRange, getYearFromDate } from '../../utils/dateFunctions';
 import { dateRangeTitle, validateInputDateRange } from '../../utils/functions';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
@@ -62,12 +61,12 @@ const Plazas = () => {
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.VENTAS_IVA}
-              name="conIva"
+              name={inputNames.CON_IVA}
               onChange={handleChange}
             />
             <Checkbox
               labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
-              name="conVentasEventos"
+              name={inputNames.CON_VENTAS_EVENTOS}
               onChange={handleChange}
             />
           </InputContainer>
@@ -75,11 +74,11 @@ const Plazas = () => {
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
-              name="conTiendasCerradas"
+              name={inputNames.CON_TIENDAS_CERRADAS}
             />
             <Checkbox
-              labelText={checkboxLabels.EXCLUIR_TIENDAS_VENTAS}
-              name="sinAgnoVenta"
+              labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
+              name={inputNames.SIN_AGNO_VENTA}
               onChange={handleChange}
             />
           </InputContainer>
@@ -87,12 +86,12 @@ const Plazas = () => {
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
-              name="sinTiendasSuspendidas"
+              name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
               onChange={handleChange}
             />
             <Checkbox
               labelText={checkboxLabels.RESULTADO_PESOS}
-              name="resultadosPesos"
+              name={inputNames.RESULTADOS_PESOS}
               checked={plazasParametros.resultadosPesos ? 1 : 0}
               onChange={handleChange}
             />
@@ -137,8 +136,8 @@ const Plazas = () => {
             {
               semanalesPlaza?.map(semPlaza => (
                 <tr key={semPlaza.plaza}>
-                  <td className='text-left bg-black text-white underline font-bold'>
-                    <Link href='#'><a>{semPlaza.plaza}</a></Link>
+                  <td className='text-left bg-black text-white font-bold'>
+                    {semPlaza.plaza}
                   </td>
                   <td>{numberWithCommas(semPlaza.compromiso)}</td>
                   <td>{numberWithCommas(semPlaza.ventasActuales)}</td>

@@ -6,16 +6,14 @@ import { InputContainer, SelectMonth, InputYear, SelectTiendas, Checkbox } from 
 import { checkboxLabels, tiendas } from '../../utils/data';
 import { getDiariasTienda } from '../../services/DiariasServices';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
-import { getTiendaName } from '../../utils/functions';
+import { getInitialTienda, getTiendaName } from '../../utils/functions';
 
 const Tienda = () => {
-  const initialTienda = tiendas.find((tienda => tienda.text === "M1")).value;
-
   const [diariasTienda, setDiariasTienda] = useState([]);
   const [tiendasParametros, setTiendaParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
-    tienda: initialTienda,
+    tienda: getInitialTienda(),
     conIva: 0,
     semanaSanta: 1,
     resultadosPesos: 0
@@ -56,6 +54,7 @@ const Tienda = () => {
               onChange={handleChange}
             />
             <SelectTiendas
+              value={tiendasParametros.tienda}
               onChange={handleChange}
             />
           </InputContainer>

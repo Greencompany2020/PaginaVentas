@@ -3,18 +3,18 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { VentasTableContainer, VentasTable, VentasDiariasTableHead, VentasDiariasTableFooter } from '../../components/table';
 import { InputContainer, SelectPlazas, SelectMonth, InputYear, Checkbox } from '../../components/inputs';
-import { checkboxLabels, plazas } from '../../utils/data';
+import { checkboxLabels } from '../../utils/data';
 import { getDiariasPlazas } from '../../services/DiariasServices';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
+import { getInitialPlaza, getPlazaName } from '../../utils/functions';
+import { inputNames } from '../../utils/data/checkboxLabels';
 
 const Plaza = () => {
-  const initialPlaza = plazas.find((plaza => plaza.text === "MAZATLAN")).value;
-
   const [diariasPlaza, setDiariasPlaza] = useState([]);
   const [plazaParametros, setPlazaParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
-    plaza: initialPlaza,
+    plaza: getInitialPlaza(),
     conIva: 0,
     semanaSanta: 1,
     conVentasEventos: 0,
@@ -43,11 +43,6 @@ const Plaza = () => {
     }));
   }
 
-  const getPlazaName = (plazaId) => {
-    const plaza = plazas.find((plaza) => plaza.value === plazaId);
-    return plaza.text;
-  }
-
   return (
     <>
       <ParametersContainer>
@@ -55,6 +50,7 @@ const Plaza = () => {
           <InputContainer>
             <SelectPlazas
               onChange={handleChange}
+              value={plazaParametros.plaza}
             />
             <SelectMonth
               value={plazaParametros.delMes}
@@ -69,19 +65,19 @@ const Plaza = () => {
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.VENTAS_IVA}
-              name="conIva"
+              name={inputNames.CON_IVA}
               onChange={handleChange}
             />
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.SEMANA_SANTA}
               checked={plazaParametros.semanaSanta ? true : false}
-              name="semanaSanta"
+              name={inputNames.SEMANA_SANTA}
               onChange={handleChange}
             />
             <Checkbox
               labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
-              name="conVentasEventos"
+              name={inputNames.CON_VENTAS_EVENTOS}
               onChange={handleChange}
             />
           </InputContainer>
@@ -89,12 +85,12 @@ const Plaza = () => {
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
-              name="conTiendasCerradas"
+              name={inputNames.CON_TIENDAS_CERRADAS}
               onChange={handleChange}
             />
             <Checkbox
-              labelText={checkboxLabels.EXCLUIR_TIENDAS_VENTAS}
-              name="sinAgnoVenta"
+              labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
+              name={inputNames.SIN_AGNO_VENTA}
               onChange={handleChange}
             />
           </InputContainer>
@@ -102,12 +98,12 @@ const Plaza = () => {
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
-              name="sinTiendaSuspendidas"
+              name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
               onChange={handleChange}
             />
             <Checkbox
               labelText={checkboxLabels.RESULTADO_PESOS}
-              name="resultadosPesos"
+              name={inputNames.RESULTADOS_PESOS}
               onChange={handleChange}
             />
           </InputContainer>

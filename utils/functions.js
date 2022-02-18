@@ -1,4 +1,4 @@
-import { tiendas } from "./data";
+import { plazas, tiendas } from "./data";
 import { getMonthByNumber, getMonthChars } from "./dateFunctions";
 
 /**
@@ -9,6 +9,15 @@ import { getMonthByNumber, getMonthChars } from "./dateFunctions";
 export const getTiendaName = (tiendaId) => {
   const tienda = tiendas.find((tienda) => tienda.value === tiendaId);
   return tienda?.text;
+}
+/**
+ * Obtiene el nomber de la plaza en base al identificador de la misma.
+ * @param {number} plazaId 
+ * @returns 
+ */
+export const getPlazaName = (plazaId) => {
+  const plaza = plazas.find((plaza) => plaza.value === plazaId);
+  return plaza?.text;
 }
 /**
  * Obtiene los 2 últimos dígitos del años. Ej.
@@ -60,3 +69,14 @@ export const dateRangeTitle = (beginDate, endDate) => {
  * @returns {boolean}
  */
 export const validateInputDateRange = (beginDate, endDate) => (beginDate?.length === 10 && endDate?.length === 10);
+
+/**
+ * Obtiene el valor de la tienda que estará por defecto.
+ * @returns {number} El identificador de la tienda
+ */
+export const getInitialTienda = () => tiendas.find((tienda => tienda.text === "M1")).value
+/**
+ * Obtiene el valor de la plaza que estará por defecto.
+ * @returns {number} El identificador de la plaza
+ */
+export const getInitialPlaza = () => plazas.find((plaza => plaza.text === "MAZATLAN")).value;

@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { format, previousMonday, nextSunday } from 'date-fns';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { InputContainer, InputDateRange, SelectPlazas, Checkbox } from '../../components/inputs';
@@ -9,6 +8,7 @@ import { getSemanalesCompromisos } from '../../services/SemanalesService';
 import { numberWithCommas } from '../../utils/resultsFormated';
 import { getCurrentWeekDateRange } from '../../utils/dateFunctions';
 import { dateRangeTitle } from '../../utils/functions';
+import { inputNames } from '../../utils/data/checkboxLabels';
 
 const Compromiso = () => {
   const [beginDate, endDate] = getCurrentWeekDateRange();
@@ -66,19 +66,19 @@ const Compromiso = () => {
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.VENTAS_IVA}
-              name="conIva"
+              name={inputNames.CON_IVA}
               onChange={handleChange}
             />
             <Checkbox
-              labelText={checkboxLabels.EXCLUIR_TIENDAS_VENTAS}
-              name="sinAgnoVenta"
+              labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
+              name={inputNames.SIN_AGNO_VENTA}
             />
           </InputContainer>
           <InputContainer>
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
-              name="conTiendasCerradas"
+              name={inputNames.CON_TIENDAS_CERRADAS}
               onChange={handleChange}
             />
           </InputContainer>

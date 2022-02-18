@@ -5,9 +5,9 @@ const checkboxLabels = {
   INCLUIR_TIENDAS_CERRADAS: 'Incluir Tiendas Cerradas',
   RESULTADO_PESOS: 'Resultados en Pesos',
   SEMANA_SANTA: 'Considerar Semana Santa',
-  EXCLUIR_TIENDAS_VENTAS: 'Excluir Tiendas sin Año de Ventas',
+  EXCLUIR_SIN_AGNO_VENTAS: 'Excluir Tiendas sin Año de Ventas',
   EXCLUIR_TIENDAS_SUSPENDIDAS: 'Excluir Tiendas Suspendidas',
-  VENTAS_VS_COMPROMISO: 'Porcetaje Ventas VS Compromiso',
+  VENTAS_VS_COMPROMISO: 'Porcentaje Ventas VS Compromiso',
   NO_HORAS_VENTAS_PARCIALES: 'No considerar las horas de venta en parciales',
   TIPO_CAMBIO_TIENDAS: 'Utilizar tipo de Cambio en Tiendas',
   ACUMULADO_SEMANAL: 'Incluir Acumulado Semanal',
@@ -22,10 +22,34 @@ const checkboxLabels = {
   ACUMULATIVA: 'Acumulativa',
   PORCENTAJE_VENTAS_VS_COMPROMISO: 'Porcentaje Ventas vs Compromiso',
   INCLUIR_EVENTOS: 'Incluir Eventos',
-  PROMEDIO: 'Promedio', 
+  PROMEDIO: 'Promedio',
   INTERCAMBIAR_SEMANA_SANTA: 'Intercambiar Semana Santa',
-  PRESUPUESTO_EN_MESES_NO_EJERCIDOS : 'Presuesto en Meses no ejercidos',
+  PRESUPUESTO_EN_MESES_NO_EJERCIDOS: 'Presuesto en Meses no ejercidos',
   OPERACIONES_EN_MILES: 'Operaciones en Miles'
+}
+
+export const inputNames = {
+  // DEL_MES: "delMes",  // Componente: InputMonth
+  // DEL_AGNO: "delAgno", // Componente: InputYear
+  // AL_AGNO: "alAgno",  // Componente: InputToYear
+  // TIENDAS: "tienda",  // Componente: SelectTienda
+  // TIENDAS: "tiendas",  // Componente: SelectTiendasGeneral
+  // PLAZA: "plaza",  // Componente: SelectPlazas
+  CON_IVA: "conIva",  // Componente: Checkbox
+  SEMANA_SANTA: "semanaSanta", // Componente: Checkbox
+  SIN_AGNO_VENTA: "sinAgnoVenta", // Componente: Checkbox
+  CON_VENTAS_EVENTOS: "conVentasEventos", // Componente: Checkbox
+  CON_TIENDAS_CERRADAS: "conTiendasCerradas", // Componente: Checkbox
+  SIN_TIENDAS_SUSPENDIDAS: "sinTiendasSuspendidas", // Componente: Checkbox
+  RESULTADOS_PESOS: "resultadosPesos", // Componente: Checkbox
+  FECHA_INICIO: "fechaInicio", // Componente: InputDateRange
+  FECHA_FIN: "fechaFin", // Componente: InputDateRange
+  VENTAS_MILES_DLLS: "ventasMilesDlls", // Componente: Checkbox
+  // FECHA: "fecha",
+  PORCENTAJE_COMPROMISO: "porcentajeVentasCompromiso", // Componente: Checkbox
+  NO_HORAS_VENTAS_PARCIALES: "noHorasVentasParciales", // Componente: Checkbox
+  ACUMULADO_SEMANAL: "acumuladoSemanal", // Componente: Checkbox
+  TIPO_CAMBIO_TIENDAS: "tipoCambioTiendas" // Componente: Checkbox
 }
 
 export default checkboxLabels;
