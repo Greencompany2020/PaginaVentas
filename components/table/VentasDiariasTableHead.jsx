@@ -1,4 +1,5 @@
-import { getLastTwoNumbers, getMonth } from "../../utils/functions";
+import { getMonthByNumber } from "../../utils/dateFunctions";
+import { getLastTwoNumbers } from "../../utils/functions";
 
 const VentasDiariasTableHead = ({ currentYear, month }) => {
   const lastYear = currentYear - 1;
@@ -8,7 +9,7 @@ const VentasDiariasTableHead = ({ currentYear, month }) => {
       <tr>
         <th colSpan={2} className='border border-white'>Dia</th>
         <th colSpan={4} className='border border-white'>Venta por Dia</th>
-        <th colSpan={5} className='border border-white'>Acumulado {getMonth(month)}</th>
+        <th colSpan={5} className='border border-white'>Acumulado {getMonthByNumber(month)}</th>
         <th colSpan={4} className='border border-white'>Acumulado Anual</th>
         <th className='border border-white'>Dia</th>
       </tr>

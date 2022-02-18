@@ -1,4 +1,5 @@
-import { getLastTwoNumbers, getMonth } from "../../utils/functions";
+import { getMonthByNumber } from "../../utils/dateFunctions";
+import { getLastTwoNumbers } from "../../utils/functions";
 
 const VentasDiariasTableFooter = ({ currentYear, month }) => {
   const lastYear = currentYear - 1;
@@ -26,7 +27,7 @@ const VentasDiariasTableFooter = ({ currentYear, month }) => {
       <tr>
         <td colSpan={2} className='border border-white'>Dia</td>
         <td colSpan={4} className='border border-white'>Venta por Dia</td>
-        <td colSpan={5} className='border border-white'>Acumulado {getMonth(month)}</td>
+        <td colSpan={5} className='border border-white'>Acumulado {getMonthByNumber(month)}</td>
         <td colSpan={4} className='border border-white'>Acumulado Anual</td>
         <td className='border border-white'>Dia</td>
       </tr>

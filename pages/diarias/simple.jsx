@@ -5,8 +5,9 @@ import { VentasTableContainer, VentasTable, TableHead } from '../../components/t
 import { SelectTiendas, SelectMonth, InputYear, InputContainer, Checkbox } from '../../components/inputs';
 import { checkboxLabels, tiendas } from '../../utils/data';
 import { getDiariasTiendaSimple } from '../../services/DiariasServices';
-import { getLastTwoNumbers, getMonth, getTiendaName } from '../../utils/functions';
+import { getLastTwoNumbers, getTiendaName } from '../../utils/functions';
 import { numberWithCommas } from '../../utils/resultsFormated';
+import { getMonthByNumber } from '../../utils/dateFunctions';
 
 const Simple = () => {
   const initialTienda = tiendas.find((tienda => tienda.text === "M1")).value;
@@ -68,7 +69,7 @@ const Simple = () => {
       </ParametersContainer>
 
       <VentasTableContainer
-        title={`Ventas Diarias ${getTiendaName(tiendaSimpleParametros.tienda)} ${getMonth(tiendaSimpleParametros.delMes)} ${tiendaSimpleParametros.delAgno}`}
+        title={`Ventas Diarias ${getTiendaName(tiendaSimpleParametros.tienda)} ${getMonthByNumber(tiendaSimpleParametros.delMes)} ${tiendaSimpleParametros.delAgno}`}
       >
         <VentasTable>
           <TableHead>

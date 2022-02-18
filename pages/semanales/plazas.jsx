@@ -7,15 +7,17 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { getSemanalesPlazas } from '../../services/SemanalesService';
 import { checkboxLabels } from '../../utils/data'
-import { dateRangeTitle, getYearFromDate, validateInputDateRange } from '../../utils/functions';
+import { getCurrentWeekDateRange, getYearFromDate } from '../../utils/dateFunctions';
+import { dateRangeTitle, validateInputDateRange } from '../../utils/functions';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 
 
 const Plazas = () => {
+  const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesPlaza, setSemanalesPlaza] = useState([]);
   const [plazasParametros, setPlazasParametros] = useState({
-    fechaInicio: format(previousMonday(new Date(Date.now())), "yyyy-MM-dd", { weekStartsOn: 1 }),
-    fechaFin: format(nextSunday(new Date(Date.now())), "yyyy-MM-dd", { weekStartsOn: 1 }),
+    fechaInicio: beginDate,
+    fechaFin: endDate,
     conIva: 0,
     sinAgnoVenta: 0,
     conVentasEventos: 0,
@@ -122,13 +124,13 @@ const Plazas = () => {
             </tr>
             <tr>
               <td className='border border-white'>Comp</td>
-              <td className='border border-white'>2021</td>
+              <td className='border border-white'>{getYearFromDate(plazasParametros.fechaFin)}</td>
               <td className='border border-white'>%</td>
-              <td className='border border-white'>2020</td>
+              <td className='border border-white'>{getYearFromDate(plazasParametros.fechaFin) - 1}</td>
               <td className='border border-white'>comp</td>
-              <td className='border border-white'>2021</td>
+              <td className='border border-white'>{getYearFromDate(plazasParametros.fechaFin)}</td>
               <td className='border border-white'>%</td>
-              <td className='border border-white'>2020</td>
+              <td className='border border-white'>{getYearFromDate(plazasParametros.fechaFin) - 1}</td>
             </tr>
           </TableHead>
           <tbody className='bg-white text-center'>

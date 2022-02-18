@@ -6,14 +6,16 @@ import { InputContainer, InputDateRange, SelectPlazas, Checkbox } from '../../co
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { checkboxLabels } from '../../utils/data';
 import { getSemanalesCompromisos } from '../../services/SemanalesService';
-import { getMonth } from '../../utils/functions';
 import { numberWithCommas } from '../../utils/resultsFormated';
+import { getCurrentWeekDateRange } from '../../utils/dateFunctions';
+import { dateRangeTitle } from '../../utils/functions';
 
 const Compromiso = () => {
+  const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesCompromisos, setSemanalesCompromisos] = useState([]);
   const [compromisosParametros, setCompromisosParametros] = useState({
-    fechaInicio: format(previousMonday(new Date(Date.now())), "yyyy-MM-dd", { weekStartsOn: 1 }),
-    fechaFin: format(nextSunday(new Date(Date.now())), "yyyy-MM-dd", { weekStartsOn: 1 }),
+    fechaInicio: beginDate,
+    fechaFin: endDate,
     plaza: 3,
     conIva: 0,
     sinAgnoVenta: 0,
@@ -43,27 +45,6 @@ const Compromiso = () => {
       ...prev,
       [e.target.name]: value
     }));
-  }
-
-  const getMonthChars = (month) => month?.slice(0, 3);
-
-  const dateRangeTitle = (beginDate, endDate) => {
-    let beginTextDate = "";
-    let endTextDate = "";
-
-    let beginDateParts = beginDate.split("-");
-    let endDateParts = endDate.split("-");
-
-    let beginMonth = getMonth(beginDateParts[1]);
-    beginMonth = getMonthChars(beginMonth);
-
-    let endMonth = getMonth(endDateParts[1]);
-    endMonth = getMonthChars(endMonth);
-
-    beginTextDate = `${beginDateParts[2]} de ${beginMonth} del ${beginDateParts[0]}`;
-    endTextDate = `${endDateParts[2]} de ${endMonth} del ${endDateParts[0]}`;
-
-    return `del ${beginTextDate} Al ${endTextDate}`;
   }
 
   return (
