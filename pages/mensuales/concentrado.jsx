@@ -1,21 +1,76 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { ParametersContainer, Parameters, SmallContainer } from '@components/containers';
-import { VentasTableContainer, VentasTable, TableHead } from '@components/table';
-import { InputContainer, InputYear, Checkbox } from '@components/inputs';
-import { checkboxLabels, ventasMensualesConcentrado, concentradoPlazas } from 'utils/data';
+import { useState, useEffect } from 'react';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
+import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
+import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
+import { InputContainer, InputYear, Checkbox } from '../../components/inputs';
+import { checkboxLabels, concentradoPlazas } from '../../utils/data';
+import { inputNames } from '../../utils/data/checkboxLabels';
+import { getMensualesConcentrado } from '../../services/MensualesServices';
+import { numberWithCommas } from '../../utils/resultsFormated';
+import { handleChange } from '../../utils/handlers';
 
-const concentrado = () => {
+const Concentrado = () => {
+  const [concentrado, setConcentrado] = useState([]);
+  const [concentradoParametros, setConcentradoParametros] = useState({
+    delAgno: new Date(Date.now()).getFullYear(),
+    conIva: 0,
+    ventasMilesDlls: 1,
+    conVentasEventos: 0,
+    conTiendasCerradas: 0,
+    resultadosPesos: 0
+  });
+
+  useEffect(() => {
+    if (concentradoParametros.delAgno.toString().length === 4) {
+      getMensualesConcentrado(concentradoParametros)
+        .then(response => setConcentrado(response));
+    }
+  }, [concentradoParametros]);
+
   return (
-    <VentasLayout>
+    <>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
-            <InputYear value={2022} onChange={() => { }} />
-            <Checkbox className='mb-3' labelText={checkboxLabels.VENTAS_IVA} />
-            <Checkbox className='mb-3' labelText={checkboxLabels.VENTAS_EN_DLLS} />
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS} />
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS} />
-            <Checkbox className='mb-3' labelText={checkboxLabels.RESULTADO_PESOS} />
+            <InputYear
+              value={concentradoParametros.delAgno}
+              onChange={(e) => handleChange(e, setConcentradoParametros)}
+            />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.VENTAS_IVA}
+              name={inputNames.CON_IVA}
+              onChange={(e) => handleChange(e, setConcentradoParametros)}
+            />
+          </InputContainer>
+          <InputContainer>
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.VENTAS_EN_DLLS}
+              name={inputNames.VENTAS_MILES_DLLS}
+              checked={concentradoParametros.ventasMilesDlls ? true : false}
+              onChange={(e) => handleChange(e, setConcentradoParametros)}
+            />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+              name={inputNames.CON_VENTAS_EVENTOS}
+              onChange={(e) => handleChange(e, setConcentradoParametros)}
+            />
+          </InputContainer>
+          <InputContainer>
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+              name={inputNames.CON_TIENDAS_CERRADAS}
+              onChange={(e) => handleChange(e, setConcentradoParametros)}
+            />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.RESULTADO_PESOS}
+              name={inputNames.RESULTADOS_PESOS}
+              onChange={(e) => handleChange(e, setConcentradoParametros)}
+            />
           </InputContainer>
         </Parameters>
         <SmallContainer>
@@ -24,7 +79,7 @@ const concentrado = () => {
       </ParametersContainer>
 
       <VentasTableContainer title='Ventas Mensuales de tiendas en el año 2022'>
-        <VentasTable className='last-row-bg'>
+        <VentasTable className='tfooter'>
           <TableHead>
             <tr>
               <th rowSpan={2}>TDA.</th>
@@ -60,30 +115,32 @@ const concentrado = () => {
           </TableHead>
           <tbody className='bg-white'>
             {
-              ventasMensualesConcentrado.map(items => (
-                <tr key={items.TDA} className={`text-center ${concentradoPlazas.includes(items.TDA) ? 'bg-gray-200' : ''}`}>
-                  <td className='bg-black text-white font-bold'>{items.TDA}</td>
-                  <td>{items.ENE}</td>
-                  <td>{items.FEB}</td>
-                  <td>{items.MAR}</td>
-                  <td>{items.ABR}</td>
-                  <td>{items.MAY}</td>
-                  <td>{items.JUN}</td>
-                  <td>{items.JUL}</td>
-                  <td>{items.AGO}</td>
-                  <td>{items.SEP}</td>
-                  <td>{items.OCT}</td>
-                  <td>{items.NOV}</td>
-                  <td>{items.DIC}</td>
-                  <td>{items.TTAL}</td>
+              concentrado?.map(items => (
+                <tr key={items.tienda} className={`text-center p-1 ${concentradoPlazas.includes(items.tienda) ? 'bg-gray-300' : ''}`}>
+                  <td className='bg-black text-white font-bold'>{items.tienda}</td>
+                  <td>{numberWithCommas(items.enero)}</td>
+                  <td>{numberWithCommas(items.febrero)}</td>
+                  <td>{numberWithCommas(items.marzo)}</td>
+                  <td>{numberWithCommas(items.abril)}</td>
+                  <td>{numberWithCommas(items.mayo)}</td>
+                  <td>{numberWithCommas(items.junio)}</td>
+                  <td>{numberWithCommas(items.julio)}</td>
+                  <td>{numberWithCommas(items.agosto)}</td>
+                  <td>{numberWithCommas(items.septiembre)}</td>
+                  <td>{numberWithCommas(items.octubre)}</td>
+                  <td>{numberWithCommas(items.noviembre)}</td>
+                  <td>{numberWithCommas(items.diciembre)}</td>
+                  <td>{numberWithCommas(items.total)}</td>
                 </tr>
               ))
             }
           </tbody>
         </VentasTable>
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
 
-export default concentrado
+Concentrado.getLayout = getVentasLayout;
+
+export default Concentrado
