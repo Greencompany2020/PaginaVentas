@@ -19,7 +19,7 @@ const VentasLayout = ({ children }) => {
   )
 }
 
-export const getLayout = page => (
+export const getVentasLayout = page => (
   <VentasLayout>
     {page}
   </VentasLayout>

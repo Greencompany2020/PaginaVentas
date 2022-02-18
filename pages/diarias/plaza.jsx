@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getLayout } from '../../components/layout/VentasLayout';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { VentasTableContainer, VentasTable, VentasDiariasTableHead, VentasDiariasTableFooter } from '../../components/table';
 import { InputContainer, SelectPlazas, SelectMonth, InputYear, Checkbox } from '../../components/inputs';
@@ -151,6 +151,6 @@ const Plaza = () => {
   )
 }
 
-Plaza.getLayout = getLayout;
+Plaza.getLayout = getVentasLayout;
 
 export default Plaza

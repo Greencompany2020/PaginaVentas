@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getLayout } from '../../components/layout/VentasLayout';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { SelectTiendas, SelectMonth, InputYear, InputContainer, Checkbox } from '../../components/inputs';
@@ -87,7 +87,7 @@ const Simple = () => {
           <tbody className='bg-white text-center'>
             {
               tiendaSimple?.map(ventas => (
-                <tr key={ventas.dial}>
+                <tr key={ventas.dia}>
                   <td>{ventas.dia}</td>
                   <td>{ventas.dia}</td>
                   <td>{numberWithCommas(ventas.ventaActual)}</td>
@@ -116,6 +116,6 @@ const Simple = () => {
   )
 }
 
-Simple.getLayout = getLayout;
+Simple.getLayout = getVentasLayout;
 
 export default Simple

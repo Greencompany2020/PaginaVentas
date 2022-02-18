@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import VentasLayout, { getLayout } from '../../components/layout/VentasLayout';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, InputYear, SelectMonth, Checkbox, SelectTiendasGeneral } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, VentasDiariasTableFooter, VentasDiariasTableHead } from '../../components/table';
@@ -147,6 +147,6 @@ const Grupo = () => {
   )
 }
 
-Grupo.getLayout = getLayout;
+Grupo.getLayout = getVentasLayout;
 
 export default Grupo

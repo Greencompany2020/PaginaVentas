@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getLayout } from '../../components/layout/VentasLayout';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { getDiariasFechas } from '../../services/DiariasServices';
 import { meses } from '../../utils/data';
@@ -47,6 +47,6 @@ const Fechas = () => {
   )
 }
 
-Fechas.getLayout = getLayout;
+Fechas.getLayout = getVentasLayout;
 
 export default Fechas

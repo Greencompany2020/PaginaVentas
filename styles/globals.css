@@ -7,7 +7,7 @@ details > summary {
 }
 /* Icono calendario para input de fechas */
 input[type="date"]::-webkit-calendar-picker-indicator {
-  content: url("/public/images/calendar.png");
+  /* content: url("/public/images/calendar.png"); */
   height: 1.75rem;
   width: 1.75rem;
 }
