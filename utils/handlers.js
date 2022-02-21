@@ -1,3 +1,9 @@
+/**
+ * Maneja las entradas de información y actuliza los parámetros.
+ * 
+ * @param {ChangeEvent<HTMLInputElement>} evt El evento del elemento
+ * @param {Dispatch<SetStateAction<any>>} updateState setState de los parámetros
+ */
 export const handleChange = (evt, updateState) => {
   let value = 0;
   if (evt.target.hasOwnProperty('checked')) {

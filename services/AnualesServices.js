@@ -8,3 +8,12 @@ export async function getAnualesPlazas(body) {
     console.log(error?.response?.data);
   }
 }
+
+export async function getAnualesTiendas(body) {
+  try {
+    const { data } = await ApiProvider.post("/anuales/tiendas", body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}

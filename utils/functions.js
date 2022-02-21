@@ -142,3 +142,36 @@ export const createDatasets = (data, fromYear, toYear, updateLabels, updateDatas
     updateDatasets([]);
   }
 }
+
+/**
+ * Crea los array de etiquetas y de dato para la gráfica de barras.
+ * El objeto debe poseer las siguiete estructura:
+ * 
+ * Descrip
+ * 
+ * Ventas
+ * 
+ * @param {object[]} data Los datos base para crear el dataset
+ * @param {Dispatch<SetActionState<any[]>>} updateLabels setState para las etiquetas
+ * @param {Dispatch<SetActionState<any[]>>} updateDataset setState para el dataset
+ */
+export const createSimpleDatasets = (data, updateLabels, updateDataset) => {
+  if (data?.length !== 0) {
+    let labels = data?.map(item => item.Descrip);
+    let datasetItem = {};
+    let datasets = [];
+
+    datasetItem.id = 1;
+    datasetItem.label = '';
+    datasetItem.data = data?.map(item => item.Ventas);
+    datasetItem.backgroundColor = '#155e75';
+
+    datasets.push(datasetItem);
+
+    updateLabels(labels);
+    updateDataset(datasets);
+  } else {
+    updateLabels([]);
+    updateDataset([]);
+  }
+}
