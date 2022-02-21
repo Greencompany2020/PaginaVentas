@@ -219,3 +219,14 @@ export const plazas = [
 ]
 
 export const regiones = ['REGION I', 'REGION II', 'REGION III'];
+
+export const concentradoPlazas = [
+  'MAZATLAN',
+  'CANCUN',
+  'VALLARTA',
+  'ACAPULCO',
+  'ISM',
+  'WEB',
+  'CABOS',
+  'PCARMEN'
+];

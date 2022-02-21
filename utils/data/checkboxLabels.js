@@ -1,4 +1,4 @@
-const checkboxLabels = {
+export const checkboxLabels = {
   VENTAS_IVA: 'Ventas c/Iva',
   VENTAS_EN_DLLS: 'Ventas en Miles Dlls',
   INCLUIR_VENTAS_EVENTOS: 'Incluir Ventas de Eventos',
@@ -51,5 +51,3 @@ export const inputNames = {
   ACUMULADO_SEMANAL: "acumuladoSemanal", // Componente: Checkbox
   TIPO_CAMBIO_TIENDAS: "tipoCambioTiendas" // Componente: Checkbox
 }
-
-export default checkboxLabels;

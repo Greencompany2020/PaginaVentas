@@ -1,4 +1,4 @@
-const enlaces = [
+export const enlaces = [
   {
     summaryText: 'Diarias',
     links: [
@@ -277,8 +277,5 @@ const enlaces = [
       },
     ]
   },
-  
+
 ]
-
-
-export default enlaces;
