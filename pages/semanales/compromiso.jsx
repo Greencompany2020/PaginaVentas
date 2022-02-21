@@ -7,8 +7,9 @@ import { checkboxLabels } from '../../utils/data';
 import { getSemanalesCompromisos } from '../../services/SemanalesService';
 import { numberWithCommas } from '../../utils/resultsFormated';
 import { getCurrentWeekDateRange } from '../../utils/dateFunctions';
-import { dateRangeTitle } from '../../utils/functions';
+import { dateRangeTitle, validateInputDateRange } from '../../utils/functions';
 import { inputNames } from '../../utils/data/checkboxLabels';
+import { handleChange } from '../../utils/handlers';
 
 const Compromiso = () => {
   const [beginDate, endDate] = getCurrentWeekDateRange();
@@ -29,24 +30,6 @@ const Compromiso = () => {
     }
   }, [compromisosParametros]);
 
-  const validateInputDateRange = (beginDate, endDate) => (beginDate?.length === 10 && endDate?.length === 10)
-
-  const handleChange = (e) => {
-    let value = 0;
-    if (e.target.hasOwnProperty('checked')) {
-      value = e.target.checked ? 1 : 0;
-    } else if (e.target.type === "date") {
-      value = e.target.value;
-    } else {
-      value = Number(e.target.value);
-    }
-
-    setCompromisosParametros(prev => ({
-      ...prev,
-      [e.target.name]: value
-    }));
-  }
-
   return (
     <>
       <ParametersContainer>
@@ -54,11 +37,11 @@ const Compromiso = () => {
           <InputContainer>
             <SelectPlazas
               classLabel='xl:text-center'
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setCompromisosParametros)}
             />
           </InputContainer>
           <InputDateRange
-            onChange={handleChange}
+            onChange={(e) => handleChange(e, setCompromisosParametros)}
             beginDate={compromisosParametros.fechaInicio}
             endDate={compromisosParametros.fechaFin}
           />
@@ -67,7 +50,7 @@ const Compromiso = () => {
               className='mb-3'
               labelText={checkboxLabels.VENTAS_IVA}
               name={inputNames.CON_IVA}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setCompromisosParametros)}
             />
             <Checkbox
               labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
@@ -79,7 +62,7 @@ const Compromiso = () => {
               className='mb-3'
               labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
               name={inputNames.CON_TIENDAS_CERRADAS}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setCompromisosParametros)}
             />
           </InputContainer>
         </Parameters>

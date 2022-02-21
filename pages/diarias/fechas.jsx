@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { getDiariasFechas } from '../../services/DiariasServices';
-import { meses } from '../../utils/data';
+import { formatLastDate } from '../../utils/dateFunctions';
 
 const Fechas = () => {
   const [fechas, setFechas] = useState([]);
@@ -11,15 +11,6 @@ const Fechas = () => {
     getDiariasFechas()
       .then(response => setFechas(response))
   }, []);
-
-  const formatLastDate = (date) => {
-    let formatedDate = "";
-    let dateParts = date.split("-");
-    let month = meses.find((mes) => mes.value === Number(dateParts[1]))
-    month = month.text.slice(0, 3);
-    formatedDate = `${dateParts[2]}-${month}-${dateParts[0]}`;
-    return formatedDate;
-  }
 
   return (
     <>

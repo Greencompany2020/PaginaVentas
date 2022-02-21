@@ -8,6 +8,7 @@ import { checkboxLabels } from '../../utils/data'
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { getCurrentWeekDateRange, getYearFromDate } from '../../utils/dateFunctions';
 import { dateRangeTitle, validateInputDateRange } from '../../utils/functions';
+import { handleChange } from '../../utils/handlers';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 
 
@@ -32,28 +33,12 @@ const Plazas = () => {
     }
   }, [plazasParametros])
 
-  const handleChange = (e) => {
-    let value = 0;
-    if (e.target.hasOwnProperty('checked')) {
-      value = e.target.checked ? 1 : 0;
-    } else if (e.target.type === "date") {
-      value = e.target.value;
-    } else {
-      value = Number(e.target.value);
-    }
-
-    setPlazasParametros(prev => ({
-      ...prev,
-      [e.target.name]: value
-    }));
-  }
-
   return (
     <>
       <ParametersContainer>
         <Parameters>
           <InputDateRange
-            onChange={handleChange}
+            onChange={(e) => handleChange(e, setPlazasParametros)}
             beginDate={plazasParametros.fechaInicio}
             endDate={plazasParametros.fechaFin}
           />
@@ -62,12 +47,12 @@ const Plazas = () => {
               className='mb-3'
               labelText={checkboxLabels.VENTAS_IVA}
               name={inputNames.CON_IVA}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setPlazasParametros)}
             />
             <Checkbox
               labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
               name={inputNames.CON_VENTAS_EVENTOS}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setPlazasParametros)}
             />
           </InputContainer>
           <InputContainer>
@@ -79,7 +64,7 @@ const Plazas = () => {
             <Checkbox
               labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
               name={inputNames.SIN_AGNO_VENTA}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setPlazasParametros)}
             />
           </InputContainer>
           <InputContainer>
@@ -87,13 +72,13 @@ const Plazas = () => {
               className='mb-3'
               labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
               name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setPlazasParametros)}
             />
             <Checkbox
               labelText={checkboxLabels.RESULTADO_PESOS}
               name={inputNames.RESULTADOS_PESOS}
               checked={plazasParametros.resultadosPesos ? 1 : 0}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setPlazasParametros)}
             />
           </InputContainer>
         </Parameters>

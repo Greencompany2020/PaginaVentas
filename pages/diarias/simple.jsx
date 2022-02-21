@@ -8,6 +8,7 @@ import { getDiariasTiendaSimple } from '../../services/DiariasServices';
 import { getInitialTienda, getLastTwoNumbers, getTiendaName } from '../../utils/functions';
 import { numberWithCommas } from '../../utils/resultsFormated';
 import { getMonthByNumber } from '../../utils/dateFunctions';
+import { handleChange } from '../../utils/handlers';
 
 const Simple = () => {
   const [tiendaSimple, setTiendaSimple] = useState([]);
@@ -23,41 +24,25 @@ const Simple = () => {
       .then(response => setTiendaSimple(response))
   }, [tiendaSimpleParametros]);
 
-  const handleChange = (e) => {
-    let value = 0;
-    if (e.target.hasOwnProperty('checked')) {
-      value = e.target.checked ? 1 : 0;
-    } else if (e.target.name === "tienda") {
-      value = e.target.value;
-    } else {
-      value = Number(e.target.value);
-    }
-
-    setTiendaSimpleParametros(prev => ({
-      ...prev,
-      [e.target.name]: value
-    }));
-  }
-
   return (
     <>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
-            <SelectTiendas onChange={handleChange} />
+            <SelectTiendas onChange={(e) => handleChange(e, setTiendaSimpleParametros)} />
             <InputYear
               value={tiendaSimpleParametros.delAgno}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setTiendaSimpleParametros)}
             />
             <SelectMonth
               value={tiendaSimpleParametros.delMes}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setTiendaSimpleParametros)}
             />
             <Checkbox
               className='mb-2'
               labelText={checkboxLabels.VENTAS_IVA}
               name="conIva"
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setTiendaSimpleParametros)}
             />
           </InputContainer>
         </Parameters>

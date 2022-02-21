@@ -8,6 +8,7 @@ import { checkboxLabels, inputNames } from '../../utils/data';
 import { formatedDate, formatLastDate, getCurrentMonth, getCurrentYear, getMonthByNumber } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getMensualesTiendas } from '../../services/MensualesServices';
+import { createSimpleDatasets } from '../../utils/functions';
 
 const Tiendas = () => {
   const [labels, setLabels] = useState([]);
@@ -25,30 +26,9 @@ const Tiendas = () => {
   useEffect(() => {
     if (tiendasParametros.alAgno.toString().length === 4) {
       getMensualesTiendas(tiendasParametros)
-        .then(response => createDatesets(response))
+        .then(response => createSimpleDatasets(response, setLabels, setDatasets))
     }
   }, [tiendasParametros]);
-
-  const createDatesets = (data) => {
-    if (data?.length !== 0) {
-      let labels = data?.map(item => item.Descrip);
-      let datasetItem = {};
-      let datasets = [];
-
-      datasetItem.id = 1;
-      datasetItem.label = '';
-      datasetItem.data = data?.map(item => item.Ventas);
-      datasetItem.backgroundColor = '#155e75';
-
-      datasets.push(datasetItem);
-
-      setLabels(labels);
-      setDatasets(datasets);
-    } else {
-      setLabels([]);
-      setDatasets([]);
-    }
-  }
 
   return (
     <>

@@ -7,6 +7,7 @@ import { checkboxLabels, tiendas } from '../../utils/data';
 import { getDiariasTienda } from '../../services/DiariasServices';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 import { getInitialTienda, getTiendaName } from '../../utils/functions';
+import { handleChange } from '../../utils/handlers';
 
 const Tienda = () => {
   const [diariasTienda, setDiariasTienda] = useState([]);
@@ -24,22 +25,6 @@ const Tienda = () => {
       .then(response => setDiariasTienda(response))
   }, [tiendasParametros]);
 
-  const handleChange = (e) => {
-    let value = 0;
-    if (e.target.hasOwnProperty('checked')) {
-      value = e.target.checked ? 1 : 0;
-    } else if (e.target.name === "tienda") {
-      value = e.target.value;
-    } else {
-      value = Number(e.target.value);
-    }
-
-    setTiendaParametros(prev => ({
-      ...prev,
-      [e.target.name]: value
-    }));
-  }
-
   return (
     <>
       <ParametersContainer>
@@ -47,15 +32,15 @@ const Tienda = () => {
           <InputContainer>
             <SelectMonth
               value={tiendasParametros.delMes}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setTiendaParametros)}
             />
             <InputYear
               value={tiendasParametros.delAgno}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setTiendaParametros)}
             />
             <SelectTiendas
               value={tiendasParametros.tienda}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setTiendaParametros)}
             />
           </InputContainer>
           <InputContainer>
@@ -63,18 +48,18 @@ const Tienda = () => {
               className='mb-3'
               labelText={checkboxLabels.VENTAS_IVA}
               name="conIva"
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setTiendaParametros)}
             />
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.SEMANA_SANTA}
               name="semanaSanta"
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setTiendaParametros)}
             />
             <Checkbox
               labelText={checkboxLabels.RESULTADO_PESOS}
               name="resultadosPesos"
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setTiendaParametros)}
             />
           </InputContainer>
         </Parameters>

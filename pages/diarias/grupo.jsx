@@ -7,6 +7,7 @@ import { checkboxLabels } from '../../utils/data';
 import { getDiariasGrupo } from '../../services/DiariasServices';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 import { inputNames } from '../../utils/data/checkboxLabels';
+import { handleChange } from '../../utils/handlers';
 
 const Grupo = () => {
   const [parametrosConsulta, setParametrosConsulta] = useState({
@@ -33,20 +34,6 @@ const Grupo = () => {
 
   }, [parametrosConsulta]);
 
-  const handleChange = (e) => {
-    let value = 0;
-    if (e.target.hasOwnProperty('checked')) {
-      value = e.target.checked ? 1 : 0;
-    } else {
-      value = Number(e.target.value);
-    }
-
-    setParametrosConsulta(prev => ({
-      ...prev,
-      [e.target.name]: value
-    }));
-  }
-
   return (
     <>
       <ParametersContainer>
@@ -54,32 +41,32 @@ const Grupo = () => {
           <InputContainer>
             <SelectMonth
               value={parametrosConsulta.delMes}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setParametrosConsulta)}
             />
             <InputYear
               value={parametrosConsulta.delAgno}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setParametrosConsulta)}
             />
-            <SelectTiendasGeneral value={parametrosConsulta.tienda} onChange={handleChange} />
+            <SelectTiendasGeneral value={parametrosConsulta.tienda} onChange={(e) => handleChange(e, setParametrosConsulta)} />
           </InputContainer>
           <InputContainer>
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.VENTAS_IVA}
               name={inputNames.CON_IVA}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setParametrosConsulta)}
             />
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.SEMANA_SANTA}
               name={inputNames.SEMANA_SANTA}
               checked={parametrosConsulta.semanaSanta ? true : false}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setParametrosConsulta)}
             />
             <Checkbox
               labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
               name={inputNames.CON_VENTAS_EVENTOS}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setParametrosConsulta)}
             />
           </InputContainer>
           <InputContainer>
@@ -87,12 +74,12 @@ const Grupo = () => {
               className='mb-3'
               labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
               name={inputNames.CON_TIENDAS_CERRADAS}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setParametrosConsulta)}
             />
             <Checkbox
               labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
               name={inputNames.SIN_AGNO_VENTA}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setParametrosConsulta)}
             />
           </InputContainer>
           <InputContainer>
@@ -100,12 +87,12 @@ const Grupo = () => {
               className='mb-3'
               labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
               name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setParametrosConsulta)}
             />
             <Checkbox
               labelText={checkboxLabels.RESULTADO_PESOS}
               name={inputNames.RESULTADOS_PESOS}
-              onChange={handleChange}
+              onChange={(e) => handleChange(e, setParametrosConsulta)}
             />
           </InputContainer>
         </Parameters>
