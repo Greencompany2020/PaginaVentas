@@ -17,3 +17,12 @@ export async function getMensualesPlazasAgnos(body) {
     console.log(error?.response?.data);
   }
 }
+
+export async function getMensualesTiendas(body) {
+  try {
+    const { data } = await ApiProvider.post("/mensuales/tiendas", body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}

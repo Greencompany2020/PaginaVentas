@@ -5,11 +5,12 @@ import { VentasTableContainer } from '../../components/table';
 import { InputContainer, Checkbox, SelectMonth, InputYear, SelectTiendasGeneral, InputToYear } from '../../components/inputs';
 import BarChart from '../../components/BarChart';
 import { checkboxLabels } from '../../utils/data';
-import { formatLastDate, getCurrentMonth, getCurrentOrPrevDate, getCurrentYear } from '../../utils/dateFunctions';
+import { formatedDate, formatLastDate, getCurrentMonth, getCurrentYear, getMonthByNumber } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { getMensualesPlazasAgnos } from '../../services/MensualesServices';
 import { dateRangeTitle } from '../../utils/functions';
+import { format } from 'date-fns';
 
 const PlazasVS = () => {
   const colors = ['#9a3412', '#9a3412', '#3f6212', '#065f46', '#155e75'];
@@ -125,14 +126,11 @@ const PlazasVS = () => {
       </ParametersContainer>
 
       <VentasTableContainer
-        title={`Ventas ${dateRangeTitle(
-          getCurrentOrPrevDate(plazasAgnosParametros.alAgno),
-          getCurrentOrPrevDate(plazasAgnosParametros.alAgno, plazasAgnosParametros.alAgno - plazasAgnosParametros.delAgno),
-          true
-        )}`}
+        title={`Ventas del mes de ${getMonthByNumber(plazasAgnosParametros.delMes)} del ${plazasAgnosParametros.alAgno} al ${plazasAgnosParametros.delAgno}`}
       >
         <BarChart
-          text={`Ventas al ${formatLastDate(getCurrentOrPrevDate(plazasAgnosParametros.alAgno))}`}
+          text={`Ventas al ${formatLastDate(formatedDate(plazasAgnosParametros.alAgno, plazasAgnosParametros.delMes))
+            }`}
           data={{
             labels: labels,
             datasets: datasets

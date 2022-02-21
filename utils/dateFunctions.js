@@ -50,41 +50,14 @@ export const getCurrentMonth = () => new Date(Date.now()).getMonth() + 1;
 export const getCurrentYear = () => new Date(Date.now()).getFullYear();
 
 /**
- * Obtiene la fecha actual en formato yyyy-MM-dd. Se puede
- * especificar los años a restar a partir de la fecha actual.
+ * Recive la fecha en formato yyyy-MM-dd y 
+ * la retorna con el nombre del mes. Ej.
  * 
- * También se puede ingresar un año para obtener la fecha y 
- * a partir de ese restarle los años.
+ * 2022-01-26 -> 26-Ene-2022
  * 
- * @param {number} year Un año cualquiera
- * @param {number} minus Los años a restar
- * @returns 
+ * @param {string} date Fecha a formatear
+ * @returns {string}
  */
-export const getCurrentOrPrevDate = (year = 0, minus = 0) => {
-  let currentDate = null;
-  let month = 0;
-  let day = 0;
-
-  if (year > 0) {
-    currentDate = new Date(Date.now());
-    month = currentDate.getMonth();
-    day = currentDate.getDate();
-    return format(new Date(year, month, day), "yyyy-MM-dd", { weekStartsOn: 1 });
-  }
-  if (minus > 0) {
-    currentDate = new Date(Date.now());
-    if (year === 0) {
-      year = currentDate.getFullYear() - minus;
-    } else {
-      year = currentDate.getFullYear();
-    }
-    month = currentDate.getMonth();
-    day = currentDate.getDate();
-    return format(new Date(year, month, day), "yyyy-MM-dd", { weekStartsOn: 1 });
-  }
-  return format(new Date(Date.now()), "yyyy-MM-dd", { weekStartsOn: 1 });
-}
-
 export const formatLastDate = (date) => {
   let formatedDate = "";
   let dateParts = date.split("-");
@@ -92,4 +65,48 @@ export const formatLastDate = (date) => {
   month = month.text.slice(0, 3);
   formatedDate = `${dateParts[2]}-${month}-${dateParts[0]}`;
   return formatedDate;
+}
+
+/**
+ * Crea la fecha y la regresa en formato yyyy-MM-dd.
+ * 
+ * Si no se especifica el año o mes, la utiliza la fecha actual
+ * como base.
+ * 
+ * @param {number} year El Año
+ * @param {number} month El Mes
+ * @returns 
+ */
+export const formatedDate = (year = 0, month = 0) => {
+  let currentDateInstance = new Date(Date.now());
+
+  if (year !== 0 && month !== 0) {
+    return format(
+      new Date(year, month - 1, currentDateInstance.getDate()),
+      "yyyy-MM-dd",
+      { weekStartsOn: 1 }
+    )
+  }
+
+  if (year !== 0) {
+    return format(
+      new Date(year, currentDateInstance.getMonth(), currentDateInstance.getDate()),
+      "yyyy-MM-dd",
+      { weekStartsOn: 1 }
+    )
+  }
+
+  if (month !== 0) {
+    return format(
+      new Date(currentDateInstance.getFullYear(), month - 1, currentDateInstance.getDate()),
+      "yyyy-MM-dd",
+      { weekStartsOn: 1 }
+    )
+  }
+
+  return format(
+    new Date(currentDateInstance.getFullYear(), currentDateInstance.getMonth(), currentDateInstance.getDate()),
+    "yyyy-MM-dd",
+    { weekStartsOn: 1 }
+  )
 }

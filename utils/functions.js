@@ -59,8 +59,8 @@ export const dateRangeTitle = (beginDate, endDate, onlyMonths = false) => {
 
   if (onlyMonths) {
     beginTextDate = `${beginMonth} del ${beginDateParts[0]}`;
-    endTextDate = `${endMonth} del ${endDateParts[0]}`;
-    return `de ${beginTextDate} a ${endTextDate}`;
+    endTextDate = `${endDateParts[0]}`;
+    return `de ${beginTextDate} al ${endTextDate}`;
   }
 
   beginTextDate = `${beginDateParts[2]} de ${beginMonth} del ${beginDateParts[0]}`;
