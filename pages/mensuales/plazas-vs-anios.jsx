@@ -1,28 +1,119 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { ParametersContainer, Parameters, SmallContainer } from '@components/containers';
-import { VentasTableContainer } from '@components/table';
-import { InputContainer, Checkbox, SelectMonth, InputYear, SelectTiendasGeneral, InputToYear } from '@components/inputs';
-import BarChart from '@components/BarChart';
-import { checkboxLabels } from 'utils/data';
+import { useState, useEffect } from 'react';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
+import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
+import { VentasTableContainer } from '../../components/table';
+import { InputContainer, Checkbox, SelectMonth, InputYear, SelectTiendasGeneral, InputToYear } from '../../components/inputs';
+import BarChart from '../../components/BarChart';
+import { checkboxLabels } from '../../utils/data';
+import { formatLastDate, getCurrentMonth, getCurrentOrPrevDate, getCurrentYear } from '../../utils/dateFunctions';
+import { handleChange } from '../../utils/handlers';
+import { inputNames } from '../../utils/data/checkboxLabels';
+import { getMensualesPlazasAgnos } from '../../services/MensualesServices';
+import { dateRangeTitle } from '../../utils/functions';
 
-const plazasVS = () => {
+const PlazasVS = () => {
+  const colors = ['#9a3412', '#9a3412', '#3f6212', '#065f46', '#155e75'];
+  const [labels, setLabels] = useState([]);
+  const [datasets, setDatasets] = useState([]);
+  const [plazasAgnosParametros, setPlazasAgnosParametros] = useState({
+    delMes: getCurrentMonth(),
+    delAgno: getCurrentYear() - 4,
+    alAgno: getCurrentYear(),
+    tiendas: 0,
+    conIva: 0,
+    conVentasEventos: 0,
+    conTiendasCerradas: 0,
+    resultadosPesos: 1
+  });
+
+  useEffect(() => {
+    if (plazasAgnosParametros.delAgno.toString().length === 4 && plazasAgnosParametros.alAgno.toString().length === 4) {
+      getMensualesPlazasAgnos(plazasAgnosParametros)
+        .then(response => createDatasets(response))
+    }
+  }, [plazasAgnosParametros]);
+
+  const createDatasets = (data) => {
+    if (data.length !== 0) {
+      let labels = [];
+      labels = data.map(item => item.DescGraf);
+      setLabels(labels);
+
+      let datasets = [];
+      let colorIndex = 0;
+      let dataSetIndex = 1;
+      for (let i = plazasAgnosParametros.alAgno; i >= plazasAgnosParametros.delAgno; i--) {
+
+        datasets.push({
+          id: dataSetIndex,
+          label: `${i}`,
+          data: data.map(item => item[`Venta${i}`]),
+          backgroundColor: colors[colorIndex]
+        });
+
+        colorIndex++;
+        dataSetIndex++;
+
+        if (colorIndex === colors.length) {
+          colorIndex = 0;
+        }
+      }
+
+      setDatasets(datasets);
+    } else {
+      setLabels([]);
+      setDatasets([]);
+    }
+  }
+
   return (
-    <VentasLayout>
+    <>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
-            <SelectMonth />
-            <InputYear value={2022} onChange={() => { }} />
-            <InputToYear value={2020} onChange={() => { }} />
+            <SelectMonth
+              value={plazasAgnosParametros.delMes}
+              onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+            />
+            <InputYear
+              value={plazasAgnosParametros.delAgno}
+              onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+            />
+            <InputToYear
+              value={plazasAgnosParametros.alAgno}
+              onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+            />
           </InputContainer>
           <InputContainer>
-            <SelectTiendasGeneral />
-            <Checkbox className='mb-3' labelText={checkboxLabels.VENTAS_IVA} />
-            <Checkbox labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS} />
+            <SelectTiendasGeneral
+              value={plazasAgnosParametros.tiendas}
+              onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+            />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.VENTAS_IVA}
+              name={inputNames.CON_IVA}
+              onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+            />
+            <Checkbox
+              labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+              name={inputNames.CON_VENTAS_EVENTOS}
+              onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+            />
           </InputContainer>
           <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS} />
-            <Checkbox labelText={checkboxLabels.RESULTADO_PESOS} />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+              name={inputNames.CON_TIENDAS_CERRADAS}
+              onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+            />
+            <Checkbox
+              labelText={checkboxLabels.RESULTADO_PESOS}
+              name={inputNames.RESULTADOS_PESOS}
+              onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+              checked={plazasAgnosParametros.resultadosPesos ? true : false}
+            />
           </InputContainer>
         </Parameters>
         <SmallContainer>
@@ -33,48 +124,25 @@ const plazasVS = () => {
         </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title='Ventas del mes Enero del año 2020 al 2018'>
+      <VentasTableContainer
+        title={`Ventas ${dateRangeTitle(
+          getCurrentOrPrevDate(plazasAgnosParametros.alAgno),
+          getCurrentOrPrevDate(plazasAgnosParametros.alAgno, plazasAgnosParametros.alAgno - plazasAgnosParametros.delAgno),
+          true
+        )}`}
+      >
         <BarChart
-          text='Ventas al 10-Ene-2022'
+          text={`Ventas al ${formatLastDate(getCurrentOrPrevDate(plazasAgnosParametros.alAgno))}`}
           data={{
-            labels: ['MZT', 'CAN', 'PV', 'ACA', 'ISM', 'CAB', 'PC'],
-            datasets: [
-              {
-                id: 1,
-                label: '2022',
-                data: [5079, 1469, 1383, 4047, 344, 434, 881],
-                backgroundColor: '#991b1b'
-              },  
-              {
-                id: 2,
-                label: '2021',
-                data: [8212, 2516, 2025, 5673, 814, 737, 2187],
-                backgroundColor: '#9a3412'
-              },
-              {
-                id: 3,
-                label: '2020',
-                data: [7196, 2067, 2377, 8228, 775, 883, 1888],
-                backgroundColor: '#3f6212'
-              },
-              {
-                id: 4,
-                label: '2019',
-                data: [5893, 1946, 2083, 7353, 845, 706, 1870],
-                backgroundColor: '#065f46'
-              },
-              {
-                id: 5,
-                label: '2018',
-                data: [5330, 1838, 2323, 5749, 791, 688, 1668],
-                backgroundColor: '#155e75'
-              },
-            ]
+            labels: labels,
+            datasets: datasets
           }}
         />
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
 
-export default plazasVS
+PlazasVS.getLayout = getVentasLayout;
+
+export default PlazasVS

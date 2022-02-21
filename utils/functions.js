@@ -44,7 +44,7 @@ export const getLastTwoNumbers = (date) => {
  * @param {string} endDate Fecha de fin de rango
  * @returns {string}
  */
-export const dateRangeTitle = (beginDate, endDate) => {
+export const dateRangeTitle = (beginDate, endDate, onlyMonths = false) => {
   let beginTextDate = "";
   let endTextDate = "";
 
@@ -56,6 +56,12 @@ export const dateRangeTitle = (beginDate, endDate) => {
 
   let endMonth = getMonthByNumber(endDateParts[1]);
   endMonth = getMonthChars(endMonth);
+
+  if (onlyMonths) {
+    beginTextDate = `${beginMonth} del ${beginDateParts[0]}`;
+    endTextDate = `${endMonth} del ${endDateParts[0]}`;
+    return `de ${beginTextDate} a ${endTextDate}`;
+  }
 
   beginTextDate = `${beginDateParts[2]} de ${beginMonth} del ${beginDateParts[0]}`;
   endTextDate = `${endDateParts[2]} de ${endMonth} del ${endDateParts[0]}`;
