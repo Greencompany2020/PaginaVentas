@@ -86,3 +86,59 @@ export const getInitialTienda = () => tiendas.find((tienda => tienda.text === "M
  * @returns {number} El identificador de la plaza
  */
 export const getInitialPlaza = () => plazas.find((plaza => plaza.text === "MAZATLAN")).value;
+/**
+ * Crea los array de etiquetas y de dato para la gráfica de barras.
+ * El objeto debe poseer las siguiete estructura:
+ * 
+ * DescGraf
+ * 
+ * Venta2022
+ * 
+ * Venta2021
+ * 
+ * Venta2020
+ * 
+ * El nombre los campos de ventas son dinámicos, por ello se utilizan
+ * el año de inicio y de fin para obtener los datos.
+ * 
+ * 
+ * @param {object[]} data Los datos para crear el dataset
+ * @param {numbe} fromYear El año de inicio del intervalo
+ * @param {number} toYear El año de fin del intervalo
+ * @param {Dispatch<SetStateAction<any[]>>} updateLabels setState para las etiquetas
+ * @param {Dispatch<SetStateAction<any[]>>} updateDatasets setState para el dataset
+ */
+export const createDatasets = (data, fromYear, toYear, updateLabels, updateDatasets) => {
+  const colors = ['#991b1b', '#9a3412', '#3f6212', '#065f46', '#155e75'];
+
+  if (data?.length !== 0) {
+    let labels = [];
+    labels = data.map(item => item.DescGraf);
+    updateLabels(labels);
+
+    let datasets = [];
+    let colorIndex = 0;
+    let dataSetIndex = 1;
+    for (let i = toYear; i >= fromYear; i--) {
+
+      datasets.push({
+        id: dataSetIndex,
+        label: `${i}`,
+        data: data.map(item => item[`Venta${i}`]),
+        backgroundColor: colors[colorIndex]
+      });
+
+      colorIndex++;
+      dataSetIndex++;
+
+      if (colorIndex === colors.length) {
+        colorIndex = 0;
+      }
+    }
+
+    updateDatasets(datasets);
+  } else {
+    updateLabels([]);
+    updateDatasets([]);
+  }
+}

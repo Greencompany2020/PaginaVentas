@@ -9,11 +9,9 @@ import { formatedDate, formatLastDate, getCurrentMonth, getCurrentYear, getMonth
 import { handleChange } from '../../utils/handlers';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { getMensualesPlazasAgnos } from '../../services/MensualesServices';
-import { dateRangeTitle } from '../../utils/functions';
-import { format } from 'date-fns';
+import { createDatasets } from '../../utils/functions';
 
 const PlazasVS = () => {
-  const colors = ['#9a3412', '#9a3412', '#3f6212', '#065f46', '#155e75'];
   const [labels, setLabels] = useState([]);
   const [datasets, setDatasets] = useState([]);
   const [plazasAgnosParametros, setPlazasAgnosParametros] = useState({
@@ -30,42 +28,15 @@ const PlazasVS = () => {
   useEffect(() => {
     if (plazasAgnosParametros.delAgno.toString().length === 4 && plazasAgnosParametros.alAgno.toString().length === 4) {
       getMensualesPlazasAgnos(plazasAgnosParametros)
-        .then(response => createDatasets(response))
+        .then(response => createDatasets(
+          response,
+          plazasAgnosParametros.delAgno,
+          plazasAgnosParametros.alAgno,
+          setLabels,
+          setDatasets
+        ));
     }
   }, [plazasAgnosParametros]);
-
-  const createDatasets = (data) => {
-    if (data.length !== 0) {
-      let labels = [];
-      labels = data.map(item => item.DescGraf);
-      setLabels(labels);
-
-      let datasets = [];
-      let colorIndex = 0;
-      let dataSetIndex = 1;
-      for (let i = plazasAgnosParametros.alAgno; i >= plazasAgnosParametros.delAgno; i--) {
-
-        datasets.push({
-          id: dataSetIndex,
-          label: `${i}`,
-          data: data.map(item => item[`Venta${i}`]),
-          backgroundColor: colors[colorIndex]
-        });
-
-        colorIndex++;
-        dataSetIndex++;
-
-        if (colorIndex === colors.length) {
-          colorIndex = 0;
-        }
-      }
-
-      setDatasets(datasets);
-    } else {
-      setLabels([]);
-      setDatasets([]);
-    }
-  }
 
   return (
     <>

@@ -1,11 +1,11 @@
-import { Flex } from '@components/containers';
-import { meses } from 'utils/data'
+import { Flex } from '../../components/containers';
+import { meses } from '../../utils/data'
 
-const SelectToMonth = () => {
+const SelectToMonth = ({ value, onChange }) => {
   return (
     <Flex className='mb-3'>
-      <label htmlFor="almes">Al Mes: </label>
-      <select name="almes" id="" className='select ml-2'>
+      <label htmlFor="alMes">Al Mes: </label>
+      <select name="alMes" value={value} className='select ml-2' onChange={onChange}>
         {
           meses.map(almes => (
             <option value={almes.value} key={almes.text}>{almes.text}</option>
