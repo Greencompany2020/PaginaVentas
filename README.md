@@ -13,6 +13,7 @@
 - [Páginas](#páginas)
 - [Data](#data)
   - [checkboxLabels](#checkboxlabels)
+  - [inputNames](#inputnames)
   - [valores](#valores)
   - [enlacesMenuLateras](#enlacesmenulateras)
 
@@ -35,6 +36,9 @@ yarn dev
 - Highlight Matching Tag
 - ES7 React/Redux/GrapgQL/React Native snippets
 - Prettier
+- editorconfig
+- Better Comments
+- Error lens
 
 ## Estructura de carpetas
 
@@ -63,7 +67,7 @@ Por ejemplo, se tiene la carpeta _buttons_ donde se encuentran los componentes `
 Lo cual permite exportar varios componentes en una sola línea:
 
 ```Javascript
-  import { DashboardButton, DashboardButtonContainer, } from '@components/buttons';
+  import { DashboardButton, DashboardButtonContainer, } from '../../components/buttons';
 ```
 
 De preferencia se recomienda que sean en inglés usando _Pascal Case_ ej. NombreLargo y que sean componentes funcionales.
@@ -107,9 +111,9 @@ inputs/
   |- SelectTiendasGeneral.jsx
 ```
 
-Todos los inputs deben ir dentro de `InputContainer`.
+Todos los inputs deben ir dentro de un `InputContainer`. Cada un recibe como props `value` y `onChange`.
 
-`InputDate`: para ingresar la fecha en formato DD-MM-AAAA en el campo _A la Fecha_.sel
+`InputDate`: para ingresar la fecha en formato DD-MM-AAAA en el campo _A la Fecha_.
 
 `InputDateRange`: para ingresar un rango de fecha en los campos _Fecha Inicial_ y _Fecha Final_.
 
@@ -119,13 +123,18 @@ Todos los inputs deben ir dentro de `InputContainer`.
 
 `SelectMonth`: para seleccionar el mes en el campo _Del mes_.
 
+`SelectToMonth`: para seleccionar el mes en el campo _Al mes_.
+
 `SelectPlazas`: para seleccionar la plaza en el campo _Plaza_.
 
 `SelectTiendas`: para seleccionar la tienda en el campo _Tienda_.
 
 `SelectTiendasGeneral`: la diferencia con `SelectTiendas` es que solo posee las opciones: **Frogs**, **Skoro** y **Web**.
 
-`Checkbox`: espara cada checbox individual. Recibe como props `className` y `labelText`. Los valores para `labelText` se obtienen de `checkboxLabels.js`.
+`Checkbox`: es cada checbox individual. Recibe como props `className`, `labelText`, `name` y `onChange`.
+Los valores para `labelText` se obtienen de `checkboxLabels.js`.
+
+`name` es necesario para obtener el valor del input. Los valores se obtienen de `inputName`
 
 ### **layout**
 
@@ -209,19 +218,19 @@ table/
 
 A la hora de importar componentes y archivos dentro de un componentes se recomienda seguir un cierto orden para mayor limpieza, el cual es el sig.
 
-- **Componentes externos**: Son componentes del framework o de otras librerías.
+- **Componentes externos**: Son componentes del framework (ya sean de React o Next) o de otras librerías.
 - **Componentes propios**: Son los componentes que hemos creado.
-- **Funciones y hooks**: Todos los hooks de React; las funciones y customs hooks que hemos creado.
+- **Funciones y hooks**: Las funciones y customs hooks que hemos creado.
 - **recursos**: Los iconos, imágenes, archivos JS y estilos.
 
 ```Javascript
 // componentes externos
 // componentes propios
-import VentasLayout from '@components/layout/VentasLayout';
-import {VentasTableContainer, VentasTable} from '@components/table';
+import VentasLayout from '../../components/layout/VentasLayout';
+import {VentasTableContainer, VentasTable} from '../../components/table';
 // funciones y hooks
 // recursos (img, js, css)
-import {reporteFechas} from 'utils/data';
+import {reporteFechas} from '../../utils/data';
 ```
 
 _Nota: no es necesario colocar los textos, pero funcionan de guía visual._
@@ -229,14 +238,14 @@ _Nota: no es necesario colocar los textos, pero funcionan de guía visual._
 ## Estructura básica de páginas
 
 ```Javascript
-import VentasLayout from '@components/layout/VentasLayout';
-import { ParametersContainer, Parameters, SmallContainer } from '@components/containers';
-import { InputContainer, InputYear, SelectTiendasGeneral, Checkbox } from '@components/inputs';
-import { VentasTableContainer, VentasTable, TableHead, TableBody } from '@components/table';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
+import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
+import { InputContainer, InputYear, SelectTiendasGeneral, Checkbox } from '../../components/inputs';
+import { VentasTableContainer, VentasTable, TableHead, TableBody } from '../../components/table';
 
-const page = () => {
+const Page = () => {
   return (
-    <VentasLayout>
+    <>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -258,17 +267,20 @@ const page = () => {
           </TableBody>
         </VentasTable>
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
 
-export default page;
+Page.getLayout = getVentasLayout;
+
+export default Page;
 
 ```
 
 ## Páginas
 
-Los nombres de las páginas así como de los componentes van en minúsculas y en español. Ya que se está usando NextJS la estructura de las carpetas y archivos determina el routing.
+Los nombres de las páginas van en minúsculas y en español, mientras que los de componentes
+empiezan con mayúsculas. Ya que se está usando NextJS la estructura de las carpetas y archivos determina el routing.
 
 Se recomienda crear una carpeta por cada submenú. Si existe una sola página para ese submenú se crea un archivo `index.js`.
 
@@ -304,11 +316,34 @@ const checkboxLabels = {
 
 ```
 
+### inputNames
+
+```Javascript
+
+const inputNames = {
+  CON_IVA: "conIva",  // Componente: Checkbox
+  SEMANA_SANTA: "semanaSanta", // Componente: Checkbox
+  SIN_AGNO_VENTA: "sinAgnoVenta", // Componente: Checkbox
+  CON_VENTAS_EVENTOS: "conVentasEventos", // Componente: Checkbox
+  CON_TIENDAS_CERRADAS: "conTiendasCerradas", // Componente: Checkbox
+  SIN_TIENDAS_SUSPENDIDAS: "sinTiendasSuspendidas", // Componente: Checkbox
+  RESULTADOS_PESOS: "resultadosPesos", // Componente: Checkbox
+  FECHA_INICIO: "fechaInicio", // Componente: InputDateRange
+  FECHA_FIN: "fechaFin", // Componente: InputDateRange
+  VENTAS_MILES_DLLS: "ventasMilesDlls", // Componente: Checkbox
+  PORCENTAJE_COMPROMISO: "porcentajeVentasCompromiso", // Componente: Checkbox
+  NO_HORAS_VENTAS_PARCIALES: "noHorasVentasParciales", // Componente: Checkbox
+  ACUMULADO_SEMANAL: "acumuladoSemanal", // Componente: Checkbox
+  TIPO_CAMBIO_TIENDAS: "tipoCambioTiendas" // Componente: Checkbox
+}
+
+```
+
 ### valores
 
 Los valores de plazas, regiones, tiendas y tiendasGeneral.
 
-### enlacesMenuLateras
+### enlaces
 
 En una array con los submenus y enlaces de la barra de navegación lateral. Aqui se agregan los submenus.
 
@@ -342,3 +377,79 @@ const enlaces = [
   ...
 ]
 ```
+
+## functions
+
+Aqui van todas la funciones que se usan para generat títulos u obtener valores iniciales,
+entre otras funciones.
+
+### Lista de funciones
+
+`getTiendaName(tiendaId: number)`: Obtiene el nombre de la tienda a partir del identificador de la misma.
+
+`getPlazaName(plazaId: number)`: Obtiene el nomber de la plaza en base al identificador de la misma.
+
+`getLastTwoNumbers(data: number)`: Obtiene los 2 últimos dígitos del años. Ej. 2021 -> 21.
+
+`dateRangeTitle(beginDate: string, endDate: string)`: Crea un texto
+de título a partir del rango de fechas ingresado. Ej.
+
+```
+beginDate: 2022-02-14
+endDate: 2022-02-20
+result: del 14 de Feb del 2022 Al 20 de Feb del 2022
+```
+
+`validateInputDateRange(beginDate: string, endDate: string)`: Verifica que las fechas sean válidas (Mejorar).
+
+`getInitialTienda`: Obtiene el valor de la tienda que estará por defecto.
+
+`getInitialPlaza`: Obtiene el valor de la plaza que estará por defecto.
+
+En las funciones anteriores el valor está declarado dentro de la función,
+por lo tanto si se quiere cambiar el valor, se tiene que ir directamente a
+la declaración.
+
+`createDatasets(data, fromYear, toYear, updateLabels, updateDatasets)`: Crea los array de etiquetas y de datos para la gráfica de barras. Los objetos deben poseer los campo **DescGraf** y **Ventas[number]**, donde
+_[number]_ es un año dentro del rango especificado, en otras palabras,
+es un campo con nombre dinámico.
+
+**Parámetros**
+
+- `data: object[]`: El array de la respuesta del servicio.
+- `fromYear: number`: El año de inicio del intervalo de fechas.
+- `toYear: number`: El año de fin del intervalo de fechas
+- `updateLabels: Dispatch<SetActionState<any[]>>`: Es el `setState` para las etiquetas
+- `updateDatasets: Dispatch<SetActionState<any[]>>`: : Es el `setState` para el dataset
+
+`createSimpleDataset(data, updateLabels, updateDatasets)`: Crea los array de etiquetas y de datos para la gráfica de barras. Los objetos deben poseer los campos **Descrip** y **Ventas**.
+
+## Handlers
+
+## dateFunctions
+
+##
+
+## Servicios
+
+Los servicios son los encargados de la comunicación con la API y de traer los datos. Es un servicio por cada submenú.
+
+Todos los servicios usan `ApiProvider` para realizar las peticiones a la API.
+
+Los servicios exportan funciones y se nombran usando _Camel Case_:
+
+```Javascript
+import ApiProvider from "./ApiProvider";
+
+export async function getAnualesPlazas(body) {
+  try {
+    const { data } = await ApiProvider.post("/anuales/plazas", body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}
+```
+
+El nombre se forma empezando con _get_ seguido del nombre del submenú y
+el enlace.

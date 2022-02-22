@@ -44,7 +44,7 @@ export const getLastTwoNumbers = (date) => {
  * @param {string} endDate Fecha de fin de rango
  * @returns {string}
  */
-export const dateRangeTitle = (beginDate, endDate, onlyMonths = false) => {
+export const dateRangeTitle = (beginDate, endDate) => {
   let beginTextDate = "";
   let endTextDate = "";
 
@@ -57,17 +57,12 @@ export const dateRangeTitle = (beginDate, endDate, onlyMonths = false) => {
   let endMonth = getMonthByNumber(endDateParts[1]);
   endMonth = getMonthChars(endMonth);
 
-  if (onlyMonths) {
-    beginTextDate = `${beginMonth} del ${beginDateParts[0]}`;
-    endTextDate = `${endDateParts[0]}`;
-    return `de ${beginTextDate} al ${endTextDate}`;
-  }
-
   beginTextDate = `${beginDateParts[2]} de ${beginMonth} del ${beginDateParts[0]}`;
   endTextDate = `${endDateParts[2]} de ${endMonth} del ${endDateParts[0]}`;
 
   return `del ${beginTextDate} Al ${endTextDate}`;
 }
+// TODO: mejorar validación incluyendo regex y que beginDate si sea menor que endDate
 /**
  * Valida si las fechas no está vacías.
  * @param {string} beginDate Fecha de inicio del rango

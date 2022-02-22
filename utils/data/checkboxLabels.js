@@ -29,12 +29,6 @@ export const checkboxLabels = {
 }
 
 export const inputNames = {
-  // DEL_MES: "delMes",  // Componente: InputMonth
-  // DEL_AGNO: "delAgno", // Componente: InputYear
-  // AL_AGNO: "alAgno",  // Componente: InputToYear
-  // TIENDAS: "tienda",  // Componente: SelectTienda
-  // TIENDAS: "tiendas",  // Componente: SelectTiendasGeneral
-  // PLAZA: "plaza",  // Componente: SelectPlazas
   CON_IVA: "conIva",  // Componente: Checkbox
   SEMANA_SANTA: "semanaSanta", // Componente: Checkbox
   SIN_AGNO_VENTA: "sinAgnoVenta", // Componente: Checkbox
@@ -45,7 +39,6 @@ export const inputNames = {
   FECHA_INICIO: "fechaInicio", // Componente: InputDateRange
   FECHA_FIN: "fechaFin", // Componente: InputDateRange
   VENTAS_MILES_DLLS: "ventasMilesDlls", // Componente: Checkbox
-  // FECHA: "fecha",
   PORCENTAJE_COMPROMISO: "porcentajeVentasCompromiso", // Componente: Checkbox
   NO_HORAS_VENTAS_PARCIALES: "noHorasVentasParciales", // Componente: Checkbox
   ACUMULADO_SEMANAL: "acumuladoSemanal", // Componente: Checkbox
