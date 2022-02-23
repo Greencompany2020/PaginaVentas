@@ -27,7 +27,7 @@ const Plazas = () => {
   })
 
   useEffect(() => {
-    if (validateInputDateRange(plazasParametros.fechaInicio, plazasParametros.fechaInicio)) {
+    if (validateInputDateRange(plazasParametros.fechaInicio, plazasParametros.fechaFin)) {
       getSemanalesPlazas(plazasParametros)
         .then(response => setSemanalesPlaza(response));
     }

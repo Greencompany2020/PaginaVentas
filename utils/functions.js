@@ -4,7 +4,7 @@ import { getMonthByNumber, getMonthChars } from "./dateFunctions";
 /**
  * Obtiene el nombre de la tienda a partir del identificador de la misma.
  * @param {number} tiendaId 
- * @returns {string} 
+ * @returns {string} El nombre de la tienda.
  */
 export const getTiendaName = (tiendaId) => {
   const tienda = tiendas.find((tienda) => tienda.value === tiendaId);
@@ -13,7 +13,7 @@ export const getTiendaName = (tiendaId) => {
 /**
  * Obtiene el nomber de la plaza en base al identificador de la misma.
  * @param {number} plazaId 
- * @returns 
+ * @returns {string} El nombre de la plaza.
  */
 export const getPlazaName = (plazaId) => {
   const plaza = plazas.find((plaza) => plaza.value === plazaId);
@@ -22,7 +22,7 @@ export const getPlazaName = (plazaId) => {
 /**
  * Obtiene los 2 últimos dígitos del años. Ej.
  * 
- * 2021 -> 21
+ * - 2021 -> 21
  * 
  * @param {number} date El año
  * @returns {string} String con los 2 dígitos.
@@ -30,16 +30,23 @@ export const getPlazaName = (plazaId) => {
 export const getLastTwoNumbers = (date) => {
   return date?.toString().slice(2);
 }
+
+/**
+ * Obtiene el día de la semana y las iniciales del mes
+ * a partir de la fecha ingresada.
+ * @param {string} date fecha en formato yyyy-MM-dd
+ * @returns {string} El día de las semana y las iniciales del mes.
+ */
+export const getDayWeekName = (date) => {
+  const dateParts = date?.split("-");
+  const month = getMonthChars(getMonthByNumber(dateParts[1]));
+  return `${dateParts[2]}-${month}`;
+}
 /**
  * Crear un texto de título a partir del rango de fechas ingresado. Ej.
- * 
- * beginDate: 2022-02-14
- * 
- * endDate: 2022-02-20
- * 
- * string: del 14 de Feb del 2022 Al 20 de Feb del 2022
- * 
- * 
+ * - beginDate: 2022-02-14
+ * - endDate: 2022-02-20
+ * - string: del 14 de Feb del 2022 Al 20 de Feb del 2022
  * @param {string} beginDate Fecha de inicio de rango
  * @param {string} endDate Fecha de fin de rango
  * @returns {string}
@@ -62,14 +69,27 @@ export const dateRangeTitle = (beginDate, endDate) => {
 
   return `del ${beginTextDate} Al ${endTextDate}`;
 }
-// TODO: mejorar validación incluyendo regex y que beginDate si sea menor que endDate
+
 /**
- * Valida si las fechas no está vacías.
+ * Valida si las fechas tienen el formato adecuado y si la fecha de inicio es
+ * menor a la fecha de fin.
  * @param {string} beginDate Fecha de inicio del rango
  * @param {string} endDate Fecha de fin del rango
- * @returns {boolean}
+ * @returns {boolean} false si las fechas no tienen el formato adecuado.
  */
-export const validateInputDateRange = (beginDate, endDate) => (beginDate?.length === 10 && endDate?.length === 10);
+export const validateInputDateRange = (beginDate, endDate) => {
+  const dateRegex = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;
+  return (dateRegex.test(beginDate) && dateRegex.test(endDate) && (Date.parse(beginDate) < Date.parse(endDate)))
+};
+/**
+ * Valida si la fecha tiene el formato yyyy-MM-dd.
+ * @param {string} date String de la fecha
+ * @returns {boolean} false si la fecha no tiene el formato adecuado.
+ */
+export const validateDate = (date) => {
+  const dateRegex = /([12]\d{3}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01]))/;
+  return dateRegex.test(date);
+}
 
 /**
  * Obtiene el valor de la tienda que estará por defecto.
@@ -85,17 +105,13 @@ export const getInitialPlaza = () => plazas.find((plaza => plaza.text === "MAZAT
  * Crea los array de etiquetas y de dato para la gráfica de barras.
  * El objeto debe poseer las siguiete estructura:
  * 
- * DescGraf
- * 
- * Venta2022
- * 
- * Venta2021
- * 
- * Venta2020
+ * - DescGraf
+ * - Venta2022
+ * - Venta2021
+ * - Venta2020
  * 
  * El nombre los campos de ventas son dinámicos, por ello se utilizan
  * el año de inicio y de fin para obtener los datos.
- * 
  * 
  * @param {object[]} data Los datos para crear el dataset
  * @param {numbe} fromYear El año de inicio del intervalo
@@ -142,9 +158,8 @@ export const createDatasets = (data, fromYear, toYear, updateLabels, updateDatas
  * Crea los array de etiquetas y de dato para la gráfica de barras.
  * El objeto debe poseer las siguiete estructura:
  * 
- * Descrip
- * 
- * Ventas
+ * - Descrip
+ * - Ventas
  * 
  * @param {object[]} data Los datos base para crear el dataset
  * @param {Dispatch<SetActionState<any[]>>} updateLabels setState para las etiquetas
