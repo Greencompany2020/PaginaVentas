@@ -8,3 +8,12 @@ export async function getComparativoGrupo(body) {
     console.log(error?.response?.data)
   }
 }
+
+export async function getComparativoPlazas(body) {
+  try {
+    const { data } = await ApiProvider.post("/comparativo/plazas", body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}

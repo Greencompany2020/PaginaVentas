@@ -185,3 +185,19 @@ export const createSimpleDatasets = (data, updateLabels, updateDataset) => {
     updateDataset([]);
   }
 }
+/**
+ * Obtiene el titulo de la tabla en base al nombre del campo.
+ * @param {string} name El nombre del campo
+ * @returns El componente de titulo del nombre de la tabla
+ */
+export const getTableName = (name) => {
+  if (name?.toLowerCase().includes("frogs") && !name?.toLowerCase().includes("proyectos")) {
+    return (<h2 className='text-center text-2xl p-3'>Tiendas Frogs</h2>);
+  } else if (name?.toLowerCase().includes("web")) {
+    return (<h2 className='text-center text-2xl p-3'>Tienda En Línea</h2>);
+  } else if (name?.toLowerCase().includes("proyectos")) {
+    return (<h2 className='text-center text-2xl p-3'>Tiendas Frogs - Proyectos</h2>);
+  } else if (name?.toLowerCase().includes("skoro")) {
+    return (<h2 className='text-center text-2xl p-3'>Tiendas Skoro</h2>);
+  }
+}
