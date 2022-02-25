@@ -1,26 +1,81 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { ParametersContainer, Parameters, SmallContainer } from '@components/containers';
-import { InputContainer, InputYear, SelectTiendasGeneral, Checkbox } from '@components/inputs';
-import { VentasTableContainer, VentasTable, TableHead, TableBody } from '@components/table';
-import { checkboxLabels, participacionVentas } from 'utils/data';
+import { useEffect, useState } from 'react';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
+import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
+import { InputContainer, SelectTiendasGeneral, Checkbox, InputToYear } from '../../components/inputs';
+import { VentasTableContainer, VentasTable, TableHead, TableBody } from '../../components/table';
+import { checkboxLabels, inputNames } from '../../utils/data';
+import { getCurrentYear } from '../../utils/dateFunctions';
+import { handleChange } from '../../utils/handlers';
+import { numberWithCommas } from '../../utils/resultsFormated'
+import { getPorcenatajesParticipacion } from '../../services/PorcentajesService';
 
-const participacion = () => {
+const Participacion = () => {
+  const [participacionVentas, setParticipacionVentas] = useState([]);
+  const [parametrosParticipacion, setParametrosParticipacion] = useState({
+    alAgno: getCurrentYear(),
+    tiendas: 0,
+    conIva: 0,
+    conVentasEventos: 0,
+    conTiendasCerradas: 0,
+    sinTiendasSuspendidas: 1,
+    resultadosPesos: 0
+  });
+
+  useEffect(() => {
+    if (parametrosParticipacion.alAgno.toString().length === 4) {
+      getPorcenatajesParticipacion(parametrosParticipacion)
+        .then(response => setParticipacionVentas(response))
+    }
+  }, [parametrosParticipacion]);
+
   return (
-    <VentasLayout>
+    <>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
-            <InputYear />
-            <SelectTiendasGeneral />
-            <Checkbox className='mb-3' labelText={checkboxLabels.VENTAS_IVA} />
+            <InputToYear
+              value={parametrosParticipacion.alAgno}
+              onChange={(e) => handleChange(e, setParametrosParticipacion)}
+            />
+            <SelectTiendasGeneral
+              value={parametrosParticipacion.tiendas}
+              onChange={(e) => handleChange(e, setParametrosParticipacion)}
+            />
           </InputContainer>
           <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS} />
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS} />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.VENTAS_IVA}
+              name={inputNames.CON_IVA}
+              onChange={(e) => handleChange(e, setParametrosParticipacion)}
+            />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+              name={inputNames.CON_VENTAS_EVENTOS}
+              onChange={(e) => handleChange(e, setParametrosParticipacion)}
+            />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+              name={inputNames.CON_TIENDAS_CERRADAS}
+              onChange={(e) => handleChange(e, setParametrosParticipacion)}
+            />
           </InputContainer>
           <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS} />
-            <Checkbox className='mb-3' labelText={checkboxLabels.RESULTADO_PESOS} />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
+              name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
+              checked={parametrosParticipacion.sinTiendasSuspendidas ? true : false}
+              onChange={(e) => handleChange(e, setParametrosParticipacion)}
+            />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.RESULTADO_PESOS}
+              name={inputNames.RESULTADOS_PESOS}
+              onChange={(e) => handleChange(e, setParametrosParticipacion)}
+            />
           </InputContainer>
         </Parameters>
         <SmallContainer>
@@ -28,7 +83,7 @@ const participacion = () => {
         </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title='PARTICIPACION DE VENTAS DE TIENDAS EN EL AÑO 2022 -iva no incluido'>
+      <VentasTableContainer title={`PARTICIPACION DE VENTAS DE TIENDAS EN EL AÑO ${parametrosParticipacion.alAgno}`}>
         <VentasTable className='last-row-bg'>
           <TableHead>
             <tr>
@@ -76,42 +131,67 @@ const participacion = () => {
           </TableHead>
           <TableBody>
             {
-              participacionVentas.map(venta => (
-                <tr key={venta.venta} className='text-center'>
-                  <td>{venta.tienda}</td>
-                  <td>{venta.venta}</td>
-                  <td>{venta.porcentaje}</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
-                  <td>0</td>
+              participacionVentas?.map((venta, index) => (
+                <tr key={venta.tienda} className='text-center'>
+                  {
+                    index + 1 === participacionVentas.length ? (
+                      <>
+                        <td>{venta.tienda}</td>
+                        <td colSpan={2}>{numberWithCommas(venta.enero)}</td>
+                        <td colSpan={2}>{numberWithCommas(venta.febrero)}</td>
+                        <td colSpan={2}>{numberWithCommas(venta.marzo)}</td>
+                        <td colSpan={2}>{numberWithCommas(venta.abril)}</td>
+                        <td colSpan={2}>{numberWithCommas(venta.mayo)}</td>
+                        <td colSpan={2}>{numberWithCommas(venta.junio)}</td>
+                        <td colSpan={2}>{numberWithCommas(venta.julio)}</td>
+                        <td colSpan={2}>{numberWithCommas(venta.agosto)}</td>
+                        <td colSpan={2}>{numberWithCommas(venta.septiembre)}</td>
+                        <td colSpan={2}>{numberWithCommas(venta.octubre)}</td>
+                        <td colSpan={2}>{numberWithCommas(venta.noviembre)}</td>
+                        <td colSpan={2}>{numberWithCommas(venta.diciembre)}</td>
+                        <td colSpan={2}>{numberWithCommas(venta.total)}</td>
+                      </>
+                    ) : (
+                      <>
+                        <td>{venta.tienda}</td>
+                        <td>{numberWithCommas(venta.enero)}</td>
+                        <td className='bg-gray-200'>{numberWithCommas(venta.porcentajeEnero)}</td>
+                        <td>{numberWithCommas(venta.febrero)}</td>
+                        <td className='bg-gray-200'>{numberWithCommas(venta.porcentajeFebrero)}</td>
+                        <td>{numberWithCommas(venta.marzo)}</td>
+                        <td className='bg-gray-200'>{numberWithCommas(venta.porcentajeMarzo)}</td>
+                        <td>{numberWithCommas(venta.abril)}</td>
+                        <td className='bg-gray-200'>{numberWithCommas(venta.porcentajeAbril)}</td>
+                        <td>{numberWithCommas(venta.mayo)}</td>
+                        <td className='bg-gray-200'>{numberWithCommas(venta.porcentajeMayo)}</td>
+                        <td>{numberWithCommas(venta.junio)}</td>
+                        <td className='bg-gray-200'>{numberWithCommas(venta.porcentajeJunio)}</td>
+                        <td>{numberWithCommas(venta.julio)}</td>
+                        <td className='bg-gray-200'>{numberWithCommas(venta.porcentajeJulio)}</td>
+                        <td>{numberWithCommas(venta.agosto)}</td>
+                        <td className='bg-gray-200'>{numberWithCommas(venta.porcentajeAgosto)}</td>
+                        <td>{numberWithCommas(venta.septiembre)}</td>
+                        <td className='bg-gray-200'>{numberWithCommas(venta.porcentajeSeptiembre)}</td>
+                        <td>{numberWithCommas(venta.octubre)}</td>
+                        <td className='bg-gray-200'>{numberWithCommas(venta.porcentajeOctubre)}</td>
+                        <td>{numberWithCommas(venta.noviembre)}</td>
+                        <td className='bg-gray-200'>{numberWithCommas(venta.porcentajeNoviembre)}</td>
+                        <td>{numberWithCommas(venta.diciembre)}</td>
+                        <td className='bg-gray-200'>{numberWithCommas(venta.porcentajeDiciembre)}</td>
+                        <td>{numberWithCommas(venta.total)}</td>
+                      </>
+                    )
+                  }
                 </tr>
               ))
             }
           </TableBody>
         </VentasTable>
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
 
-export default participacion
+Participacion.getLayout = getVentasLayout;
+
+export default Participacion
