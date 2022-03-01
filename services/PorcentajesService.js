@@ -8,3 +8,12 @@ export async function getPorcenatajesParticipacion(body) {
     console.log(error?.response?.data);
   }
 }
+
+export async function getPorcentajeCrecimiento(body) {
+  try {
+    const { data } = await ApiProvider.post("/porcentajes/crecimiento", body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}
