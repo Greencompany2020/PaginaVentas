@@ -174,11 +174,17 @@ export const getNameDay = (date) => {
 }
 /**
  * Resta los días indicados a partir de la fecha actual.
- * @param {number} days El número de dias a restar a la fecha
+ * @param {number} days El número de dias a restar a la fecha.
+ * @param {number} year El año a crear la fecha. Si se asigna este valor obtiene por defecto la fecha del dia anterior, por ello se deja 
+ * en 0 el valor de days.
  * @returns {string} fecha en formato yyyy-MM-dd
  */
-export const getPrevDate = (days) => {
-  const currentDate = new Date(Date.now());
+export const getPrevDate = (days, year = 0) => {
+  let currentDate = new Date(Date.now());
+  if (year > 0) {
+    const dateParts = format(currentDate, "yyyy-MM-dd", { weekStartsOn: 1 }).split("-");
+    currentDate = Date.parse(`${year}-${dateParts[1]}-${dateParts[2]}`);
+  }
   const prevDate = sub(currentDate, { days });
-  return format(prevDate, "yyy-MM-dd", { weekStartsOn: 1 });
+  return format(prevDate, "yyyy-MM-dd", { weekStartsOn: 1 });
 }

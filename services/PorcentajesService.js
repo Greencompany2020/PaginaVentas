@@ -17,3 +17,12 @@ export async function getPorcentajeCrecimiento(body) {
     console.log(error?.response?.data);
   }
 }
+
+export async function getPorcentajesMensuales(body) {
+  try {
+    const { data } = await ApiProvider.post("/porcentajes/mensuales", body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}

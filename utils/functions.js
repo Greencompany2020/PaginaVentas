@@ -93,7 +93,7 @@ export const validateDate = (date) => {
 
 /**
  * Obtiene el valor de la tienda que estará por defecto.
- * @returns {number} El identificador de la tienda
+ * @returns {string} El identificador de la tienda
  */
 export const getInitialTienda = () => tiendas.find((tienda => tienda.text === "M1")).value
 /**

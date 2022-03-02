@@ -7,4 +7,3 @@ export * from './comparativoGrupo';
 export * from './comparativoPlazas';
 export * from './participacionVentas';
 export * from './crecimientoTabla';
-export * from './porcentajesMensuales';
