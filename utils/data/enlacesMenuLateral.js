@@ -135,15 +135,15 @@ export const enlaces = [
     summaryText: 'Meses vs Años',
     links: [
       {
-        link: '/mesesvsanios/degrupo',
+        link: '/mesesvsanios/grupo',
         linkText: 'De Grupo'
       },
       {
-        link: '/mesesvsanios/porplaza',
+        link: '/mesesvsanios/plaza',
         linkText: 'Por Plaza'
       },
       {
-        link: '/mesesvsanios/portienda',
+        link: '/mesesvsanios/tienda',
         linkText: 'Por Tienda'
       },
       {

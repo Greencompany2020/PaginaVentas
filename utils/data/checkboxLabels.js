@@ -42,5 +42,7 @@ export const inputNames = {
   PORCENTAJE_COMPROMISO: "porcentajeVentasCompromiso", // Componente: Checkbox
   NO_HORAS_VENTAS_PARCIALES: "noHorasVentasParciales", // Componente: Checkbox
   ACUMULADO_SEMANAL: "acumuladoSemanal", // Componente: Checkbox
-  TIPO_CAMBIO_TIENDAS: "tipoCambioTiendas" // Componente: Checkbox
+  TIPO_CAMBIO_TIENDAS: "tipoCambioTiendas", // Componente: Checkbox
+  INCLUIR_TOTAL: "incluirTotal",
+  VENTAS_DIA_MES_ACTUAL: "ventasDiaMesActual"
 }
