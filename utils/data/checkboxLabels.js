@@ -44,5 +44,6 @@ export const inputNames = {
   ACUMULADO_SEMANAL: "acumuladoSemanal", // Componente: Checkbox
   TIPO_CAMBIO_TIENDAS: "tipoCambioTiendas", // Componente: Checkbox
   INCLUIR_TOTAL: "incluirTotal",
-  VENTAS_DIA_MES_ACTUAL: "ventasDiaMesActual"
+  VENTAS_DIA_MES_ACTUAL: "ventasDiaMesActual",
+  DETALLADO_TIENDA: "detalladoTienda"
 }

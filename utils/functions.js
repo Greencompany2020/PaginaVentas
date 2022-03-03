@@ -201,3 +201,76 @@ export const getTableName = (name) => {
     return (<h2 className='text-center text-2xl p-3'>Tiendas Skoro</h2>);
   }
 }
+/**
+ * Valida que los años sean de 4 número (2000) y que el year1
+ * sea menor year2
+ * @param {number} year1 El primer año a validar
+ * @param {number} year2 El segundo año a validar
+ * @returns {boolean} Si lo años son validos
+ */
+export const validateYearRange = (year1, year2) => {
+  return (year1?.toString().length === 4 && year2?.toString().length === 4) && year1 < year2;
+}
+/**
+ * Valida que los meses no sean 0 y que el mes 1 es menor al mes 2.
+ * @param {number} month1 El número del primer mes a validar
+ * @param {number} month2 El número del segundo mes a validar
+ * @returns {boolean}
+ */
+export const validateMonthRange = (month1, month2) => (month1 <= month2) && (month1 !== 0 && month2 !== 0);
+
+export const createMesesAgnosGrupoDataset = (data, fromYear, toYear) => {
+  const colors = ['#006400', '#daa520', '#6495ed', '#ff7f50', '#98fb98'];
+
+  if (data?.length !== 0) {
+    let labels = [];
+    labels = data.map(item => item?.Mes ? getMonthByNumber(item.Mes) : item.titulo);
+    setLabels(labels);
+
+    let datasets = [];
+    let colorIndex = 0;
+    let dataSetIndex = 1;
+    for (let i = toYear; i >= fromYear; i--) {
+      let ventas = data.map(item => item[`Ventas${i}`]);
+      let ventasPrev = data.map(item => item[`Ventas${i - 1}`] ?? 0)
+
+      datasets.push({
+        id: dataSetIndex,
+        label: `${i} ${calculateCrecimiento(ventas, ventasPrev)}%`,
+        data: data.map(item => Math.floor(item[`Ventas${i}`])),
+        backgroundColor: colors[colorIndex]
+      });
+
+      colorIndex++;
+      dataSetIndex++;
+
+      if (colorIndex === colors.length) {
+        colorIndex = 0;
+      }
+    }
+
+    setDatasets(datasets);
+  } else {
+    setLabels([]);
+    setDatasets([]);
+  }
+}
+
+/**
+ * 
+ * @param {number[]} dataList1 
+ * @param {number[]} dataList2 
+ */
+export const calculateCrecimiento = (dataList1, dataList2) => {
+  const sumTotal = dataList1.reduce((acc, curr) => acc + curr);
+  const sumTotalPrev = dataList2.reduce((acc, curr) => acc + curr);
+
+  const porcentaje = calculatePromedio(sumTotal, sumTotalPrev);
+
+  return porcentaje;
+}
+
+export const calculatePromedio = (total1, total2) => {
+  if (total2 === 0) return 0;
+  return ((total1 / total2 - 1) * 100).toFixed(1);
+}

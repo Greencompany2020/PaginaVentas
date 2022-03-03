@@ -5,7 +5,7 @@ import { Parameters, ParametersContainer, SmallContainer } from '../../component
 import { InputContainer, SelectMonth, SelectTiendasGeneral, InputYear, Checkbox, InputToYear, SelectToMonth } from '../../components/inputs';
 import { checkboxLabels, inputNames } from '../../utils/data';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
-import { getCurrentMonth, getCurrentYear, getMonthByNumber } from '../../utils/dateFunctions';
+import { formatLastDate, getCurrentMonth, getCurrentYear, getMonthByNumber, getPrevDate } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getMesesAgnosGrupo } from '../../services/MesesAgnosService';
 
@@ -182,6 +182,7 @@ const Grupo = () => {
 
       <ComparativoVentas title={`Comparativo de ventas del año ${parametrosGrupo.delAgno} al año ${parametrosGrupo.alAgno} (mls.dlls)`}>
         <BarChart
+          text={`${parametrosGrupo.alMes === getCurrentMonth() ? `Ventas al ${formatLastDate(getPrevDate(0, parametrosGrupo.alAgno))}` : ""}`}
           data={{
             labels,
             datasets

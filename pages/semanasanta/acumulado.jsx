@@ -1,11 +1,11 @@
 import Link from 'next/link';
 import { Flex, SmallContainer, ParametersContainer, Parameters } from '@components/containers';
 import VentasLayout from '@components/layout/VentasLayout';
-import { VentasTableContainer, VentasTable, TableHead,AcumuladoSemanaSantaFooter } from '@components/table';
+import { VentasTableContainer, VentasTable, TableHead, AcumuladoSemanaSantaFooter } from '@components/table';
 import { InputContainer, Checkbox, InputOfTheDate, InputVsYear, SelectTiendasGeneral } from '@components/inputs';
 import { semanalesTienda, regiones, checkboxLabels } from 'utils/data';
 
-const acumulado = ({day1,day2,year1,year2}) => {
+const acumulado = ({ day1, day2, year1, year2 }) => {
   return (
     day1 = "day1",
     day2 = "day2",
@@ -15,8 +15,8 @@ const acumulado = ({day1,day2,year1,year2}) => {
       <ParametersContainer>
         <Parameters>
           <InputContainer>
-          <InputOfTheDate/>
-          <InputVsYear/>
+            <InputOfTheDate />
+            <InputVsYear />
           </InputContainer>
           <InputContainer>
             <Checkbox className='mb-3' labelText={checkboxLabels.VENTAS_IVA} />
@@ -32,8 +32,8 @@ const acumulado = ({day1,day2,year1,year2}) => {
           </InputContainer>
         </Parameters>
         <SmallContainer>
-        
-        Este reporte muestra la venta del dia y la venta acumulada de la   semana santa en la fecha especificada.
+
+          Este reporte muestra la venta del dia y la venta acumulada de la   semana santa en la fecha especificada.
 
         </SmallContainer>
       </ParametersContainer>
@@ -67,11 +67,11 @@ const acumulado = ({day1,day2,year1,year2}) => {
               <td rowSpan={2} className='border border-white'>{year2}</td>
               <td rowSpan={2} className='border border-white'>PPTO.</td>
               <td rowSpan={3} className='border border-white'>%</td>
-              
+
             </tr>
           </TableHead>
-          <AcumuladoSemanaSantaFooter/>
-          
+          <AcumuladoSemanaSantaFooter />
+
           <tbody className='bg-white'>
             {
               semanalesTienda.map(item => (
@@ -102,12 +102,12 @@ const acumulado = ({day1,day2,year1,year2}) => {
                   <td>{item.promFechaComp}</td>
                   <td>{item.artFechaActual}</td>
                   <td>{item.porcentajeArt}</td>
-                  
+
                 </tr>
               ))
             }
           </tbody>
-          
+
         </VentasTable>
       </VentasTableContainer>
     </VentasLayout>
