@@ -180,9 +180,8 @@ const Grupo = () => {
 
       </ParametersContainer>
 
-      <ComparativoVentas title='Comparativo de ventas del año 2017 al año 2021 (mls.dlls) -iva no incluido'>
+      <ComparativoVentas title={`Comparativo de ventas del año ${parametrosGrupo.delAgno} al año ${parametrosGrupo.alAgno} (mls.dlls)`}>
         <BarChart
-          text='Comparativo de ventas del año 2017 al año 2021 (mls.dlls) -iva no incluido'
           data={{
             labels,
             datasets
