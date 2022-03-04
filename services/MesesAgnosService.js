@@ -26,3 +26,12 @@ export async function getMesesAgnosTiendas(body) {
     console.log(error?.response?.data)
   }
 }
+
+export async function getMesesAgnosTodasTiendas(body) {
+  try {
+    const { data } = await ApiProvider.post("/mesesvsanios/todastiendas", body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}
