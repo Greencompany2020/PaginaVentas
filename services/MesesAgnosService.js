@@ -17,3 +17,12 @@ export async function getMesesAgnosPlazas(body) {
     console.log(error?.response?.data);
   }
 }
+
+export async function getMesesAgnosTiendas(body) {
+  try {
+    const { data } = await ApiProvider.post("/mesesvsanios/tiendas", body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data)
+  }
+}

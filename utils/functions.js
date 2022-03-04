@@ -3,7 +3,7 @@ import { getMonthByNumber, getMonthChars } from "./dateFunctions";
 
 /**
  * Obtiene el nombre de la tienda a partir del identificador de la misma.
- * @param {number} tiendaId 
+ * @param {string} tiendaId 
  * @returns {string} El nombre de la tienda.
  */
 export const getTiendaName = (tiendaId) => {

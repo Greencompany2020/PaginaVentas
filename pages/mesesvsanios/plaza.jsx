@@ -173,7 +173,10 @@ const Plaza = () => {
 
       </ParametersContainer>
 
-      <ComparativoVentas title={`Ventas Plaza del año ${parametrosPlazas.delAgno} al año ${parametrosPlazas.alAgno} (mls.dlls.)`}>
+      <ComparativoVentas
+        title={`Ventas Plaza del año ${parametrosPlazas.delAgno} al año ${parametrosPlazas.alAgno} 
+        (mls.${parametrosPlazas.resultadosPesos === 1 ? "pesos." : "dlls."})`
+        }>
         <BarChart
           text={`${parametrosPlazas.alMes === getCurrentMonth() ? `Ventas al ${formatLastDate(getPrevDate(0, parametrosPlazas.alAgno))}` : ""}`}
           data={{

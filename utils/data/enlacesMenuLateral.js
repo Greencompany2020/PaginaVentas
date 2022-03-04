@@ -143,11 +143,11 @@ export const enlaces = [
         linkText: 'Por Plaza'
       },
       {
-        link: '/mesesvsanios/tienda',
+        link: '/mesesvsanios/tiendas',
         linkText: 'Por Tienda'
       },
       {
-        link: '/mesesvsanios/todaslastiendas',
+        link: '/mesesvsanios/todastiendas',
         linkText: 'Todas las tiendas'
       }
     ]
