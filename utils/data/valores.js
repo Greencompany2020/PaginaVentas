@@ -49,6 +49,37 @@ export const meses = [
   },
 ]
 
+export const dias = [
+  {
+    value: 0,
+    text: 'Lunes'
+  },
+  {
+    value: 1,
+    text: 'Martes'
+  },
+  {
+    value: 2,
+    text: 'Miercoles'
+  },
+  {
+    value: 3,
+    text: 'Jueves'
+  },
+  {
+    value: 4,
+    text: 'Viernes'
+  },
+  {
+    value: 5,
+    text: 'Sabado'
+  },
+  {
+    value: 6,
+    text: 'Domingo'
+  }
+]
+
 export const tiendasGeneral = [
   {
     value: 0,

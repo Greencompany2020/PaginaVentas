@@ -1,4 +1,4 @@
-import { format, getDay, nextSunday, previousMonday, sub } from "date-fns";
+import { format, getDay, nextSunday, previousMonday, sub, add } from "date-fns";
 import { meses } from "./data";
 import { getDayWeekName } from "./functions";
 
@@ -187,4 +187,64 @@ export const getPrevDate = (days, year = 0) => {
   }
   const prevDate = sub(currentDate, { days });
   return format(prevDate, "yyyy-MM-dd", { weekStartsOn: 1 });
+}
+/**
+ * Calcula la fechas de inicio y de fin de la semana santa del año ingresado.
+ * La lógica de la función es obtenida de la original en PHP.
+ * @param {number} year El año a obtener la semana santa
+ * @returns {string[]} Un array con la fechas de inicio y de fin.
+ */
+export const semanaSanta = (year) => {
+  const pDig = parseInt(year / 100, 10);
+  const pDec = year % 19;
+
+  let result = parseInt((pDig - 15) / 2, 10) + 202 - 11 * pDec;
+
+  if (pDig > 26) result = result - 1;
+  if (pDig > 36) result = result - 1;
+
+  if (
+    pDig === 21 ||
+    pDig === 24 ||
+    pDig === 25 ||
+    pDig === 33 ||
+    pDig === 33 ||
+    pDig === 37
+  ) {
+    result = result - 1;
+  }
+
+  result = result % 30;
+  let resultA = result + 21;
+
+  if (result === 29) resultA = resultA - 1;
+  if (result === 28 && pDec > 10) resultA = resultA - 1;
+  // Obtiene el último domingo
+  let resultB = (resultA - 19) % 7;
+  let resultC = (40 - pDig) % 4;
+
+  if (resultC === 3) resultC = resultC + 1;
+  if (resultC > 1) resultC = resultC + 1;
+
+  result = year % 100;
+  let resultD = (result + parseInt(result / 4, 10)) % 7;
+
+  let resultE = ((20 - resultB - resultC - resultD) % 7) + 1;
+  let dia = resultA + resultE;
+  let mes = 0;
+
+  if (dia > 31) {
+    dia = dia - 31;
+    mes = 4;
+  } else {
+    mes = 3;
+  }
+
+  const domingo = new Date(year, mes - 1, dia);
+  let fechaInicio = sub(domingo, { days: 9 });
+  fechaInicio = format(fechaInicio, "yyyy-MM-dd", { weekStartsOn: 1 });
+  let fechaFin = add(domingo, { days: 1 });
+  fechaFin = format(fechaFin, "yyyy-MM-dd", { weekStartsOn: 1 });
+
+  return [fechaInicio, fechaFin];
 }

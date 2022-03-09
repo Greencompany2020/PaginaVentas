@@ -1,4 +1,5 @@
-import { plazas, tiendas } from "./data";
+import { getDay } from "date-fns";
+import { dias, plazas, tiendas } from "./data";
 import { getMonthByNumber, getMonthChars } from "./dateFunctions";
 
 /**
@@ -273,4 +274,13 @@ export const calculateCrecimiento = (dataList1, dataList2) => {
 export const calculatePromedio = (total1, total2) => {
   if (total2 === 0) return 0;
   return ((total1 / total2 - 1) * 100).toFixed(1);
+}
+
+export const validateYear = (year) => year > 1999;
+
+export const getDayName = (date) => {
+  if (!validateDate(date)) return date;
+  const weekDay = getDayWeekName(date)
+  const dayName = dias.find(dia => dia.value === getDay(Date.parse(date)));
+  return `${dayName?.text} ${weekDay}`
 }

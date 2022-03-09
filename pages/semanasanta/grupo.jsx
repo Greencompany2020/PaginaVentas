@@ -1,57 +1,121 @@
-import VentasLayout from "@components/layout/VentasLayout";
+import { useState, useEffect } from 'react';
+import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   Parameters,
   ParametersContainer,
   SmallContainer,
-} from "@components/containers";
+} from "../../components/containers";
 import {
   InputContainer,
   SelectMonth,
   SelectPlazas,
   InputYear,
   Checkbox,
-} from "@components/inputs";
+  InputVsYear,
+  SelectTiendasGeneral,
+} from "../../components/inputs";
 import {
   VentasTableContainer,
   VentasTable,
   SemanaSantaTableFooter,
   VentasSemanaSantaHead,
-} from "@components/table";
-import { ventasDiariasGrupo, checkboxLabels } from "utils/data";
+} from "../../components/table";
 import SemanaSantaTable from "../../components/table/SemanaSantaTable";
+import { checkboxLabels, inputNames } from "../../utils/data";
+import { getCurrentYear } from '../../utils/dateFunctions';
+import { handleChange } from '../../utils/handlers';
+import { validateYear } from '../../utils/functions';
+import { getSemanaSantaGrupo, getSemanaSantaGrupoConcentrado } from '../../services/semanaSantaService';
 
-const grupo = () => {
-  const year = 2000;
+const Grupo = () => {
+  const [concentrado, setConcentrado] = useState(false);
+  const [semanaSantaGrupo, setSemanaSantaGrupo] = useState({});
+  const [paramGrupo, setParamGrupo] = useState({
+    delAgno: getCurrentYear(),
+    versusAgno: getCurrentYear() - 1,
+    tiendas: 0,
+    conIva: 0,
+    conVentasEventos: 0,
+    conTiendasCerradas: 0,
+    incluirFinSemanaAnterior: 1,
+    resultadosPesos: 1
+  });
+  
+  useEffect(() => {
+    if (validateYear(paramGrupo.delAgno) && validateYear(paramGrupo.versusAgno)) {
+      if (concentrado) {
+        getSemanaSantaGrupoConcentrado(paramGrupo)
+          .then(response => setSemanaSantaGrupo(response))
+      } else {
+        getSemanaSantaGrupo(paramGrupo)
+          .then(response => setSemanaSantaGrupo(response))
+      }
+    }
+  }, [paramGrupo, concentrado]);
+  
   return (
-    <VentasLayout>
+    <>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
-            <SelectMonth />
-            <InputYear value={2020} onChange={() => {}} />
-            <SelectPlazas />
+            <InputYear 
+              value={paramGrupo.delAgno} 
+              onChange={(e) => { handleChange(e, setParamGrupo) }} 
+            />
+            <InputVsYear 
+              value={paramGrupo.versusAgno}
+              onChange={(e) => { handleChange(e, setParamGrupo) }}
+            />
+            <SelectTiendasGeneral 
+              value={paramGrupo.tiendas}
+              onChange={(e) => { handleChange(e, setParamGrupo) }}
+            />
           </InputContainer>
           <InputContainer>
-            <Checkbox className="mb-3" labelText={checkboxLabels.VENTAS_IVA} />
+            <Checkbox 
+              className="mb-3" 
+              labelText={checkboxLabels.CONCENTRADO}
+              onChange={() => { setConcentrado(prev => !prev) }}
+            />
+            <Checkbox 
+              className="mb-3" 
+              labelText={checkboxLabels.VENTAS_IVA}
+              name={inputNames.CON_IVA}
+              onChange={(e) => { handleChange(e, setParamGrupo) }}
+            />
             <Checkbox
               className="mb-3"
-              labelText={checkboxLabels.SEMANA_SANTA}
+              labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS} 
+              name={inputNames.CON_VENTAS_EVENTOS}
+              onChange={(e) => { handleChange(e, setParamGrupo) }}
             />
-            <Checkbox labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS} />
-          </InputContainer>
-          <InputContainer>
             <Checkbox
               className="mb-3"
               labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+              onChange={(e) => { handleChange(e, setParamGrupo) }}
             />
-            <Checkbox labelText={checkboxLabels.EXCLUIR_TIENDAS_VENTAS} />
           </InputContainer>
           <InputContainer>
+            <Checkbox 
+              className="mb-3"
+              labelText={checkboxLabels.INCLUIR_FIN_DE_SEMANA_ANTERIOR} 
+              name={inputNames.INCLUIR_FIN_SEMANA_ANTERIOR}
+              onChange={(e) => { handleChange(e, setParamGrupo) }}
+              checked={paramGrupo.incluirFinSemanaAnterior}
+            />
             <Checkbox
               className="mb-3"
-              labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
+              labelText={checkboxLabels.PERIODO_COMPLETO}
+              onChange={() => {}}
             />
-            <Checkbox labelText={checkboxLabels.RESULTADO_PESOS} />
+            <Checkbox 
+              labelText={checkboxLabels.RESULTADO_PESOS}
+              name={inputNames.RESULTADOS_PESOS}
+              onChange={(e) => { handleChange(e, setParamGrupo) }}
+              checked={paramGrupo.resultadosPesos}
+            />
+          </InputContainer>
+          <InputContainer>
           </InputContainer>
         </Parameters>
         <SmallContainer>
@@ -60,31 +124,17 @@ const grupo = () => {
         </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title="Ventas Semana Santa">
-        <SemanaSantaTable title="M1"></SemanaSantaTable>
-        <SemanaSantaTable title="M2"></SemanaSantaTable>
-        <SemanaSantaTable title="M3"></SemanaSantaTable>
-        <SemanaSantaTable title="M4"></SemanaSantaTable>
-        <SemanaSantaTable title="M5"></SemanaSantaTable>
-        <SemanaSantaTable title="M6"></SemanaSantaTable>
-        <SemanaSantaTable title="M9"></SemanaSantaTable>
-        <SemanaSantaTable title="M10"></SemanaSantaTable>
-        <SemanaSantaTable title="CAB1"></SemanaSantaTable>
-        <SemanaSantaTable title="IS-5"></SemanaSantaTable>
-        <SemanaSantaTable title="OUTLET MCD"></SemanaSantaTable>
-        <SemanaSantaTable title="PYA1"></SemanaSantaTable>
-        <SemanaSantaTable title="PYA4"></SemanaSantaTable>
-        <SemanaSantaTable title="PV2"></SemanaSantaTable>
-        <SemanaSantaTable title="PV4"></SemanaSantaTable>
-        <SemanaSantaTable title="PV6"></SemanaSantaTable>
-        <SemanaSantaTable title="ACA1"></SemanaSantaTable>
-        <SemanaSantaTable title="ACA2"></SemanaSantaTable>
-        <SemanaSantaTable title="ACA5"></SemanaSantaTable>
-        <SemanaSantaTable title="ISM1"></SemanaSantaTable>
-        <SemanaSantaTable title="TOTAL GRUPO"></SemanaSantaTable>
+      <VentasTableContainer title={`Ventas De Semana Santa del Año ${paramGrupo.delAgno}`}>
+        {
+          Object.keys(semanaSantaGrupo).map(key => 
+            <SemanaSantaTable key={key} title={key} ventas={semanaSantaGrupo[key]} year1={paramGrupo.delAgno} year2={paramGrupo.versusAgno} />
+          )
+        }
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   );
 };
 
-export default grupo;
+Grupo.getLayout = getVentasLayout;
+
+export default Grupo;

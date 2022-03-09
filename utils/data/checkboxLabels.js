@@ -25,7 +25,9 @@ export const checkboxLabels = {
   PROMEDIO: 'Promedio',
   INTERCAMBIAR_SEMANA_SANTA: 'Intercambiar Semana Santa',
   PRESUPUESTO_EN_MESES_NO_EJERCIDOS: 'Presuesto en Meses no ejercidos',
-  OPERACIONES_EN_MILES: 'Operaciones en Miles'
+  OPERACIONES_EN_MILES: 'Operaciones en Miles',
+  INCLUIR_FIN_DE_SEMANA_ANTERIOR: 'Incluir fin de semana anterior',
+  PERIODO_COMPLETO: 'Presentar periodo completo'
 }
 
 export const inputNames = {
@@ -45,5 +47,7 @@ export const inputNames = {
   TIPO_CAMBIO_TIENDAS: "tipoCambioTiendas", // Componente: Checkbox
   INCLUIR_TOTAL: "incluirTotal",
   VENTAS_DIA_MES_ACTUAL: "ventasDiaMesActual",
-  DETALLADO_TIENDA: "detalladoTienda"
+  DETALLADO_TIENDA: "detalladoTienda",
+  INCLUIR_FIN_SEMANA_ANTERIOR: "incluirFinSemanaAnterior",
+  CONCENTRADO: "concentrado",
 }
