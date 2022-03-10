@@ -26,3 +26,12 @@ export async function getSemanaSantaPeriodos() {
     console.log(error?.response?.data);
   }
 }
+
+export async function getSemanaSantaPlazas(body) {
+  try {
+    const { data } = await ApiProvider.post("/semanasanta/plazas", body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}

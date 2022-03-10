@@ -276,7 +276,7 @@ export const calculatePromedio = (total1, total2) => {
   return ((total1 / total2 - 1) * 100).toFixed(1);
 }
 
-export const validateYear = (year) => year > 1999;
+export const validateYear = (year) => year > 1999 && year.toString().length === 4;
 
 export const getDayName = (date) => {
   if (!validateDate(date)) return date;

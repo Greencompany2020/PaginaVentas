@@ -172,7 +172,7 @@ export const enlaces = [
         linkText: 'Periodos'
       },
       {
-        link: '/semanasanta/porplaza',
+        link: '/semanasanta/plaza',
         linkText: 'Por Plaza'
       }
     ]
