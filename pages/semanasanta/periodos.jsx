@@ -1,20 +1,25 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { Parameters, ParametersContainer, SmallContainer } from '@components/containers';
-import { InputContainer,SelectTiendas, SelectMonth, SelectToMonth,InputToYear, InputYear, Checkbox } from '@components/inputs';
-import { checkboxLabels } from 'utils/data';
-import BarChart from '@components/BarChart';
-import ComparativoVentas from '../../components/table/ComparativoVentas';
-import { VentasTableContainer, SemanaSantaTable, PeriodosSemanaSantaTable } from '../../components/table';
+import { useState ,useEffect } from 'react';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
+import { VentasTableContainer, PeriodosSemanaSantaTable } from '../../components/table';
+import { getSemanaSantaPeriodos } from '../../services/semanaSantaService';
 
+const Periodos = () => {
+  const [periodos, setPeriodos] = useState([]);
 
-const periodos = () => {
+  useEffect(() => {
+    getSemanaSantaPeriodos()
+      .then(response => setPeriodos(response));
+  }, []);
+
   return (
-    <VentasLayout>
-      <VentasTableContainer>
-        <PeriodosSemanaSantaTable title="PERIODOS DE SEMANA SANTA "></PeriodosSemanaSantaTable>
+    <>
+      <VentasTableContainer title="PERIODOS DE SEMANA SANTA">
+        <PeriodosSemanaSantaTable  dates={periodos}/>
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
 
-export default periodos
+Periodos.getLayout = getVentasLayout;
+
+export default Periodos

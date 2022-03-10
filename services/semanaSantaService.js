@@ -17,3 +17,12 @@ export async function getSemanaSantaGrupoConcentrado(body) {
     console.log(error?.response?.data);
   }
 }
+
+export async function getSemanaSantaPeriodos() {
+  try {
+    const { data } = await ApiProvider.get("/semanasanta/periodos");
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}
