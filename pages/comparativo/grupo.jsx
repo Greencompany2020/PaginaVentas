@@ -3,12 +3,12 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { InputContainer, Checkbox, InputDate } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
-import { checkboxLabels, concentradoPlazas, inputNames, regiones } from '../../utils/data';
+import { checkboxLabels, inputNames } from '../../utils/data';
 import { handleChange } from '../../utils/handlers';
 import { getComparativoGrupo } from '../../services/ComparativoService';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 import { getBeginCurrentWeekDateRange, getMonthByNumber, getNameDay, getPrevDate, getYearFromDate } from '../../utils/dateFunctions';
-import { getDayWeekName, validateDate } from '../../utils/functions';
+import { getDayWeekName, validateDate, getTableName, rowColor } from '../../utils/functions';
 
 const Grupo = () => {
   const [comparativoGrupo, setComparativoGrupo] = useState({});
@@ -33,24 +33,6 @@ const Grupo = () => {
         .then(response => setComparativoGrupo(response))
     }
   }, [parametrosGrupo]);
-
-  const getTableName = (name) => {
-    if (name?.toLowerCase().includes("frogs")) {
-      return (<h2 className='text-center text-2xl p-3'>Tiendas Frogs</h2>);
-    } else if (name?.toLowerCase().includes("web")) {
-      return (<h2 className='text-center text-2xl p-3'>Tienda En Línea</h2>);
-    }
-  }
-
-  const rowColor = (item) => {
-    if (concentradoPlazas.findIndex(plaza => plaza === item.tienda) !== -1) {
-      return "bg-gray-200";
-    }
-    if (regiones.includes(item.tienda)) {
-      return "bg-gray-300";
-    }
-    return ""
-  }
 
   return (
     <>

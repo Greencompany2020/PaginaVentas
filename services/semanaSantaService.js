@@ -35,3 +35,12 @@ export async function getSemanaSantaPlazas(body) {
     console.log(error?.response?.data);
   }
 }
+
+export async function getSemanaSantaAcumulado(body) {
+  try {
+    const { data } = await ApiProvider.post("/semanasanta/acumulado", body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}

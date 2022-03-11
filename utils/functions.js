@@ -1,5 +1,5 @@
 import { getDay } from "date-fns";
-import { dias, plazas, tiendas } from "./data";
+import { concentradoPlazas, dias, plazas, regiones, tiendas } from "./data";
 import { getMonthByNumber, getMonthChars } from "./dateFunctions";
 
 /**
@@ -258,29 +258,76 @@ export const createMesesAgnosGrupoDataset = (data, fromYear, toYear) => {
 }
 
 /**
+ * Calcula el crecimiento de ventas o presupuestos.
  * 
- * @param {number[]} dataList1 
- * @param {number[]} dataList2 
+ * @see {@link calculatePromedio}
+ * @param {number[]} currentData Lista de datos del año actual.
+ * @param {number[]} prevData Lista de datos del año anterior.
  */
-export const calculateCrecimiento = (dataList1, dataList2) => {
-  const sumTotal = dataList1.reduce((acc, curr) => acc + curr);
-  const sumTotalPrev = dataList2.reduce((acc, curr) => acc + curr);
+export const calculateCrecimiento = (currentData, prevData) => {
+  const sumTotal = currentData.reduce((acc, curr) => acc + curr);
+  const sumTotalPrev = prevData.reduce((acc, curr) => acc + curr);
 
   const porcentaje = calculatePromedio(sumTotal, sumTotalPrev);
 
   return porcentaje;
 }
-
-export const calculatePromedio = (total1, total2) => {
-  if (total2 === 0) return 0;
-  return ((total1 / total2 - 1) * 100).toFixed(1);
+/**
+ * Calcula el promedio en base a la fórmula:
+ * 
+ * - (cant1 / cant2 - 1) * 100
+ * 
+ * @param {number} cant La cantidad sobre la que se va a calcular el promedio.
+ * @param {number} baseCant La cantidad base para el cálculo del promedio.
+ * @returns {string} Un string con el premedio con decimales
+ */
+export const calculatePromedio = (cant, baseCant) => {
+  if (baseCant === 0) return 0;
+  return ((cant / baseCant - 1) * 100).toFixed(1);
 }
 
 export const validateYear = (year) => year > 1999 && year.toString().length === 4;
-
+/**
+ * Obtiene el nombre del dia, número y mes a partir de la fecha ingresada. Ej.
+ * 
+ * - 2022-04-08 -> Viernes 08-Abr
+ * 
+ * @param {string} date La fecha en formato yyyy-MM-dd
+ * @returns {string} Un string con el nombre, número y mes.
+ */
 export const getDayName = (date) => {
   if (!validateDate(date)) return date;
   const weekDay = getDayWeekName(date)
   const dayName = dias.find(dia => dia.value === getDay(Date.parse(date)));
   return `${dayName?.text} ${weekDay}`
+}
+/**
+ * Añade el color de fondo de la fila en base si el nombre
+ * es de una plaza o de la región.
+ * @param {object} item Objeto con el campo tienda
+ * @returns {string} La clase de tailwind del color de fondo.
+ */
+export const rowColor = (item) => {
+  if (concentradoPlazas.findIndex(plaza => plaza === item.tienda) !== -1) {
+    return "bg-gray-200";
+  }
+  if (regiones.includes(item.tienda)) {
+    return "bg-gray-300";
+  }
+  return ""
+}
+/**
+ * Crear un texto de título a partir del rango de fechas ingresado. Ej.
+ * - beginDate: 2022-04-08
+ * - endDate: 2022-04-11
+ * - string: Del Viernes 08-Abr al Lunes 11-Abr 
+ * @param {string} beginDate La fecha de incio del rango
+ * @param {string} endDate La fecha de fin de rango
+ * @returns {string}
+ */
+export const dateRangeTitleSemanaSanta = (beginDate, endDate) => {
+  const beginWeekDay = getDayName(beginDate);
+  const endWeekDay = getDayName(endDate);
+
+  return `Del ${beginWeekDay} al ${endWeekDay}`;
 }

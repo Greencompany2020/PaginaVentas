@@ -194,7 +194,7 @@ export const getPrevDate = (days, year = 0) => {
  * @param {number} year El año a obtener la semana santa
  * @returns {string[]} Un array con la fechas de inicio y de fin.
  */
-export const semanaSanta = (year) => {
+export const semanaSanta = (year, timestamp = false) => {
   const pDig = parseInt(year / 100, 10);
   const pDec = year % 19;
 
@@ -240,11 +240,36 @@ export const semanaSanta = (year) => {
     mes = 3;
   }
 
+  // teniendo el domingo de semana santa debemos sumarle 6 dias atras
+  // y 7 delante para obtener los 14 dias a evaluar (Sem.Sta y Pascua)
   const domingo = new Date(year, mes - 1, dia);
+
   let fechaInicio = sub(domingo, { days: 9 });
-  fechaInicio = format(fechaInicio, "yyyy-MM-dd", { weekStartsOn: 1 });
-  let fechaFin = add(domingo, { days: 1 });
-  fechaFin = format(fechaFin, "yyyy-MM-dd", { weekStartsOn: 1 });
+
+  if (timestamp) fechaInicio = fechaInicio.getTime();
+  else fechaInicio = format(fechaInicio, "yyyy-MM-dd", { weekStartsOn: 1 });
+
+  let fechaFin = add(domingo, { days: 7 });
+
+  if (timestamp) fechaFin = fechaFin.getTime();
+  else fechaFin = format(fechaFin, "yyyy-MM-dd", { weekStartsOn: 1 });
 
   return [fechaInicio, fechaFin];
+}
+/**
+ * Obtiene la fecha actual. Si se especifica semanaSta obtiene
+ * la fecha de inicio o de fin de la misma en base a la fecha actual.
+ * @param {boolean} semanaSta Si se va a considerar Semana Santa.
+ * @returns {string} La fecha en formato yyyy-MM-dd
+ */
+export const getCurrentDate = (semanaSta = false) => {
+  if (semanaSta) {
+    const date = new Date(Date.now()); 
+    const [fechaInicioTime, fechaFinTime] = semanaSanta(date.getFullYear(), true);
+    const [fechaInicio, fechaFin] = semanaSanta(date.getFullYear());
+
+    if (date.getTime() < fechaInicioTime) return fechaInicio;
+    else if (date.getTime() > fechaFinTime) return fechaFin;
+  }
+  return format(Date.now(), "yyyy-MM-dd", { weekStartsOn: 1 });
 }
