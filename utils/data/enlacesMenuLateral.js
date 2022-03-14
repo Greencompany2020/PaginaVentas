@@ -189,7 +189,7 @@ export const enlaces = [
         linkText: 'Grupo'
       },
       {
-        link: '/presupuesto/porfechas',
+        link: '/presupuesto/fechas',
         linkText: 'Por Fecha'
       },
       {

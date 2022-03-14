@@ -1,23 +1,25 @@
-import { PresupuestoFechasFooter, PresupuestoFechaHead, VentasTable } from ".";
-import ventasDiariasGrupo from "../../utils/data/ventasDiariasGrupo";
+import PresupuestoFechaHead from "./PresupuestoFechasTableHead";
+import { numberWithCommas } from "../../utils/resultsFormated";
+import VentasTable from "./VentasTable";
 
-const PresupuestoTable = ({ year1, year2, title }) => {
+const PresupuestoTable = ({ title, presupuestos = [] }) => {
   return (
     <>
       <h1 className="text-center font-bold">{title}</h1>
-      <VentasTable className="my-7 ">
-      <PresupuestoFechaHead/>
+      <VentasTable className="my-7 last-row-bg">
+      <PresupuestoFechaHead />
         <tbody className="bg-white text-center">
-          {ventasDiariasGrupo.map((item) => (
-            <tr key={item.fechaActual}>
-              <td className="text-center">{item.fechaActual}</td>
-              <td className="text-center">{item.fechaAnterior}</td>
-              <td>{item.ventaDiariaFechaActual}</td>
-              <td>{item.ventaDiariaFechaAnterior}</td>
+          {presupuestos?.map((item, index) => (
+            <tr key={index}>
+              <td className="text-center">{item.SFecha ?? item.Descrip}</td>
+              <td className="text-center">{numberWithCommas(item.Presupuesto)}</td>
+              <td className="text-center">{numberWithCommas(item.Operaciones)}</td>
+              <td>{numberWithCommas(item.Promedios)}</td>
+              <td>{numberWithCommas(item.ImporteB)}</td>
+              <td>{numberWithCommas(item.ImporteC)}</td>
             </tr>
           ))}
         </tbody>
-        <PresupuestoFechasFooter />
       </VentasTable>
     </>
   );

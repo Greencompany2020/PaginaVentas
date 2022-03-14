@@ -8,3 +8,12 @@ export async function getPresupuestoGrupo(body) {
     console.log(error?.response?.data);
   }
 }
+
+export async function getPresupuestoFechas(body) {
+  try {
+    const { data } = await ApiProvider.post('/presupuesto/fechas', body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}

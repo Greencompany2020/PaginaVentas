@@ -1,4 +1,4 @@
-import { format, getDay, nextSunday, previousMonday, sub, add } from "date-fns";
+import { format, getDay, nextSunday, previousMonday, sub, add, endOfMonth, startOfMonth } from "date-fns";
 import { meses } from "./data";
 import { getDayWeekName } from "./functions";
 
@@ -272,4 +272,11 @@ export const getCurrentDate = (semanaSta = false) => {
     else if (date.getTime() > fechaFinTime) return fechaFin;
   }
   return format(Date.now(), "yyyy-MM-dd", { weekStartsOn: 1 });
+}
+
+export const getBeginEndMonth = () => {
+  const today = new Date(Date.now());
+  const beginMonth = format(startOfMonth(today), "yyyy-MM-dd")
+  const endMonth = format(endOfMonth(today), "yyyy-MM-dd");
+  return [beginMonth, endMonth];
 }

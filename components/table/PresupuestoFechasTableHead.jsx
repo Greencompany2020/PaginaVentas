@@ -1,4 +1,4 @@
-const PresupuestoBasesTableHead = ({ year1, year2,tiendaGen }) => {
+const PresupuestoFechasTableHead = () => {
   return (
     
     <thead className="bg-black text-white text-center">
@@ -15,4 +15,4 @@ const PresupuestoBasesTableHead = ({ year1, year2,tiendaGen }) => {
   );
 };
 
-export default PresupuestoBasesTableHead;
+export default PresupuestoFechasTableHead;
