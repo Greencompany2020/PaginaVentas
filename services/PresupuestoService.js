@@ -17,3 +17,12 @@ export async function getPresupuestoFechas(body) {
     console.log(error?.response?.data);
   }
 }
+
+export async function getPresupuestoPlazas(body) {
+  try {
+    const { data } = await ApiProvider.post('/presupuesto/plazas', body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}

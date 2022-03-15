@@ -193,7 +193,7 @@ export const enlaces = [
         linkText: 'Por Fecha'
       },
       {
-        link: '/presupuesto/porplaza',
+        link: '/presupuesto/plaza',
         linkText: 'Por Plaza'
       },
       {
