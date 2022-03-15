@@ -3,11 +3,11 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, SelectMonth, SelectToMonth, InputYear, SelectTiendasGeneral, Checkbox } from '../../components/inputs';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
+import BarChart from '../../components/BarChart';
 import { checkboxLabels, inputNames, meses } from '../../utils/data';
 import { getCurrentMonth, getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
-import BarChart from '../../components/BarChart';
-import { validateYear } from '../../utils/functions';
+import { validateMonthRange, validateYear, createPresupuestoDatasets } from '../../utils/functions';
 import { getPresupuestoGrupo } from '../../services/PresupuestoService';
 
 const Grupo = () => {
@@ -28,9 +28,9 @@ const Grupo = () => {
   });
 
   useEffect(() => {
-    if (validateYear(paramGrupo.delAgno) && paramGrupo.delAgno > 0 && paramGrupo.alMes > 0) {
+    if (validateYear(paramGrupo.delAgno) && validateMonthRange(paramGrupo.delMes, paramGrupo.alMes)) {
       getPresupuestoGrupo(paramGrupo)
-        .then(response => createPresupuestoGrupoDatasets(response));
+        .then(response => createPresupuestoDatasets(response, paramGrupo.delAgno, setLabels, setDatasets));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramGrupo]);
@@ -149,6 +149,7 @@ const Grupo = () => {
             <Checkbox 
               className='mb-3'
               labelText={checkboxLabels.RESULTADO_PESOS}
+              name={inputNames.RESULTADOS_PESOS}
               onChange={(e) => { handleChange(e, setParamGrupo) }}
             />
           </InputContainer>

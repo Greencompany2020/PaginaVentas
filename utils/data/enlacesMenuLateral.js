@@ -197,7 +197,7 @@ export const enlaces = [
         linkText: 'Por Plaza'
       },
       {
-        link: '/presupuesto/portienda',
+        link: '/presupuesto/tienda',
         linkText: 'Por Tienda'
       }
     ]

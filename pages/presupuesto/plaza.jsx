@@ -5,7 +5,7 @@ import { InputContainer, SelectMonth, SelectToMonth, InputYear, SelectPlazas, Ch
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import { checkboxLabels, inputNames, meses } from '../../utils/data';
 import BarChart from '../../components/BarChart';
-import { getInitialPlaza, getPlazaName, validateYear } from '../../utils/functions';
+import { getInitialPlaza, getPlazaName, validateMonthRange, validateYear, createPresupuestoDatasets } from '../../utils/functions';
 import { getCurrentMonth, getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getPresupuestoPlazas } from '../../services/PresupuestoService';
@@ -28,62 +28,12 @@ const Plaza = () => {
   });
 
   useEffect(() => {
-    if (validateYear(paramPlazas.delAgno)) {
+    if (validateYear(paramPlazas.delAgno) && validateMonthRange(paramPlazas.delMes, paramPlazas.alMes)) {
       getPresupuestoPlazas(paramPlazas)
-        .then(response => createPresupuestoPlazaDatasets(response))
+        .then(response => createPresupuestoDatasets(response, paramPlazas.delAgno, setLabels, setDatasets))
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramPlazas]);
-
-  const createPresupuestoPlazaDatasets = (data) => {
-    const colors = ['#047857', '#0E7490', '#1D4ED8'];
-
-    if (data?.length !== 0) {
-      const labels = [];
-      const ventasDataset = [];
-
-      const ventasActual = data?.map((venta) => venta.ventaActual);
-      const presupuestos = data?.map((venta) => venta.presupuesto);
-      const ventasAnterior = data?.map((venta) => venta.ventaAnterior);
-
-      for (let venta of data) {
-        const month = meses.find((mes) => mes.value === venta.mes)?.text ?? "ACUM";
-
-        const label = `${month} ${venta.porcentaje}%`;
-
-        labels.push(label);
-      }
-
-      const ventasActualesData = {
-        label: `Ventas ${paramPlazas.delAgno}`,
-        data: ventasActual,
-        backgroundColor: colors[0]
-      };
-
-      ventasDataset.push(ventasActualesData);
-
-      const presupuesto = {
-        label: 'Presupuesto',
-        data: presupuestos,
-        backgroundColor: colors[1]
-      };
-      ventasDataset.push(presupuesto);
-
-      const ventasAnteriorData = {
-        label: `Ventas ${paramPlazas.delAgno - 1}`,
-        data: ventasAnterior,
-        backgroundColor: colors[2]
-      };
-
-      ventasDataset.push(ventasAnteriorData)
-
-      setDatasets(ventasDataset)
-      setLabels(labels);
-    } else {
-      setDatasets([]);
-      setLabels([]);
-    }
-  }
 
   return (
     <>

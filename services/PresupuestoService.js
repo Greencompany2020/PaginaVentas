@@ -26,3 +26,12 @@ export async function getPresupuestoPlazas(body) {
     console.log(error?.response?.data);
   }
 }
+
+export async function getPresupuestoTienda(body) {
+  try {
+    const { data } = await ApiProvider.post('/presupuesto/tienda', body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}

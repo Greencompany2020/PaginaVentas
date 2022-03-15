@@ -1,5 +1,5 @@
 import { getDay } from "date-fns";
-import { concentradoPlazas, dias, plazas, regiones, tiendas } from "./data";
+import { concentradoPlazas, dias, meses, plazas, regiones, tiendas } from "./data";
 import { getMonthByNumber, getMonthChars } from "./dateFunctions";
 
 /**
@@ -330,4 +330,61 @@ export const dateRangeTitleSemanaSanta = (beginDate, endDate) => {
   const endWeekDay = getDayName(endDate);
 
   return `Del ${beginWeekDay} al ${endWeekDay}`;
+}
+/**
+ * Crea los array de etiquetas y de datos para la gráfica de barras.
+ * 
+ * @param {object[]} data Los datos base para crear el dataset
+ * @param {number} agno El Año para las etiquetas.
+ * @param {Dispatch<SetActionState<any[]>>} updateLabels setState para las etiquetas
+ * @param {Dispatch<SetActionState<any[]>>} updateDataset setState para el dataset
+ */
+export const createPresupuestoDatasets = (data, agno, updateLabels, updateDataset) => {
+  const colors = ['#047857', '#0E7490', '#1D4ED8'];
+
+  if (data?.length !== 0) {
+    const labels = [];
+    const ventasDataset = [];
+
+    const ventasActual = data?.map((venta) => venta.ventaActual);
+    const presupuestos = data?.map((venta) => venta.presupuesto);
+    const ventasAnterior = data?.map((venta) => venta.ventaAnterior);
+
+    for (let venta of data) {
+      const month = meses.find((mes) => mes.value === venta.mes)?.text ?? "ACUM";
+
+      const label = `${month} ${venta.porcentaje}%`;
+
+      labels.push(label);
+    }
+
+    const ventasActualesData = {
+      label: `Ventas ${agno}`,
+      data: ventasActual,
+      backgroundColor: colors[0]
+    };
+
+    ventasDataset.push(ventasActualesData);
+
+    const presupuesto = {
+      label: 'Presupuesto',
+      data: presupuestos,
+      backgroundColor: colors[1]
+    };
+    ventasDataset.push(presupuesto);
+
+    const ventasAnteriorData = {
+      label: `Ventas ${agno - 1}`,
+      data: ventasAnterior,
+      backgroundColor: colors[2]
+    };
+
+    ventasDataset.push(ventasAnteriorData)
+
+    updateDataset(ventasDataset)
+    updateLabels(labels);
+  } else {
+    updateDataset([]);
+    updateLabels([]);
+  }
 }
