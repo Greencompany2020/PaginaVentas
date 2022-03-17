@@ -214,7 +214,7 @@ export const enlaces = [
         linkText: 'Grupo'
       },
       {
-        link: '/operaciones/porplaza',
+        link: '/operaciones/plaza',
         linkText: 'Por Plaza'
       },
       {

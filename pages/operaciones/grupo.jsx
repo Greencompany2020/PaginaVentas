@@ -96,7 +96,7 @@ const Grupo = () => {
       </ParametersContainer>
 
       <ComparativoVentas 
-        title={`Ventas por Mes Tiendas Grupo año ${paramGrupo.delAgno}`}
+        title={`Operaciones por Mes del Grupo del año ${paramGrupo.delAgno}`}
       >
         <BarChart
           data={{

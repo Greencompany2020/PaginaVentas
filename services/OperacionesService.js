@@ -8,3 +8,12 @@ export async function getOperacionesGrupo(body) {
     console.log(error?.response?.data);
   }
 }
+
+export async function getOperacionesPlaza(body) {
+  try {
+    const { data } = await ApiProvider.post("/operaciones/plaza", body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}
