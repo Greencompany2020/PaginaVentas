@@ -82,5 +82,7 @@ export const inputNames = {
   INCLUIR_FIN_SEMANA_ANTERIOR: 'incluirFinSemanaAnterior',
   CONCENTRADO: 'concentrado',
   ACUMULATIVA: 'acumulado',
-  GRAFICAR_TOTAL: 'total'
+  GRAFICAR_TOTAL: 'total',
+  PROMEDIO: 'promedio',
+  CON_EVENTOS: 'conEventos'
 }

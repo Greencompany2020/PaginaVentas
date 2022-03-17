@@ -332,7 +332,7 @@ export const dateRangeTitleSemanaSanta = (beginDate, endDate) => {
   return `Del ${beginWeekDay} al ${endWeekDay}`;
 }
 /**
- * Crea los array de etiquetas y de datos para la gráfica de barras.
+ * Crea los array de etiquetas y de datos para la gráfica de barras en presupuestos.
  * 
  * @param {object[]} data Los datos base para crear el dataset
  * @param {number} agno El Año para las etiquetas.
@@ -382,6 +382,55 @@ export const createPresupuestoDatasets = (data, agno, updateLabels, updateDatase
     ventasDataset.push(ventasAnteriorData)
 
     updateDataset(ventasDataset)
+    updateLabels(labels);
+  } else {
+    updateDataset([]);
+    updateLabels([]);
+  }
+}
+/**
+ * Crea los array de etiquetas y de datos para la gráfica de barras para operaciones.
+ * 
+ * @param {object[]} data Los datos base para crear el dataset
+ * @param {number} agno El Año para las etiquetas.
+ * @param {Dispatch<SetActionState<any[]>>} updateLabels setState para las etiquetas
+ * @param {Dispatch<SetActionState<any[]>>} updateDataset setState para el dataset
+ */
+export const createOperacionesDatasets = (data, agno, updateLabels, updateDataset) => {
+  const colors = ['#047857', '#0E7490', '#1D4ED8'];
+
+  if (data?.length !== 0) {
+    const labels = [];
+    const operacionesDataset = [];
+
+    const operacionesActual = data?.map((operacion) => operacion.operacionesActual);
+    const operacionesAnterior = data?.map((operacion) => operacion.operacionesAnterior);
+
+    for (let operacion of data) {
+      const month = meses.find((mes) => mes.value === operacion.mes)?.text ?? "ACUM";
+
+      const label = `${month} ${operacion.porcentaje}%`;
+
+      labels.push(label);
+    }
+
+    const operacionesActualesData = {
+      label: `Operaciones ${agno}`,
+      data: operacionesActual,
+      backgroundColor: colors[0]
+    };
+
+    operacionesDataset.push(operacionesActualesData);
+
+    const operacionesAnteriorData = {
+      label: `Operaciones ${agno - 1}`,
+      data: operacionesAnterior,
+      backgroundColor: colors[1]
+    };
+
+    operacionesDataset.push(operacionesAnteriorData)
+
+    updateDataset(operacionesDataset)
     updateLabels(labels);
   } else {
     updateDataset([]);
