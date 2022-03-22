@@ -17,3 +17,12 @@ export async function getOperacionesPlaza(body) {
     console.log(error?.response?.data);
   }
 }
+
+export async function getOperacionesTienda(body) {
+  try {
+    const { data } = await ApiProvider.post("/operaciones/tienda", body);
+    return data.result;
+  } catch (error) {
+    console.log(error?.response?.data);
+  }
+}
