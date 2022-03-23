@@ -13,3 +13,4 @@ export { default as InputOfTheDate} from './InputOfTheDate';
 export { default as InputVsYear} from './InputVsYear';
 export { default as InputYearPresupuesto} from './InputYearPresupuesto';
 export { default as InputDateDate} from './InputDateDate';
+export { default as InputRangos } from './InputRangos';

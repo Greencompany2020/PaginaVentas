@@ -235,7 +235,7 @@ export const enlaces = [
         linkText: 'Detallado'
       },
       {
-        link: '/rangodeventas/porplaza',
+        link: '/rangodeventas/plaza',
         linkText: 'Por Plaza'
       },
       {

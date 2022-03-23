@@ -10,7 +10,7 @@ export const handleChange = (evt, updateState) => {
     value = evt.target.checked ? 1 : 0;
   } else if (evt.target.name === "tienda") {
     value = evt.target.value;
-  } else if (evt.target.type === "date") {
+  } else if (evt.target.type === "date" || evt.target.type === "text") {
     value = evt.target.value;
   } else {
     value = Number(evt.target.value);
