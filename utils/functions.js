@@ -437,3 +437,55 @@ export const createOperacionesDatasets = (data, agno, updateLabels, updateDatase
     updateLabels([]);
   }
 }
+
+export const createRangoVentasDataset = (data, updateLabels, updateDataset) => {
+  const bgColors = [
+    'rgba(255, 100, 94, 0.5)',
+    'rgba(255, 99, 132, 0.2)',
+    'rgba(54, 162, 235, 0.2)',
+    'rgba(255, 206, 86, 0.2)',
+    'rgba(75, 192, 192, 0.2)',
+    'rgba(153, 102, 255, 0.2)',
+    'rgba(255, 159, 64, 0.2)',
+    'rgba(0, 128, 128, 0.2)',
+    'rgba(106, 90, 205, 0.2)',
+    'rgba(205, 133, 63, 0.2)',
+    'rgba(107, 142, 35, 0.2)',
+  ];
+
+  const borderColor = [
+    'rgba(255, 100, 94, 1)',
+    'rgba(255, 99, 132, 1)',
+    'rgba(54, 162, 235, 1)',
+    'rgba(255, 206, 86, 1)',
+    'rgba(75, 192, 192, 1)',
+    'rgba(153, 102, 255, 1)',
+    'rgba(255, 159, 64, 1)',
+    'rgba(0, 128, 128, 1)',
+    'rgba(106, 90, 205, 1)',
+    'rgba(205, 133, 63, 1)',
+    'rgba(107, 142, 35, 1)',
+  ]
+
+  if (data && data?.length !== 0) {
+    const labels = [];
+    const rangosVentas = [];
+
+    labels = data?.map((rango) => rango.rango);
+
+    let dataItem = {
+      data: data?.map((rango) => rango.venta),
+      backgroundColor: bgColors.slice(0, data?.length),
+      borderColor: borderColor.slice(0, data?.length),
+      borderWidth: 1
+    }
+
+    rangosVentas.push(dataItem)
+
+    updateLabels(labels);
+    updateDataset(rangosVentas);
+  } else {
+    updateLabels([]);
+    updateDataset([]);
+  }
+}

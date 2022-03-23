@@ -239,7 +239,7 @@ export const enlaces = [
         linkText: 'Por Plaza'
       },
       {
-        link: '/rangodeventas/portienda',
+        link: '/rangodeventas/tienda',
         linkText: 'Por tienda'
       },
     ]
