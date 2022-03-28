@@ -1,4 +1,3 @@
-export * from './minutas';
 export * from './enlacesMenuLateral';
 export * from './ventasDiariasGrupo';
 export * from './valores';
