@@ -1,5 +1,4 @@
-import { SemanaSantaTableFooter, VentasSemanaSantaHead, PresupuestoBasesTableHead, VentasTable } from ".";
-import ventasDiariasGrupo from "../../utils/data/ventasDiariasGrupo";
+import { PresupuestoBasesTableHead, VentasTable } from ".";
 
 const PresupuestoBasesTable = ({ year1, year2, title }) => {
   return (
@@ -10,7 +9,6 @@ const PresupuestoBasesTable = ({ year1, year2, title }) => {
         <tbody className="bg-white text-center">
         <tr>
           <th className="border border-white"></th>
-         
         </tr>
         </tbody>
         

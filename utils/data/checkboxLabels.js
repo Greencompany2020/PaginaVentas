@@ -1,5 +1,5 @@
 export const checkboxLabels = {
-  
+
   VENTAS_IVA: 'Ventas c/Iva',
 
   VENTAS_EN_DLLS: 'Ventas en Miles Dlls',

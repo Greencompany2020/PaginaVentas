@@ -437,7 +437,13 @@ export const createOperacionesDatasets = (data, agno, updateLabels, updateDatase
     updateLabels([]);
   }
 }
-
+/**
+ * Crea los array de etiquetas y de datos para la gráfica de barras en rango de ventas.
+ * 
+ * @param {object[]} data Los datos base para crear el dataset
+ * @param {Dispatch<SetActionState<any[]>>} updateLabels setState para las etiquetas
+ * @param {Dispatch<SetActionState<any[]>>} updateDataset setState para el dataset
+ */
 export const createRangoVentasDataset = (data, updateLabels, updateDataset) => {
   const bgColors = [
     'rgba(255, 100, 94, 0.5)',

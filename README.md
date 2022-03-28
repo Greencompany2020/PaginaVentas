@@ -14,6 +14,7 @@
 - [Data](#data)
   - [checkboxLabels](#checkboxlabels)
   - [inputNames](#inputnames)
+  - [Relación CheckboxLabels e inputNames](#relación-checkboxLabels-e-inputNames)
   - [valores](#valores)
   - [enlacesMenuLateras](#enlacesmenulateras)
 
@@ -298,6 +299,8 @@ export { meses, tiendasGeneral, plazas, regiones, tiendas } from './valores';
 
 ### checkboxLabels
 
+El nombre que se le asigna al prop `labelText` en el componente `Checkbox`.
+
 ```Javascript
 const checkboxLabels = {
   VENTAS_IVA: 'Ventas c/Iva',
@@ -306,38 +309,94 @@ const checkboxLabels = {
   INCLUIR_TIENDAS_CERRADAS: 'Incluir Tiendas Cerradas',
   RESULTADO_PESOS: 'Resultados en Pesos',
   SEMANA_SANTA: 'Considerar Semana Santa',
-  EXCLUIR_TIENDAS_VENTAS: 'Excluir tiendas s/años de Ventas',
+  EXCLUIR_SIN_AGNO_VENTAS: 'Excluir Tiendas sin Año de Ventas',
   EXCLUIR_TIENDAS_SUSPENDIDAS: 'Excluir Tiendas Suspendidas',
-  VENTAS_VS_COMPROMISO: 'Porcetaje Ventas VS Compromiso',
+  VENTAS_VS_COMPROMISO: 'Porcentaje Ventas VS Compromiso',
   NO_HORAS_VENTAS_PARCIALES: 'No considerar las horas de venta en parciales',
-  TIPO_CAMBIO_TIENDAS: 'Utilizar tipo de cambio en tiendas',
-  ACUMULADO_SEMANAL: 'Incluir acumulado semanal'
+  TIPO_CAMBIO_TIENDAS: 'Utilizar tipo de Cambio en Tiendas',
+  ACUMULADO_SEMANAL: 'Incluir Acumulado Semanal',
+  INCLUIR_TOTAL: 'Incluir Total',
+  VENTAS_AL_DIA_MES_ACTUAL: 'Ventas al Dia-Mes Actual',
+  DETALLADO_POR_TIENDA: 'Detallado por Tienda',
+  PORCENTAJE_VENTAS_VS_LOGRO: 'Porcentaje Ventas vs Logro',
+  INCLUIR_FIN_DE_SEMANA_ANTERIOR: 'Incluir fin de semana anterior',
+  INCLUIR_ACUMULADO: 'Incluir Acumulado',
+  PRESENTAR_PERIODO_COMPLETO: 'Presentar Periodo Completo',
+  CONCENTRADO: 'Concentrado',
+  ACUMULATIVA: 'Acumulativa',
+  GRAFICAR_TOTAL: 'Graficar Total',
+  PORCENTAJE_VENTAS_VS_COMPROMISO: 'Porcentaje Ventas vs Compromiso',
+  INCLUIR_EVENTOS: 'Incluir Eventos',
+  PROMEDIO: 'Promedio',
+  INTERCAMBIAR_SEMANA_SANTA: 'Intercambiar Semana Santa',
+  PRESUPUESTO_EN_MESES_NO_EJERCIDOS: 'Presuesto en Meses no ejercidos',
+  OPERACIONES_EN_MILES: 'Operaciones en Miles',
+  PERIODO_COMPLETO: 'Presentar periodo completo'
 }
 
 ```
 
 ### inputNames
 
+El valor que se le asigna al prop `name` en el componente Checkbox.
+
 ```Javascript
 
 const inputNames = {
-  CON_IVA: "conIva",  // Componente: Checkbox
-  SEMANA_SANTA: "semanaSanta", // Componente: Checkbox
-  SIN_AGNO_VENTA: "sinAgnoVenta", // Componente: Checkbox
-  CON_VENTAS_EVENTOS: "conVentasEventos", // Componente: Checkbox
-  CON_TIENDAS_CERRADAS: "conTiendasCerradas", // Componente: Checkbox
-  SIN_TIENDAS_SUSPENDIDAS: "sinTiendasSuspendidas", // Componente: Checkbox
-  RESULTADOS_PESOS: "resultadosPesos", // Componente: Checkbox
-  FECHA_INICIO: "fechaInicio", // Componente: InputDateRange
-  FECHA_FIN: "fechaFin", // Componente: InputDateRange
-  VENTAS_MILES_DLLS: "ventasMilesDlls", // Componente: Checkbox
-  PORCENTAJE_COMPROMISO: "porcentajeVentasCompromiso", // Componente: Checkbox
-  NO_HORAS_VENTAS_PARCIALES: "noHorasVentasParciales", // Componente: Checkbox
-  ACUMULADO_SEMANAL: "acumuladoSemanal", // Componente: Checkbox
-  TIPO_CAMBIO_TIENDAS: "tipoCambioTiendas" // Componente: Checkbox
+  CON_IVA: 'conIva',  // Componente: Checkbox
+  SEMANA_SANTA: 'semanaSanta', // Componente: Checkbox
+  SIN_AGNO_VENTA: 'sinAgnoVenta', // Componente: Checkbox
+  CON_VENTAS_EVENTOS: 'conVentasEventos', // Componente: Checkbox
+  CON_TIENDAS_CERRADAS: 'conTiendasCerradas', // Componente: Checkbox
+  SIN_TIENDAS_SUSPENDIDAS: 'sinTiendasSuspendidas', // Componente: Checkbox
+  RESULTADOS_PESOS: 'resultadosPesos', // Componente: Checkbox
+  FECHA_INICIO: 'fechaInicio', // Componente: InputDateRange
+  FECHA_FIN: 'fechaFin', // Componente: InputDateRange
+  VENTAS_MILES_DLLS: 'ventasMilesDlls', // Componente: Checkbox
+  PORCENTAJE_COMPROMISO: 'porcentajeVentasCompromiso', // Componente: Checkbox
+  NO_HORAS_VENTAS_PARCIALES: 'noHorasVentasParciales', // Componente: Checkbox
+  ACUMULADO_SEMANAL: 'acumuladoSemanal', // Componente: Checkbox
+  TIPO_CAMBIO_TIENDAS: 'tipoCambioTiendas', // Componente: Checkbox
+  INCLUIR_TOTAL: 'incluirTotal',
+  VENTAS_DIA_MES_ACTUAL: 'ventasDiaMesActual',
+  DETALLADO_TIENDA: 'detalladoTienda',
+  INCLUIR_FIN_SEMANA_ANTERIOR: 'incluirFinSemanaAnterior',
+  CONCENTRADO: 'concentrado',
+  ACUMULATIVA: 'acumulado',
+  GRAFICAR_TOTAL: 'total',
+  PROMEDIO: 'promedio',
+  CON_EVENTOS: 'conEventos'
 }
 
 ```
+### Relación CheckboxLabels e inputNames.
+
+El valor del prop `name` es necesario ya que define los valores que son enviados a la API para las consultas.
+
+Al único componente al que se le pasa como prop `name` es `Checkbox`.
+
+| texto | name | Checkbox Label | input Name|
+|-------|------|----------------|-----------|
+| Ventas c/Iva |conIva|   VENTAS_IVA   | CON_IVA   |
+| Considerar Semana Santa |semanaSanta | SEMANA_SANTA | SEMANA_SANTA |
+| Excluir Tiendas sin Año de Ventas |sinAgnoVenta | EXCLUIR_SIN_AGNO_VENTAS | SIN_AGNO_VENTA |
+| Incluir Ventas de Eventos |conVentasEventos | INCLUIR_VENTAS_EVENTOS | CON_VENTAS_EVENTOS |
+| Incluir Tiendas Cerradas | conTiendasCerradas | CON_TIENDAS_CERRADAS | INCLUIR_TIENDAS_CERRADAS |
+| Excluir Tiendas Suspendidas |sinTiendasSuspendidas | SIN_TIENDAS_SUSPENDIDAS | EXCLUIR_TIENDAS_SUSPENDIDAS |
+| Resultados en Pesos |resultadosPesos | RESULTADOS_PESOS | RESULTADOS_PESOS |
+| Ventas en Miles Dlls |ventasMilesDlls | VENTAS_EN_DLLS | VENTAS_MILES_DLLS |
+| Porcentaje Ventas vs Compromiso |porcentajeVentasCompromiso | VENTAS_VS_COMPROMISO | PORCENTAJE_COMPROMISO |
+| No considerar las horas de venta en parciales |noHorasVentasParciales | NO_HORAS_VENTAS_PARCIALES | NO_HORAS_VENTAS_PARCIALES |
+| Incluir Acumulado Semanal |acumuladoSemanal | ACUMULADO_SEMANAL | ACUMULADO_SEMANAL | 
+| Utilizar tipo de Cambio en Tiendas |tipoCambioTiendas | TIPO_CAMBIO_TIENDAS | TIPO_CAMBIO_TIENDAS |
+| Incluir Total |incluirTotal | INCLUIR_TOTAL | INCLUIR_TOTAL |
+| Ventas al Dia-Mes Actual |ventasDiaMesActual | VENTAS_AL_DIA_MES_ACTUAL | VENTAS_DIA_MES_ACTUAL |
+| Detallado por Tienda |detalladoTienda | DETALLADO_POR_TIENDA | DETALLADO_TIENDA |
+| Incluir fin de semana anterior |incluirFinSemanaAnterior | INCLUIR_FIN_DE_SEMANA_ANTERIOR | INCLUIR_FIN_SEMANA_ANTERIOR |
+| Concentrado | concentrado | CONCENTRADO | CONCENTRADO |
+| Acumulativa |acumulado | ACUMULATIVA | ACUMULATIVA |
+| GRAFICAR_TOTAL |total | GRAFICAR_TOTAL | GRAFICAR_TOTAL |
+| Promedio | promedio | PROMEDIO | PROMEDIO |
 
 ### valores
 
@@ -380,53 +439,37 @@ const enlaces = [
 
 ## functions
 
-Aqui van todas la funciones que se usan para generat títulos u obtener valores iniciales,
+Aqui van todas la funciones que se usan para generar títulos u obtener valores iniciales,
 entre otras funciones.
-
-### Lista de funciones
-
-`getTiendaName(tiendaId: number)`: Obtiene el nombre de la tienda a partir del identificador de la misma.
-
-`getPlazaName(plazaId: number)`: Obtiene el nomber de la plaza en base al identificador de la misma.
-
-`getLastTwoNumbers(data: number)`: Obtiene los 2 últimos dígitos del años. Ej. 2021 -> 21.
-
-`dateRangeTitle(beginDate: string, endDate: string)`: Crea un texto
-de título a partir del rango de fechas ingresado. Ej.
-
-```
-beginDate: 2022-02-14
-endDate: 2022-02-20
-result: del 14 de Feb del 2022 Al 20 de Feb del 2022
-```
-
-`validateInputDateRange(beginDate: string, endDate: string)`: Verifica que las fechas sean válidas (Mejorar).
-
-`getInitialTienda`: Obtiene el valor de la tienda que estará por defecto.
-
-`getInitialPlaza`: Obtiene el valor de la plaza que estará por defecto.
-
-En las funciones anteriores el valor está declarado dentro de la función,
-por lo tanto si se quiere cambiar el valor, se tiene que ir directamente a
-la declaración.
-
-`createDatasets(data, fromYear, toYear, updateLabels, updateDatasets)`: Crea los array de etiquetas y de datos para la gráfica de barras. Los objetos deben poseer los campo **DescGraf** y **Ventas[number]**, donde
-_[number]_ es un año dentro del rango especificado, en otras palabras,
-es un campo con nombre dinámico.
-
-**Parámetros**
-
-- `data: object[]`: El array de la respuesta del servicio.
-- `fromYear: number`: El año de inicio del intervalo de fechas.
-- `toYear: number`: El año de fin del intervalo de fechas
-- `updateLabels: Dispatch<SetActionState<any[]>>`: Es el `setState` para las etiquetas
-- `updateDatasets: Dispatch<SetActionState<any[]>>`: : Es el `setState` para el dataset
-
-`createSimpleDataset(data, updateLabels, updateDatasets)`: Crea los array de etiquetas y de datos para la gráfica de barras. Los objetos deben poseer los campos **Descrip** y **Ventas**.
 
 ## Handlers
 
+Son las funciones que manejan el onChange de los inputs y actualizan el estado.
+
+```Javascript
+const handleChange = (evt, updateState) => {
+  let value = 0;
+  if (evt.target.hasOwnProperty('checked')) {
+    value = evt.target.checked ? 1 : 0;
+  } else if (evt.target.name === "tienda") {
+    value = evt.target.value;
+  } else if (evt.target.type === "date" || evt.target.type === "text") {
+    value = evt.target.value;
+  } else {
+    value = Number(evt.target.value);
+  }
+
+  updateState(prev => ({
+    ...prev,
+    [evt.target.name]: value
+  }));
+}
+
+```
+
 ## dateFunctions
+
+Contiene todas las funciones de manejo de fechas (creación de rangos, fechas anterior, etc.)
 
 ##
 
@@ -439,6 +482,7 @@ Todos los servicios usan `ApiProvider` para realizar las peticiones a la API.
 Los servicios exportan funciones y se nombran usando _Camel Case_:
 
 ```Javascript
+// AnualesService
 import ApiProvider from "./ApiProvider";
 
 export async function getAnualesPlazas(body) {
