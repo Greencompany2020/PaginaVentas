@@ -6,7 +6,7 @@ import BarChart from '@components/BarChart';
 import { useState } from 'react';
 import { checkboxLabels} from 'utils/data';
 
-const grafica = ({year1,year2}) => {
+const Grafica = ({year1,year2}) => {
   year1 = 1
   year2 = "year2"
   const [toggleTienda, setToggleTienda] = useState(true);
@@ -97,4 +97,4 @@ const grafica = ({year1,year2}) => {
   )
 }
 
-export default grafica
+export default Grafica

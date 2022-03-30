@@ -1,3 +1,13 @@
-// TODO: Crear maquetación de página
-// TODO: Añadir servicio de operaciones
-// TODO: Añadir useState para inputs y useEffect para consulta
+import { getVentasLayout } from '../../components/layout/VentasLayout';
+
+const Comparativo = () => {
+  return (
+    <>
+      <h1 className='text-4xl m-auto'>Procedimiento en Construcción</h1>
+    </>
+  )
+}
+
+Comparativo.getLayout = getVentasLayout;
+
+export default Comparativo
