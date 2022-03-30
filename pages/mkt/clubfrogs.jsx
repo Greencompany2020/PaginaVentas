@@ -1,9 +1,13 @@
-import React from 'react'
+import { getVentasLayout } from '../../components/layout/VentasLayout';
 
 const ClubFrogs = () => {
   return (
-    <div>ClubFrogs</div>
+    <>
+      <h1 className='text-4xl m-auto'>Procedimiento en Construcción</h1>
+    </>
   )
 }
+
+ClubFrogs.getLayout = getVentasLayout;
 
 export default ClubFrogs
