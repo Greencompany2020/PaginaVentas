@@ -3,14 +3,17 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { VentasTableContainer, VentasTable, VentasDiariasTableHead, VentasDiariasTableFooter } from '../../components/table';
 import { InputContainer, SelectPlazas, SelectMonth, InputYear, Checkbox } from '../../components/inputs';
+import MessageModal from '../../components/MessageModal';
 import { checkboxLabels } from '../../utils/data';
 import { getDiariasPlazas } from '../../services/DiariasServices';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 import { getInitialPlaza, getPlazaName } from '../../utils/functions';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { handleChange } from '../../utils/handlers';
+import useMessageModal from '../../hooks/useMessageModal';
 
 const Plaza = () => {
+  const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [diariasPlaza, setDiariasPlaza] = useState([]);
   const [plazaParametros, setPlazaParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
@@ -27,11 +30,20 @@ const Plaza = () => {
 
   useEffect(() => {
     getDiariasPlazas(plazaParametros)
-      .then(response => setDiariasPlaza(response))
+      .then(response => {
+        if (response instanceof Error) {
+          setMessage(response?.response?.data ?? "Ha ocurrido un error al consultar. Vea la consola (F12)");
+          setModalOpen(true);
+          return;
+        }
+        setDiariasPlaza(response)
+      })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plazaParametros]);
 
   return (
     <>
+      <MessageModal message={message} setShowModal={setModalOpen} showModal={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

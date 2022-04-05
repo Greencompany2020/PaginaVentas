@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+  site-1:
+    restart: always
+    container_name: ventas-site-1
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - 3000
+    networks:
+      - site-network
+
+  site-2:
+    restart: always
+    container_name: ventas-site-2
+    build:
+      context: . 
+      dockerfile: Dockerfile
+    expose:
+      - 3000    
+    networks:
+      - site-network
+
+  nginx-site:
+    restart: always
+    container_name: nginx-site
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./certs:/etc/ssl/certs
+    ports:
+      - 80:80
+      - 443:443
+    depends_on:
+      - site-1
+      - site-2
+    networks:
+      - site-network
+
+networks:
+  site-network:

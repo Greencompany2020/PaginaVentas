@@ -36,3 +36,8 @@ yarn-error.log*
 
 # VS Code
 .vscode
+
+# Testing data or utils
+certs
+bin
+/nginx

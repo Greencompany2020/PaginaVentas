@@ -2,14 +2,17 @@ import { useEffect, useState } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, InputYear, SelectMonth, Checkbox, SelectTiendasGeneral } from '../../components/inputs';
+import MessageModal from '../../components/MessageModal';
 import { VentasTableContainer, VentasTable, VentasDiariasTableFooter, VentasDiariasTableHead } from '../../components/table';
 import { checkboxLabels } from '../../utils/data';
 import { getDiariasGrupo } from '../../services/DiariasServices';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { handleChange } from '../../utils/handlers';
+import useMessageModal from '../../hooks/useMessageModal';
 
 const Grupo = () => {
+  const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [parametrosConsulta, setParametrosConsulta] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
@@ -28,14 +31,21 @@ const Grupo = () => {
   useEffect(() => {
     if (parametrosConsulta.delAgno.toString().length === 4) {
       getDiariasGrupo(parametrosConsulta)
-        .then(response => setDiariasGrupo(response))
-        .catch(error => console.log(error))
+        .then(response => {
+          if (response instanceof Error) {
+            setMessage(response?.response?.data ?? "Ha ocurrido un error al consultar. Vea la consola (F12)");
+            setModalOpen(true);
+            return;
+          }
+          setDiariasGrupo(response);
+        })
     }
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parametrosConsulta]);
 
   return (
     <>
+      <MessageModal message={message} setShowModal={setModalOpen} showModal={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

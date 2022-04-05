@@ -1,6 +1,7 @@
 import { useState, useEffect, Fragment } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
+import MessageModal from '../../components/MessageModal';
 import { InputContainer, Checkbox, InputDate } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { checkboxLabels, inputNames } from '../../utils/data';
@@ -9,8 +10,10 @@ import { getComparativoGrupo } from '../../services/ComparativoService';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 import { getBeginCurrentWeekDateRange, getMonthByNumber, getNameDay, getPrevDate, getYearFromDate } from '../../utils/dateFunctions';
 import { getDayWeekName, validateDate, getTableName, rowColor } from '../../utils/functions';
+import useMessageModal from '../../hooks/useMessageModal';
 
 const Grupo = () => {
+  const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [comparativoGrupo, setComparativoGrupo] = useState({});
   const [acumuladoSemanal, setAcumuladoSemanal] = useState(false);
   const [parametrosGrupo, setParametrosGrupo] = useState({
@@ -30,12 +33,21 @@ const Grupo = () => {
   useEffect(() => {
     if (validateDate(parametrosGrupo.fecha)) {
       getComparativoGrupo(parametrosGrupo)
-        .then(response => setComparativoGrupo(response))
+        .then(response => {
+          if (response instanceof Error) {
+            setMessage(response?.response?.data ?? "Ha ocurrido un error al consultar. Vea la consola");
+            setModalOpen(true);
+            return;
+          };
+          setComparativoGrupo(response)
+      })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parametrosGrupo]);
 
   return (
     <>
+      <MessageModal message={message} setShowModal={setModalOpen} showModal={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -131,7 +143,7 @@ const Grupo = () => {
         }
       >
         {
-          Object.entries(comparativoGrupo)?.map(([key, value]) => (
+          Object?.entries(comparativoGrupo ?? {})?.map(([key, value]) => (
             <Fragment key={key}>
               {getTableName(key)}
               <VentasTable className='last-row-bg'>

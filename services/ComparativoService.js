@@ -6,6 +6,7 @@ export async function getComparativoGrupo(body) {
     return data.result;
   } catch (error) {
     console.log(error?.response?.data)
+    return error;
   }
 }
 
