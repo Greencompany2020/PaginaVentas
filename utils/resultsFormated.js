@@ -8,10 +8,18 @@ export const formatNumber = (num) => {
   let numberText = "";
   if (num <= 0) {
     numberText = `(${Math.abs(num)})`;
-    return (<td className='text-red-600 font-bold text-center'>{numberWithCommas(numberText)}</td>)
+    return (<td style={{
+      color: "rgb(220 38 38)",
+      fontWeight: 700,
+      textAlign: "center",
+    }}>{numberWithCommas(numberText)}</td>)
   } else {
     numberText = `${Math.abs(num)}`;
-    return (<td className='text-green-600 font-bold text-center'>{numberWithCommas(numberText)}</td>)
+    return (<td style={{
+      color: "rgb(5 150 105)",
+      fontWeight: 700,
+      textAlign: "center"
+    }}>{numberWithCommas(numberText)}</td>)
   }
 }
 /**

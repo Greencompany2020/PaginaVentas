@@ -44,7 +44,7 @@ const Grupo = () => {
           .then(response => {
 
             if (isError(response)) {
-              setMessage(response?.response?.data ?? MENSAJE_ERROR);
+              setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
               setModalOpen(true);
             } else {
               setSemanaSantaGrupo(response)
@@ -55,7 +55,7 @@ const Grupo = () => {
           .then(response => {
 
             if (response instanceof Error) {
-              setMessage(response?.response?.data ?? MENSAJE_ERROR);
+              setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
               setModalOpen(true);
             } else {
               setSemanaSantaGrupo(response)

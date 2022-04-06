@@ -262,4 +262,4 @@ export const concentradoPlazas = [
   'PCARMEN'
 ];
 
-export const MENSAJE_ERROR = "Ha ocurrido un error durante al consulta de datos. Vea la consola (F12) para más detalles."
+export const MENSAJE_ERROR = "Ha ocurrido un error durante al consulta de datos."

@@ -62,7 +62,7 @@ const Minutas = () => {
     if (result && !isError(result)) {
       const nuevasMinutas = await getListaArchivos(directorioActual);
 
-      setShowMessageModal(true);
+      setModalOpen(true);
 
       setTimeout(() => {
         setMessage("");
@@ -72,7 +72,7 @@ const Minutas = () => {
         setMinutas(nuevasMinutas);
       }, 2000);
     } else {
-      setMessage(result?.response?.data ?? "No se pudo eliminar");
+      setMessage(result?.response?.data?.message ?? "No se pudo eliminar");
       setModalOpen(true);
     }
   }
@@ -84,7 +84,7 @@ const Minutas = () => {
       .then(response => {
 
         if (isError(response)) {
-          setMessage(response?.response?.data ?? "No se pudieron obtener las minutas. Consulte la consola (F12) para más detalles");
+          setMessage(response?.response?.data?.message ?? "No se pudieron obtener las minutas. Consulte la consola (F12) para más detalles");
           setModalOpen(true);
         } else {
           setMinutas(response)
@@ -135,7 +135,7 @@ const Minutas = () => {
           setMinutas(nuevasMinutas);
         }, 2000);
       } else {
-        setMessage(result?.response?.data ?? "No se pudo crear la carpeta");
+        setMessage(result?.response?.data?.message ?? "No se pudo crear la carpeta");
         setModalOpen(true);
       }
     } else {
@@ -178,7 +178,7 @@ const Minutas = () => {
           setMinutas(nuevasMinutas);
         }, 2000);
       } else {
-        setMessage(result?.response?.data ?? "No se pudo añadir la minuta");
+        setMessage(result?.response?.data?.message ?? "No se pudo añadir la minuta");
         setModalOpen(true);
       }
     }
@@ -190,7 +190,7 @@ const Minutas = () => {
     const minutasActualizadas = await getListaArchivos(directorioActual);
 
     if (isError(minutasActualizadas)) {
-      setMessage(minutasActualizadas?.response?.data ?? "No se pudieron obtener las minutas. Consulte la consola (F12) para más detalles");
+      setMessage(minutasActualizadas?.response?.data?.message ?? "No se pudieron obtener las minutas. Consulte la consola (F12) para más detalles");
       setModalOpen(true);
     } else {
       setMinutas(minutasActualizadas);
@@ -231,7 +231,7 @@ const Minutas = () => {
       .then(response => {
 
         if (isError(response)) {
-          setMessage(response?.response?.data ?? "No se pudieron obtener las minutas. Consulte la consola (F12) para más detalles");
+          setMessage(response?.response?.data?.message ?? "No se pudieron obtener las minutas. Consulte la consola (F12) para más detalles");
           setModalOpen(true);
         } else {
           setMinutas(response)
@@ -317,7 +317,7 @@ const Minutas = () => {
                           item.typeItem === "directory" ? 
                           (<p className="hover:underline hover:cursor-pointer hover:text-blue-600 w-3" onClick={() => { handleDirectorio(item.path) }}>{item.name}</p>)
                           : 
-                          (<Link href={item.path}><a>{item.name}</a></Link>)
+                          (<Link href={item.path}><a target="_blank">{item.name}</a></Link>)
                         }
                       </td>
                       <td className="border-2">
@@ -374,14 +374,6 @@ const Minutas = () => {
         </div>
         {/* ERROR MODAL */}
         <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
-        {/* <div className={`bg-black absolute w-4/5 sm:w-2/3 lg:w-1/3 ${showMessageModal ? 'top-1/4 transform scale-100 transition ease-in-out duration-200' : '-top-1/4 transform scale-0 transition ease-in-out duration-200'} h-20 flex justify-center items-center p-4 rounded-md`}>
-          <Flex className="justify-center items-center flex-grow">
-            <p className="text-white text-center">{message}</p>
-          </Flex>
-          <span className="cursor-pointer ml-5" onClick={() => setShowMessageModal(false)}>
-            <Image src={Close} alt="close" height={25} width={25}/>
-          </span>
-        </div> */}
       </Flex>
     </>
   )

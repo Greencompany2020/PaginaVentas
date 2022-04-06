@@ -36,7 +36,7 @@ const Grupo = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
             setModalOpen(true);
           } else {
             createPresupuestoDatasets(response, paramGrupo.delAgno, setLabels, setDatasets);

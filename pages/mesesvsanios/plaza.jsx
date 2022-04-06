@@ -6,7 +6,7 @@ import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import MessageModal from '../../components/MessageModal';
 import BarChart from '../../components/BarChart';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
-import { calculateCrecimiento, getInitialPlaza, validateMonthRange, validateYearRange } from '../../utils/functions';
+import { calculateCrecimiento, getInitialPlaza, isError, validateMonthRange, validateYearRange } from '../../utils/functions';
 import { formatLastDate, getCurrentMonth, getCurrentYear, getMonthByNumber, getPrevDate } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getMesesAgnosPlazas } from '../../services/MesesAgnosService';
@@ -39,7 +39,7 @@ const Plaza = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
             setModalOpen(true);
           } else {
             createMesesAgnosPlazasDataset(response, parametrosPlazas.delAgno, parametrosPlazas.alAgno)

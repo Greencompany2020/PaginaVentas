@@ -32,7 +32,7 @@ const Plaza = () => {
     getDiariasPlazas(plazaParametros)
       .then(response => {
         if (isError(response)) {
-          setMessage(response?.response?.data ?? MENSAJE_ERROR);
+          setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
           setModalOpen(true);
         } else {
           setDiariasPlaza(response)
