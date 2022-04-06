@@ -12,17 +12,18 @@ import {
   InputYear,
   Checkbox,
 } from "../../components/inputs";
-import {
-  VentasTableContainer
-} from "../../components/table";
-import { checkboxLabels, inputNames } from "../../utils/data";
+import { VentasTableContainer } from "../../components/table";
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
 import SemanaSantaTable from "../../components/table/SemanaSantaTable";
-import { getInitialPlaza, validateYear } from '../../utils/functions';
+import MessageModal from '../../components/MessageModal';
+import { getInitialPlaza, isError, validateYear } from '../../utils/functions';
 import { getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getSemanaSantaPlazas } from '../../services/semanaSantaService';
+import useMessageModal from '../../hooks/useMessageModal';
 
 const Plaza = () => {
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [semanaSantaPlazas, setSemanaSantaPlazas] = useState({});
   const [paramPlaza, setParamPlaza] = useState({
     plaza: getInitialPlaza(),
@@ -38,12 +39,22 @@ const Plaza = () => {
   useEffect(() => {
     if (validateYear(paramPlaza.delAgno)) {
       getSemanaSantaPlazas(paramPlaza)
-        .then(response => setSemanaSantaPlazas(response))
+        .then(response => {
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            setSemanaSantaPlazas(response)
+          }
+        })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramPlaza]);
 
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

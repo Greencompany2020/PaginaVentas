@@ -16,5 +16,6 @@ export async function getComparativoPlazas(body) {
     return data.result;
   } catch (error) {
     console.log(error?.response?.data);
+    return error;
   }
 }

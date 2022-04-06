@@ -3,17 +3,20 @@ import { useState, useEffect } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, SelectTiendas, SelectMonth, SelectToMonth, InputToYear, InputYear, Checkbox } from '../../components/inputs';
-import { checkboxLabels, inputNames } from '../../utils/data';
-import { calculateCrecimiento, getInitialTienda, getTiendaName, validateMonthRange, validateYearRange } from '../../utils/functions';
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
+import { calculateCrecimiento, getInitialTienda, getTiendaName, isError, validateMonthRange, validateYearRange } from '../../utils/functions';
+import MessageModal from '../../components/MessageModal';
 import BarChart from '../../components/BarChart';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import { formatLastDate, getCurrentMonth, getCurrentYear, getMonthByNumber, getPrevDate } from '../../utils/dateFunctions';
 import { getMesesAgnosTiendas } from '../../services/MesesAgnosService';
 import { handleChange } from '../../utils/handlers';
+import useGraphData from '../../hooks/useGraphData';
+import useMessageModal from '../../hooks/useMessageModal';
 
 const Tiendas = () => {
-  const [labels, setLabels] = useState([]);
-  const [datasets, setDatasets] = useState([]);
+  const { datasets, labels, setDatasets, setLabels } = useGraphData();
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [parametrosTiendas, setParametrosTiendas] = useState({
     tienda: getInitialTienda(),
     delMes: 1,
@@ -31,9 +34,16 @@ const Tiendas = () => {
       && validateYearRange(parametrosTiendas.delAgno, parametrosTiendas.alAgno)) {
       getMesesAgnosTiendas(parametrosTiendas)
         .then(response => {
-          createMesesAgnosTiendasDataset(response, parametrosTiendas.delAgno, parametrosTiendas.alAgno);
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            createMesesAgnosTiendasDataset(response, parametrosTiendas.delAgno, parametrosTiendas.alAgno);
+          }
         })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parametrosTiendas]);
 
   const createMesesAgnosTiendasDataset = (data, fromYear, toYear) => {
@@ -76,6 +86,7 @@ const Tiendas = () => {
 
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

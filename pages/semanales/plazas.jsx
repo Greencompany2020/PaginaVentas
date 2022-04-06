@@ -2,17 +2,20 @@ import { useEffect, useState } from 'react';
 import { SmallContainer, ParametersContainer, Parameters } from '../../components/containers';
 import { InputContainer, InputDateRange, Checkbox } from '../../components/inputs'
 import { getVentasLayout } from '../../components/layout/VentasLayout';
+import MessageModal from '../../components/MessageModal';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
+import useMessageModal from '../../hooks/useMessageModal';
 import { getSemanalesPlazas } from '../../services/SemanalesService';
-import { checkboxLabels } from '../../utils/data'
+import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data'
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { getCurrentWeekDateRange, getYearFromDate } from '../../utils/dateFunctions';
-import { dateRangeTitle, validateInputDateRange } from '../../utils/functions';
+import { dateRangeTitle, isError, validateInputDateRange } from '../../utils/functions';
 import { handleChange } from '../../utils/handlers';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 
 
 const Plazas = () => {
+  const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesPlaza, setSemanalesPlaza] = useState([]);
   const [plazasParametros, setPlazasParametros] = useState({
@@ -29,12 +32,21 @@ const Plazas = () => {
   useEffect(() => {
     if (validateInputDateRange(plazasParametros.fechaInicio, plazasParametros.fechaFin)) {
       getSemanalesPlazas(plazasParametros)
-        .then(response => setSemanalesPlaza(response));
+        .then(response => {
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            setSemanalesPlaza(response);
+          }
+        });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plazasParametros])
 
   return (
     <>
+      <MessageModal message={message} setShowModal={setModalOpen} showModal={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputDateRange

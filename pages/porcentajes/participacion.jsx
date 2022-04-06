@@ -3,13 +3,17 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { InputContainer, SelectTiendasGeneral, Checkbox, InputToYear } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableHead, TableBody } from '../../components/table';
-import { checkboxLabels, inputNames } from '../../utils/data';
+import MessageModal from '../../components/MessageModal';
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { numberWithCommas } from '../../utils/resultsFormated'
 import { getPorcenatajesParticipacion } from '../../services/PorcentajesService';
+import useMessageModal from '../../hooks/useMessageModal';
+import { isError, validateYear } from '../../utils/functions';
 
 const Participacion = () => {
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [participacionVentas, setParticipacionVentas] = useState([]);
   const [parametrosParticipacion, setParametrosParticipacion] = useState({
     alAgno: getCurrentYear(),
@@ -22,14 +26,25 @@ const Participacion = () => {
   });
 
   useEffect(() => {
-    if (parametrosParticipacion.alAgno.toString().length === 4) {
+    if (validateYear(parametrosParticipacion.alAgno)) {
       getPorcenatajesParticipacion(parametrosParticipacion)
-        .then(response => setParticipacionVentas(response))
+        .then(response => {
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            setParticipacionVentas(response)
+          }
+
+        })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parametrosParticipacion]);
 
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

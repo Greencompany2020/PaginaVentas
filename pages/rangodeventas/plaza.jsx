@@ -4,15 +4,18 @@ import { Parameters, ParametersContainer, SmallContainer } from '../../component
 import { InputContainer, SelectPlazas, InputRangos, InputDateRange, Checkbox } from '../../components/inputs';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import PieChart from '../../components/Pie';
-import { createRangoVentasDataset, getInitialPlaza, validateInputDateRange } from '../../utils/functions';
+import MessageModal from '../../components/MessageModal';
+import { createRangoVentasDataset, getInitialPlaza, isError, validateInputDateRange } from '../../utils/functions';
 import { getBeginEndMonth } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getRangoVentasPlaza } from '../../services/RangoVentasService';
-import { checkboxLabels } from '../../utils/data';
+import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
+import useGraphData from '../../hooks/useGraphData';
+import useMessageModal from '../../hooks/useMessageModal';
 
 const Plaza = () => {
-  const [labels, setLabels] = useState([]);
-  const [datasets, setDatasets] = useState([]);
+  const { datasets, labels, setDatasets, setLabels } = useGraphData();
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [paramPlaza, setParamPlaza] = useState({
     plaza: getInitialPlaza(),
     fechaInicio: getBeginEndMonth(true)[0],
@@ -23,14 +26,24 @@ const Plaza = () => {
   useEffect(() => {
     if (validateInputDateRange(paramPlaza.fechaInicio, paramPlaza.fechaFin)) {
       getRangoVentasPlaza(paramPlaza)
-        .then(response => createRangoVentasDataset(response, setLabels, setDatasets))
+        .then(response => {
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            createRangoVentasDataset(response, setLabels, setDatasets);
+          }
+        });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramPlaza]);
   
   
 
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

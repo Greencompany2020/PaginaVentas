@@ -3,14 +3,17 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer, Flex } from '../../components/containers';
 import { InputContainer, InputYear, InputToYear, Checkbox, SelectTiendas, SelectPlazas } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableBody, TableHead } from '../../components/table';
-import { checkboxLabels, inputNames } from '../../utils/data';
-import { getInitialPlaza, getInitialTienda } from '../../utils/functions';
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
+import { getInitialPlaza, getInitialTienda, isError, validateYearRange } from '../../utils/functions';
 import { formatedDate, formatLastDate, getPrevDate, getYearFromDate } from '../../utils/dateFunctions';
 import { numberWithCommas } from '../../utils/resultsFormated';
 import { handleChange } from '../../utils/handlers';
 import { getPorcentajesMensuales } from '../../services/PorcentajesService';
+import useMessageModal from '../../hooks/useMessageModal';
+import MessageModal from '../../components/MessageModal';
 
 const Mensuales = () => {
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [porcentajesMensuales, setPorcentajesMensuales] = useState([]);
   const [parametrosMensuales, setParametrosMensuales] = useState({
     queryTiendaPlaza: 0,
@@ -27,10 +30,19 @@ const Mensuales = () => {
   const [togglePlaza, setTogglePlaza] = useState(false);
 
   useEffect(() => {
-    if (parametrosMensuales.alAgno.toString().length === 4 && parametrosMensuales.delAgno.toString().length === 4) {
+    if (validateYearRange(parametrosMensuales.delAgno, parametrosMensuales.alAgno)) {
       getPorcentajesMensuales(parametrosMensuales)
-        .then(response => setPorcentajesMensuales(response));
+        .then(response => {
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            setPorcentajesMensuales(response)
+          }
+        });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parametrosMensuales]);
 
   const handleVisibleTienda = () => {
@@ -53,6 +65,7 @@ const Mensuales = () => {
 
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

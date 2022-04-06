@@ -4,12 +4,12 @@ import { ParametersContainer, Parameters, SmallContainer } from '../../component
 import MessageModal from '../../components/MessageModal';
 import { InputContainer, Checkbox, InputDate } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
-import { checkboxLabels, inputNames } from '../../utils/data';
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { handleChange } from '../../utils/handlers';
 import { getComparativoGrupo } from '../../services/ComparativoService';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 import { getBeginCurrentWeekDateRange, getMonthByNumber, getNameDay, getPrevDate, getYearFromDate } from '../../utils/dateFunctions';
-import { getDayWeekName, validateDate, getTableName, rowColor } from '../../utils/functions';
+import { getDayWeekName, validateDate, getTableName, rowColor, isError } from '../../utils/functions';
 import useMessageModal from '../../hooks/useMessageModal';
 
 const Grupo = () => {
@@ -34,12 +34,12 @@ const Grupo = () => {
     if (validateDate(parametrosGrupo.fecha)) {
       getComparativoGrupo(parametrosGrupo)
         .then(response => {
-          if (response instanceof Error) {
-            setMessage(response?.response?.data ?? "Ha ocurrido un error al consultar. Vea la consola");
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
             setModalOpen(true);
-            return;
-          };
-          setComparativoGrupo(response)
+          } else {
+            setComparativoGrupo(response)
+          }
       })
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

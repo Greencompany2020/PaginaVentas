@@ -4,15 +4,18 @@ import { Parameters, ParametersContainer, SmallContainer } from '../../component
 import { InputContainer, SelectMonth, SelectToMonth, InputYear, SelectTiendasGeneral, Checkbox } from '../../components/inputs';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import BarChart from '../../components/BarChart';
-import { checkboxLabels, inputNames, meses } from '../../utils/data';
+import MessageModal from '../../components/MessageModal';
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getCurrentMonth, getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
-import { validateMonthRange, validateYear, createPresupuestoDatasets } from '../../utils/functions';
+import { validateMonthRange, validateYear, createPresupuestoDatasets, isError } from '../../utils/functions';
+import useGraphData from '../../hooks/useGraphData';
+import useMessageModal from '../../hooks/useMessageModal';
 import { getPresupuestoGrupo } from '../../services/PresupuestoService';
 
 const Grupo = () => {
-  const [labels, setLabels] = useState([]);
-  const [datasets, setDatasets] = useState([]);
+  const { datasets, labels, setDatasets, setLabels } = useGraphData();
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [paramGrupo, setParamGrupo] = useState({
     delMes: 1,
     alMes: getCurrentMonth() - 1,
@@ -30,63 +33,22 @@ const Grupo = () => {
   useEffect(() => {
     if (validateYear(paramGrupo.delAgno) && validateMonthRange(paramGrupo.delMes, paramGrupo.alMes)) {
       getPresupuestoGrupo(paramGrupo)
-        .then(response => createPresupuestoDatasets(response, paramGrupo.delAgno, setLabels, setDatasets));
+        .then(response => {
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            createPresupuestoDatasets(response, paramGrupo.delAgno, setLabels, setDatasets);
+          }
+        });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramGrupo]);
 
-  const createPresupuestoGrupoDatasets = (data) => {
-    const colors = ['#F43F5E', '#EA580C', '#0284C7'];
-
-    if (data?.length !== 0) {
-      const labels = [];
-      const ventasDataset = [];
-
-      const ventasActual = data?.map((venta) => venta.ventaActual);
-      const presupuestos = data?.map((venta) => venta.presupuesto);
-      const ventasAnterior = data?.map((venta) => venta.ventaAnterior);
-
-      for (let venta of data) {
-        const month = meses.find((mes) => mes.value === venta.mes)?.text ?? "ACUM";
-
-        const label = `${month} ${venta.porcentaje}%`;
-
-        labels.push(label);
-      }
-
-      const ventasActualesData = {
-        label: `Ventas ${paramGrupo.delAgno}`,
-        data: ventasActual,
-        backgroundColor: colors[0]
-      };
-
-      ventasDataset.push(ventasActualesData);
-
-      const presupuesto = {
-        label: 'Presupuesto',
-        data: presupuestos,
-        backgroundColor: colors[1]
-      };
-      ventasDataset.push(presupuesto);
-
-      const ventasAnteriorData = {
-        label: `Ventas ${paramGrupo.delAgno - 1}`,
-        data: ventasAnterior,
-        backgroundColor: colors[2]
-      };
-
-      ventasDataset.push(ventasAnteriorData)
-
-      setDatasets(ventasDataset)
-      setLabels(labels);
-    } else {
-      setDatasets([]);
-      setLabels([]);
-    }
-  }
-
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

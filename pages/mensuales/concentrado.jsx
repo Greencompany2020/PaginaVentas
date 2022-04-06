@@ -3,13 +3,17 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { InputContainer, InputYear, Checkbox } from '../../components/inputs';
-import { checkboxLabels, concentradoPlazas } from '../../utils/data';
+import MessageModal from '../../components/MessageModal';
+import { checkboxLabels, concentradoPlazas, MENSAJE_ERROR } from '../../utils/data';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { getMensualesConcentrado } from '../../services/MensualesServices';
 import { numberWithCommas } from '../../utils/resultsFormated';
 import { handleChange } from '../../utils/handlers';
+import useMessageModal from '../../hooks/useMessageModal';
+import { isError } from '../../utils/functions';
 
 const Concentrado = () => {
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [concentrado, setConcentrado] = useState([]);
   const [concentradoParametros, setConcentradoParametros] = useState({
     delAgno: new Date(Date.now()).getFullYear(),
@@ -23,12 +27,21 @@ const Concentrado = () => {
   useEffect(() => {
     if (concentradoParametros.delAgno.toString().length === 4) {
       getMensualesConcentrado(concentradoParametros)
-        .then(response => setConcentrado(response));
+        .then(response => {
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            setConcentrado(response);
+          }
+        });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [concentradoParametros]);
 
   return (
     <>
+      <MessageModal message={message} setModalOpen={setModalOpen} modalOpen={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

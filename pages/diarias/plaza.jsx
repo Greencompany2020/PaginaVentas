@@ -4,10 +4,10 @@ import { ParametersContainer, Parameters, SmallContainer } from '../../component
 import { VentasTableContainer, VentasTable, VentasDiariasTableHead, VentasDiariasTableFooter } from '../../components/table';
 import { InputContainer, SelectPlazas, SelectMonth, InputYear, Checkbox } from '../../components/inputs';
 import MessageModal from '../../components/MessageModal';
-import { checkboxLabels } from '../../utils/data';
+import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
 import { getDiariasPlazas } from '../../services/DiariasServices';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
-import { getInitialPlaza, getPlazaName } from '../../utils/functions';
+import { getInitialPlaza, getPlazaName, isError } from '../../utils/functions';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { handleChange } from '../../utils/handlers';
 import useMessageModal from '../../hooks/useMessageModal';
@@ -31,12 +31,12 @@ const Plaza = () => {
   useEffect(() => {
     getDiariasPlazas(plazaParametros)
       .then(response => {
-        if (response instanceof Error) {
-          setMessage(response?.response?.data ?? "Ha ocurrido un error al consultar. Vea la consola (F12)");
+        if (isError(response)) {
+          setMessage(response?.response?.data ?? MENSAJE_ERROR);
           setModalOpen(true);
-          return;
+        } else {
+          setDiariasPlaza(response)
         }
-        setDiariasPlaza(response)
       })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plazaParametros]);

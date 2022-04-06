@@ -1,6 +1,6 @@
-import DetailsSideBar from '@components/DetailsSideBar';
+import DetailsSideBar from './DetailsSideBar';
 import { MenuIcon } from '@heroicons/react/solid';
-import useToggle from 'hooks/useToggle';
+import useToggle from '../hooks/useToggle';
 
 import { enlaces as enlacesMenuLateral } from '../utils/data'
 

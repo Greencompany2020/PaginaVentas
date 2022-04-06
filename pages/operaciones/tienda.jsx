@@ -4,15 +4,18 @@ import { Checkbox, InputContainer, InputToYear, InputYear, SelectMonth, SelectTi
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import { getOperacionesTienda } from '../../services/OperacionesService';
+import MessageModal from '../../components/MessageModal';
 import BarChart from '../../components/BarChart';
-import { checkboxLabels, inputNames, meses } from '../../utils/data';
+import { checkboxLabels, inputNames, MENSAJE_ERROR, meses } from '../../utils/data';
 import { getCurrentMonth, getCurrentYear } from '../../utils/dateFunctions';
-import { getInitialTienda, getTiendaName, validateMonthRange, validateYearRange } from '../../utils/functions';
+import { getInitialTienda, getTiendaName, isError, validateMonthRange, validateYearRange } from '../../utils/functions';
 import { handleChange } from '../../utils/handlers';
+import useGraphData from '../../hooks/useGraphData';
+import useMessageModal from '../../hooks/useMessageModal';
 
 const Tienda = () => {
-  const [datasets, setDatasets] = useState([]);
-  const [labels, setLabels] = useState([]);
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
+  const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTienda, setParamTienda] = useState({
     tienda: getInitialTienda(),
     delMes: 1,
@@ -28,7 +31,15 @@ const Tienda = () => {
   useEffect(() => {
     if (validateYearRange(paramTienda.delAgno, paramTienda.alAgno) && validateMonthRange(paramTienda.delMes, paramTienda.alMes)) {
       getOperacionesTienda(paramTienda)
-        .then(response => createOperacionesDatasets(response));
+        .then(response => {
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true)
+          } else {
+            createOperacionesDatasets(response)
+          }
+        });
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramTienda]);
@@ -78,6 +89,7 @@ const Tienda = () => {
 
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

@@ -2,17 +2,20 @@ import { useState, useEffect } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, InputYear, SelectPlazas, Checkbox } from '../../components/inputs';
-import { checkboxLabels, inputNames } from '../../utils/data';
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import BarChart from '../../components/BarChart';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
-import { getInitialPlaza, getPlazaName } from '../../utils/functions';
+import MessageModal from '../../components/MessageModal';
+import { getInitialPlaza, getPlazaName, isError, validateYear } from '../../utils/functions';
 import { formatLastDate, getCurrentYear, getMonthByNumber, getPrevDate } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getMesesAgnosTodasTiendas } from '../../services/MesesAgnosService';
+import useGraphData from '../../hooks/useGraphData';
+import useMessageModal from '../../hooks/useMessageModal';
 
 const TodasTiendas = () => {
-  const [labels, setLabels] = useState([]);
-  const [datasets, setDatasets] = useState([]);
+  const { datasets, labels, setDatasets, setLabels } = useGraphData();
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [paramTiendas, setParamTiendas] = useState({
     plaza: getInitialPlaza(),
     delAgno: getCurrentYear(),
@@ -22,12 +25,19 @@ const TodasTiendas = () => {
   });
 
   useEffect(() => {
-    if (paramTiendas.delAgno != 0 && paramTiendas.delAgno.toString().length === 4) {
+    if (validateYear(paramTiendas.delAgno)) {
       getMesesAgnosTodasTiendas(paramTiendas)
         .then(response => {
-          createMesesAgnosTiendasDataset(response);
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            createMesesAgnosTiendasDataset(response);
+          }
         })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramTiendas]);
 
   const createMesesAgnosTiendasDataset = (data) => {
@@ -69,6 +79,7 @@ const TodasTiendas = () => {
 
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

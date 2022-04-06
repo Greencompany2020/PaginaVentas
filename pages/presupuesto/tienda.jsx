@@ -4,15 +4,18 @@ import { Parameters, ParametersContainer, SmallContainer } from '../../component
 import { InputContainer, SelectTiendas,SelectMonth, SelectToMonth, InputYear, Checkbox } from '../../components/inputs';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import BarChart from '../../components/BarChart';
+import MessageModal from '../../components/MessageModal';
 import { getPresupuestoTienda } from '../../services/PresupuestoService';
-import { checkboxLabels, inputNames } from '../../utils/data';
-import { getInitialTienda, validateMonthRange, validateYear, createPresupuestoDatasets, getTiendaName } from '../../utils/functions'
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
+import { getInitialTienda, validateMonthRange, validateYear, createPresupuestoDatasets, getTiendaName, isError } from '../../utils/functions'
 import { getCurrentMonth, getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
+import useGraphData from '../../hooks/useGraphData';
+import useMessageModal from '../../hooks/useMessageModal';
 
 const Tienda = () => {
-  const [labels, setLabels] = useState([]);
-  const [datasets, setDatasets] = useState([]);
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
+  const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTienda, setParamTienda] = useState({
     tienda: getInitialTienda(),
     delMes: 1,
@@ -28,13 +31,22 @@ const Tienda = () => {
   useEffect(() => {
     if (validateMonthRange(paramTienda.delMes, paramTienda.alMes) && validateYear(paramTienda.delAgno)) {
       getPresupuestoTienda(paramTienda)
-        .then(response => createPresupuestoDatasets(response, paramTienda.delAgno, setLabels, setDatasets))
+        .then(response => {
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            createPresupuestoDatasets(response, paramTienda.delAgno, setLabels, setDatasets);
+          }
+        })
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramTienda]);
 
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

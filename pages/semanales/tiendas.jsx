@@ -3,15 +3,18 @@ import { SmallContainer, ParametersContainer, Parameters } from '../../component
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { InputContainer, InputDateRange, Checkbox, SelectTiendasGeneral } from '../../components/inputs';
+import MessageModal from '../../components/MessageModal';
 import RegionesPlazaTableRow from '../../components/table/RegionesPlazaTableRow';
-import { regiones, checkboxLabels, plazas } from '../../utils/data';
+import { regiones, checkboxLabels, plazas, MENSAJE_ERROR } from '../../utils/data';
 import { getCurrentWeekDateRange, getYearFromDate } from '../../utils/dateFunctions';
-import { dateRangeTitle, validateInputDateRange } from '../../utils/functions';
+import { dateRangeTitle, isError, validateInputDateRange } from '../../utils/functions';
 import { getSemanalesTiendas } from '../../services/SemanalesService';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { handleChange } from '../../utils/handlers';
+import useMessageModal from '../../hooks/useMessageModal';
 
 const Tiendas = () => {
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesTienda, setSemanalesTienda] = useState([]);
   const [tiendasParametros, setTiendasParametros] = useState({
@@ -29,8 +32,16 @@ const Tiendas = () => {
   useEffect(() => {
     if (validateInputDateRange(tiendasParametros.fechaInicio, tiendasParametros.fechaFin)) {
       getSemanalesTiendas(tiendasParametros)
-        .then(response => setSemanalesTienda(response))
+        .then(response => {
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            setSemanalesTienda(response)
+          }
+        })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tiendasParametros]);
 
 
@@ -46,6 +57,7 @@ const Tiendas = () => {
 
   return (
     <>
+      <MessageModal message={message} setShowModal={setModalOpen} showModal={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputDateRange

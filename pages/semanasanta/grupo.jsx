@@ -7,27 +7,23 @@ import {
 } from "../../components/containers";
 import {
   InputContainer,
-  SelectMonth,
-  SelectPlazas,
   InputYear,
   Checkbox,
   InputVsYear,
   SelectTiendasGeneral,
 } from "../../components/inputs";
-import {
-  VentasTableContainer,
-  VentasTable,
-  SemanaSantaTableFooter,
-  VentasSemanaSantaHead,
-} from "../../components/table";
+import { VentasTableContainer } from "../../components/table";
+import MessageModal from '../../components/MessageModal';
 import SemanaSantaTable from "../../components/table/SemanaSantaTable";
-import { checkboxLabels, inputNames } from "../../utils/data";
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
 import { getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
-import { validateYear } from '../../utils/functions';
+import { isError, validateYear } from '../../utils/functions';
 import { getSemanaSantaGrupo, getSemanaSantaGrupoConcentrado } from '../../services/semanaSantaService';
+import useMessageModal from '../../hooks/useMessageModal';
 
 const Grupo = () => {
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [concentrado, setConcentrado] = useState(false);
   const [semanaSantaGrupo, setSemanaSantaGrupo] = useState({});
   const [paramGrupo, setParamGrupo] = useState({
@@ -45,16 +41,34 @@ const Grupo = () => {
     if (validateYear(paramGrupo.delAgno) && validateYear(paramGrupo.versusAgno)) {
       if (concentrado) {
         getSemanaSantaGrupoConcentrado(paramGrupo)
-          .then(response => setSemanaSantaGrupo(response))
+          .then(response => {
+
+            if (isError(response)) {
+              setMessage(response?.response?.data ?? MENSAJE_ERROR);
+              setModalOpen(true);
+            } else {
+              setSemanaSantaGrupo(response)
+            }
+          });
       } else {
         getSemanaSantaGrupo(paramGrupo)
-          .then(response => setSemanaSantaGrupo(response))
+          .then(response => {
+
+            if (response instanceof Error) {
+              setMessage(response?.response?.data ?? MENSAJE_ERROR);
+              setModalOpen(true);
+            } else {
+              setSemanaSantaGrupo(response)
+            }
+          });
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramGrupo, concentrado]);
   
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

@@ -6,6 +6,7 @@ export async function getSemanaSantaGrupo(body) {
     return data.result
   } catch (error) {
     console.log(error?.response?.data);
+    return error;
   }
 }
 
@@ -15,6 +16,7 @@ export async function getSemanaSantaGrupoConcentrado(body) {
     return data.result;
   } catch (error) {
     console.log(error?.response?.data);
+    return error;
   }
 }
 
@@ -24,6 +26,7 @@ export async function getSemanaSantaPeriodos() {
     return data.result;
   } catch (error) {
     console.log(error?.response?.data);
+    return error;
   }
 }
 
@@ -33,6 +36,7 @@ export async function getSemanaSantaPlazas(body) {
     return data.result;
   } catch (error) {
     console.log(error?.response?.data);
+    return error;
   }
 }
 
@@ -42,5 +46,6 @@ export async function getSemanaSantaAcumulado(body) {
     return data.result;
   } catch (error) {
     console.log(error?.response?.data);
+    return error;
   }
 }

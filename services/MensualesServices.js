@@ -6,6 +6,7 @@ export async function getMensualesConcentrado(body) {
     return data.result;
   } catch (error) {
     console.log(error?.response?.data);
+    return error;
   }
 }
 
@@ -15,6 +16,7 @@ export async function getMensualesPlazasAgnos(body) {
     return data.result;
   } catch (error) {
     console.log(error?.response?.data);
+    return error;
   }
 }
 
@@ -24,5 +26,6 @@ export async function getMensualesTiendas(body) {
     return data.result;
   } catch (error) {
     console.log(error?.response?.data);
+    return error;
   }
 }

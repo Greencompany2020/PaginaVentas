@@ -4,7 +4,9 @@ import MessageModal from '../../components/MessageModal';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import useMessageModal from '../../hooks/useMessageModal';
 import { getDiariasFechas } from '../../services/DiariasServices';
+import { MENSAJE_ERROR } from '../../utils/data';
 import { formatLastDate } from '../../utils/dateFunctions';
+import { isError } from '../../utils/functions';
 
 const Fechas = () => {
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
@@ -13,12 +15,12 @@ const Fechas = () => {
   useEffect(() => {
     getDiariasFechas()
       .then(response => {
-        if (response instanceof Error) {
-          setMessage(response?.response?.data ?? "Ha ocurrido un error al consultar. Vea la consola (F12)");
+        if (isError(response)) {
+          setMessage(response?.response?.data ?? MENSAJE_ERROR);
           setModalOpen(true);
-          return;
+        } else {
+          setFechas(response);
         }
-        setFechas(response);
       })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

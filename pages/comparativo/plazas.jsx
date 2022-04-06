@@ -3,15 +3,18 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { InputContainer, Checkbox, InputDate } from '../../components/inputs';
-import { checkboxLabels, inputNames } from '../../utils/data';
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getMonthByNumber, getPrevDate, getYearFromDate } from '../../utils/dateFunctions';
+import MessageModal from '../../components/MessageModal';
 import { handleChange } from '../../utils/handlers';
-import { getTableName, validateDate } from '../../utils/functions';
+import { getTableName, isError, validateDate } from '../../utils/functions';
 import { getComparativoPlazas } from '../../services/ComparativoService';
 import { Fragment } from 'react/cjs/react.production.min';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
+import useMessageModal from '../../hooks/useMessageModal';
 
 const Plazas = () => {
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [comparativoPlazas, setComparativoPlazas] = useState({});
   const [semanaSanta, setSemanaSanta] = useState(true);
   const [parametrosPlazas, setParametrosPlazas] = useState({
@@ -28,12 +31,23 @@ const Plazas = () => {
   useEffect(() => {
     if (validateDate(parametrosPlazas.fecha)) {
       getComparativoPlazas(parametrosPlazas)
-        .then(response => setComparativoPlazas(response))
+        .then(response => {
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            setComparativoPlazas(response)
+          }
+
+        });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parametrosPlazas]);
 
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

@@ -1,16 +1,18 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { InputContainer, Checkbox, SelectMonth, SelectToMonth, InputYear } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableHead, TableBody } from '../../components/table';
-import { checkboxLabels, inputNames, meses } from '../../utils/data';
+import MessageModal from '../../components/MessageModal';
+import { checkboxLabels, inputNames, MENSAJE_ERROR, meses } from '../../utils/data';
 import { handleChange } from '../../utils/handlers';
 import { getCurrentMonth, getCurrentYear, getMonthChars } from '../../utils/dateFunctions';
-import { validateMonthRange, validateYear } from '../../utils/functions';
+import { isError, validateMonthRange, validateYear } from '../../utils/functions';
 import { getPromotores } from '../../services/MKTService';
-import { Fragment } from 'react';
+import useMessageModal from '../../hooks/useMessageModal';
 
 const Promotores = () => {
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [promotores, setPromotores] = useState({});
   const [paramPromotores, setParamPromotores] = useState({
     delMes: 1,
@@ -22,8 +24,17 @@ const Promotores = () => {
   useEffect(() => {
     if (validateMonthRange(paramPromotores.delMes, paramPromotores.alMes) && validateYear(paramPromotores.delAgno)) {
       getPromotores(paramPromotores)
-        .then(response => setPromotores(response));
+        .then(response => {
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            setPromotores(response)
+          }
+        });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramPromotores]);
 
   const createPromotoresTableHead = () => {
@@ -94,6 +105,7 @@ const Promotores = () => {
 
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

@@ -4,9 +4,9 @@ import { ParametersContainer, Parameters, SmallContainer } from '../../component
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import MessageModal from '../../components/MessageModal';
 import { SelectTiendas, SelectMonth, InputYear, InputContainer, Checkbox } from '../../components/inputs';
-import { checkboxLabels } from '../../utils/data';
+import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
 import { getDiariasTiendaSimple } from '../../services/DiariasServices';
-import { getInitialTienda, getLastTwoNumbers, getTiendaName } from '../../utils/functions';
+import { getInitialTienda, getLastTwoNumbers, getTiendaName, isError } from '../../utils/functions';
 import { numberWithCommas } from '../../utils/resultsFormated';
 import { getMonthByNumber } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
@@ -25,12 +25,12 @@ const Simple = () => {
   useEffect(() => {
     getDiariasTiendaSimple(tiendaSimpleParametros)
       .then(response => {
-        if (response instanceof Error) {
-          setMessage(response?.response?.data ?? "Ha ocurrido un error al consultar. Vea la consola (F12)");
+        if (isError(response)) {
+          setMessage(response?.response?.data ?? MENSAJE_ERROR);
           setModalOpen(true);
-          return;
+        } else {
+          setTiendaSimple(response)
         }
-        setTiendaSimple(response)
       })
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tiendaSimpleParametros]);

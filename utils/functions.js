@@ -219,14 +219,22 @@ export const validateYearRange = (year1, year2) => {
  * @returns {boolean}
  */
 export const validateMonthRange = (month1, month2) => (month1 <= month2) && (month1 !== 0 && month2 !== 0);
-
-export const createMesesAgnosGrupoDataset = (data, fromYear, toYear) => {
+/**
+ * Crea los array de etiquetas y de dato para la gráfica de barras.
+ * 
+ * @param {object[]} data Los datos para crear el dataset
+ * @param {numbe} fromYear El año de inicio del intervalo
+ * @param {number} toYear El año de fin del intervalo
+ * @param {Dispatch<SetStateAction<any[]>>} updateLabels setState para las etiquetas
+ * @param {Dispatch<SetStateAction<any[]>>} updateDatasets setState para el dataset
+ */
+export const createMesesAgnosGrupoDataset = (data, fromYear, toYear, updateDataset, updateLabels) => {
   const colors = ['#006400', '#daa520', '#6495ed', '#ff7f50', '#98fb98'];
 
   if (data?.length !== 0) {
     let labels = [];
     labels = data.map(item => item?.Mes ? getMonthByNumber(item.Mes) : item.titulo);
-    setLabels(labels);
+    updateLabels(labels);
 
     let datasets = [];
     let colorIndex = 0;
@@ -250,10 +258,10 @@ export const createMesesAgnosGrupoDataset = (data, fromYear, toYear) => {
       }
     }
 
-    setDatasets(datasets);
+    updateDataset(datasets);
   } else {
-    setLabels([]);
-    setDatasets([]);
+    updateLabels([]);
+    updateDataset([]);
   }
 }
 
@@ -495,3 +503,10 @@ export const createRangoVentasDataset = (data, updateLabels, updateDataset) => {
     updateDataset([]);
   }
 }
+/**
+ * Comprueba que el objecto pasado sea una instancia de
+ * Error.
+ * @param {object} obj El objeto a verificar
+ * @returns {boolean}
+ */
+export const isError = (obj) => obj instanceof Error;

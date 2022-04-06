@@ -4,16 +4,19 @@ import { ParametersContainer, Parameters, SmallContainer } from '../../component
 import { InputContainer, SelectTiendasGeneral, Checkbox, InputToYear, SelectToMonth } from '../../components/inputs';
 import { VentasTableContainer } from '../../components/table';
 import BarChart from '../../components/BarChart';
-import { checkboxLabels } from '../../utils/data';
+import MessageModal from '../../components/MessageModal';
+import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
 import { formatedDate, formatLastDate, getCurrentMonth, getCurrentYear, getMonthByNumber } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { inputNames } from '../../utils/data';
 import { getAnualesTiendas } from '../../services/AnualesServices';
-import { createSimpleDatasets } from '../../utils/functions';
+import { createSimpleDatasets, isError } from '../../utils/functions';
+import useMessageModal from '../../hooks/useMessageModal';
+import useGraphData from '../../hooks/useGraphData';
 
 const Tienda = () => {
-  const [labels, setLabels] = useState([]);
-  const [dataset, setDataset] = useState([]);
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
+  const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [tiendasParametros, setTiendasParametros] = useState({
     alAgno: getCurrentYear(),
     alMes: getCurrentMonth(),
@@ -27,12 +30,23 @@ const Tienda = () => {
   useEffect(() => {
     if (tiendasParametros.alAgno.toString().length === 4) {
       getAnualesTiendas(tiendasParametros)
-        .then(response => createSimpleDatasets(response, setLabels, setDataset));
+        .then(response => {
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            createSimpleDatasets(response, setLabels, setDatasets)
+          }
+
+        });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tiendasParametros]);
 
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -90,7 +104,7 @@ const Tienda = () => {
           text={`Ventas al ${formatLastDate(formatedDate(tiendasParametros.alAgno, tiendasParametros.alMes))}`}
           data={{
             labels: labels,
-            datasets: dataset
+            datasets: datasets
           }}
         />
       </VentasTableContainer>

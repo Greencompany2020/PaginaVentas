@@ -4,16 +4,20 @@ import { ParametersContainer, Parameters, SmallContainer } from '../../component
 import { VentasTableContainer } from '../../components/table';
 import { InputContainer, Checkbox, SelectMonth, InputYear, SelectTiendasGeneral, InputToYear } from '../../components/inputs';
 import BarChart from '../../components/BarChart';
-import { checkboxLabels } from '../../utils/data';
+import MessageModal from '../../components/MessageModal';
+import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
 import { formatedDate, formatLastDate, getCurrentMonth, getCurrentYear, getMonthByNumber } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { getMensualesPlazasAgnos } from '../../services/MensualesServices';
-import { createDatasets } from '../../utils/functions';
+import { createDatasets, isError, validateYearRange } from '../../utils/functions';
+import useMessageModal from '../../hooks/useMessageModal';
+import useGraphData from '../../hooks/useGraphData';
+
 
 const PlazasVS = () => {
-  const [labels, setLabels] = useState([]);
-  const [datasets, setDatasets] = useState([]);
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
+  const { labels, setLabels, datasets, setDatasets } = useGraphData();
   const [plazasAgnosParametros, setPlazasAgnosParametros] = useState({
     delMes: getCurrentMonth(),
     delAgno: getCurrentYear() - 4,
@@ -26,20 +30,31 @@ const PlazasVS = () => {
   });
 
   useEffect(() => {
-    if (plazasAgnosParametros.delAgno.toString().length === 4 && plazasAgnosParametros.alAgno.toString().length === 4) {
+    if (validateYearRange(plazasAgnosParametros.delAgno, plazasAgnosParametros.alAgno)) {
       getMensualesPlazasAgnos(plazasAgnosParametros)
-        .then(response => createDatasets(
-          response,
-          plazasAgnosParametros.delAgno,
-          plazasAgnosParametros.alAgno,
-          setLabels,
-          setDatasets
-        ));
+        .then(response => {
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true)
+          } else {
+              createDatasets(
+              response,
+              plazasAgnosParametros.delAgno,
+              plazasAgnosParametros.alAgno,
+              setLabels,
+              setDatasets
+            )
+          }
+
+      });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plazasAgnosParametros]);
 
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

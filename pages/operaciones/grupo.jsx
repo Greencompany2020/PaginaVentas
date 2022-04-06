@@ -4,15 +4,18 @@ import { Parameters, ParametersContainer, SmallContainer } from '../../component
 import { InputContainer, SelectTiendasGeneral,SelectMonth, SelectToMonth, InputYear, Checkbox } from '../../components/inputs';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import BarChart from '../../components/BarChart';
-import { checkboxLabels, inputNames } from '../../utils/data';
+import MessageModal from '../../components/MessageModal';
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getCurrentMonth, getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
-import { createOperacionesDatasets, validateMonthRange, validateYear } from '../../utils/functions';
+import { createOperacionesDatasets, isError, validateMonthRange, validateYear } from '../../utils/functions';
 import { getOperacionesGrupo } from '../../services/OperacionesService';
+import useGraphData from '../../hooks/useGraphData';
+import useMessageModal from '../../hooks/useMessageModal';
 
 const Grupo = () => {
-  const [labels, setLabels] = useState([]);
-  const [datasets, setDatasets] = useState([]);
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
+  const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramGrupo, setParamGrupo] = useState({
     delMes: 1,
     alMes: getCurrentMonth() - 1,
@@ -28,12 +31,22 @@ const Grupo = () => {
   useEffect(() => {
     if (validateMonthRange(paramGrupo.delMes, paramGrupo.alMes) && validateYear(paramGrupo.delAgno)) {
       getOperacionesGrupo(paramGrupo)
-        .then(response => createOperacionesDatasets(response, paramGrupo.delAgno, setLabels, setDatasets));
+        .then(response => {
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            createOperacionesDatasets(response, paramGrupo.delAgno, setLabels, setDatasets);
+          }
+        });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramGrupo]);
 
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

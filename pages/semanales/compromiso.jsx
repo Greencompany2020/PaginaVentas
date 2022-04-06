@@ -2,16 +2,19 @@ import { useState, useEffect } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { InputContainer, InputDateRange, SelectPlazas, Checkbox } from '../../components/inputs';
+import MessageModal from '../../components/MessageModal';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
-import { checkboxLabels } from '../../utils/data';
+import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
 import { getSemanalesCompromisos } from '../../services/SemanalesService';
 import { numberWithCommas } from '../../utils/resultsFormated';
 import { getCurrentWeekDateRange } from '../../utils/dateFunctions';
-import { dateRangeTitle, validateInputDateRange } from '../../utils/functions';
+import { dateRangeTitle, isError, validateInputDateRange } from '../../utils/functions';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { handleChange } from '../../utils/handlers';
+import useMessageModal from '../../hooks/useMessageModal';
 
 const Compromiso = () => {
+  const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesCompromisos, setSemanalesCompromisos] = useState([]);
   const [compromisosParametros, setCompromisosParametros] = useState({
@@ -26,12 +29,21 @@ const Compromiso = () => {
   useEffect(() => {
     if (validateInputDateRange(compromisosParametros.fechaInicio, compromisosParametros.fechaFin)) {
       getSemanalesCompromisos(compromisosParametros)
-        .then(response => setSemanalesCompromisos(response));
+        .then(response => {
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            setSemanalesCompromisos(response);
+          }
+        });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [compromisosParametros]);
 
   return (
     <>
+      <MessageModal message={message} setShowModal={setModalOpen} showModal={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

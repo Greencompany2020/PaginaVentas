@@ -4,12 +4,13 @@ import { Parameters, ParametersContainer, SmallContainer } from '../../component
 import { InputContainer, InputYear, SelectMonth, Checkbox, SelectTiendasGeneral } from '../../components/inputs';
 import MessageModal from '../../components/MessageModal';
 import { VentasTableContainer, VentasTable, VentasDiariasTableFooter, VentasDiariasTableHead } from '../../components/table';
-import { checkboxLabels } from '../../utils/data';
+import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
 import { getDiariasGrupo } from '../../services/DiariasServices';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { handleChange } from '../../utils/handlers';
 import useMessageModal from '../../hooks/useMessageModal';
+import { isError } from '../../utils/functions';
 
 const Grupo = () => {
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
@@ -32,12 +33,12 @@ const Grupo = () => {
     if (parametrosConsulta.delAgno.toString().length === 4) {
       getDiariasGrupo(parametrosConsulta)
         .then(response => {
-          if (response instanceof Error) {
-            setMessage(response?.response?.data ?? "Ha ocurrido un error al consultar. Vea la consola (F12)");
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
             setModalOpen(true);
-            return;
+          } else {
+            setDiariasGrupo(response);
           }
-          setDiariasGrupo(response);
         })
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps

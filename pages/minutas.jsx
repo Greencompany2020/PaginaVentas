@@ -4,7 +4,9 @@ import Image from 'next/image';
 import Navbar from "../components/Navbar";
 import { MinutasButton } from '../components/buttons';
 import { Flex } from '../components/containers';
+import MessageModal from "../components/MessageModal";
 import { crearDirectorio, crearMinuta, eliminarDirectorio, eliminarMinuta, getListaArchivos } from '../services/MinutasService';
+import useMessageModal from "../hooks/useMessageModal";
 import Chat from '../public/icons/chat.svg';
 import Refresh from '../public/icons/refresh.svg';
 import Home from '../public/icons/home.svg';
@@ -13,6 +15,7 @@ import Question from '../public/images/question.png';
 import Trash from '../public/images/trash-icon.png';
 import Menu from '../public/icons/dot-menu.svg';
 import Close from '../public/icons/close.svg';
+import { isError } from '../utils/functions';
 
 const Minutas = () => {
   const [carpetasArchivos, setcarpetasArchivos] = useState({
@@ -25,8 +28,7 @@ const Minutas = () => {
   const [minutas, setMinutas] = useState([]);
   const [tipo, setTipo] = useState("carpeta");
   const [showModal, setShowModal] = useState(false);
-  const [showMessageModal, setShowMessageModal] = useState(false);
-  const [message, setMessage] = useState("");
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal()
 
   const handleModal = () => {
     setFileDir("");
@@ -57,18 +59,21 @@ const Minutas = () => {
     };
     
 
-    if (result) {
+    if (result && !isError(result)) {
       const nuevasMinutas = await getListaArchivos(directorioActual);
 
       setShowMessageModal(true);
 
       setTimeout(() => {
         setMessage("");
-        setShowMessageModal(false);
+        setModalOpen(false);
         
         setShowModal(false);
         setMinutas(nuevasMinutas);
       }, 2000);
+    } else {
+      setMessage(result?.response?.data ?? "No se pudo eliminar");
+      setModalOpen(true);
     }
   }
 
@@ -76,7 +81,15 @@ const Minutas = () => {
   const handleRaizButton = () => {
     setDirectorioActual("minutas");
     getListaArchivos()
-      .then(response => setMinutas(response));
+      .then(response => {
+
+        if (isError(response)) {
+          setMessage(response?.response?.data ?? "No se pudieron obtener las minutas. Consulte la consola (F12) para más detalles");
+          setModalOpen(true);
+        } else {
+          setMinutas(response)
+        }
+      });
   }
   // Crear carpeta y añadir minuta
   const submitHandler = async (e) => {
@@ -93,7 +106,7 @@ const Minutas = () => {
   
       if (!fileDir) {
         setMessage("Ingrese un nombre para la carpeta");
-        setShowMessageModal(true);
+        setModalOpen(true);
         return;
       }
 
@@ -107,25 +120,28 @@ const Minutas = () => {
   
       const result = await crearDirectorio(newDirectorio);
 
-      if (result) {
+      if (result && !isError(result)) {
         const nuevasMinutas = await getListaArchivos(directorioActual);
         
         setMessage("Se ha creado la carpeta");
-        setShowMessageModal(true);
+        setModalOpen(true);
       
         setTimeout(() => {
           setMessage("");
           setFileDir("");
-          setShowMessageModal(false);
+          setModalOpen(false);
           
           setShowModal(false);
           setMinutas(nuevasMinutas);
         }, 2000);
+      } else {
+        setMessage(result?.response?.data ?? "No se pudo crear la carpeta");
+        setModalOpen(true);
       }
     } else {
       if (fileInputRef.current.files.length === 0) {
         setMessage("Seleccione archivos a subir");
-        setShowMessageModal(true);
+        setModalOpen(true);
         return;
       }
 
@@ -145,31 +161,41 @@ const Minutas = () => {
       for (const key of Object.keys(fileInputRef.current.files)) {
         formData.append("files", fileInputRef.current.files[key]);
       }
-      // console.log(fileDirParam);
+      
       const result = await crearMinuta(formData, fileDirParam);
       
-      if (result) {
+      if (result && !isError(result)) {
         const nuevasMinutas = await getListaArchivos(directorioActual);
         setMessage("Se ha(n) añadido la(s) minuta(s)");
-        setShowMessageModal(true);
+        setModalOpen(true);
         
         setTimeout(() => {
           setMessage("");
           fileInputRef.current.value = "";
-          setShowMessageModal(false);
+          setModalOpen(false);
           
           setShowModal(false);
           setMinutas(nuevasMinutas);
         }, 2000);
+      } else {
+        setMessage(result?.response?.data ?? "No se pudo añadir la minuta");
+        setModalOpen(true);
       }
     }
 
     
   }
-
+  // Actualizar el directorio
   const handleUpdate = async () => {
     const minutasActualizadas = await getListaArchivos(directorioActual);
-    setMinutas(minutasActualizadas);
+
+    if (isError(minutasActualizadas)) {
+      setMessage(minutasActualizadas?.response?.data ?? "No se pudieron obtener las minutas. Consulte la consola (F12) para más detalles");
+      setModalOpen(true);
+    } else {
+      setMinutas(minutasActualizadas);
+    }
+
   }
 
   // Regresa al directorio anterior
@@ -187,7 +213,7 @@ const Minutas = () => {
   const handleDirectorio = (dir) => {
     setDirectorioActual(`minutas/${dir}`);
   }
-  
+  // Obtiene la cuenta de directorios y archivos.
   const updateCount = () => {
     let carpetas = 0;
     let archivos = 0;
@@ -203,8 +229,15 @@ const Minutas = () => {
   useEffect(() => {
     getListaArchivos(directorioActual)
       .then(response => {
-        setMinutas(response)
+
+        if (isError(response)) {
+          setMessage(response?.response?.data ?? "No se pudieron obtener las minutas. Consulte la consola (F12) para más detalles");
+          setModalOpen(true);
+        } else {
+          setMinutas(response)
+        }
       })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [directorioActual]);
 
 
@@ -340,14 +373,15 @@ const Minutas = () => {
           </div>
         </div>
         {/* ERROR MODAL */}
-        <div className={`bg-black absolute w-4/5 sm:w-2/3 lg:w-1/3 ${showMessageModal ? 'top-1/4 transform scale-100 transition ease-in-out duration-200' : '-top-1/4 transform scale-0 transition ease-in-out duration-200'} h-20 flex justify-center items-center p-4 rounded-md`}>
+        <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
+        {/* <div className={`bg-black absolute w-4/5 sm:w-2/3 lg:w-1/3 ${showMessageModal ? 'top-1/4 transform scale-100 transition ease-in-out duration-200' : '-top-1/4 transform scale-0 transition ease-in-out duration-200'} h-20 flex justify-center items-center p-4 rounded-md`}>
           <Flex className="justify-center items-center flex-grow">
             <p className="text-white text-center">{message}</p>
           </Flex>
           <span className="cursor-pointer ml-5" onClick={() => setShowMessageModal(false)}>
             <Image src={Close} alt="close" height={25} width={25}/>
           </span>
-        </div>
+        </div> */}
       </Flex>
     </>
   )

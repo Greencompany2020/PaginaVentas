@@ -12,12 +12,16 @@ import {
 } from "../../components/inputs";
 import { VentasTableContainer } from "../../components/table";
 import { PresupuestoTable } from "../../components/table";
+import MessageModal from '../../components/MessageModal';
 import { handleChange } from '../../utils/handlers'
 import { getInitialPlaza, getPlazaName, validateInputDateRange } from '../../utils/functions';
 import { formatLastDate, getBeginEndMonth } from '../../utils/dateFunctions';
 import { getPresupuestoFechas } from '../../services/PresupuestoService';
+import useMessageModal from '../../hooks/useMessageModal';
+import { MENSAJE_ERROR } from '../../utils/data';
 
 const Fechas = () => {
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [prespuestos, setPrespuestos] = useState({});
   const [paramFechas, setParamFechas] = useState({
     plaza: getInitialPlaza(),
@@ -28,12 +32,22 @@ const Fechas = () => {
   useEffect(() => {
     if (validateInputDateRange(paramFechas.fechaInicio, paramFechas.fechaFin)) {
       getPresupuestoFechas(paramFechas)
-        .then(response => setPrespuestos(response));
+        .then(response => {
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            setPrespuestos(response)
+          }
+        });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramFechas]);
 
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

@@ -3,14 +3,17 @@ import { SmallContainer, ParametersContainer, Parameters } from '../../component
 import { getVentasLayout} from '../../components/layout/VentasLayout';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { InputContainer, Checkbox, InputOfTheDate, InputVsYear } from '../../components/inputs';
-import { checkboxLabels, inputNames } from '../../utils/data';
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
+import MessageModal from '../../components/MessageModal';
 import { getCurrentDate, getCurrentYear, getYearFromDate, semanaSanta } from '../../utils/dateFunctions';
-import { getDayName, rowColor, validateDate, validateYear, getTableName, dateRangeTitleSemanaSanta } from '../../utils/functions';
+import { getDayName, rowColor, validateDate, validateYear, getTableName, dateRangeTitleSemanaSanta, isError } from '../../utils/functions';
 import { handleChange } from '../../utils/handlers';
 import { getSemanaSantaAcumulado } from '../../services/semanaSantaService';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
+import useMessageModal from '../../hooks/useMessageModal';
 
 const Acumulado = () => {
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [fechaInicioSemana, setFechaInicioSemana] = useState(semanaSanta(getCurrentYear())[0]);
   const [acumulado, setAcumulado] = useState([]);
   const [paramAcumulado, setParamAcumulado] = useState({
@@ -27,12 +30,22 @@ const Acumulado = () => {
   useEffect(() => {
     if (validateDate(paramAcumulado.fecha) && validateYear(paramAcumulado.versusAgno)) {
       getSemanaSantaAcumulado(paramAcumulado)
-        .then(response => setAcumulado(response));
+        .then(response => {
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true)
+          } else {
+            setAcumulado(response)
+          }
+        });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramAcumulado]);
 
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

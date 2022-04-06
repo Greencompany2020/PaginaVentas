@@ -1,4 +1,6 @@
 import ApiProvider from "./ApiProvider";
+// TODO: Modal de mensaje de error para minutas
+// TODO: posible respuesta en forma de objeto
 
 export async function getListaArchivos(fileDir) {
   try {
@@ -18,6 +20,7 @@ export async function getListaArchivos(fileDir) {
     return data;
   } catch (error) {
     console.log(error?.response?.data);
+    return error;
   }
 }
 
@@ -27,7 +30,7 @@ export async function crearDirectorio(dirData) {
     return true;
   } catch (error) {
     console.log(error?.response?.data);
-    return false;
+    return error;
   }
 }
 
@@ -41,7 +44,7 @@ export async function crearMinuta(minutaData, fileDir) {
     return true;
   } catch (error) {
     console.log(error?.response?.data);
-    return false;
+    return error;
   }
 }
 
@@ -55,7 +58,7 @@ export async function eliminarDirectorio(fileDir) {
     return true;
   } catch (error) {
     console.log(error?.response?.data);
-    return false;
+    return error;
   }
 }
 
@@ -69,6 +72,6 @@ export async function eliminarMinuta(fileDir) {
     return true;
   } catch (error) {
     console.log(error?.response?.data);
-    return false;
+    return error;
   }
 }

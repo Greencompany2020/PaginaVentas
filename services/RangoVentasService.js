@@ -6,6 +6,7 @@ export async function getRangoVentasPlaza(body) {
     return data.result;
   } catch (error) {
     console.log(error?.response?.data);
+    return error;
   }
 }
 
@@ -15,5 +16,6 @@ export async function getRangoVentasTienda(body) {
     return data.result;
   } catch (error) {
     console.log(error?.response?.data);
+    return error;
   }
 }

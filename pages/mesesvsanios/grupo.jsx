@@ -1,17 +1,21 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import BarChart from '../../components/BarChart';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, SelectMonth, SelectTiendasGeneral, InputYear, Checkbox, InputToYear, SelectToMonth } from '../../components/inputs';
-import { checkboxLabels, inputNames } from '../../utils/data';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
-import { formatLastDate, getCurrentMonth, getCurrentYear, getMonthByNumber, getPrevDate } from '../../utils/dateFunctions';
+import MessageModal from '../../components/MessageModal';
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
+import { formatLastDate, getCurrentMonth, getCurrentYear, getPrevDate } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getMesesAgnosGrupo } from '../../services/MesesAgnosService';
-
+import useGraphData from '../../hooks/useGraphData';
+import useMessageModal from "../../hooks/useMessageModal";
+import { createMesesAgnosGrupoDataset, isError, validateMonthRange, validateYearRange } from '../../utils/functions';
+// TODO: probar validaciones agregadas y useGraphData
 const Grupo = () => {
-  const [labels, setLabels] = useState([]);
-  const [datasets, setDatasets] = useState([]);
+  const { labels, setLabels, datasets, setDatasets } = useGraphData();
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [parametrosGrupo, setParametrosGrupo] = useState({
     delAgno: getCurrentYear() - 5,
     alAgno: getCurrentYear(),
@@ -31,76 +35,64 @@ const Grupo = () => {
     if (validateYearRange(parametrosGrupo.delAgno, parametrosGrupo.alAgno) && validateMonthRange(parametrosGrupo.delMes, parametrosGrupo.alMes)) {
       getMesesAgnosGrupo(parametrosGrupo)
         .then(response => {
-          createMesesAgnosGrupoDataset(response, parametrosGrupo.delAgno, parametrosGrupo.alAgno)
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            createMesesAgnosGrupoDataset(
+                response,
+                parametrosGrupo.delAgno,
+                parametrosGrupo.alAgno,
+                setDatasets,
+                setLabels
+              )
+          }
         })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parametrosGrupo]);
 
-  const validateYearRange = (year1, year2) => {
-    return (year1?.toString().length === 4 && year2?.toString().length === 4) && year1 < year2;
-  }
+  // const createMesesAgnosGrupoDataset = (data, fromYear, toYear) => {
+  //   const colors = ['#006400', '#daa520', '#6495ed', '#ff7f50', '#98fb98'];
 
-  const validateMonthRange = (month1, month2) => (month1 <= month2) && (month1 !== 0 && month2 !== 0);
+  //   if (data?.length !== 0) {
+  //     let labels = [];
+  //     labels = data.map(item => item?.Mes ? getMonthByNumber(item.Mes) : item.titulo);
+  //     setLabels(labels);
 
-  const createMesesAgnosGrupoDataset = (data, fromYear, toYear) => {
-    const colors = ['#006400', '#daa520', '#6495ed', '#ff7f50', '#98fb98'];
+  //     let datasets = [];
+  //     let colorIndex = 0;
+  //     let dataSetIndex = 1;
+  //     for (let i = toYear; i >= fromYear; i--) {
+  //       let ventas = data.map(item => item[`Ventas${i}`]);
+  //       let ventasPrev = data.map(item => item[`Ventas${i - 1}`] ?? 0)
 
-    if (data?.length !== 0) {
-      let labels = [];
-      labels = data.map(item => item?.Mes ? getMonthByNumber(item.Mes) : item.titulo);
-      setLabels(labels);
+  //       datasets.push({
+  //         id: dataSetIndex,
+  //         label: `${i} ${calculateCrecimiento(ventas, ventasPrev)}%`,
+  //         data: data.map(item => Math.floor(item[`Ventas${i}`])),
+  //         backgroundColor: colors[colorIndex]
+  //       });
 
-      let datasets = [];
-      let colorIndex = 0;
-      let dataSetIndex = 1;
-      for (let i = toYear; i >= fromYear; i--) {
-        let ventas = data.map(item => item[`Ventas${i}`]);
-        let ventasPrev = data.map(item => item[`Ventas${i - 1}`] ?? 0)
+  //       colorIndex++;
+  //       dataSetIndex++;
 
-        datasets.push({
-          id: dataSetIndex,
-          label: `${i} ${calculateCrecimiento(ventas, ventasPrev)}%`,
-          data: data.map(item => Math.floor(item[`Ventas${i}`])),
-          backgroundColor: colors[colorIndex]
-        });
+  //       if (colorIndex === colors.length) {
+  //         colorIndex = 0;
+  //       }
+  //     }
 
-        colorIndex++;
-        dataSetIndex++;
-
-        if (colorIndex === colors.length) {
-          colorIndex = 0;
-        }
-      }
-
-      setDatasets(datasets);
-    } else {
-      setLabels([]);
-      setDatasets([]);
-    }
-  }
-
-  /**
-   * 
-   * @param {number[]} dataList1 
-   * @param {number[]} dataList2 
-   */
-  const calculateCrecimiento = (dataList1, dataList2) => {
-    const sumTotal = dataList1.reduce((acc, curr) => acc + curr);
-    const sumTotalPrev = dataList2.reduce((acc, curr) => acc + curr);
-
-    const porcentaje = calculatePromedio(sumTotal, sumTotalPrev);
-
-    return porcentaje;
-  }
-
-  const calculatePromedio = (total1, total2) => {
-    if (total2 === 0) return 0;
-    return ((total1 / total2 - 1) * 100).toFixed(1);
-  }
+  //     setDatasets(datasets);
+  //   } else {
+  //     setLabels([]);
+  //     setDatasets([]);
+  //   }
+  // }
 
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

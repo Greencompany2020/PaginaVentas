@@ -3,14 +3,17 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { InputContainer, Checkbox, SelectTiendasGeneral, InputDate } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableBody, TableHead } from '../../components/table';
-import { checkboxLabels, inputNames } from '../../utils/data';
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getCurrentWeekDateRange, getMonthByNumber, getYearFromDate } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
-import { validateDate } from '../../utils/functions';
+import { isError, validateDate } from '../../utils/functions';
 import { getPorcentajeCrecimiento } from '../../services/PorcentajesService';
 import { numberWithCommas } from '../../utils/resultsFormated';
+import useMessageModal from "../../hooks/useMessageModal";
+import MessageModal from '../../components/MessageModal';
 
 const Crecimiento = () => {
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [dateRange, setDateRange] = useState([]);
   const [crecimiento, setCrecimiento] = useState([]);
   const [parametrosCrecimiento, setParametrosCrecimiento] = useState({
@@ -36,14 +39,23 @@ const Crecimiento = () => {
     if (validateDate(parametrosCrecimiento.fecha)) {
       getPorcentajeCrecimiento(parametrosCrecimiento)
         .then(response => {
-          createDateRange()
-          setCrecimiento(response);
+
+          if (isError(response)) {
+            setMessage(response?.response?.data ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            createDateRange()
+            setCrecimiento(response);
+          }
+
         })
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parametrosCrecimiento, createDateRange]);
 
   return (
     <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
