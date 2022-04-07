@@ -1,4 +1,4 @@
-import { Flex } from '@components/containers';
+import { Flex } from '../containers';
 import { meses } from '../../utils/data'
 
 const SelectMonth = ({ value, onChange }) => {

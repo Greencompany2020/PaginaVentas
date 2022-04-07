@@ -1,10 +1,10 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { ParametersContainer, Parameters, SmallContainer,Flex } from '@components/containers';
-import { InputContainer, InputYear, InputVsYear, SelectTiendas,SelectPlazas, Checkbox } from '@components/inputs';
-import { VentasTableContainer } from '@components/table';
-import BarChart from '@components/BarChart';
 import { useState } from 'react';
-import { checkboxLabels} from 'utils/data';
+import VentasLayout from '../../components/layout/VentasLayout';
+import { ParametersContainer, Parameters, SmallContainer,Flex } from '../../components/containers';
+import { InputContainer, InputYear, InputVsYear, SelectTiendas,SelectPlazas, Checkbox } from '../../components/inputs';
+import { VentasTableContainer } from '../../components/table';
+import BarChart from '../../components/BarChart';
+import { checkboxLabels} from '../../utils/data';
 
 const Grafica = ({year1,year2}) => {
   year1 = 1

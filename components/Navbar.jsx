@@ -1,10 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Flex } from '@components/containers';
+import { Flex } from '../components/containers';
 import { ChevronDownIcon } from '@heroicons/react/solid';
-import Logo from '@public/images/green-company-logo.png';
-import Menu from '@public/images/dot-menu.png';
-import User from '@public/images/user-frogs.jpg';
+import Logo from '../public/images/green-company-logo.png';
+import Menu from '../public/images/dot-menu.png';
+import User from '../public/images/user-frogs.jpg';
 
 const Navbar = () => {
   return (

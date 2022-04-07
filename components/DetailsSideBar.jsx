@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Image from 'next/image';
-import Plus from '@public/icons/plus.svg';
+import Plus from '../public/icons/plus.svg';
 
 const DetailsSideBar = ({ summaryText, links }) => {
   const router = useRouter();

@@ -38,7 +38,7 @@ const Tienda = () => {
 
   return (
     <>
-      <MessageModal message={message} setShowModal={setModalOpen} showModal={modalOpen} />
+      <MessageModal message={message} setModalOpen={setModalOpen} modalOpen={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>

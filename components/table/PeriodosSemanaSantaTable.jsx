@@ -1,4 +1,4 @@
-import {  VentasTable } from ".";
+import { VentasTable } from ".";
 
 const PeriodosSemanaSantaTable = ({ dates }) => {
   return (

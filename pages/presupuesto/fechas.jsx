@@ -14,7 +14,7 @@ import { VentasTableContainer } from "../../components/table";
 import { PresupuestoTable } from "../../components/table";
 import MessageModal from '../../components/MessageModal';
 import { handleChange } from '../../utils/handlers'
-import { getInitialPlaza, getPlazaName, validateInputDateRange } from '../../utils/functions';
+import { getInitialPlaza, getPlazaName, isError, validateInputDateRange } from '../../utils/functions';
 import { formatLastDate, getBeginEndMonth } from '../../utils/dateFunctions';
 import { getPresupuestoFechas } from '../../services/PresupuestoService';
 import useMessageModal from '../../hooks/useMessageModal';

@@ -1,4 +1,4 @@
-import { Flex } from '../../components/containers';
+import { Flex } from '../containers';
 import { plazas } from '../../utils/data';
 
 const SelectPlazas = ({ classLabel, onChange, value }) => {

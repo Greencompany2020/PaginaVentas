@@ -1,9 +1,9 @@
 import Image from 'next/image'
-import Navbar from 'components/Navbar';
-import { DashboardButton, DashboardButtonContainer, } from '@components/buttons';
-import { Flex } from '@components/containers';
-import SalesForecast from '@public/icons/sales-forecast.svg';
-import Chat from '@public/icons/chat.svg';
+import Navbar from '../components/Navbar';
+import { DashboardButton, DashboardButtonContainer, } from '../components/buttons';
+import { Flex } from '../components/containers';
+import SalesForecast from '../public/icons/sales-forecast.svg';
+import Chat from '../public/icons/chat.svg';
 
 const Dashboard = () => {
   return (

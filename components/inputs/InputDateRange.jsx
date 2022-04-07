@@ -1,4 +1,4 @@
-import { Flex } from '../../components/containers';
+import { Flex } from '../containers';
 
 const InputDateRange = ({ beginDate, endDate, onChange }) => {
   return (

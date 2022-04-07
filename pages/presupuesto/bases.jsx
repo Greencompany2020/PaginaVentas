@@ -1,24 +1,19 @@
-import VentasLayout from "@components/layout/VentasLayout";
+import VentasLayout from "../../components/layout/VentasLayout";
 import {
   Parameters,
   ParametersContainer,
   SmallContainer,
-} from "@components/containers";
+} from "../../components/containers";
 import {
   InputContainer,
   SelectTiendasGeneral,
   SelectPlazas,
   InputYear,
   Checkbox,
-} from "@components/inputs";
-import {
-  VentasTableContainer,
-  VentasTable,
-  SemanaSantaTableFooter,
-  VentasSemanaSantaHead,
-} from "@components/table";
-import { ventasDiariasGrupo, checkboxLabels } from "utils/data";
+} from "../../components/inputs";
+import { VentasTableContainer } from "../../components/table";
 import PresupuestoBasesTable from "../../components/table/PresupuestoBasesTable";
+import { checkboxLabels } from "utils/data";
 
 const porplaza = () => {
   const year = 2000;

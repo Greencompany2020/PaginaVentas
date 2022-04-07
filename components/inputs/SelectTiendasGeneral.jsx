@@ -1,4 +1,4 @@
-import { Flex } from '@components/containers';
+import { Flex } from '../containers';
 import { tiendasGeneral } from '../../utils/data'
 
 const SelectTiendasGeneral = ({ value, onChange }) => {

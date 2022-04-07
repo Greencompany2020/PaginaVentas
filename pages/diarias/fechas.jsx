@@ -27,7 +27,7 @@ const Fechas = () => {
 
   return (
     <>
-      <MessageModal message={message} setShowModal={setModalOpen} showModal={modalOpen} />
+      <MessageModal message={message} setModalOpen={setModalOpen} modalOpen={modalOpen} />
       <VentasTableContainer title="Reporte de la ultima fecha de venta registrada por tienda">
         <VentasTable>
           <TableHead>

@@ -12,7 +12,7 @@ import { getMesesAgnosGrupo } from '../../services/MesesAgnosService';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from "../../hooks/useMessageModal";
 import { createMesesAgnosGrupoDataset, isError, validateMonthRange, validateYearRange } from '../../utils/functions';
-// TODO: probar validaciones agregadas y useGraphData
+
 const Grupo = () => {
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();

@@ -1,10 +1,10 @@
 // Componentes externos
 import Image from 'next/image';
 // Componentes propios
-import { Flex } from '@components/containers';
+import { Flex } from '../containers'
 // Funciones y hooks
 // Recursos (img, js, css)
-import Trend from '@public/images/trend.png';
+import Trend from '../../public/images/trend.png'
 
 const VentasTableContainer = ({ children, title }) => {
   return (

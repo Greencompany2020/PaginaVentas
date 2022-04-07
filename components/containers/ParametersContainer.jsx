@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import { Flex } from './index'
-import Settings from '@public/images/settings.png'
+import Settings from '../../public/images/settings.png'
 
 const ParametersContainer = ({ children }) => {
   return (

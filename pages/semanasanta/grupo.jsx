@@ -54,7 +54,7 @@ const Grupo = () => {
         getSemanaSantaGrupo(paramGrupo)
           .then(response => {
 
-            if (response instanceof Error) {
+            if (isError(response)) {
               setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
               setModalOpen(true);
             } else {

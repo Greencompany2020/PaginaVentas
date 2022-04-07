@@ -1,7 +1,6 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { Parameters, ParametersContainer, SmallContainer } from '@components/containers';
-import { InputContainer, SelectMonth, SelectTiendasGeneral, InputDateDate, Checkbox,InputToYear,SelectToMonth } from '@components/inputs';
-import { checkboxLabels } from 'utils/data';
+import VentasLayout from '../../components/layout/VentasLayout';
+import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
+import { InputContainer, SelectTiendasGeneral, InputDateDate } from '../../components/inputs';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import PieChart from '../../components/Pie';
 
