@@ -12,7 +12,7 @@ import {
 } from "../../components/inputs";
 import { VentasTableContainer } from "../../components/table";
 import { PresupuestoTable } from "../../components/table";
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import { handleChange } from '../../utils/handlers'
 import { getInitialPlaza, getPlazaName, isError, validateInputDateRange } from '../../utils/functions';
 import { formatLastDate, getBeginEndMonth } from '../../utils/dateFunctions';

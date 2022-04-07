@@ -4,7 +4,7 @@ import { ParametersContainer, Parameters, SmallContainer } from '../../component
 import { InputContainer, SelectTiendasGeneral, Checkbox, InputToYear, SelectToMonth } from '../../components/inputs';
 import { VentasTableContainer } from '../../components/table';
 import BarChart from '../../components/BarChart';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
 import { formatedDate, formatLastDate, getCurrentMonth, getCurrentYear, getMonthByNumber } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import VentasLayout from '../../components/layout/VentasLayout';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer,Flex } from '../../components/containers';
 import { InputContainer, InputYear, InputVsYear, SelectTiendas,SelectPlazas, Checkbox } from '../../components/inputs';
 import { VentasTableContainer } from '../../components/table';
@@ -23,7 +23,7 @@ const Grafica = ({year1,year2}) => {
   }
 
   return (
-    <VentasLayout>
+    <>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -93,8 +93,10 @@ const Grafica = ({year1,year2}) => {
           }}
         />
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
+
+Grafica.getLayout = getVentasLayout;
 
 export default Grafica

@@ -1,7 +1,7 @@
 import { useState, useEffect, Fragment } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import { InputContainer, Checkbox, InputDate } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';

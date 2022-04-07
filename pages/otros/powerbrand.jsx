@@ -1,11 +1,11 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { ParametersContainer, Parameters, SmallContainer } from '@components/containers';
-import { InputContainer, InputDate } from '@components/inputs';
-import { VentasTableContainer, VentasTable, TableHead, TableBody } from '@components/table';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
+import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
+import { InputContainer, InputDate } from '../../components/inputs';
+import { VentasTableContainer, VentasTable, TableHead, TableBody } from '../../components/table';
 
 const powerbrand = () => {
   return (
-    <VentasLayout>
+    <>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -78,8 +78,10 @@ const powerbrand = () => {
           </TableBody>
         </VentasTable>
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
+
+powerbrand.getLayout = getVentasLayout;
 
 export default powerbrand

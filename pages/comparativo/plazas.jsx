@@ -5,7 +5,7 @@ import { VentasTableContainer, VentasTable, TableHead } from '../../components/t
 import { InputContainer, Checkbox, InputDate } from '../../components/inputs';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getMonthByNumber, getPrevDate, getYearFromDate } from '../../utils/dateFunctions';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import { handleChange } from '../../utils/handlers';
 import { getTableName, isError, validateDate } from '../../utils/functions';
 import { getComparativoPlazas } from '../../services/ComparativoService';

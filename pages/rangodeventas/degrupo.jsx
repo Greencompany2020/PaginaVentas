@@ -1,4 +1,4 @@
-import VentasLayout from '../../components/layout/VentasLayout';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, SelectTiendasGeneral, InputDateDate } from '../../components/inputs';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
@@ -6,7 +6,7 @@ import PieChart from '../../components/Pie';
 
 const degrupo = () => {
   return (
-    <VentasLayout>
+    <>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -56,8 +56,10 @@ const degrupo = () => {
           }}
         />
       </ComparativoVentas>
-    </VentasLayout>
+    </>
   )
 }
+
+degrupo.getLayout = getVentasLayout;
 
 export default degrupo

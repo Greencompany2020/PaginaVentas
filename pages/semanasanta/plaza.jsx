@@ -15,7 +15,7 @@ import {
 import { VentasTableContainer } from "../../components/table";
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
 import SemanaSantaTable from "../../components/table/SemanaSantaTable";
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import { getInitialPlaza, isError, validateYear } from '../../utils/functions';
 import { getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';

@@ -3,6 +3,7 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { InputContainer, Checkbox, SelectTiendasGeneral, InputDate } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableBody, TableHead } from '../../components/table';
+import { MessageModal } from '../../components/modals';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getCurrentWeekDateRange, getMonthByNumber, getYearFromDate } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
@@ -10,7 +11,6 @@ import { isError, validateDate } from '../../utils/functions';
 import { getPorcentajeCrecimiento } from '../../services/PorcentajesService';
 import { numberWithCommas } from '../../utils/resultsFormated';
 import useMessageModal from "../../hooks/useMessageModal";
-import MessageModal from '../../components/MessageModal';
 
 const Crecimiento = () => {
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();

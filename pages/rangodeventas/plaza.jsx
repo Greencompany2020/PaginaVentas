@@ -4,7 +4,7 @@ import { Parameters, ParametersContainer, SmallContainer } from '../../component
 import { InputContainer, SelectPlazas, InputRangos, InputDateRange, Checkbox } from '../../components/inputs';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import PieChart from '../../components/Pie';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import { createRangoVentasDataset, getInitialPlaza, isError, validateInputDateRange } from '../../utils/functions';
 import { getBeginEndMonth } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';

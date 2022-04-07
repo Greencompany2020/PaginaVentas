@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import React from 'react'
-import { Flex } from './containers'
-import Close from '../public/icons/close.svg';
+import { Flex } from '../containers'
+import Close from '../../public/icons/close.svg';
 
 const MessageModal = ({ modalOpen, setModalOpen, message }) => {
   return (

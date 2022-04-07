@@ -1,6 +1,6 @@
 import { useState ,useEffect } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import { VentasTableContainer, PeriodosSemanaSantaTable } from '../../components/table';
 import useMessageModal from '../../hooks/useMessageModal';
 import { getSemanaSantaPeriodos } from '../../services/semanaSantaService';

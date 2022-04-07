@@ -4,7 +4,7 @@ import Image from 'next/image';
 import Navbar from "../components/Navbar";
 import { MinutasButton } from '../components/buttons';
 import { Flex } from '../components/containers';
-import MessageModal from "../components/MessageModal";
+import { ConfirmModal, MessageModal } from "../components/modals";
 import { crearDirectorio, crearMinuta, eliminarDirectorio, eliminarMinuta, getListaArchivos } from '../services/MinutasService';
 import useMessageModal from "../hooks/useMessageModal";
 import Chat from '../public/icons/chat.svg';
@@ -27,6 +27,8 @@ const Minutas = () => {
   const [fileDir, setFileDir] = useState("");
   const [minutas, setMinutas] = useState([]);
   const [tipo, setTipo] = useState("carpeta");
+  // Estados modal
+  const confirmModalRef = useRef(null);
   const [showModal, setShowModal] = useState(false);
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal()
 
@@ -46,8 +48,10 @@ const Minutas = () => {
     setShowModal(!showModal);
     setTipo("minuta");
   }
-  
+  // Eliminar un directorio o archivo
   const handleDelete = async (dir, type) => {
+    const confirm = await confirmModalRef.current?.show()
+    
     let result = null;
 
     if (type === "directory") {
@@ -58,6 +62,8 @@ const Minutas = () => {
       result = await eliminarMinuta(dir);
     };
     
+
+    if (!confirm) return;
 
     if (result && !isError(result)) {
       const nuevasMinutas = await getListaArchivos(directorioActual);
@@ -259,21 +265,21 @@ const Minutas = () => {
             <Flex className="justify-center sm:justify-end mb-2 flex-wrap">
               {/* Botón Raiz */}
               <MinutasButton onClick={handleRaizButton}>
-                <Image src={Home} alt='' height={28} width={28} />
+                <Image src={Home} alt='Home' height={28} width={28} />
                 <span className="text-white ml-2">Raíz</span>
               </MinutasButton>
               {/* Botón Crear Carpeta */}
               <MinutasButton onClick={handleCarpetaButton}>
-                <Image src={Chat} alt='' height={28} width={28}/>
+                <Image src={Chat} alt='Dialog' height={28} width={28}/>
                 <span className="text-white mr-2">+ Carpeta</span>
               </MinutasButton>
               {/* Botón Crear Minuta */}
               <MinutasButton onClick={handleMinutaButton}>
-                <Image src={Chat} alt='' height={28} width={28} />
+                <Image src={Chat} alt='Dialog' height={28} width={28} />
                 <span className="text-white mr-2">+ Minuta</span>
               </MinutasButton>
               <MinutasButton onClick={handleUpdate}>
-                <Image src={Refresh} alt='' height={28} width={28} />
+                <Image src={Refresh} alt='Refresh' height={28} width={28} />
                 <span className="text-white mr-2">Actualizar</span>
               </MinutasButton>
               {/* <MinutasButton>
@@ -297,7 +303,7 @@ const Minutas = () => {
               <tbody>
                 <tr>
                   <td className='w-10 p-2 border-2 text-yellow-500'>
-                    <Image src={Folder} alt='' className="w-7 h-7 m-auto object-cover" />
+                    <Image src={Folder} alt='Folder' className="w-7 h-7 m-auto object-cover" />
                   </td>
                   <td className='border-2 text-left pl-1'>
                     <p className="hover:cursor-pointer" onClick={handlePrevDirectorio}>...</p>
@@ -310,7 +316,7 @@ const Minutas = () => {
                   minutas?.map(item => (
                     <tr className="text-center" key={item.name}>
                       <td className="w-10 p-2 border-2 text-yellow-500">
-                        {item.typeItem === "file" ? <Image src={Question} alt='' className="m-auto object-contain" height={28} width={28} /> : <Image src={Folder} alt='' className="m-auto object-contain" height={28} width={28}/>}
+                        {item.typeItem === "file" ? <Image src={Question} alt='Unknown' className="m-auto object-contain" height={28} width={28} /> : <Image src={Folder} alt='Dir' className="m-auto object-contain" height={28} width={28}/>}
                       </td>
                       <td className="border-2 text-left pl-1">
                         {
@@ -321,13 +327,13 @@ const Minutas = () => {
                         }
                       </td>
                       <td className="border-2">
-                        {item.size}
+                        {item.size.includes('0') ? '' : item.size}
                       </td>
                       <td className="border-2">
                         ---
                       </td>
                       <td className="border-2 text-blue-600">
-                        <Image src={Trash} alt='' 
+                        <Image src={Trash} alt='Trash' 
                           className="m-auto object-contain cursor-pointer" 
                           height={28} 
                           width={28} 
@@ -374,6 +380,8 @@ const Minutas = () => {
         </div>
         {/* ERROR MODAL */}
         <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
+        {/* CONFIRM MODAL */}
+        <ConfirmModal ref={confirmModalRef} />
       </Flex>
     </>
   )

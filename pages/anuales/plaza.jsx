@@ -3,7 +3,7 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { InputContainer, InputToYear, SelectTiendasGeneral, Checkbox, InputYear, SelectToMonth } from '../../components/inputs';
 import { VentasTableContainer } from '../../components/table';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import BarChart from '../../components/BarChart';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getCurrentMonth, getCurrentYear, getMonthByNumber } from '../../utils/dateFunctions';

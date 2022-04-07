@@ -13,7 +13,7 @@ import {
   SelectTiendasGeneral,
 } from "../../components/inputs";
 import { VentasTableContainer } from "../../components/table";
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import SemanaSantaTable from "../../components/table/SemanaSantaTable";
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
 import { getCurrentYear } from '../../utils/dateFunctions';

@@ -3,7 +3,7 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, InputDateRange, InputRangos, SelectTiendas, } from '../../components/inputs';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import PieChart from '../../components/Pie';
 import { createRangoVentasDataset, getInitialTienda, isError, validateInputDateRange } from '../../utils/functions';
 import { getBeginEndMonth } from '../../utils/dateFunctions';

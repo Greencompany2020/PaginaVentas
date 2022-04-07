@@ -3,7 +3,7 @@ import { SmallContainer, ParametersContainer, Parameters } from '../../component
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { InputContainer, InputDateRange, Checkbox, SelectTiendasGeneral } from '../../components/inputs';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import RegionesPlazaTableRow from '../../components/table/RegionesPlazaTableRow';
 import { regiones, checkboxLabels, plazas, MENSAJE_ERROR } from '../../utils/data';
 import { getCurrentWeekDateRange, getYearFromDate } from '../../utils/dateFunctions';

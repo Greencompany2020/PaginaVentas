@@ -4,7 +4,7 @@ import { Checkbox, InputContainer, InputToYear, InputYear, SelectMonth, SelectTi
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import { getOperacionesTienda } from '../../services/OperacionesService';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import BarChart from '../../components/BarChart';
 import { checkboxLabels, inputNames, MENSAJE_ERROR, meses } from '../../utils/data';
 import { getCurrentMonth, getCurrentYear } from '../../utils/dateFunctions';

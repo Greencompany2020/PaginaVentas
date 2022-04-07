@@ -5,7 +5,7 @@ import { InputContainer, InputYear, SelectPlazas, Checkbox } from '../../compone
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import BarChart from '../../components/BarChart';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import { getInitialPlaza, getPlazaName, isError, validateYear } from '../../utils/functions';
 import { formatLastDate, getCurrentYear, getMonthByNumber, getPrevDate } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';

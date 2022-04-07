@@ -3,7 +3,7 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { InputContainer, InputYear, Checkbox } from '../../components/inputs';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import { checkboxLabels, concentradoPlazas, MENSAJE_ERROR } from '../../utils/data';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { getMensualesConcentrado } from '../../services/MensualesServices';

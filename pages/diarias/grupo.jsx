@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, InputYear, SelectMonth, Checkbox, SelectTiendasGeneral } from '../../components/inputs';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import { VentasTableContainer, VentasTable, VentasDiariasTableFooter, VentasDiariasTableHead } from '../../components/table';
 import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
 import { getDiariasGrupo } from '../../services/DiariasServices';

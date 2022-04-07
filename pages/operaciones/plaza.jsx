@@ -3,14 +3,14 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, SelectPlazas,SelectMonth, SelectToMonth, InputYear, Checkbox } from '../../components/inputs';
 import BarChart from '../../components/BarChart';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
-import useMessageModal from '../../hooks/useMessageModal';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { createOperacionesDatasets, getInitialPlaza, getPlazaName, validateMonthRange, validateYear, isError } from '../../utils/functions';
 import { getCurrentMonth, getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getOperacionesPlaza } from '../../services/OperacionesService';
+import useMessageModal from '../../hooks/useMessageModal';
 import useGraphData from '../../hooks/useGraphData';
 
 const Plaza = () => {

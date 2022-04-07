@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import useMessageModal from '../../hooks/useMessageModal';
 import { getDiariasFechas } from '../../services/DiariasServices';

@@ -4,7 +4,7 @@ import { getVentasLayout} from '../../components/layout/VentasLayout';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { InputContainer, Checkbox, InputOfTheDate, InputVsYear } from '../../components/inputs';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import { getCurrentDate, getCurrentYear, getYearFromDate, semanaSanta } from '../../utils/dateFunctions';
 import { getDayName, rowColor, validateDate, validateYear, getTableName, dateRangeTitleSemanaSanta, isError } from '../../utils/functions';
 import { handleChange } from '../../utils/handlers';

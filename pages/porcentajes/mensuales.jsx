@@ -3,6 +3,7 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer, Flex } from '../../components/containers';
 import { InputContainer, InputYear, InputToYear, Checkbox, SelectTiendas, SelectPlazas } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableBody, TableHead } from '../../components/table';
+import { MessageModal } from '../../components/modals';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getInitialPlaza, getInitialTienda, isError, validateYearRange } from '../../utils/functions';
 import { formatedDate, formatLastDate, getPrevDate, getYearFromDate } from '../../utils/dateFunctions';
@@ -10,7 +11,6 @@ import { numberWithCommas } from '../../utils/resultsFormated';
 import { handleChange } from '../../utils/handlers';
 import { getPorcentajesMensuales } from '../../services/PorcentajesService';
 import useMessageModal from '../../hooks/useMessageModal';
-import MessageModal from '../../components/MessageModal';
 
 const Mensuales = () => {
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();

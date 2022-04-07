@@ -5,7 +5,7 @@ import { InputContainer, SelectMonth, SelectToMonth, InputYear, SelectPlazas, Ch
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import { checkboxLabels, inputNames, MENSAJE_ERROR, meses } from '../../utils/data';
 import BarChart from '../../components/BarChart';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import { getInitialPlaza, getPlazaName, validateMonthRange, validateYear, createPresupuestoDatasets, isError } from '../../utils/functions';
 import { getCurrentMonth, getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';

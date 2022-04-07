@@ -4,7 +4,7 @@ import BarChart from '../../components/BarChart';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, SelectMonth, SelectTiendasGeneral, InputYear, Checkbox, InputToYear, SelectToMonth } from '../../components/inputs';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { formatLastDate, getCurrentMonth, getCurrentYear, getPrevDate } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
@@ -52,44 +52,7 @@ const Grupo = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parametrosGrupo]);
-
-  // const createMesesAgnosGrupoDataset = (data, fromYear, toYear) => {
-  //   const colors = ['#006400', '#daa520', '#6495ed', '#ff7f50', '#98fb98'];
-
-  //   if (data?.length !== 0) {
-  //     let labels = [];
-  //     labels = data.map(item => item?.Mes ? getMonthByNumber(item.Mes) : item.titulo);
-  //     setLabels(labels);
-
-  //     let datasets = [];
-  //     let colorIndex = 0;
-  //     let dataSetIndex = 1;
-  //     for (let i = toYear; i >= fromYear; i--) {
-  //       let ventas = data.map(item => item[`Ventas${i}`]);
-  //       let ventasPrev = data.map(item => item[`Ventas${i - 1}`] ?? 0)
-
-  //       datasets.push({
-  //         id: dataSetIndex,
-  //         label: `${i} ${calculateCrecimiento(ventas, ventasPrev)}%`,
-  //         data: data.map(item => Math.floor(item[`Ventas${i}`])),
-  //         backgroundColor: colors[colorIndex]
-  //       });
-
-  //       colorIndex++;
-  //       dataSetIndex++;
-
-  //       if (colorIndex === colors.length) {
-  //         colorIndex = 0;
-  //       }
-  //     }
-
-  //     setDatasets(datasets);
-  //   } else {
-  //     setLabels([]);
-  //     setDatasets([]);
-  //   }
-  // }
-
+  
   return (
     <>
       <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />

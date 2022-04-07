@@ -3,6 +3,7 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { InputContainer, SelectMonth, InputToYear, SelectTiendasGeneral, Checkbox } from '../../components/inputs';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { VentasTableContainer } from '../../components/table';
+import { MessageModal } from '../../components/modals';
 import BarChart from '../../components/BarChart';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { formatedDate, formatLastDate, getCurrentMonth, getCurrentYear, getMonthByNumber } from '../../utils/dateFunctions';
@@ -10,7 +11,6 @@ import { handleChange } from '../../utils/handlers';
 import { getMensualesTiendas } from '../../services/MensualesServices';
 import { createSimpleDatasets, isError, validateYear } from '../../utils/functions';
 import useMessageModal from '../../hooks/useMessageModal';
-import MessageModal from '../../components/MessageModal';
 import useGraphData from '../../hooks/useGraphData';
 
 const Tiendas = () => {

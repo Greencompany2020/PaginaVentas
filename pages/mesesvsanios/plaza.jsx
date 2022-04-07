@@ -3,7 +3,7 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, SelectMonth, SelectToMonth, InputToYear, InputYear, Checkbox, SelectPlazas } from '../../components/inputs';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
-import MessageModal from '../../components/MessageModal';
+import { MessageModal } from '../../components/modals';
 import BarChart from '../../components/BarChart';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import { calculateCrecimiento, getInitialPlaza, isError, validateMonthRange, validateYearRange } from '../../utils/functions';

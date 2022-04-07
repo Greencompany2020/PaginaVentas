@@ -1,4 +1,4 @@
-import VentasLayout from "../../components/layout/VentasLayout";
+import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   Parameters,
   ParametersContainer,
@@ -18,7 +18,7 @@ import { checkboxLabels } from "utils/data";
 const porplaza = () => {
   const year = 2000;
   return (
-    <VentasLayout>
+    <>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -53,8 +53,10 @@ const porplaza = () => {
         <PresupuestoBasesTable title="M8"></PresupuestoBasesTable>
         <PresupuestoBasesTable title="M9"></PresupuestoBasesTable>
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   );
 };
+
+porplaza.getLayout = getVentasLayout;
 
 export default porplaza;

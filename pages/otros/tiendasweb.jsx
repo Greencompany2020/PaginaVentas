@@ -1,11 +1,11 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { ParametersContainer, Parameters, SmallContainer } from '@components/containers';
-import { InputContainer, InputDate } from '@components/inputs';
-import { VentasTableContainer, VentasTable, TableHead, TableBody } from '@components/table';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
+import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
+import { InputContainer, InputDate } from '../../components/inputs';
+import { VentasTableContainer, VentasTable, TableHead, TableBody } from '../../components/table';
 
 const tiendasweb = () => {
   return (
-    <VentasLayout>
+    <>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -78,8 +78,10 @@ const tiendasweb = () => {
           </TableBody>
         </VentasTable>
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
+
+tiendasweb.getLayout = getVentasLayout;
 
 export default tiendasweb
