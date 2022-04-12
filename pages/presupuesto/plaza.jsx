@@ -3,7 +3,7 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, SelectMonth, SelectToMonth, InputYear, SelectPlazas, Checkbox } from '../../components/inputs';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
-import { checkboxLabels, inputNames, MENSAJE_ERROR, meses } from '../../utils/data';
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import BarChart from '../../components/BarChart';
 import { MessageModal } from '../../components/modals';
 import { getInitialPlaza, getPlazaName, validateMonthRange, validateYear, createPresupuestoDatasets, isError } from '../../utils/functions';
@@ -12,12 +12,14 @@ import { handleChange } from '../../utils/handlers';
 import { getPresupuestoPlazas } from '../../services/PresupuestoService';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
+import { useUserContextState } from '../../context/UserContext';
 
 const Plaza = () => {
+  const { userLevel } = useUserContextState();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramPlazas, setParamPlazas] = useState({
-    plaza: getInitialPlaza(),
+    plaza: getInitialPlaza(userLevel),
     delAgno: getCurrentYear(),
     delMes: 1,
     alMes: getCurrentMonth() - 1,

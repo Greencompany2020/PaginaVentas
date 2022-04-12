@@ -19,12 +19,14 @@ import { formatLastDate, getBeginEndMonth } from '../../utils/dateFunctions';
 import { getPresupuestoFechas } from '../../services/PresupuestoService';
 import useMessageModal from '../../hooks/useMessageModal';
 import { MENSAJE_ERROR } from '../../utils/data';
+import { useUserContextState } from '../../context/UserContext';
 
 const Fechas = () => {
+  const { userLevel } = useUserContextState();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [prespuestos, setPrespuestos] = useState({});
   const [paramFechas, setParamFechas] = useState({
-    plaza: getInitialPlaza(),
+    plaza: getInitialPlaza(userLevel),
     fechaInicio: getBeginEndMonth()[0],
     fechaFin: getBeginEndMonth()[1],
   });

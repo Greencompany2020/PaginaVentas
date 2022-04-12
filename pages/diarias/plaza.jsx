@@ -11,14 +11,16 @@ import { getInitialPlaza, getPlazaName, isError } from '../../utils/functions';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { handleChange } from '../../utils/handlers';
 import useMessageModal from '../../hooks/useMessageModal';
-
+import { useUserContextState } from '../../context/UserContext';
+// TODO: Añadir plaza y tienda inicial usando userLevel y useUserContextState
 const Plaza = () => {
+  const { userLevel } = useUserContextState()
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [diariasPlaza, setDiariasPlaza] = useState([]);
   const [plazaParametros, setPlazaParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
-    plaza: getInitialPlaza(),
+    plaza: getInitialPlaza(userLevel),
     conIva: 0,
     semanaSanta: 1,
     conVentasEventos: 0,
@@ -29,6 +31,7 @@ const Plaza = () => {
   });
 
   useEffect(() => {
+
     getDiariasPlazas(plazaParametros)
       .then(response => {
         if (isError(response)) {

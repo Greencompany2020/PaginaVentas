@@ -13,12 +13,14 @@ import { getMesesAgnosTiendas } from '../../services/MesesAgnosService';
 import { handleChange } from '../../utils/handlers';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
+import { useUserContextState } from '../../context/UserContext';
 
 const Tiendas = () => {
+  const { userLevel } = useUserContextState();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [parametrosTiendas, setParametrosTiendas] = useState({
-    tienda: getInitialTienda(),
+    tienda: getInitialTienda(userLevel),
     delMes: 1,
     alMes: getCurrentMonth() - 1,
     delAgno: getCurrentYear() - 5,

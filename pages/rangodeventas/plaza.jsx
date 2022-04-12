@@ -9,7 +9,7 @@ import { createRangoVentasDataset, getInitialPlaza, isError, validateInputDateRa
 import { getBeginEndMonth } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getRangoVentasPlaza } from '../../services/RangoVentasService';
-import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
 
@@ -20,7 +20,8 @@ const Plaza = () => {
     plaza: getInitialPlaza(),
     fechaInicio: getBeginEndMonth(true)[0],
     fechaFin: getBeginEndMonth(true)[1],
-    rangos: '100,200,300,400,500,600'
+    rangos: '100,200,300,400,500,600',
+    conTiendasCerradas: 0
   })
 
   useEffect(() => {
@@ -64,7 +65,9 @@ const Plaza = () => {
             />
             <Checkbox
               className="mb-3"
+              name={inputNames.CON_TIENDAS_CERRADAS}
               labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+              onChange={(e) => { handleChange(e, setParamPlaza) }}
             />
           </InputContainer>
         </Parameters>

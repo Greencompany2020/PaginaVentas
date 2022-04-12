@@ -11,8 +11,10 @@ import { numberWithCommas } from '../../utils/resultsFormated';
 import { handleChange } from '../../utils/handlers';
 import { getPorcentajesMensuales } from '../../services/PorcentajesService';
 import useMessageModal from '../../hooks/useMessageModal';
+import { useUserContextState } from '../../context/UserContext';
 
 const Mensuales = () => {
+  const { userLevel } = useUserContextState();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [porcentajesMensuales, setPorcentajesMensuales] = useState([]);
   const [parametrosMensuales, setParametrosMensuales] = useState({
