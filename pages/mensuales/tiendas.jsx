@@ -1,27 +1,92 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { InputContainer, SelectMonth, InputYear, SelectTiendasGeneral, Checkbox } from '@components/inputs';
-import { ParametersContainer, Parameters, SmallContainer } from '@components/containers';
-import { VentasTableContainer } from '@components/table';
-import BarChart from '@components/BarChart';
-import { checkboxLabels } from 'utils/data';
+import { useState, useEffect } from 'react';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
+import { InputContainer, SelectMonth, InputToYear, SelectTiendasGeneral, Checkbox } from '../../components/inputs';
+import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
+import { VentasTableContainer } from '../../components/table';
+import { MessageModal } from '../../components/modals';
+import BarChart from '../../components/BarChart';
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
+import { formatedDate, formatLastDate, getCurrentMonth, getCurrentYear, getMonthByNumber } from '../../utils/dateFunctions';
+import { handleChange } from '../../utils/handlers';
+import { getMensualesTiendas } from '../../services/MensualesServices';
+import { createSimpleDatasets, isError, validateYear } from '../../utils/functions';
+import useMessageModal from '../../hooks/useMessageModal';
+import useGraphData from '../../hooks/useGraphData';
 
-const tiendas = () => {
+const Tiendas = () => {
+  const { message, modalOpen, setModalOpen, setMessage } = useMessageModal();
+  const { labels, setLabels, datasets, setDatasets } = useGraphData();
+  const [tiendasParametros, setTiendasParametros] = useState({
+    delMes: getCurrentMonth(),
+    alAgno: getCurrentYear(),
+    tiendas: 0,
+    conIva: 0,
+    conVentasEventos: 0,
+    conTiendasCerradas: 0,
+    resultadosPesos: 1
+  });
+
+  useEffect(() => {
+    if (validateYear(tiendasParametros.alAgno)) {
+      getMensualesTiendas(tiendasParametros)
+        .then(response => {
+          if (isError(response)) {
+            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            createSimpleDatasets(response, setLabels, setDatasets)
+          }
+        })
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tiendasParametros]);
+
   return (
-    <VentasLayout>
+    <>
+      <MessageModal setModalOpen={setModalOpen} message={message} modalOpen={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
-            <SelectMonth />
-            <InputYear />
+            <SelectMonth
+              value={tiendasParametros.delMes}
+              onChange={(e) => handleChange(e, setTiendasParametros)}
+            />
+            <InputToYear
+              value={tiendasParametros.alAgno}
+              onChange={(e) => handleChange(e, setTiendasParametros)}
+            />
           </InputContainer>
           <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.VENTAS_IVA} />
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS} />
-            <SelectTiendasGeneral />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.VENTAS_IVA}
+              name={inputNames.CON_IVA}
+              onChange={(e) => handleChange(e, setTiendasParametros)}
+            />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+              name={inputNames.CON_VENTAS_EVENTOS}
+              onChange={(e) => handleChange(e, setTiendasParametros)}
+            />
+            <SelectTiendasGeneral
+              value={tiendasParametros.tiendas}
+              onChange={(e) => handleChange(e, setTiendasParametros)}
+            />
           </InputContainer>
           <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS} />
-            <Checkbox labelText={checkboxLabels.RESULTADO_PESOS} />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+              name={inputNames.CON_TIENDAS_CERRADAS}
+              onChange={(e) => handleChange(e, setTiendasParametros)}
+            />
+            <Checkbox
+              labelText={checkboxLabels.RESULTADO_PESOS}
+              name={inputNames.RESULTADOS_PESOS}
+              onChange={(e) => handleChange(e, setTiendasParametros)}
+              checked={tiendasParametros.resultadosPesos ? true : false}
+            />
           </InputContainer>
         </Parameters>
         <SmallContainer>
@@ -29,31 +94,21 @@ const tiendas = () => {
         </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title='Ventas del mes Enero del año 2020 al 2018'>
+      <VentasTableContainer
+        title={`Ventas del mes de ${getMonthByNumber(tiendasParametros.delMes)} del año ${tiendasParametros.alAgno}`}
+      >
         <BarChart
-          text='Ventas al 10-Ene-2022'
+          text={`Ventas al ${formatLastDate(formatedDate(tiendasParametros.alAgno, tiendasParametros.delMes))}`}
           data={{
-            labels: [
-              'M1', 'M2', 'M3', 'M4', 'M5', 'M5', 'M6', 'M9', 'M10', 'IS-OUTLET',
-              'FORUM', 'PV2', 'PV4', 'PV6', 'ACA1', 'ACA2', 'ACA5', 'ISM1', 'CAB1',
-              'CAB3', 'PYA1', 'PYA4'
-            ],
-            datasets: [
-              {
-                id: 1,
-                label: '',
-                data: [
-                  883, 1240, 777, 417, 263, 221, 497, 781, 645, 177, 646, 716,
-                  298, 370, 977, 2871, 697, 349, 375, 59, 430, 451
-                ],
-                backgroundColor: '#155e75'
-              }
-            ]
+            labels: labels,
+            datasets: datasets
           }}
         />
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
 
-export default tiendas
+Tiendas.getLayout = getVentasLayout;
+
+export default Tiendas

@@ -1,26 +1,81 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { ParametersContainer, Parameters, SmallContainer } from '@components/containers';
-import { InputContainer, InputDateRange, SelectPlazas, Checkbox } from '@components/inputs';
-import { VentasTableContainer, VentasTable, TableHead } from '@components/table';
-import { compromisosSemanales, checkboxLabels } from 'utils/data';
+import { useState, useEffect } from 'react';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
+import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
+import { InputContainer, InputDateRange, SelectPlazas, Checkbox } from '../../components/inputs';
+import { MessageModal } from '../../components/modals';
+import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
+import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
+import { getSemanalesCompromisos } from '../../services/SemanalesService';
+import { numberWithCommas } from '../../utils/resultsFormated';
+import { getCurrentWeekDateRange } from '../../utils/dateFunctions';
+import { dateRangeTitle, isError, validateInputDateRange } from '../../utils/functions';
+import { inputNames } from '../../utils/data/checkboxLabels';
+import { handleChange } from '../../utils/handlers';
+import useMessageModal from '../../hooks/useMessageModal';
 
-const compromiso = () => {
+const Compromiso = () => {
+  const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
+  const [beginDate, endDate] = getCurrentWeekDateRange();
+  const [semanalesCompromisos, setSemanalesCompromisos] = useState([]);
+  const [compromisosParametros, setCompromisosParametros] = useState({
+    fechaInicio: beginDate,
+    fechaFin: endDate,
+    plaza: 3,
+    conIva: 0,
+    sinAgnoVenta: 0,
+    conTiendasCerradas: 0
+  });
+
+  useEffect(() => {
+    if (validateInputDateRange(compromisosParametros.fechaInicio, compromisosParametros.fechaFin)) {
+      getSemanalesCompromisos(compromisosParametros)
+        .then(response => {
+          if (isError(response)) {
+            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            setSemanalesCompromisos(response);
+          }
+        });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [compromisosParametros]);
+
   return (
-    <VentasLayout>
+    <>
+      <MessageModal message={message} setModalOpen={setModalOpen} modalOpen={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
-            <SelectPlazas classLabel='xl:text-center' />
+            <SelectPlazas
+              classLabel='xl:text-center'
+              onChange={(e) => handleChange(e, setCompromisosParametros)}
+            />
           </InputContainer>
-
-          <InputDateRange />
-
+          <InputDateRange
+            onChange={(e) => handleChange(e, setCompromisosParametros)}
+            beginDate={compromisosParametros.fechaInicio}
+            endDate={compromisosParametros.fechaFin}
+          />
           <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.VENTAS_IVA} />
-            <Checkbox labelText={checkboxLabels.EXCLUIR_TIENDAS_VENTAS} />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.VENTAS_IVA}
+              name={inputNames.CON_IVA}
+              onChange={(e) => handleChange(e, setCompromisosParametros)}
+            />
+            <Checkbox
+              labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
+              name={inputNames.SIN_AGNO_VENTA}
+            />
           </InputContainer>
           <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS} />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+              name={inputNames.CON_TIENDAS_CERRADAS}
+              onChange={(e) => handleChange(e, setCompromisosParametros)}
+            />
           </InputContainer>
         </Parameters>
         <SmallContainer>
@@ -31,7 +86,7 @@ const compromiso = () => {
         </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title='DEFINICION METAS: Semana del 03 de Ene Al 09 de Ene 2022'>
+      <VentasTableContainer title={`DEFINICION METAS: Semana ${dateRangeTitle(compromisosParametros.fechaInicio, compromisosParametros.fechaFin)}`}>
         <VentasTable>
           <TableHead>
             <tr>
@@ -48,17 +103,27 @@ const compromiso = () => {
           </TableHead>
           <tbody className='bg-white'>
             {
-              compromisosSemanales.map(item => (
-                <tr key={item.tienda} className='text-right'>
+              semanalesCompromisos?.map(compromiso => (
+                <tr key={compromiso.Descrip} className='text-right'>
                   <td colSpan={2} className='text-center bg-black text-white font-bold p-2'>
-                    {item.tienda}
+                    {compromiso.Descrip}
                   </td>
-                  <td>{item.compromisoVenta}</td>
+                  <td>{numberWithCommas(compromiso.PresupuestoSem)}</td>
                   <td colSpan={2} className='pr-4'>
-                    <input type="text" value={item.compromisoPromedios} className='w-16 outline-none bg-gray-200 text-right rounded-md pr-2' onChange={() => { }} />
+                    <input
+                      type="text"
+                      value={compromiso.Promedio}
+                      className='w-16 outline-none bg-gray-200 text-right rounded-md pr-2'
+                      onChange={() => { }}
+                    />
                   </td>
                   <td colSpan={2} className='pr-4'>
-                    <input type="text" value={item.compromisoOperaciones} className='w-16 outline-none bg-gray-200 text-right rounded-md pr-2' onChange={() => { }} />
+                    <input
+                      type="text"
+                      value={compromiso.OperacionesSem}
+                      className='w-16 outline-none bg-gray-200 text-right rounded-md pr-2'
+                      onChange={() => { }}
+                    />
                   </td>
                 </tr>
               ))
@@ -69,8 +134,10 @@ const compromiso = () => {
       <button className='blue-button text-white'>
         Grabar
       </button>
-    </VentasLayout>
+    </>
   )
 }
 
-export default compromiso
+Compromiso.getLayout = getVentasLayout;
+
+export default Compromiso;

@@ -1,26 +1,73 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { ParametersContainer, Parameters, SmallContainer, Flex } from '@components/containers';
-import { InputContainer, InputYear, InputToYear, Checkbox, SelectTiendas, SelectPlazas } from '@components/inputs';
-import { VentasTableContainer, VentasTable, TableBody, TableHead } from '@components/table';
-import { useState } from 'react';
-import { checkboxLabels, porcentajesMensuales } from 'utils/data';
+import { useState, useEffect } from 'react';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
+import { ParametersContainer, Parameters, SmallContainer, Flex } from '../../components/containers';
+import { InputContainer, InputYear, InputToYear, Checkbox, SelectTiendas, SelectPlazas } from '../../components/inputs';
+import { VentasTableContainer, VentasTable, TableBody, TableHead } from '../../components/table';
+import { MessageModal } from '../../components/modals';
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
+import { getInitialPlaza, getInitialTienda, isError, validateYearRange } from '../../utils/functions';
+import { formatedDate, formatLastDate, getPrevDate, getYearFromDate } from '../../utils/dateFunctions';
+import { numberWithCommas } from '../../utils/resultsFormated';
+import { handleChange } from '../../utils/handlers';
+import { getPorcentajesMensuales } from '../../services/PorcentajesService';
+import useMessageModal from '../../hooks/useMessageModal';
+import { useUserContextState } from '../../context/UserContext';
 
 const Mensuales = () => {
+  const { userLevel } = useUserContextState();
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
+  const [porcentajesMensuales, setPorcentajesMensuales] = useState([]);
+  const [parametrosMensuales, setParametrosMensuales] = useState({
+    queryTiendaPlaza: 0,
+    tienda: getInitialTienda(),
+    plaza: getInitialPlaza(),
+    delAgno: Number(getYearFromDate(formatedDate())) - 5,
+    alAgno: Number(getYearFromDate(formatedDate())),
+    conIva: 0,
+    conVentasEventos: 0,
+    conTiendasCerradas: 0,
+    resultadosPesos: 0
+  });
   const [toggleTienda, setToggleTienda] = useState(true);
   const [togglePlaza, setTogglePlaza] = useState(false);
 
+  useEffect(() => {
+    if (validateYearRange(parametrosMensuales.delAgno, parametrosMensuales.alAgno)) {
+      getPorcentajesMensuales(parametrosMensuales)
+        .then(response => {
+
+          if (isError(response)) {
+            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            setPorcentajesMensuales(response)
+          }
+        });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parametrosMensuales]);
+
   const handleVisibleTienda = () => {
     setToggleTienda(true);
+    setParametrosMensuales(prev => ({
+      ...prev,
+      queryTiendaPlaza: 0
+    }));
     setTogglePlaza(false);
   }
 
   const handleVisiblePlaza = () => {
     setTogglePlaza(true);
+    setParametrosMensuales(prev => ({
+      ...prev,
+      queryTiendaPlaza: 1
+    }));
     setToggleTienda(false);
   }
 
   return (
-    <VentasLayout>
+    <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -32,23 +79,49 @@ const Mensuales = () => {
               </Flex>
             </Flex>
             {
-              toggleTienda && <SelectTiendas />
+              toggleTienda && <SelectTiendas value={parametrosMensuales.tienda} onChange={(e) => handleChange(e, setParametrosMensuales)} />
             }
             {
-              togglePlaza && <SelectPlazas />
+              togglePlaza && <SelectPlazas value={parametrosMensuales.plaza} onChange={(e) => handleChange(e, setParametrosMensuales)} />
             }
           </InputContainer>
           <InputContainer>
-            <InputYear />
-            <InputToYear />
+            <InputYear
+              value={parametrosMensuales.delAgno}
+              onChange={(e) => handleChange(e, setParametrosMensuales)}
+            />
+            <InputToYear
+              value={parametrosMensuales.alAgno}
+              onChange={(e) => handleChange(e, setParametrosMensuales)}
+            />
           </InputContainer>
           <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.VENTAS_IVA} />
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS} />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.VENTAS_IVA}
+              name={inputNames.CON_IVA}
+              onChange={(e) => handleChange(e, setParametrosMensuales)}
+            />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+              name={inputNames.CON_VENTAS_EVENTOS}
+              onChange={(e) => handleChange(e, setParametrosMensuales)}
+            />
           </InputContainer>
           <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS} />
-            <Checkbox className='mb-3' labelText={checkboxLabels.RESULTADO_PESOS} />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+              name={inputNames.CON_TIENDAS_CERRADAS}
+              onChange={(e) => handleChange(e, setParametrosMensuales)}
+            />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.RESULTADO_PESOS}
+              name={inputNames.RESULTADOS_PESOS}
+              onChange={(e) => handleChange(e, setParametrosMensuales)}
+            />
           </InputContainer>
         </Parameters>
         <SmallContainer>
@@ -59,7 +132,7 @@ const Mensuales = () => {
         </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title='PROPORCION DE VENTAS MENSUALES VS. VENTA ANUAL -iva no incluido'>
+      <VentasTableContainer title={`PROPORCION DE VENTAS MENSUALES VS. VENTA ANUAL - Ventas al ${formatLastDate(getPrevDate(0, parametrosMensuales.alAgno))}`}>
         <VentasTable className='last-row-bg'>
           <TableHead>
             <tr>
@@ -107,42 +180,44 @@ const Mensuales = () => {
           </TableHead>
           <TableBody>
             {
-              porcentajesMensuales.map(item => (
-                <tr className='text-center' key={item.fecha}>
-                  <td>{item.fecha}</td>
-                  <td>{item.totalEnero}</td>
-                  <td>{item.porcentajeEnero}</td>
-                  <td>{item.totalFebrero}</td>
-                  <td>{item.porcentajeFebrero}</td>
-                  <td>{item.totalMarzo}</td>
-                  <td>{item.porcentajeMarzo}</td>
-                  <td>{item.totalAbril}</td>
-                  <td>{item.porcentajeAbril}</td>
-                  <td>{item.totalMayo}</td>
-                  <td>{item.porcentajeMayo}</td>
-                  <td>{item.totalJunio}</td>
-                  <td>{item.porcentajeJunio}</td>
-                  <td>{item.totalJulio}</td>
-                  <td>{item.porcentajeJulio}</td>
-                  <td>{item.totalAgosto}</td>
-                  <td>{item.porcentajeAgosto}</td>
-                  <td>{item.totalSeptiembre}</td>
-                  <td>{item.porcentajeSeptiembre}</td>
-                  <td>{item.totalOctubre}</td>
-                  <td>{item.porcentajeOctubre}</td>
-                  <td>{item.totalNoviembre}</td>
-                  <td>{item.porcentajeNoviembre}</td>
-                  <td>{item.totalDiciembre}</td>
-                  <td>{item.porcentajeDiciembre}</td>
-                  <td>{item.total}</td>
+              porcentajesMensuales?.map((item, index) => (
+                <tr className='text-center' key={item.agno}>
+                  <td>{item.agno}</td>
+                  <td>{numberWithCommas(item.enero)}</td>
+                  <td className={index !== porcentajesMensuales.length - 1 ? "bg-gray-200" : ""}>{item.porcentajeEnero}</td>
+                  <td>{numberWithCommas(item.febrero)}</td>
+                  <td className={index !== porcentajesMensuales.length - 1 ? "bg-gray-200" : ""}>{item.porcentajeFebrero}</td>
+                  <td>{numberWithCommas(item.marzo)}</td>
+                  <td className={index !== porcentajesMensuales.length - 1 ? "bg-gray-200" : ""}>{item.porcentajeMarzo}</td>
+                  <td>{numberWithCommas(item.abril)}</td>
+                  <td className={index !== porcentajesMensuales.length - 1 ? "bg-gray-200" : ""}>{item.porcentajeAbril}</td>
+                  <td>{numberWithCommas(item.mayo)}</td>
+                  <td className={index !== porcentajesMensuales.length - 1 ? "bg-gray-200" : ""}>{item.porcentajeMayo}</td>
+                  <td>{numberWithCommas(item.junio)}</td>
+                  <td className={index !== porcentajesMensuales.length - 1 ? "bg-gray-200" : ""}>{item.porcentajeJunio}</td>
+                  <td>{numberWithCommas(item.julio)}</td>
+                  <td className={index !== porcentajesMensuales.length - 1 ? "bg-gray-200" : ""}>{item.porcentajeJulio}</td>
+                  <td>{numberWithCommas(item.agosto)}</td>
+                  <td className={index !== porcentajesMensuales.length - 1 ? "bg-gray-200" : ""}>{item.porcentajeAgosto}</td>
+                  <td>{numberWithCommas(item.septiembre)}</td>
+                  <td className={index !== porcentajesMensuales.length - 1 ? "bg-gray-200" : ""}>{item.porcentajeSeptiembre}</td>
+                  <td>{numberWithCommas(item.octubre)}</td>
+                  <td className={index !== porcentajesMensuales.length - 1 ? "bg-gray-200" : ""}>{item.porcentajeOctubre}</td>
+                  <td>{numberWithCommas(item.noviembre)}</td>
+                  <td className={index !== porcentajesMensuales.length - 1 ? "bg-gray-200" : ""}>{item.porcentajeNoviembre}</td>
+                  <td>{numberWithCommas(item.diciembre)}</td>
+                  <td className={index !== porcentajesMensuales.length - 1 ? "bg-gray-200" : ""}>{item.porcentajeDiciembre}</td>
+                  <td>{numberWithCommas(item.total)}</td>
                 </tr>
               ))
             }
           </TableBody>
         </VentasTable>
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
+
+Mensuales.getLayout = getVentasLayout;
 
 export default Mensuales

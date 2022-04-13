@@ -1,4 +1,4 @@
-const enlaces = [
+export const enlaces = [
   {
     summaryText: 'Diarias',
     links: [
@@ -130,7 +130,152 @@ const enlaces = [
         linkText: 'Mensuales'
       }
     ]
-  }
-]
+  },
+  {
+    summaryText: 'Meses vs Años',
+    links: [
+      {
+        link: '/mesesvsanios/grupo',
+        linkText: 'De Grupo'
+      },
+      {
+        link: '/mesesvsanios/plaza',
+        linkText: 'Por Plaza'
+      },
+      {
+        link: '/mesesvsanios/tiendas',
+        linkText: 'Por Tienda'
+      },
+      {
+        link: '/mesesvsanios/todastiendas',
+        linkText: 'Todas las tiendas'
+      }
+    ]
+  },
+  {
+    summaryText: 'Semana Santa',
+    links: [
+      {
+        link: '/semanasanta/acumulado',
+        linkText: 'Acumulado'
+      },
+      {
+        link: '/semanasanta/grafica',
+        linkText: 'Grafica'
+      },
+      {
+        link: '/semanasanta/grupo',
+        linkText: 'Grupo'
+      },
+      {
+        link: '/semanasanta/periodos',
+        linkText: 'Periodos'
+      },
+      {
+        link: '/semanasanta/plaza',
+        linkText: 'Por Plaza'
+      }
+    ]
+  },
+  {
+    summaryText: 'Presupuesto',
+    links: [
+      {
+        link: '/presupuesto/bases',
+        linkText: 'Bases'
+      },
+      {
+        link: '/presupuesto/grupo',
+        linkText: 'Grupo'
+      },
+      {
+        link: '/presupuesto/fechas',
+        linkText: 'Por Fecha'
+      },
+      {
+        link: '/presupuesto/plaza',
+        linkText: 'Por Plaza'
+      },
+      {
+        link: '/presupuesto/tienda',
+        linkText: 'Por Tienda'
+      }
+    ]
+  },
+  {
+    summaryText: 'Operaciones',
+    links: [
+      {
+        link: '/operaciones/comparativo',
+        linkText: 'Comparativo'
+      },
+      {
+        link: '/operaciones/grupo',
+        linkText: 'Grupo'
+      },
+      {
+        link: '/operaciones/plaza',
+        linkText: 'Por Plaza'
+      },
+      {
+        link: '/operaciones/tienda',
+        linkText: 'Por tienda'
+      },
+    ]
+  },
+  {
+    summaryText: 'Rango de ventas',
+    links: [
+      {
+        link: '/rangodeventas/degrupo',
+        linkText: 'De Grupo'
+      },
+      {
+        link: '/rangodeventas/detallado',
+        linkText: 'Detallado'
+      },
+      {
+        link: '/rangodeventas/plaza',
+        linkText: 'Por Plaza'
+      },
+      {
+        link: '/rangodeventas/tienda',
+        linkText: 'Por tienda'
+      },
+    ]
+  },
+  {
+    summaryText: 'MKT',
+    links: [
+      {
+        link: '/mkt/clubfrogs',
+        linkText: 'Club Frogs'
+      },
+      {
+        link: '/mkt/descuentos',
+        linkText: 'Descuentos'
+      },
+      {
+        link: '/mkt/graficapromociones',
+        linkText: 'Gráfica Promociones'
+      },
+      {
+        link: '/mkt/ocupacionhotelera',
+        linkText: 'Ocupación Hotelera'
+      },
+      {
+        link: '/mkt/promociones',
+        linkText: 'Promociones'
+      },
+      {
+        link: '/mkt/promotores',
+        linkText: 'Promotores'
+      },
+      {
+        link: '/mkt/sugerencias',
+        linkText: 'Sugerencias'
+      },
+    ]
+  },
 
-export default enlaces;
+]

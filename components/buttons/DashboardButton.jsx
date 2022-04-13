@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import DashboardIcon from '@public/images/dashboard-icon.png';
+import DashboardIcon from '../../public/images/dashboard-icon.png';
 
 const DashboardButton = ({ name, link }) => {
   return (

@@ -1,12 +1,12 @@
 import Link from 'next/link';
-import VentasLayout from '@components/layout/VentasLayout';
-import { ParametersContainer, Parameters, SmallContainer } from '@components/containers';
-import { InputContainer, InputDate } from '@components/inputs';
-import { VentasTableContainer, VentasTable, TableHead, TableBody } from '@components/table';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
+import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
+import { InputContainer, InputDate } from '../../components/inputs';
+import { VentasTableContainer, VentasTable, TableHead, TableBody } from '../../components/table';
 
 const proveduria = () => {
   return (
-    <VentasLayout>
+    <>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -91,8 +91,10 @@ const proveduria = () => {
           </TableBody>
         </VentasTable>
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
+
+proveduria.getLayout = getVentasLayout;
 
 export default proveduria

@@ -1,29 +1,97 @@
-import Link from 'next/link'
-import { SmallContainer, ParametersContainer, Parameters } from '@components/containers';
-import { InputContainer, InputDateRange, Checkbox } from '@components/inputs'
-import VentasLayout from '@components/layout/VentasLayout';
-import { VentasTableContainer, VentasTable, TableHead } from '@components/table';
-import { semanalesPlaza, checkboxLabels } from 'utils/data'
+import { useEffect, useState } from 'react';
+import { SmallContainer, ParametersContainer, Parameters } from '../../components/containers';
+import { InputContainer, InputDateRange, Checkbox } from '../../components/inputs'
+import { getVentasLayout } from '../../components/layout/VentasLayout';
+import { MessageModal } from '../../components/modals';
+import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
+import useMessageModal from '../../hooks/useMessageModal';
+import { getSemanalesPlazas } from '../../services/SemanalesService';
+import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data'
+import { inputNames } from '../../utils/data/checkboxLabels';
+import { getCurrentWeekDateRange, getYearFromDate } from '../../utils/dateFunctions';
+import { dateRangeTitle, isError, validateInputDateRange } from '../../utils/functions';
+import { handleChange } from '../../utils/handlers';
+import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 
 
-const Informes = () => {
+const Plazas = () => {
+  const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
+  const [beginDate, endDate] = getCurrentWeekDateRange();
+  const [semanalesPlaza, setSemanalesPlaza] = useState([]);
+  const [plazasParametros, setPlazasParametros] = useState({
+    fechaInicio: beginDate,
+    fechaFin: endDate,
+    conIva: 0,
+    sinAgnoVenta: 0,
+    conVentasEventos: 0,
+    conTiendasCerradas: 0,
+    sinTiendasSuspendidas: 0,
+    resultadosPesos: 1
+  })
+
+  useEffect(() => {
+    if (validateInputDateRange(plazasParametros.fechaInicio, plazasParametros.fechaFin)) {
+      getSemanalesPlazas(plazasParametros)
+        .then(response => {
+          if (isError(response)) {
+            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            setSemanalesPlaza(response);
+          }
+        });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plazasParametros])
 
   return (
-    <VentasLayout>
+    <>
+      <MessageModal message={message} setModalOpen={setModalOpen} modalOpen={modalOpen} />
       <ParametersContainer>
         <Parameters>
-          <InputDateRange />
+          <InputDateRange
+            onChange={(e) => handleChange(e, setPlazasParametros)}
+            beginDate={plazasParametros.fechaInicio}
+            endDate={plazasParametros.fechaFin}
+          />
           <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.VENTAS_IVA} />
-            <Checkbox labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS} />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.VENTAS_IVA}
+              name={inputNames.CON_IVA}
+              onChange={(e) => handleChange(e, setPlazasParametros)}
+            />
+            <Checkbox
+              labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+              name={inputNames.CON_VENTAS_EVENTOS}
+              onChange={(e) => handleChange(e, setPlazasParametros)}
+            />
           </InputContainer>
           <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS} />
-            <Checkbox labelText={checkboxLabels.EXCLUIR_TIENDAS_VENTAS} />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+              name={inputNames.CON_TIENDAS_CERRADAS}
+            />
+            <Checkbox
+              labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
+              name={inputNames.SIN_AGNO_VENTA}
+              onChange={(e) => handleChange(e, setPlazasParametros)}
+            />
           </InputContainer>
           <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS} />
-            <Checkbox labelText={checkboxLabels.RESULTADO_PESOS} />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
+              name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
+              onChange={(e) => handleChange(e, setPlazasParametros)}
+            />
+            <Checkbox
+              labelText={checkboxLabels.RESULTADO_PESOS}
+              name={inputNames.RESULTADOS_PESOS}
+              checked={plazasParametros.resultadosPesos ? 1 : 0}
+              onChange={(e) => handleChange(e, setPlazasParametros)}
+            />
           </InputContainer>
         </Parameters>
         <SmallContainer>
@@ -40,54 +108,56 @@ const Informes = () => {
           <TableHead>
             <tr>
               <td rowSpan={3} className='border border-white'>Plaza</td>
-              <td colSpan={12} className='border border-white'>Del 20 de dic al 26 de Dic 2021</td>
+              <td colSpan={12} className='border border-white'>{dateRangeTitle(plazasParametros.fechaInicio, plazasParametros.fechaFin)}</td>
             </tr>
             <tr>
               <td rowSpan={2} className='border border-white'>Comp</td>
-              <td rowSpan={2} className='border border-white'>2021</td>
+              <td rowSpan={2} className='border border-white'>{getYearFromDate(plazasParametros.fechaFin)}</td>
               <td rowSpan={2} className='border border-white'>%</td>
-              <td rowSpan={2} className='border border-white'>2020</td>
+              <td rowSpan={2} className='border border-white'>{getYearFromDate(plazasParametros.fechaFin) - 1}</td>
               <td colSpan={4} className='border border-white'>operaciones</td>
               <td colSpan={4} className='border border-white'>promedios</td>
             </tr>
             <tr>
               <td className='border border-white'>Comp</td>
-              <td className='border border-white'>2021</td>
+              <td className='border border-white'>{getYearFromDate(plazasParametros.fechaFin)}</td>
               <td className='border border-white'>%</td>
-              <td className='border border-white'>2020</td>
+              <td className='border border-white'>{getYearFromDate(plazasParametros.fechaFin) - 1}</td>
               <td className='border border-white'>comp</td>
-              <td className='border border-white'>2021</td>
+              <td className='border border-white'>{getYearFromDate(plazasParametros.fechaFin)}</td>
               <td className='border border-white'>%</td>
-              <td className='border border-white'>2020</td>
+              <td className='border border-white'>{getYearFromDate(plazasParametros.fechaFin) - 1}</td>
             </tr>
           </TableHead>
-          <tbody className='bg-white'>
+          <tbody className='bg-white text-center'>
             {
-              semanalesPlaza.map(item => (
-                <tr className='text-right' key={item.plaza}>
-                  <td className='text-left bg-black text-white underline font-bold'>
-                    <Link href='/informes'><a>{item.plaza}</a></Link>
+              semanalesPlaza?.map(semPlaza => (
+                <tr key={semPlaza.plaza}>
+                  <td className='text-left bg-black text-white font-bold'>
+                    {semPlaza.plaza}
                   </td>
-                  <td>{item.comp}</td>
-                  <td>{item.fechaActual}</td>
-                  <td className='text-red-600 font-bold'>{item.porcentaje}</td>
-                  <td>{item.fechaComp}</td>
-                  <td>{item.operacionesComp}</td>
-                  <td>{item.opeFechaActual}</td>
-                  <td className='text-red-600 font-bold'>{item.porcentajeOper}</td>
-                  <td>{item.opeFechaComp}</td>
-                  <td>{item.promedioComp}</td>
-                  <td>{item.promFechaActual}</td>
-                  <td className='text-red-600 font-bold'>{item.porcentajeProm}</td>
-                  <td>{item.promFechaComp}</td>
+                  <td>{numberWithCommas(semPlaza.compromiso)}</td>
+                  <td>{numberWithCommas(semPlaza.ventasActuales)}</td>
+                  {formatNumber(semPlaza.porcentaje)}
+                  <td>{numberWithCommas(semPlaza.ventasAnterior)}</td>
+                  <td>{numberWithCommas(semPlaza.operacionesComp)}</td>
+                  <td>{numberWithCommas(semPlaza.operacionesActual)}</td>
+                  {formatNumber(semPlaza.porcentajeOperaciones)}
+                  <td>{numberWithCommas(semPlaza.operacionesAnterior)}</td>
+                  <td>{numberWithCommas(semPlaza.promedioComp)}</td>
+                  <td>{numberWithCommas(semPlaza.promedioActual)}</td>
+                  {formatNumber(semPlaza.porcentajePromedios)}
+                  <td>{numberWithCommas(semPlaza.promedioAnterior)}</td>
                 </tr>
               ))
             }
           </tbody>
         </VentasTable>
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
 
-export default Informes
+Plazas.getLayout = getVentasLayout;
+
+export default Plazas

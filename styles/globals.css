@@ -7,7 +7,7 @@ details > summary {
 }
 /* Icono calendario para input de fechas */
 input[type="date"]::-webkit-calendar-picker-indicator {
-  content: url("/public/images/calendar.png");
+  /* content: url("/public/images/calendar.png"); */
   height: 1.75rem;
   width: 1.75rem;
 }
@@ -20,7 +20,7 @@ input[type="date"]:in-range::-webkit-datetime-edit-text {
 }
 
 table.tfooter tr:last-child {
-  @apply bg-black text-white text-right font-bold;
+  @apply bg-black text-white font-bold;
 }
 
 @media (max-width: 1024px) {

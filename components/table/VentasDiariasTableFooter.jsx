@@ -1,21 +1,25 @@
+import { getMonthByNumber } from "../../utils/dateFunctions";
+import { getLastTwoNumbers } from "../../utils/functions";
 
-const VentasDiariasTableFooter = () => {
+const VentasDiariasTableFooter = ({ currentYear, month }) => {
+  const lastYear = currentYear - 1;
+
   return (
     <tfoot className='bg-black text-white text-center font-bold'>
       <tr>
-        <td className='border border-white'>22</td>
-        <td className='border border-white'>21</td>
-        <td className='border border-white'>2022</td>
-        <td className='border border-white'>2021</td>
+        <td className='border border-white'>{getLastTwoNumbers(currentYear)}</td>
+        <td className='border border-white'>{getLastTwoNumbers(lastYear)}</td>
+        <td className='border border-white'>{currentYear}</td>
+        <td className='border border-white'>{lastYear}</td>
         <td className='border border-white'>COMP.</td>
         <td className='border border-white'>%</td>
-        <td className='border border-white'>2022</td>
-        <td className='border border-white'>2021</td>
+        <td className='border border-white'>{currentYear}</td>
+        <td className='border border-white'>{lastYear}</td>
         <td className='border border-white'>COMP.</td>
         <td className='border border-white'>(-)</td>
         <td className='border border-white'>%</td>
-        <td className='border border-white'>2022</td>
-        <td className='border border-white'>2021</td>
+        <td className='border border-white'>{currentYear}</td>
+        <td className='border border-white'>{lastYear}</td>
         <td className='border border-white'>COMP.</td>
         <td className='border border-white'>%</td>
         <td className='border border-white'>22</td>
@@ -23,7 +27,7 @@ const VentasDiariasTableFooter = () => {
       <tr>
         <td colSpan={2} className='border border-white'>Dia</td>
         <td colSpan={4} className='border border-white'>Venta por Dia</td>
-        <td colSpan={5} className='border border-white'>Acumulado Enero</td>
+        <td colSpan={5} className='border border-white'>Acumulado {getMonthByNumber(month)}</td>
         <td colSpan={4} className='border border-white'>Acumulado Anual</td>
         <td className='border border-white'>Dia</td>
       </tr>

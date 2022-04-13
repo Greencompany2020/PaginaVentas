@@ -1,28 +1,106 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { ParametersContainer, Parameters, SmallContainer } from '@components/containers';
-import { VentasTableContainer } from '@components/table';
-import { InputContainer, Checkbox, SelectMonth, InputYear, SelectTiendasGeneral, InputToYear } from '@components/inputs';
-import BarChart from '@components/BarChart';
-import { checkboxLabels } from 'utils/data';
+import { useState, useEffect } from 'react';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
+import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
+import { VentasTableContainer } from '../../components/table';
+import { InputContainer, Checkbox, SelectMonth, InputYear, SelectTiendasGeneral, InputToYear } from '../../components/inputs';
+import BarChart from '../../components/BarChart';
+import { MessageModal } from '../../components/modals';
+import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
+import { formatedDate, formatLastDate, getCurrentMonth, getCurrentYear, getMonthByNumber } from '../../utils/dateFunctions';
+import { handleChange } from '../../utils/handlers';
+import { inputNames } from '../../utils/data/checkboxLabels';
+import { getMensualesPlazasAgnos } from '../../services/MensualesServices';
+import { createDatasets, isError, validateYearRange } from '../../utils/functions';
+import useMessageModal from '../../hooks/useMessageModal';
+import useGraphData from '../../hooks/useGraphData';
 
-const plazasVS = () => {
+
+const PlazasVS = () => {
+  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
+  const { labels, setLabels, datasets, setDatasets } = useGraphData();
+  const [plazasAgnosParametros, setPlazasAgnosParametros] = useState({
+    delMes: getCurrentMonth(),
+    delAgno: getCurrentYear() - 4,
+    alAgno: getCurrentYear(),
+    tiendas: 0,
+    conIva: 0,
+    conVentasEventos: 0,
+    conTiendasCerradas: 0,
+    resultadosPesos: 1
+  });
+
+  useEffect(() => {
+    if (validateYearRange(plazasAgnosParametros.delAgno, plazasAgnosParametros.alAgno)) {
+      getMensualesPlazasAgnos(plazasAgnosParametros)
+        .then(response => {
+
+          if (isError(response)) {
+            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
+            setModalOpen(true)
+          } else {
+              createDatasets(
+              response,
+              plazasAgnosParametros.delAgno,
+              plazasAgnosParametros.alAgno,
+              setLabels,
+              setDatasets
+            )
+          }
+
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plazasAgnosParametros]);
+
   return (
-    <VentasLayout>
+    <>
+      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
-            <SelectMonth />
-            <InputYear value={2022} onChange={() => { }} />
-            <InputToYear value={2020} onChange={() => { }} />
+            <SelectMonth
+              value={plazasAgnosParametros.delMes}
+              onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+            />
+            <InputYear
+              value={plazasAgnosParametros.delAgno}
+              onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+            />
+            <InputToYear
+              value={plazasAgnosParametros.alAgno}
+              onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+            />
           </InputContainer>
           <InputContainer>
-            <SelectTiendasGeneral />
-            <Checkbox className='mb-3' labelText={checkboxLabels.VENTAS_IVA} />
-            <Checkbox labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS} />
+            <SelectTiendasGeneral
+              value={plazasAgnosParametros.tiendas}
+              onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+            />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.VENTAS_IVA}
+              name={inputNames.CON_IVA}
+              onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+            />
+            <Checkbox
+              labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+              name={inputNames.CON_VENTAS_EVENTOS}
+              onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+            />
           </InputContainer>
           <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS} />
-            <Checkbox labelText={checkboxLabels.RESULTADO_PESOS} />
+            <Checkbox
+              className='mb-3'
+              labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+              name={inputNames.CON_TIENDAS_CERRADAS}
+              onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+            />
+            <Checkbox
+              labelText={checkboxLabels.RESULTADO_PESOS}
+              name={inputNames.RESULTADOS_PESOS}
+              onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+              checked={plazasAgnosParametros.resultadosPesos ? true : false}
+            />
           </InputContainer>
         </Parameters>
         <SmallContainer>
@@ -33,48 +111,22 @@ const plazasVS = () => {
         </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title='Ventas del mes Enero del año 2020 al 2018'>
+      <VentasTableContainer
+        title={`Ventas del mes de ${getMonthByNumber(plazasAgnosParametros.delMes)} del ${plazasAgnosParametros.alAgno} al ${plazasAgnosParametros.delAgno}`}
+      >
         <BarChart
-          text='Ventas al 10-Ene-2022'
+          text={`Ventas al ${formatLastDate(formatedDate(plazasAgnosParametros.alAgno, plazasAgnosParametros.delMes))
+            }`}
           data={{
-            labels: ['MZT', 'CAN', 'PV', 'ACA', 'ISM', 'CAB', 'PC'],
-            datasets: [
-              {
-                id: 1,
-                label: '2022',
-                data: [5079, 1469, 1383, 4047, 344, 434, 881],
-                backgroundColor: '#991b1b'
-              },
-              {
-                id: 2,
-                label: '2021',
-                data: [8212, 2516, 2025, 5673, 814, 737, 2187],
-                backgroundColor: '#9a3412'
-              },
-              {
-                id: 3,
-                label: '2020',
-                data: [7196, 2067, 2377, 8228, 775, 883, 1888],
-                backgroundColor: '#3f6212'
-              },
-              {
-                id: 4,
-                label: '2019',
-                data: [5893, 1946, 2083, 7353, 845, 706, 1870],
-                backgroundColor: '#065f46'
-              },
-              {
-                id: 5,
-                label: '2018',
-                data: [5330, 1838, 2323, 5749, 791, 688, 1668],
-                backgroundColor: '#155e75'
-              },
-            ]
+            labels: labels,
+            datasets: datasets
           }}
         />
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
 
-export default plazasVS
+PlazasVS.getLayout = getVentasLayout;
+
+export default PlazasVS

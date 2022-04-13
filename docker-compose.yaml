@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:
+  ventas-site:
+    container_name: ventas_site
+    image: joshyelcg/ventas-site:1.0
+    restart: always
+    ports:
+      - 3000:3000
+    env_file: .env.production
+    environment:
+      - NEXT_PUBLIC_HOST=${NEXT_PUBLIC_HOST}
+      - NEXT_PUBLIC_PORT=${NEXT_PUBLIC_PORT}
+    networks:
+      - ventas-network
+    depends_on:
+      - ventas_api
+
+  ventas-api: 
+    container_name: ventas_api
+    image: joshyelcg/ventas-api:1.0
+    restart: always
+    ports:
+      - 4000:4000
+    env_file: .env
+    environment:
+      - PORT=${PORT}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - NODE_ENV=${NODE_ENV}
+    networks:
+      - ventas-network
+        #command: sh -c "wait-for 172.19.0.4:3306 --timeout=0 -- echo 'Reached MySQL database'"
+    healthcheck:
+      test: ["CMD", "curl", "http://ventas-api:3000/api/v1"]
+      interval: 5s
+      timeout: 3s
+      retries: 6
+  
+  nginx:
+    image: nginx:latest
+    container_name: nginx_prod
+    volumes:
+      - ./nginx/nginx.config:/etc/nginx/nginx.conf
+    ports:
+      - 80:80
+    command: /bin/sh -c "nginx -g 'daemon off;'"
+    depends_on:
+      ventas-api:
+        condition: service_healthy
+      ventas-api:
+        condition: service_started
+    networks:
+      - ventas-network
+
+networks:
+  ventas-network:
+
+

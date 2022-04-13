@@ -1,7 +1,7 @@
 import Head from 'next/head';
 import Image from 'next/image';
-import Logo from '@public/images/green-company.png';
-import { Flex } from '@components/containers';
+import Logo from '../public/images/green-company.png';
+import { Flex } from '../components/containers';
 import Link from 'next/link';
 
 export const Home = () => {

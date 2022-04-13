@@ -1,12 +1,12 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { ParametersContainer, Parameters, SmallContainer } from '@components/containers';
-import { InputContainer, InputDate, Checkbox } from '@components/inputs';
-import { VentasTableContainer, VentasTable, TableHead, TableBody } from '@components/table';
-import { checkboxLabels } from 'utils/data';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
+import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
+import { InputContainer, InputDate, Checkbox } from '../../components/inputs';
+import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
+import { checkboxLabels } from '../../utils/data';
 
 const acumulado = () => {
   return (
-    <VentasLayout>
+    <>
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -44,8 +44,10 @@ const acumulado = () => {
           </TableHead>
         </VentasTable>
       </VentasTableContainer>
-    </VentasLayout>
+    </>
   )
 }
+
+acumulado.getLayout = getVentasLayout;
 
 export default acumulado

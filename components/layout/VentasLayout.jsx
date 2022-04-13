@@ -1,7 +1,7 @@
 // Componentes externos
 // Componentes propios
-import Navbar from '@components/Navbar'
-import SideMenu from '@components/SideMenu'
+import Navbar from '../Navbar';
+import SideMenu from '../SideMenu';
 // Funciones y hooks
 // Recursos (img, js, css)
 
@@ -18,5 +18,11 @@ const VentasLayout = ({ children }) => {
     </>
   )
 }
+
+export const getVentasLayout = page => (
+  <VentasLayout>
+    {page}
+  </VentasLayout>
+)
 
 export default VentasLayout
