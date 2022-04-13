@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Flex } from '../components/containers';
@@ -37,7 +37,7 @@ const Navbar = () => {
           <p className="text-white text-lg font-bold">Opciones de cuenta</p>
           <Image src={Cancel} height={30} width={30} alt='Cerrar' className='invert cursor-pointer' onClick={() => setShowDialog(false)}/>
         </Flex>
-        <Link href="/dashboard">
+        <Link href="/usuario/perfil">
           <a className='hover:bg-sky-500 hover:bg-opacity-20 rounded-md transition ease-in-out duration-200'>
             <Flex className='justify-start mx-2 border-b border-b-gray-100 p-2'>
               <Image src={UserIcon} height={20} width={25} alt='Cerrar' className='invert' />
