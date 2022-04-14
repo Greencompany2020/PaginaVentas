@@ -44,3 +44,47 @@ table.last-row-bg tr:last-child {
 .buttonToggle {
   @apply px-2 py-1 border border-gray-300 hover:bg-gray-500 hover:text-white rounded-md cursor-pointer transition ease-in-out duration-200;
 }
+
+/*Advnaced components*/
+@layer components {
+  /*Accordion*/
+  .Accordion{
+    @apply flex flex-row w-full justify-between cursor-pointer border-b-2 z-10;
+  }
+  .Accordion-button{
+    @apply  w-[32px] transition-transform ease-in-out duration-300; 
+  }
+  .Accordion-button.active{
+    @apply rotate-180;
+  }
+  .Collapse-Accordion{
+    @apply overflow-hidden w-full h-0 transition-height duration-300 ease-in-out;
+  }
+  .Collapse-Accordion.active{
+    @apply h-fit;
+  }
+
+  /*Modal*/
+  .Form-modal{
+    @apply
+    bg-black fixed 
+    min-w-[400px] 
+    min-h-[200px] 
+    w-fit 
+    top-0 
+    left-0 
+    translate-x-[calc(50vw_-_50%)] 
+    translate-y-[calc(50vh_-_50%)] 
+    rounded-md 
+    z-10
+    transition-transform duration-300 ease-in-out
+    transform scale-0
+    ;
+  }
+
+  .Form-modal.active{
+    @apply
+    transform scale-100
+  }
+
+}

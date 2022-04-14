@@ -1,9 +1,9 @@
 import Image from 'next/image';
-import { Flex } from '../../components/containers';
+import {  Flex } from '../../components/containers';
 import { getBaseLayout } from '../../components/layout/BaseLayout';
-import { ChevronDownIcon } from '@heroicons/react/solid';
 import Frogs from '../../public/images/rana10.png';
 import Verify from '../../public/icons/ok-08.png';
+import { DashboardList } from '../../components/profile';
 
 const Perfil = () => {
   return (
@@ -151,8 +151,10 @@ const Perfil = () => {
             <p className='font-bold text-3xl'>Definición de Dashboard</p>
             <p className='text-right text-xl'>Página de Ventas</p>
           </Flex>
+
+          <DashboardList/>
           
-          <section className='w-full px-5'>
+          {/*<section className='w-full px-5'>
             <div className='w-full pt-3'>
               <Flex className='justify-between cursor-pointer'>
                 <p className='font-semibold text-lg'>Diarias</p>
@@ -162,7 +164,7 @@ const Perfil = () => {
                 
               </div>
             </div>
-          </section>
+          </section>*/}
 
           {/* <div className='grid grid-rows-2 grid-cols-4'>
               
