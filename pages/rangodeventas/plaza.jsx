@@ -12,6 +12,7 @@ import { getRangoVentasPlaza } from '../../services/RangoVentasService';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
+import withAuth from '../../components/withAuth';
 
 const Plaza = () => {
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
@@ -93,6 +94,6 @@ const Plaza = () => {
   )
 }
 
-Plaza.getLayout = getVentasLayout;
-
-export default Plaza
+const PlazaWithAuth = withAuth(Plaza);
+PlazaWithAuth.getLayout = getVentasLayout;
+export default PlazaWithAuth;

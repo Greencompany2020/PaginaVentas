@@ -3,6 +3,7 @@ import { ParametersContainer, Parameters, SmallContainer } from '../../component
 import { InputContainer, InputDate, Checkbox } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { checkboxLabels } from '../../utils/data';
+import withAuth from '../../components/withAuth';
 
 const acumulado = () => {
   return (
@@ -48,6 +49,6 @@ const acumulado = () => {
   )
 }
 
-acumulado.getLayout = getVentasLayout;
-
-export default acumulado
+const AcumuladoWithAuth = withAuth(acumulado);
+AcumuladoWithAuth.getLayout = getVentasLayout;
+export default AcumuladoWithAuth;

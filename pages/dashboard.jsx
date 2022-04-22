@@ -5,6 +5,7 @@ import { Flex } from '../components/containers';
 import SalesForecast from '../public/icons/sales-forecast.svg';
 import Chat from '../public/icons/chat.svg';
 import Config from '../public/icons/config-5.png'
+import withAuth from '../components/withAuth';
 
 const customDashboards = [
   {
@@ -38,7 +39,6 @@ const customDashboards = [
     link: '/rangodeventas/plaza'
   },
 ];
-
 const Dashboard = () => {
   return (
     <div className='w-full h-screen bg-white overflow-x-hidden relative'>
@@ -77,5 +77,4 @@ const Dashboard = () => {
     </div>
   )
 }
-
-export default Dashboard
+export default withAuth(Dashboard);

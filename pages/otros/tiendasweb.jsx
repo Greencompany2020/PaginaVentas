@@ -2,6 +2,7 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { InputContainer, InputDate } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableHead, TableBody } from '../../components/table';
+import withAuth from '../../components/withAuth';
 
 const tiendasweb = () => {
   return (
@@ -82,6 +83,7 @@ const tiendasweb = () => {
   )
 }
 
-tiendasweb.getLayout = getVentasLayout;
 
-export default tiendasweb
+const TiendasWebWithAuth = withAuth(tiendasweb);
+TiendasWebWithAuth.getLayout = getVentasLayout;
+export default TiendasWebWithAuth;

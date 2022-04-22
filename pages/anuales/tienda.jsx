@@ -13,6 +13,8 @@ import { getAnualesTiendas } from '../../services/AnualesServices';
 import { createSimpleDatasets, isError } from '../../utils/functions';
 import useMessageModal from '../../hooks/useMessageModal';
 import useGraphData from '../../hooks/useGraphData';
+import withAuth from '../../components/withAuth';
+
 
 const Tienda = () => {
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
@@ -112,6 +114,6 @@ const Tienda = () => {
   )
 }
 
-Tienda.getLayout = getVentasLayout;
-
-export default Tienda
+const TiendaWithAuth = withauth(Tienda);
+TiendaWithAuth.getLayout = getVentasLayout();
+export default TiendaWithAuth;

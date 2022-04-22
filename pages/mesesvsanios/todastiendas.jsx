@@ -13,6 +13,7 @@ import { getMesesAgnosTodasTiendas } from '../../services/MesesAgnosService';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
 import { useUserContextState } from '../../context/UserContext';
+import withAuth from '../../components/withAuth';
 
 const TodasTiendas = () => {
   const { userLevel } = useUserContextState();
@@ -140,6 +141,6 @@ const TodasTiendas = () => {
   )
 }
 
-TodasTiendas.getLayout = getVentasLayout;
-
-export default TodasTiendas;
+const TodasTiendasWithAuth = withAuth(TodasTiendas);
+TodasTiendasWithAuth.getLayout = getVentasLayout;
+export default TodasTiendasWithAuth;

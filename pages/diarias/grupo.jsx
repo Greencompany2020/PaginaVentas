@@ -11,6 +11,7 @@ import { inputNames } from '../../utils/data/checkboxLabels';
 import { handleChange } from '../../utils/handlers';
 import useMessageModal from '../../hooks/useMessageModal';
 import { isError } from '../../utils/functions';
+import withAuth from '../../components/withAuth';
 
 const Grupo = () => {
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
@@ -146,6 +147,6 @@ const Grupo = () => {
   )
 }
 
-Grupo.getLayout = getVentasLayout;
-
-export default Grupo
+const GrupoWithAuth = withAuth(Grupo);
+GrupoWithAuth.getLayout = getVentasLayout;
+export default GrupoWithAuth;

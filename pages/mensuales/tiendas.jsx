@@ -12,6 +12,7 @@ import { getMensualesTiendas } from '../../services/MensualesServices';
 import { createSimpleDatasets, isError, validateYear } from '../../utils/functions';
 import useMessageModal from '../../hooks/useMessageModal';
 import useGraphData from '../../hooks/useGraphData';
+import withAuth from '../../components/withAuth';
 
 const Tiendas = () => {
   const { message, modalOpen, setModalOpen, setMessage } = useMessageModal();
@@ -109,6 +110,6 @@ const Tiendas = () => {
   )
 }
 
-Tiendas.getLayout = getVentasLayout;
-
-export default Tiendas
+const TiendasWithAuth = withAuth(Tiendas);
+TiendasWithAuth.getLayout = getVentasLayout;
+export default TiendasWithAuth;

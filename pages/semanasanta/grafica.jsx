@@ -5,6 +5,7 @@ import { InputContainer, InputYear, InputVsYear, SelectTiendas,SelectPlazas, Che
 import { VentasTableContainer } from '../../components/table';
 import BarChart from '../../components/BarChart';
 import { checkboxLabels} from '../../utils/data';
+import withAuth from '../../components/withAuth';
 
 const Grafica = ({year1,year2}) => {
   year1 = 1
@@ -97,6 +98,6 @@ const Grafica = ({year1,year2}) => {
   )
 }
 
-Grafica.getLayout = getVentasLayout;
-
-export default Grafica
+const GraficaWithAuth = withAuth(Grafica);
+GraficaWithAuth.getLayout = getVentasLayout;
+export default GraficaWithAuth;

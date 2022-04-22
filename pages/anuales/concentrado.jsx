@@ -1,5 +1,5 @@
 import { getVentasLayout } from '../../components/layout/VentasLayout';
-
+import withAuth from '../../components/withAuth';
 const Concentrado = () => {
   return (
     <>
@@ -8,6 +8,6 @@ const Concentrado = () => {
   )
 }
 
-Concentrado.getLayout = getVentasLayout;
-
-export default Concentrado
+const ConcentradoWithAuth = withAuth(Concentrado);
+ConcentradoWithAuth.getLayout = getVentasLayout();
+export default ConcentradoWithAuth;

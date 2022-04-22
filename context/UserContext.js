@@ -26,4 +26,8 @@ const UserContextProvider = ({ children }) => {
   )
 }
 
+const userConfContexProvider = () => {
+  const [userConf, setUserConf] = useState({});
+}
+
 export {UserContextProvider, useUserContextState};

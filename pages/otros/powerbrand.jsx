@@ -2,6 +2,7 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { InputContainer, InputDate } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableHead, TableBody } from '../../components/table';
+import withAuth from '../../components/withAuth';
 
 const powerbrand = () => {
   return (
@@ -82,6 +83,6 @@ const powerbrand = () => {
   )
 }
 
-powerbrand.getLayout = getVentasLayout;
-
-export default powerbrand
+const PowerBrandWithAuth = withAuth(powerbrand);
+PowerBrandWithAuth.getLayout = getVentasLayout;
+export default PowerBrandWithAuth;

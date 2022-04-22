@@ -12,6 +12,7 @@ import { validateMonthRange, validateYear, createPresupuestoDatasets, isError } 
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
 import { getPresupuestoGrupo } from '../../services/PresupuestoService';
+import withAuth from '../../components/withAuth';
 
 const Grupo = () => {
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
@@ -137,6 +138,6 @@ const Grupo = () => {
   )
 }
 
-Grupo.getLayout = getVentasLayout;
-
-export default Grupo;
+const GrupoWithAuth = withAuth(Grupo);
+GrupoWithAuth.getLayout = getVentasLayout;
+export default GrupoWithAuth;

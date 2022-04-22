@@ -262,4 +262,72 @@ export const concentradoPlazas = [
   'PCARMEN'
 ];
 
+export const tiendascon = [
+  {
+    nombre: 'Por tienda',
+    grupo: 'Diarias',
+    configuracion: {
+      iva: ['enabled', true],
+      eventos: ['enabled', true],
+      agnoSinVenta: ['enabled', true],
+      cerrada: ['enabled', false],
+      suspendida: ['enabled', true],
+      pesos: ['disabled', false]
+    }
+  },
+
+  {
+    nombre: 'Por plaza',
+    grupo: 'Diarias',
+    configuracion: {
+      iva: ['enabled', true],
+      eventos: ['disabled', true],
+      agnoSinVenta: ['enabled', true],
+      cerrada: ['enabled', false],
+      suspendida: ['enabled', true],
+      pesos: ['disabled', false]
+    }
+  },
+
+  {
+    nombre: 'Del grupo',
+    grupo: 'Diarias',
+    configuracion: {
+      iva: ['enabled', true],
+      eventos: ['enabled', true],
+      agnoSinVenta: ['enabled', true],
+      cerrada: ['enabled', false],
+      suspendida: ['enabled', true],
+      pesos: ['disabled', false]
+    }
+  },
+
+  {
+    nombre: 'Compromiso',
+    grupo: 'Semanales',
+    configuracion: {
+      iva: ['enabled', true],
+      eventos: ['enabled', true],
+      agnoSinVenta: ['enabled', true],
+      cerrada: ['enabled', false],
+      suspendida: ['enabled', true],
+      pesos: ['disabled', false]
+    }
+  },
+
+  {
+    nombre: 'Por tienda',
+    grupo: 'Semanales',
+    configuracion: {
+      iva: ['enabled', true],
+      eventos: ['enabled', true],
+      agnoSinVenta: ['enabled', true],
+      cerrada: ['enabled', false],
+      suspendida: ['enabled', true],
+      pesos: ['disabled', false]
+    }
+  },
+
+]
+
 export const MENSAJE_ERROR = "Ha ocurrido un error durante al consulta de datos."

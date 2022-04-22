@@ -12,6 +12,7 @@ import { getSemanalesTiendas } from '../../services/SemanalesService';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { handleChange } from '../../utils/handlers';
 import useMessageModal from '../../hooks/useMessageModal';
+import withAuth from '../../components/withAuth';
 
 const Tiendas = () => {
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
@@ -160,6 +161,6 @@ const Tiendas = () => {
   )
 }
 
-Tiendas.getLayout = getVentasLayout;
-
-export default Tiendas
+const TiendasWithAuth = withAuth(Tiendas);
+TiendasWithAuth.getLayout = getVentasLayout;
+export default TiendasWithAuth;

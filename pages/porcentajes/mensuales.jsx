@@ -12,6 +12,8 @@ import { handleChange } from '../../utils/handlers';
 import { getPorcentajesMensuales } from '../../services/PorcentajesService';
 import useMessageModal from '../../hooks/useMessageModal';
 import { useUserContextState } from '../../context/UserContext';
+import withAuth from '../../components/withAuth';
+
 
 const Mensuales = () => {
   const { userLevel } = useUserContextState();
@@ -218,6 +220,6 @@ const Mensuales = () => {
   )
 }
 
-Mensuales.getLayout = getVentasLayout;
-
-export default Mensuales
+const MensualesWithAuth = withAuth(Mensuales);
+MensualesWithAuth.getLayout = getVentasLayout;
+export default MensualesWithAuth;

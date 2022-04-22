@@ -1,4 +1,5 @@
 import { getVentasLayout } from '../../components/layout/VentasLayout';
+import withAuth from '../../components/withAuth';
 
 const ClubFrogs = () => {
   return (
@@ -8,6 +9,6 @@ const ClubFrogs = () => {
   )
 }
 
-ClubFrogs.getLayout = getVentasLayout;
-
-export default ClubFrogs
+const ClubFrogsWithAuth = withAuth(ClubFrogs);
+ClubFrogsWithAuth.getLayout = getVentasLayout;
+export default ClubFrogsWithAuth;

@@ -12,6 +12,7 @@ import { getCurrentMonth, getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
+import withAuth from '../../components/withAuth';
 
 const Tienda = () => {
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
@@ -115,6 +116,6 @@ const Tienda = () => {
   )
 }
 
-Tienda.getLayout = getVentasLayout;
-
-export default Tienda
+const TiendaWithAuth = withAuth(Tienda);
+TiendaWithAuth.getLayout = getVentasLayout;
+export default TiendaWithAuth;

@@ -6,7 +6,6 @@ import { enlaces as enlacesMenuLateral } from '../utils/data'
 
 const SideMenu = () => {
   const [visible, toggleVisible] = useToggle(true);
-
   return (
     <>
       <aside className={`w-56 lg:flex-none bg-gray-200 z-10 left-0 transform absolute lg:relative lg:translate-x-0 ${visible ? '-translate-x-full' : ''} transition duration-200 ease-in-out`}>
