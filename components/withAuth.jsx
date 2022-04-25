@@ -1,58 +1,62 @@
-import { useRouter } from "next/router";
+import { useRouter} from "next/router";
 import { useAuth } from "../context/AuthContext";
 import { useEffect } from "react";
-import Unauthorized from "../pages/unauthorized";
+import cookie from "js-cookie";
+import * as jose from 'jose';
+import dayjs from "dayjs";
 
-/**
- * Este hoc envuelte toda los componentes para validar rutas
- * 
- */
+const witAuth = (Component) => {
+    const AuthorizationComponent = () => {
 
-
-export default WrappedComponent  =>{
-
-    /**
-     * Obtiene los valores iniciales desde el initialProps
-     * Obtiene el componente que renderizara
-     * utiliza el contexto de useAuth y router
-     * @param {*} props 
-     * @returns 
-     */
-    const hoc = ({...props}) => {
-        const auth = useAuth();
         const router = useRouter();
+        const auth = useAuth();
+        const exceptionPages = ['/', '/dashboard', '/usuario/perfil']
 
-        const matchPath = () => {
-            const foundPath = auth.routes.find(route => route.pathname == props.serverProps.pathname);
-            return foundPath ? true : false;
-        }
 
-        const redirect = matchPath();
+        const hasUserAccess = async () => {
+            const isException = exceptionPages.find(page => page == router.asPath);
 
-        useEffect(()=>{
-            console.log('estoy aqui');
-            if(!redirect){
-                router.push('/unauthorized');
+            if(isException){
+
+                const token = cookie.get('accessToken');
+                if(token){
+                    const decode = jose.decodeJwt(token);
+                    const isExpired = dayjs.unix(decode.exp).diff(dayjs()) < 1;
+
+                    if(isExpired){
+                        if(!auth.refreshToken()){
+                            cookie.remove('accessToken');
+                            router.push('/');
+                        }
+                    }
+
+                    if(router.asPath == '/'){
+                        router.push('/dashboard')
+                    }
+                }else{
+                    router.push('/')
+                }
+
+
+            }else{
+                if(router.asPath !== '/'){
+                    const data = await auth.getRoute(router.asPath);
+                    if(data?.access === false || !data) router.replace('/unauthorized')
+                }
+
             }
-        },[])
-        return redirect ? <WrappedComponent {...props}/> : null
 
-    }
-
-    /**
-     * Revisa desde el servidor de node el contexto (req, res)
-     * Obtiene el pathname de la pagina
-     * Regresa la cookie
-     * @param {*} context 
-     * @returns 
-     */
-    hoc.getInitialProps = async (context) => {
-        const {pathname} = context;
-        const serverProps = {
-            pathname
         }
-        return { serverProps };
-    }
 
-    return hoc;
+        useEffect(() => {
+            hasUserAccess();
+        },[]);
+
+        return  <Component />
+    }
+    return AuthorizationComponent;
 }
+
+
+
+export default witAuth;

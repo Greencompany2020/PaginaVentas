@@ -4,19 +4,18 @@ import Logo from '../public/images/green-company.png';
 import {Formik, Form, Field} from 'formik'
 import { useAuth } from '../context/AuthContext';
 import * as Yup from 'yup';
+import witAuth from '../components/withAuth';
 export const Home = () => {
 
   const auth = useAuth();
   const validationSchema = Yup.object().shape({
     UserCode: Yup.string().required('Requerido'),
     password: Yup.string().required('Requerido'),
-    //rememberPass: Yup.boolean().optional()
   });
 
   const initialValues = {
     UserCode: '',
     password: '',
-    //rememberPass: false
   }
 
   const handleSubmit = values => {
@@ -50,7 +49,7 @@ export const Home = () => {
                           id='UserCode'
                           className={`rounded-md p-3 outline-none  ${errors?.UserCode && touched?.UserCode ? 'border-[3px] border-red-500': null}`}
                         />
-                        {errors?.Usercode && touched?.Usercode ? <span className='font-semibold text-red-500'>{errors?.UserCode}</span>: null}
+                        {errors?.UserCode && touched?.UserCode ? <span className='font-semibold text-red-500'>{errors?.UserCode}</span>: null}
                       </div>
                     
                       <div className='flex flex-col justify-start h-24 '>
@@ -59,7 +58,7 @@ export const Home = () => {
                           placeholder='Contraseña' 
                           name='password' 
                           id='password'
-                          className={`rounded-md p-3 outline-none  ${errors?.pass && touched?.pass ?'border-[3px] border-red-500' : null}`}
+                          className={`rounded-md p-3 outline-none  ${errors?.password && touched?.password ?'border-[3px] border-red-500' : null}`}
                         />
                       {errors?.password && touched?.password ? <span className='font-semibold text-red-500'>{errors?.password}</span> : null}
                       </div>
@@ -89,4 +88,4 @@ export const Home = () => {
   )
 }
 
-export default Home;
+export default witAuth(Home);

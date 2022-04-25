@@ -1,42 +1,21 @@
 import jsCookie from 'js-cookie';
-import {loginAuth} from '../services/AuthServices';
+import {loginAuth, getRouteAuth, refreshTokenAuth, logOutAuth} from '../services/AuthServices';
 import {useRouter} from 'next/router';
-import {useState} from 'react'
-
 
 function useProvideAuth(){
-
-    const [routes, setRoutes] = useState([
-        {
-            id: 1,
-            pathname: '/dashboard'
-        },
-        {
-            id: 2,
-            pathname: '/plazas'
-        },
-
-        {
-            id: 2,
-            pathname: '/comparativo/grupo'
-        },
-        {
-            id: 2,
-            pathname: '/comparativo/plazas'
-        }
-    ]);
-
-
-    const router = useRouter();    
+    const router = useRouter();
+    
+    
     const signIn = async (body) => {
         try{
             const token = await loginAuth(body);
+            console.log(token);
             if(token){
                 jsCookie.set('accessToken', token);
-                router.push('/dashboard')
+                window.location.href = '/dashboard';
             }
         }catch(err){
-            console.log(err);
+            return false;
         }
     }
 
@@ -46,15 +25,37 @@ function useProvideAuth(){
             jsCookie.remove('accessToken');
             router.push('/');
         }catch(err){
-            console.log(err);
+           return false;
         }
     }
 
-  
+    const getRoute = async (body) =>{
+        try{
+            const {data} = await getRouteAuth(body);
+            return data;
+        }catch(err){
+           return {access:false}
+        }
+    }
+
+    const refreshToken = async() => {
+        try{
+            const token = await refreshTokenAuth();
+            if(token){
+                jsCookie.set('accessToken', token);
+                return true;
+            }
+            return false
+        }catch(err){
+            return false
+        }
+    }
+
     return {
         signIn,
         logOut,
-        routes
+        getRoute,
+        refreshToken,
     }
 }
 

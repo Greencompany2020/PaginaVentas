@@ -248,6 +248,6 @@ const Perfil = () => {
   )
 }
 
-PerfilWithAuth = withAuth(Perfil);
+const PerfilWithAuth = withAuth(Perfil);
 PerfilWithAuth.getLayout = getBaseLayout;
 export default PerfilWithAuth;

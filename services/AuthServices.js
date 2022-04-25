@@ -11,8 +11,8 @@ export async function loginAuth(body) {
         const {data} = await ApiProvider.post('/auth/login', body);
         const token = data.accessToken;
         return token;
-    }catch(err){
-        console.log(err);
+    }
+    catch(err){
         return err;
     }
 }
@@ -21,12 +21,30 @@ export async function loginAuth(body) {
  * Deslogea al usuario
  */
 export async function logOutAuth(){
+
     try{
-        const {data} = await ApiProvider.get('/auth/logout');
+        const data = await ApiProvider.get('/auth/logout');
         return data;
     }catch(err){
-        console.log(err);
+        return false;
     }
 }
 
+export async function getRouteAuth(body){
+    try{
+        const data = await ApiProvider.post('/user/dashboards/acceso', {point:body})
+        return data;
+    }catch(err){
+        return false;
+    }
+}
 
+export async function refreshTokenAuth(){
+    try{
+        const data =  await ApiProvider.get('/auth/refresh');
+        const token = data.accessToken;
+        return token
+    }catch(err){
+        return false;
+    }
+}
