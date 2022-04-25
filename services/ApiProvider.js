@@ -17,6 +17,8 @@ const ApiProvider = axios.create({
 
 
 
+
+
 //Este interceptor actualiza el token
 ApiProvider.interceptors.request.use(async req => {
   
@@ -28,11 +30,13 @@ ApiProvider.interceptors.request.use(async req => {
 
     try{
       const {data} = await axios.get(`${baseURL}/auth/refresh`,{withCredentials: true});
-      jsCookie.set('accessToken', data.accessToken,{expires: 1});
+      const newToken = data.accessToken;
+      jsCookie.set('accessToken',  newToken,{expires: 1});
+      req.headers.Authorization = `Bearer ${ newToken}`
     }catch(err){
-      console.log(err);
       jsCookie.remove('accessToken')
       window.location.href = '/';
+      console.log(err);
     }
   }
 
