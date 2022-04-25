@@ -9,11 +9,11 @@ function useProvideAuth(){
     const signIn = async (body) => {
         try{
             const token = await loginAuth(body);
-            console.log(token);
             if(token){
-                jsCookie.set('accessToken', token);
-                window.location.href = '/dashboard';
+                jsCookie.set('accessToken', token,{expires: 1});
+                window.location.href = '/dashboard'
             }
+            return false;
         }catch(err){
             return false;
         }
@@ -42,7 +42,7 @@ function useProvideAuth(){
         try{
             const token = await refreshTokenAuth();
             if(token){
-                jsCookie.set('accessToken', token);
+                jsCookie.set('accessToken', token,{expires: 1});
                 return true;
             }
             return false

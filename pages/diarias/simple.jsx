@@ -21,7 +21,7 @@ const Simple = () => {
   const [tiendaSimpleParametros, setTiendaSimpleParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
-    tienda: getInitialTienda(useLevel),
+    tienda: getInitialTienda(userLevel),
     conIva: 0,
   });
 

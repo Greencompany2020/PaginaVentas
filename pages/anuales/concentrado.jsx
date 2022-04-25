@@ -9,5 +9,5 @@ const Concentrado = () => {
 }
 
 const ConcentradoWithAuth = withAuth(Concentrado);
-ConcentradoWithAuth.getLayout = getVentasLayout();
+ConcentradoWithAuth.getLayout = getVentasLayout;
 export default ConcentradoWithAuth;

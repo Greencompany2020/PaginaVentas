@@ -13,7 +13,7 @@ export async function loginAuth(body) {
         return token;
     }
     catch(err){
-        return err;
+        return false;
     }
 }
 

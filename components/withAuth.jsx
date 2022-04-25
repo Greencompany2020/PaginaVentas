@@ -1,17 +1,15 @@
 import { useRouter} from "next/router";
 import { useAuth } from "../context/AuthContext";
-import { useEffect } from "react";
+import { useEffect, useState} from "react";
 import cookie from "js-cookie";
 import * as jose from 'jose';
 import dayjs from "dayjs";
 
 const witAuth = (Component) => {
     const AuthorizationComponent = () => {
-
         const router = useRouter();
         const auth = useAuth();
-        const exceptionPages = ['/', '/dashboard', '/usuario/perfil']
-
+        const exceptionPages = ['/', '/dashboard', '/usuario/perfil', '/ventas']
 
         const hasUserAccess = async () => {
             const isException = exceptionPages.find(page => page == router.asPath);
@@ -26,7 +24,7 @@ const witAuth = (Component) => {
                     if(isExpired){
                         if(!auth.refreshToken()){
                             cookie.remove('accessToken');
-                            router.push('/');
+                            window.location.href = '/';
                         }
                     }
 
@@ -36,8 +34,7 @@ const witAuth = (Component) => {
                 }else{
                     router.push('/')
                 }
-
-
+               
             }else{
                 if(router.asPath !== '/'){
                     const data = await auth.getRoute(router.asPath);
@@ -45,14 +42,14 @@ const witAuth = (Component) => {
                 }
 
             }
-
+           
         }
 
         useEffect(() => {
             hasUserAccess();
         },[]);
 
-        return  <Component />
+        return <Component /> 
     }
     return AuthorizationComponent;
 }

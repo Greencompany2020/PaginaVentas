@@ -49,7 +49,7 @@ const Dashboard = () => {
             <h1>Bienvenido, <span className='text-xl'>Mauricio Rochin</span></h1>
           </div>
           <div className='grid lg:grid-cols-2 gap-6 text-center text-lg mt-5'>
-            <DashboardButtonContainer link='/comparativo/grupo'>
+            <DashboardButtonContainer link='/ventas'>
               <Image src={SalesForecast} alt='ventas' className='w-32 h-32 m-auto' height={128} width={128} />
               <p>Estadísticas de Venta</p>
             </DashboardButtonContainer>

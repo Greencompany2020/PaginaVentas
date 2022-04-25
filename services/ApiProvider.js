@@ -28,7 +28,7 @@ ApiProvider.interceptors.request.use(async req => {
 
     try{
       const {data} = await axios.get(`${baseURL}/auth/refresh`,{withCredentials: true});
-      jsCookie.set('accessToken', data.accessToken);
+      jsCookie.set('accessToken', data.accessToken,{expires: 1});
     }catch(err){
       console.log(err);
       jsCookie.remove('accessToken')
