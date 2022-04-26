@@ -13,6 +13,7 @@ import { getOperacionesPlaza } from '../../services/OperacionesService';
 import useMessageModal from '../../hooks/useMessageModal';
 import useGraphData from '../../hooks/useGraphData';
 import { useUserContextState } from '../../context/UserContext';
+import withAuth from '../../components/withAuth';
 
 const Plaza = () => {
   const { userLevel } = useUserContextState();
@@ -147,6 +148,6 @@ const Plaza = () => {
   )
 }
 
-Plaza.getLayout = getVentasLayout;
-
-export default Plaza
+const PlazaWithAuth = withAuth(Plaza);
+PlazaWithAuth.getLayout = getVentasLayout;
+export default PlazaWithAuth;

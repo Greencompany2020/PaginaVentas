@@ -11,6 +11,7 @@ import { getInitialTienda, getTiendaName, isError } from '../../utils/functions'
 import { handleChange } from '../../utils/handlers';
 import useMessageModal from '../../hooks/useMessageModal';
 import { useUserContextState } from '../../context/UserContext';
+import withAuth from '../../components/withAuth';
 
 const Tienda = () => {
   const { userLevel } = useUserContextState()
@@ -116,6 +117,6 @@ const Tienda = () => {
   )
 }
 
-Tienda.getLayout = getVentasLayout;
-
-export default Tienda
+const TiendaWithAuth = withAuth(Tienda);
+TiendaWithAuth.getLayout = getVentasLayout;
+export default TiendaWithAuth;

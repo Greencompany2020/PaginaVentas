@@ -20,6 +20,8 @@ import { getPresupuestoFechas } from '../../services/PresupuestoService';
 import useMessageModal from '../../hooks/useMessageModal';
 import { MENSAJE_ERROR } from '../../utils/data';
 import { useUserContextState } from '../../context/UserContext';
+import withAuth from '../../components/withAuth';
+
 
 const Fechas = () => {
   const { userLevel } = useUserContextState();
@@ -84,6 +86,6 @@ const Fechas = () => {
   );
 };
 
-Fechas.getLayout = getVentasLayout;
-
-export default Fechas;
+const FechasWithAuth = withAuth(Fechas);
+FechasWithAuth.getLayout = getVentasLayout;
+export default FechasWithAuth;

@@ -11,8 +11,9 @@ import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 import { getBeginCurrentWeekDateRange, getMonthByNumber, getNameDay, getPrevDate, getYearFromDate } from '../../utils/dateFunctions';
 import { getDayWeekName, validateDate, getTableName, rowColor, isError } from '../../utils/functions';
 import useMessageModal from '../../hooks/useMessageModal';
+import withAuth from '../../components/withAuth';
 
-const Grupo = () => {
+function Grupo(){
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [comparativoGrupo, setComparativoGrupo] = useState({});
   const [acumuladoSemanal, setAcumuladoSemanal] = useState(false);
@@ -228,6 +229,7 @@ const Grupo = () => {
   )
 }
 
-Grupo.getLayout = getVentasLayout
+const GrupoWithAuth = withAuth(Grupo);
+GrupoWithAuth.getLayout = getVentasLayout;
+export default GrupoWithAuth;
 
-export default Grupo

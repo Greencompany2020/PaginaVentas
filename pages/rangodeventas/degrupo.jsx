@@ -3,6 +3,7 @@ import { Parameters, ParametersContainer, SmallContainer } from '../../component
 import { InputContainer, SelectTiendasGeneral, InputDateDate } from '../../components/inputs';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import PieChart from '../../components/Pie';
+import withAuth from '../../components/withAuth';
 
 const degrupo = () => {
   return (
@@ -60,6 +61,6 @@ const degrupo = () => {
   )
 }
 
-degrupo.getLayout = getVentasLayout;
-
-export default degrupo
+const DeGrupoWithAuth = withAuth(degrupo);
+DeGrupoWithAuth.getLayout = getVentasLayout;
+export default DeGrupoWithAuth;

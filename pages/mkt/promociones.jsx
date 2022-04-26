@@ -1,5 +1,5 @@
 import { getVentasLayout } from '../../components/layout/VentasLayout';
-
+import withAuth from '../../components/withAuth';
 const Promociones = () => {
   return (
     <>
@@ -8,6 +8,6 @@ const Promociones = () => {
   )
 }
 
-Promociones.getLayout = getVentasLayout;
-
-export default Promociones
+const PromocionesWithAuth = withAuth(Promociones);
+PromocionesWithAuth.getLayout = getVentasLayout;
+export default PromocionesWithAuth;

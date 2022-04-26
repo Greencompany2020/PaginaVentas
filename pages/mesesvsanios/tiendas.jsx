@@ -14,6 +14,7 @@ import { handleChange } from '../../utils/handlers';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
 import { useUserContextState } from '../../context/UserContext';
+import withAuth from '../../components/withAuth';
 
 const Tiendas = () => {
   const { userLevel } = useUserContextState();
@@ -160,6 +161,6 @@ const Tiendas = () => {
   )
 }
 
-Tiendas.getLayout = getVentasLayout;
-
-export default Tiendas
+const TiendasWithAuth = withAuth(Tiendas);
+TiendasWithAuth.getLayout = getVentasLayout;
+export default TiendasWithAuth;

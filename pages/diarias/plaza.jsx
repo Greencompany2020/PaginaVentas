@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getVentasLayout } from '../../components/layout/VentasLayout';
+import VentasLayout, { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { VentasTableContainer, VentasTable, VentasDiariasTableHead, VentasDiariasTableFooter } from '../../components/table';
 import { InputContainer, SelectPlazas, SelectMonth, InputYear, Checkbox } from '../../components/inputs';
@@ -12,6 +12,8 @@ import { inputNames } from '../../utils/data/checkboxLabels';
 import { handleChange } from '../../utils/handlers';
 import useMessageModal from '../../hooks/useMessageModal';
 import { useUserContextState } from '../../context/UserContext';
+import withAuth from '../../components/withAuth';
+
 // TODO: Añadir plaza y tienda inicial usando userLevel y useUserContextState
 const Plaza = () => {
   const { userLevel } = useUserContextState()
@@ -149,6 +151,7 @@ const Plaza = () => {
   )
 }
 
-Plaza.getLayout = getVentasLayout;
 
-export default Plaza
+const PlazaWithAuth = withAuth(Plaza);
+PlazaWithAuth.getLayout = getVentasLayout;
+export default PlazaWithAuth

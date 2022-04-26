@@ -11,6 +11,8 @@ import { numberWithCommas } from '../../utils/resultsFormated'
 import { getPorcenatajesParticipacion } from '../../services/PorcentajesService';
 import useMessageModal from '../../hooks/useMessageModal';
 import { isError, validateYear } from '../../utils/functions';
+import withAuth from '../../components/withAuth';
+
 
 const Participacion = () => {
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
@@ -207,6 +209,6 @@ const Participacion = () => {
   )
 }
 
-Participacion.getLayout = getVentasLayout;
-
-export default Participacion
+const ParticipacionWithAuth = withAuth(Participacion);
+ParticipacionWithAuth.getLayout = getVentasLayout;
+export default ParticipacionWithAuth;

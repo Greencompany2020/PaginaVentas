@@ -5,6 +5,7 @@ import { Flex } from '../components/containers';
 import SalesForecast from '../public/icons/sales-forecast.svg';
 import Chat from '../public/icons/chat.svg';
 import Config from '../public/icons/config-5.png'
+import withAuth from '../components/withAuth';
 
 const customDashboards = [
   {
@@ -38,7 +39,6 @@ const customDashboards = [
     link: '/rangodeventas/plaza'
   },
 ];
-
 const Dashboard = () => {
   return (
     <div className='w-full h-screen bg-white overflow-x-hidden relative'>
@@ -49,7 +49,7 @@ const Dashboard = () => {
             <h1>Bienvenido, <span className='text-xl'>Mauricio Rochin</span></h1>
           </div>
           <div className='grid lg:grid-cols-2 gap-6 text-center text-lg mt-5'>
-            <DashboardButtonContainer link='/comparativo/grupo'>
+            <DashboardButtonContainer link='/ventas'>
               <Image src={SalesForecast} alt='ventas' className='w-32 h-32 m-auto' height={128} width={128} />
               <p>Estadísticas de Venta</p>
             </DashboardButtonContainer>
@@ -77,5 +77,4 @@ const Dashboard = () => {
     </div>
   )
 }
-
-export default Dashboard
+export default withAuth(Dashboard);

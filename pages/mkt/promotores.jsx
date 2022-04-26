@@ -10,6 +10,8 @@ import { getCurrentMonth, getCurrentYear, getMonthChars } from '../../utils/date
 import { isError, validateMonthRange, validateYear } from '../../utils/functions';
 import { getPromotores } from '../../services/MKTService';
 import useMessageModal from '../../hooks/useMessageModal';
+import withAuth from '../../components/withAuth';
+
 
 const Promotores = () => {
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
@@ -157,6 +159,6 @@ const Promotores = () => {
   )
 }
 
-Promotores.getLayout = getVentasLayout;
-
-export default Promotores
+const PromotoresWithAuth = withAuth(Promotores);
+PromotoresWithAuth.getLayout = getVentasLayout;
+export default PromotoresWithAuth;

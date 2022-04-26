@@ -21,6 +21,9 @@ import { handleChange } from '../../utils/handlers';
 import { isError, validateYear } from '../../utils/functions';
 import { getSemanaSantaGrupo, getSemanaSantaGrupoConcentrado } from '../../services/semanaSantaService';
 import useMessageModal from '../../hooks/useMessageModal';
+import withAuth from '../../components/withAuth';
+
+
 
 const Grupo = () => {
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
@@ -149,6 +152,6 @@ const Grupo = () => {
   );
 };
 
-Grupo.getLayout = getVentasLayout;
-
-export default Grupo;
+const GrupoWithAuth = withAuth(Grupo);
+GrupoWithAuth.getLayout = getVentasLayout;
+export default GrupoWithAuth;

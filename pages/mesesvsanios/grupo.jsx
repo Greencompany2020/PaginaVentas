@@ -12,6 +12,7 @@ import { getMesesAgnosGrupo } from '../../services/MesesAgnosService';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from "../../hooks/useMessageModal";
 import { createMesesAgnosGrupoDataset, isError, validateMonthRange, validateYearRange } from '../../utils/functions';
+import withAuth from '../../components/withAuth';
 
 const Grupo = () => {
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
@@ -148,6 +149,7 @@ const Grupo = () => {
   )
 }
 
-Grupo.getLayout = getVentasLayout;
 
-export default Grupo
+const GrupoWithAuth = withAuth(Grupo);
+GrupoWithAuth.getLayout = getVentasLayout;
+export default GrupoWithAuth;

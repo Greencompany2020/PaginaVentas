@@ -3,6 +3,7 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { InputContainer, InputDate } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableHead, TableBody } from '../../components/table';
+import withAuth from '../../components/withAuth';
 
 const proveduria = () => {
   return (
@@ -95,6 +96,6 @@ const proveduria = () => {
   )
 }
 
-proveduria.getLayout = getVentasLayout;
-
-export default proveduria
+const ProveduriaWithAuth = withAuth(proveduria);
+ProveduriaWithAuth.getLayout = getVentasLayout;
+export default ProveduriaWithAuth;

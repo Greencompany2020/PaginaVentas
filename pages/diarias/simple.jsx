@@ -12,6 +12,7 @@ import { getMonthByNumber } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import useMessageModal from '../../hooks/useMessageModal';
 import { useUserContextState } from '../../context/UserContext';
+import withAuth from '../../components/withAuth';
 
 const Simple = () => {
   const { userLevel } = useUserContextState();
@@ -20,7 +21,7 @@ const Simple = () => {
   const [tiendaSimpleParametros, setTiendaSimpleParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
-    tienda: getInitialTienda(useLevel),
+    tienda: getInitialTienda(userLevel),
     conIva: 0,
   });
 
@@ -114,6 +115,6 @@ const Simple = () => {
   )
 }
 
-Simple.getLayout = getVentasLayout;
-
-export default Simple
+const SimpleWithAuth = withAuth(Simple);
+SimpleWithAuth.getLayout = getVentasLayout;
+export default SimpleWithAuth;

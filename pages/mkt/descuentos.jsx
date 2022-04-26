@@ -1,4 +1,5 @@
 import { getVentasLayout } from '../../components/layout/VentasLayout';
+import withAuth from '../../components/withAuth';
 
 const Descuentos = () => {
   return (
@@ -8,6 +9,6 @@ const Descuentos = () => {
   )
 }
 
-Descuentos.getLayout = getVentasLayout;
-
-export default Descuentos
+const DescuentosWithAuth = withAuth(Descuentos);
+DescuentosWithAuth.getLayout = getVentasLayout;
+export default DescuentosWithAuth;
