@@ -114,6 +114,6 @@ const Tienda = () => {
   )
 }
 
-const TiendaWithAuth = withauth(Tienda);
+const TiendaWithAuth = withAuth(Tienda);
 TiendaWithAuth.getLayout = getVentasLayout();
 export default TiendaWithAuth;
