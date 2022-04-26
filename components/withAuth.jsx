@@ -22,7 +22,7 @@ const witAuth = (Component) => {
                 tokenRequired: true,
             },
             {
-                pathname: 'usuario/',
+                pathname: '/usuario/perfil',
                 tokenRequired: true,
             },
             {
