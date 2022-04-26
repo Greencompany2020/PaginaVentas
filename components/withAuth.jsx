@@ -44,7 +44,6 @@ const witAuth = (Component) => {
                     router.push(page);
                     break;
             }
-            router.replace(page);
         }
 
         const userHastoken = async () =>{
@@ -72,7 +71,7 @@ const witAuth = (Component) => {
                     const userAccess = await getAuthToPath();
                     if(!userAccess.access)  return cb('/unauthorized', 'replace')
                 }else{
-                    cb('/', 'redirect')
+                    cb('/', 'push')
                 }   
             }
         }
