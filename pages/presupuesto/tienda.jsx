@@ -18,7 +18,7 @@ const Tienda = () => {
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTienda, setParamTienda] = useState({
-    tienda: getInitialTienda(),
+    tienda: 'none',
     delMes: 1,
     alMes: getCurrentMonth() - 1,
     delAgno: getCurrentYear(),

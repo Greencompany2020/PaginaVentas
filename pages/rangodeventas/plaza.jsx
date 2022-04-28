@@ -18,7 +18,7 @@ const Plaza = () => {
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [paramPlaza, setParamPlaza] = useState({
-    plaza: getInitialPlaza(),
+    plaza:0,
     fechaInicio: getBeginEndMonth(true)[0],
     fechaFin: getBeginEndMonth(true)[1],
     rangos: '100,200,300,400,500,600',

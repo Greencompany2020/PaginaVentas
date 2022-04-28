@@ -4,7 +4,6 @@ import {loginAuth, getRouteAuth, refreshTokenAuth, logOutAuth, getUserPerfil, po
 import {useRouter} from 'next/router';
 
 function useProvideAuth(){
-    const [common, setCommon] = useState(null);
     const router = useRouter();
     
     const login = async (body) => {
@@ -86,7 +85,6 @@ function useProvideAuth(){
         refreshToken,
         login,
         getUserData,
-        common
     }
 }
 

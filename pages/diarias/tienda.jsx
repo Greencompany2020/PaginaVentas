@@ -10,17 +10,15 @@ import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 import { getInitialTienda, getTiendaName, isError } from '../../utils/functions';
 import { handleChange } from '../../utils/handlers';
 import useMessageModal from '../../hooks/useMessageModal';
-import { useUserContextState } from '../../context/UserContext';
 import withAuth from '../../components/withAuth';
 
 const Tienda = () => {
-  const { userLevel } = useUserContextState()
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [diariasTienda, setDiariasTienda] = useState([]);
   const [tiendasParametros, setTiendaParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
-    tienda: getInitialTienda(userLevel),
+    tienda:'none',
     conIva: 0,
     semanaSanta: 1,
     resultadosPesos: 0
