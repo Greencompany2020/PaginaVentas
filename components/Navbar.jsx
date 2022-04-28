@@ -63,7 +63,7 @@ const Navbar = () => {
             </Flex>
           </a>
         </Link>
-        <a className='hover:bg-sky-500 hover:bg-opacity-20 rounded-md transition ease-in-out duration-200 cursor-pointer' onClick={() => auth.logOut()}>
+        <a className='hover:bg-sky-500 hover:bg-opacity-20 rounded-md transition ease-in-out duration-200 cursor-pointer' onClick={()=> auth.logOut()}>
             <Flex className='justify-start mx-2 border-b border-b-gray-100 p-2'>
               <Image src={Close} height={20} width={25} alt='Cerrar' className='invert' />
               <p className="text-white text-base ml-5">Cerrar Sesión</p>

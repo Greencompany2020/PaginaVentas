@@ -13,6 +13,7 @@ import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
 import { MENSAJE_ERROR } from '../../utils/data';
 import { useUserContextState } from '../../context/UserContext';
+import withAuth from '../../components/withAuth';
 
 const Tienda = () => {
   const { userLevel } = useUserContextState();
