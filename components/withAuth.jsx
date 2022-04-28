@@ -6,12 +6,17 @@ import * as jose from 'jose';
 import dayjs from "dayjs";
 
 
+
 const witAuth = (Component) => {
 
     const AuthorizationComponent = () => {
         const router = useRouter();
         const auth = useAuth();
+        const [isEva, setEva] = useState(true);
 
+        /**
+         * paginas con reglas expeciales
+         */
         const exceptions = [
             {
                 pathname: '/',
@@ -32,6 +37,11 @@ const witAuth = (Component) => {
         ]
 
 
+        /**
+         * callback que redirige la pagina
+         * @param {*} page 
+         * @param {*} opt 
+         */
         const RedirecTo = (page, opt = 'push') => {
             switch (opt){
                 case 'replace':
@@ -46,81 +56,70 @@ const witAuth = (Component) => {
             }
         }
 
+
+        /**
+         * Evalua si el usuario tiene tiene un token de acceso
+         * Si lo tiene y esa expirado tratara de refrescarlo
+         * @returns boolean
+         */
         const userHastoken = async () =>{
             const token = cookie.get('accessToken');
             const isTokenAvailable = token ? true : false;
-            if(!isTokenAvailable){
-                const success =  auth.refreshToken();
-                return success;
+            if(!isTokenAvailable){ 
+                return false;
             }
-            return isTokenAvailable;
+            const decodeToken = jose.decodeJwt(token);
+            const isExpired = (dayjs.unix(decodeToken.exp).diff(dayjs()) < 1);
+            if(!isExpired){
+                return true
+            };
+            const isTokenRefresh = await auth.refreshToken();
+            return isTokenRefresh
         }
 
+
+        /**
+         * Evalua si el usuario tiene permisos para ingresar al point
+         * @returns data
+         */
         const getAuthToPath = async ()  => {
             const data = await auth.getRoute(router.asPath);
             return data;
         }
 
 
-        const newEvaluate = async (cb) => {
+        /**
+         * evalua el pint al que se quiere ingresar
+         * recibe una callbacl que ejecuta el redirect o el push
+         * si el usuario no esta autorizado remplaza la direccion
+         * si el usuario no tiene token lo redirecciona al login
+         * si el usuario tiene token y quiere ingresar al login lo redirige al dashboard
+         * @param {*} cb 
+         * @returns 
+         */
+        const pathEvaluate = async (cb) => {
             const attemptException = exceptions.find(paths => paths.pathname == router.asPath);
+            const userToken = await userHastoken();
+
             if(attemptException){
-                if(attemptException.tokenRequired && ! await userHastoken()) cb('/', 'push');
+                if(attemptException.tokenRequired && !userToken) cb('/', 'push');
+                if(attemptException.pathname == '/' && userToken) cb('/dashboard', 'push');
             }else{
-                if(await userHastoken()){
-                    const userAccess = await getAuthToPath();
-                    if(!userAccess.access)  return cb('/unauthorized', 'replace')
-                }else{
-                    cb('/', 'push')
-                }   
+                if(!userToken) cb('/', 'push');
+                const userAccess = await getAuthToPath();
+                if(!userAccess.access)  return cb('/unauthorized', 'replace');
             }
+            
         }
 
+        pathEvaluate(RedirecTo);
 
-        /*const exceptionPages = ['/', '/dashboard', '/usuario/perfil', '/ventas']
+        /*useEffect(() => {
+            pathEvaluate(RedirecTo);
+            setEva(false);
+        },[eval]);*/
 
-        const hasUserAccess = async () => {
-            const isException = exceptionPages.find(page => page == router.asPath);
-            const token = cookie.get('accessToken');
-
-            
-            if(isException){
-
-                if(token){
-                    const decode = jose.decodeJwt(token);
-                    const isExpired = dayjs.unix(decode.exp).diff(dayjs()) < 1;
-
-                    if(isExpired){
-                        if(!auth.refreshToken()){
-                            cookie.remove('accessToken');
-                            window.location.href = '/';
-                        }
-                    }
-
-                    if(router.asPath == '/'){
-                        router.push('/dashboard')
-                    }
-                }else{
-                    router.push('/')
-                }
-               
-            }else{
-                if(router.asPath !== '/'){
-                    const data = await auth.getRoute(router.asPath);
-                    if(data?.access === false || !data) router.replace('/unauthorized')
-                }
-
-            }
-           
-        }*/
-
-
-        useEffect(() => {
-            newEvaluate(RedirecTo)
-            //hasUserAccess();
-        },[]);
-
-        return <Component /> 
+        return <Component/> 
     }
     return AuthorizationComponent;
 }

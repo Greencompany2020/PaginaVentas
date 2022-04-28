@@ -180,5 +180,5 @@ const Acumulado = () => {
 }
 
 const AcumuladoWithAuth = withAuth(Acumulado);
-AcumuladoWithAuth.getVentasLayout = getVentasLayout;
+AcumuladoWithAuth.getLayout = getVentasLayout;
 export default AcumuladoWithAuth;

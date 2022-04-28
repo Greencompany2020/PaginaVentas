@@ -1,11 +1,9 @@
 import {Formik, Form, Field} from 'formik';
-import { useEffect } from 'react';
 import { meses } from '../../utils/data'
 
 
 const DashboardForm = ({userValues}) => {
 
-   console.log(userValues);
     const initialValues = {
         year: 2022,
         month: 0,

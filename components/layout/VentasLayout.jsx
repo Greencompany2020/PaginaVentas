@@ -6,6 +6,7 @@ import SideMenu from '../SideMenu';
 // Recursos (img, js, css)
 
 const VentasLayout = ({ children }) => {
+
   return (
     <>
       <Navbar />

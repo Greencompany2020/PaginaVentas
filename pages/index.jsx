@@ -28,7 +28,7 @@ export const Home = () => {
 
   const login = async (values) =>{
 
-    if(!await auth.signIn(values)){
+    if(!await auth.login(values)){
       setMessage('Usuario o contraseña invalido');
       setModalOpen(true);
     }

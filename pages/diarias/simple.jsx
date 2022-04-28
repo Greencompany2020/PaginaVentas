@@ -11,17 +11,15 @@ import { numberWithCommas } from '../../utils/resultsFormated';
 import { getMonthByNumber } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import useMessageModal from '../../hooks/useMessageModal';
-import { useUserContextState } from '../../context/UserContext';
 import withAuth from '../../components/withAuth';
 
 const Simple = () => {
-  const { userLevel } = useUserContextState();
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [tiendaSimple, setTiendaSimple] = useState([]);
   const [tiendaSimpleParametros, setTiendaSimpleParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
-    tienda: getInitialTienda(userLevel),
+    tienda: 'none',
     conIva: 0,
   });
 

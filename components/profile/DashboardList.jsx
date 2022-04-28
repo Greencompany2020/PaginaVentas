@@ -4,15 +4,18 @@ import { Accordion } from "../containers";
 import { FormModal } from "../modals";
 import DashboardForm from "./DashboardForm";
 import useToggle from "../../hooks/useToggle";
-import { tiendascon } from "../../utils/data";
 import { groupBykey} from "../../utils/functions";
 
-const DashboardList = () => {
+const DashboardList = ({dashboards}) => {
+
+    if(!dashboards) return <></>
+
+
     const [visible, toggleVisible] = useToggle(false);
     const [selectedData, setData] = useState({});
     const handleSelectedData = (data) => setData(data); 
-    const grupos = groupBykey(tiendascon, 'grupo');
-
+    const grupos = groupBykey(dashboards, 'Clase');
+    
     return(
         <>
             <section className="overflow-hidden mt-8 space-y-2">
