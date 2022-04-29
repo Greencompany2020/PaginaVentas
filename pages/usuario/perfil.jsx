@@ -11,15 +11,14 @@ import { useAuth } from '../../context/AuthContext';
 const Perfil = () => {
 
   const auth = useAuth();
-  const [user, setUser] = useState(null);
-  const [dashboards, setDashboards] = useState(null);
+  const [user, setUser] = useState();
+  const [dashboards, setDashboards] = useState();
 
 
   const getData = async () =>{
     const data = await auth.getUserData();
-    setUser(data.user);
-    setDashboards(data.dashboards);
-    console.log(data);
+    setUser(data?.user);
+    setDashboards(data?.dashboards);
   }
   
   useEffect(()=>{

@@ -1,18 +1,16 @@
 import { useRouter} from "next/router";
 import { useAuth } from "../context/AuthContext";
-import { useEffect, useState} from "react";
 import cookie from "js-cookie";
 import * as jose from 'jose';
 import dayjs from "dayjs";
-
+import { useEffect } from "react";
 
 
 const witAuth = (Component) => {
 
     const AuthorizationComponent = () => {
-        const router = useRouter();
         const auth = useAuth();
-        const [isEva, setEva] = useState(true);
+        const router = useRouter();
 
         /**
          * paginas con reglas expeciales
@@ -112,12 +110,11 @@ const witAuth = (Component) => {
             
         }
 
-        pathEvaluate(RedirecTo);
+       
 
-        /*useEffect(() => {
+        useEffect(() => {
             pathEvaluate(RedirecTo);
-            setEva(false);
-        },[eval]);*/
+        },[eval]);
 
         return <Component/> 
     }
