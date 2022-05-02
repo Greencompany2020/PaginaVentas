@@ -12,14 +12,13 @@ import { getRangoVentasTienda } from '../../services/RangoVentasService';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
 import { MENSAJE_ERROR } from '../../utils/data';
-import { useUserContextState } from '../../context/UserContext';
+import withAuth from '../../components/withAuth';
 
 const Tienda = () => {
-  const { userLevel } = useUserContextState();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [paramTienda, setParamTienda] = useState({
-    tienda: getInitialTienda(userLevel),
+    tienda:'none',
     fechaInicio: getBeginEndMonth(true)[0],
     fechaFin: getBeginEndMonth(true)[1],
     rangos: '100,200,300,400,500,600'
@@ -83,6 +82,6 @@ const Tienda = () => {
   )
 }
 
-Tienda.getLayout = getVentasLayout;
-
-export default Tienda
+const TiendaWithAuth = withAuth(Tienda);
+TiendaWithAuth.getLayout = getVentasLayout;
+export default TiendaWithAuth;

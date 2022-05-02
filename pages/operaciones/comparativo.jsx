@@ -1,5 +1,5 @@
 import { getVentasLayout } from '../../components/layout/VentasLayout';
-
+import withAuth from '../../components/withAuth';
 const Comparativo = () => {
   return (
     <>
@@ -8,6 +8,6 @@ const Comparativo = () => {
   )
 }
 
-Comparativo.getLayout = getVentasLayout;
-
-export default Comparativo
+const ComparativoWithAuth = withAuth(Comparativo);
+ComparativoWithAuth.getLayout = getVentasLayout;
+export default ComparativoWithAuth;

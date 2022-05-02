@@ -12,6 +12,7 @@ import { getComparativoPlazas } from '../../services/ComparativoService';
 import { Fragment } from 'react/cjs/react.production.min';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 import useMessageModal from '../../hooks/useMessageModal';
+import withAuth from '../../components/withAuth';
 
 const Plazas = () => {
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
@@ -190,6 +191,6 @@ const Plazas = () => {
   )
 }
 
-Plazas.getLayout = getVentasLayout;
-
-export default Plazas;
+const PlazasWithAuth = withAuth(Plazas);
+PlazasWithAuth.getLayout = getVentasLayout;
+export default PlazasWithAuth;

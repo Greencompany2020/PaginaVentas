@@ -1,4 +1,6 @@
 import { getVentasLayout } from '../../components/layout/VentasLayout';
+import withAuth from '../../components/withAuth';
+
 
 const Sugerencia = () => {
   return (
@@ -8,6 +10,6 @@ const Sugerencia = () => {
   )
 }
 
-Sugerencia.getLayout = getVentasLayout;
-
-export default Sugerencia
+const SugerenciaWithAuth = withAuth(Sugerencia);
+SugerenciaWithAuth.getLayout = getVentasLayout;
+export default SugerenciaWithAuth;

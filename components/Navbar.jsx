@@ -12,10 +12,12 @@ import Password from '../public/icons/password-11.png'
 import Config from '../public/icons/config-5.png';
 import Close from '../public/icons/close-37.png';
 import useClickOutside from '../hooks/useClickOutside';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const userMenuRef = useRef(null);
   const [showDialog, setShowDialog] = useState(false);
+  const auth = useAuth();
   useClickOutside(userMenuRef, () => { setShowDialog(false) });
 
   return (
@@ -61,14 +63,12 @@ const Navbar = () => {
             </Flex>
           </a>
         </Link>
-        <Link href="/dashboard">
-          <a className='hover:bg-sky-500 hover:bg-opacity-20 rounded-md transition ease-in-out duration-200'>
+        <a className='hover:bg-sky-500 hover:bg-opacity-20 rounded-md transition ease-in-out duration-200 cursor-pointer' onClick={()=> auth.logOut()}>
             <Flex className='justify-start mx-2 border-b border-b-gray-100 p-2'>
               <Image src={Close} height={20} width={25} alt='Cerrar' className='invert' />
               <p className="text-white text-base ml-5">Cerrar Sesión</p>
             </Flex>
           </a>
-        </Link>
       </Flex>
     </div>
     </>

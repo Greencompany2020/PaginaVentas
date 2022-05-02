@@ -13,7 +13,7 @@ import { getMensualesPlazasAgnos } from '../../services/MensualesServices';
 import { createDatasets, isError, validateYearRange } from '../../utils/functions';
 import useMessageModal from '../../hooks/useMessageModal';
 import useGraphData from '../../hooks/useGraphData';
-
+import withAuth from '../../components/withAuth';
 
 const PlazasVS = () => {
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
@@ -127,6 +127,6 @@ const PlazasVS = () => {
   )
 }
 
-PlazasVS.getLayout = getVentasLayout;
-
-export default PlazasVS
+const PlazasVSWithAuth = withAuth(PlazasVS);
+PlazasVSWithAuth.getLayout = getVentasLayout;
+export default PlazasVSWithAuth;

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getVentasLayout } from '../../components/layout/VentasLayout';
+import VentasLayout, { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { VentasTableContainer, VentasTable, VentasDiariasTableHead, VentasDiariasTableFooter } from '../../components/table';
 import { InputContainer, SelectPlazas, SelectMonth, InputYear, Checkbox } from '../../components/inputs';
@@ -11,16 +11,19 @@ import { getInitialPlaza, getPlazaName, isError } from '../../utils/functions';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { handleChange } from '../../utils/handlers';
 import useMessageModal from '../../hooks/useMessageModal';
-import { useUserContextState } from '../../context/UserContext';
-// TODO: Añadir plaza y tienda inicial usando userLevel y useUserContextState
+import withAuth from '../../components/withAuth';
+import { useUser } from '../../context/UserContext';
+
+// TODO: Añadir plaza
 const Plaza = () => {
-  const { userLevel } = useUserContextState()
+
+
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [diariasPlaza, setDiariasPlaza] = useState([]);
   const [plazaParametros, setPlazaParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
-    plaza: getInitialPlaza(userLevel),
+    plaza: 0,
     conIva: 0,
     semanaSanta: 1,
     conVentasEventos: 0,
@@ -149,6 +152,7 @@ const Plaza = () => {
   )
 }
 
-Plaza.getLayout = getVentasLayout;
 
-export default Plaza
+const PlazaWithAuth = withAuth(Plaza);
+PlazaWithAuth.getLayout = getVentasLayout;
+export default PlazaWithAuth

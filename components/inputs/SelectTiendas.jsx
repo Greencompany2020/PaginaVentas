@@ -1,18 +1,23 @@
+import { useUser } from '../../context/UserContext';
 import { Flex } from '../containers';
-import { useAppState } from '../../context/useAppState';
 
 const SelectTiendas = ({ onChange, value }) => {
-  const { tiendas } = useAppState();
+
+  const {tiendas} = useUser();
   
+  const TiendasItem = ({tiendas}) => {
+    if(!tiendas) return <></>
+    const Item = tiendas.map(tienda => (
+      <option value={`${tienda.EmpresaWeb}${tienda.NoTienda}`} key={tienda.Descrip}>{tienda.Descrip}</option>
+    ));
+    return Item;
+  }
+
   return (
     <Flex className='mb-3'>
       <label htmlFor="mes">Tienda: </label>
       <select name="tienda" value={value} className='select ml-2' onChange={onChange}>
-        {
-          tiendas.map(item => (
-            <option value={`${item.EmpresaWeb}${item.NoTienda}`} key={item.Descrip}>{item.Descrip}</option>
-          ))
-        }
+        <TiendasItem tiendas={tiendas}/>
       </select>
     </Flex>
   )

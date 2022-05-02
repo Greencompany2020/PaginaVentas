@@ -1,4 +1,5 @@
 import { getVentasLayout } from '../../components/layout/VentasLayout';
+import withAuth from '../../components/withAuth';
 
 const Detallado = () => {
   return (
@@ -8,6 +9,6 @@ const Detallado = () => {
   )
 }
 
-Detallado.getLayout = getVentasLayout;
-
-export default Detallado
+const DetalladoWithAuth = withAuth(Detallado);
+DetalladoWithAuth.getLayout = getVentasLayout;
+export default DetalladoWithAuth;

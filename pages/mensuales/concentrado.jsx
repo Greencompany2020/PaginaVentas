@@ -11,6 +11,7 @@ import { numberWithCommas } from '../../utils/resultsFormated';
 import { handleChange } from '../../utils/handlers';
 import useMessageModal from '../../hooks/useMessageModal';
 import { isError } from '../../utils/functions';
+import withAuth from '../../components/withAuth';
 
 const Concentrado = () => {
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
@@ -154,6 +155,6 @@ const Concentrado = () => {
   )
 }
 
-Concentrado.getLayout = getVentasLayout;
-
-export default Concentrado
+const ConcentradoWithAuth = withAuth(Concentrado);
+ConcentradoWithAuth.getLayout = getVentasLayout;
+export default ConcentradoWithAuth;

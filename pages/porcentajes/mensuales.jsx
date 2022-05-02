@@ -11,16 +11,16 @@ import { numberWithCommas } from '../../utils/resultsFormated';
 import { handleChange } from '../../utils/handlers';
 import { getPorcentajesMensuales } from '../../services/PorcentajesService';
 import useMessageModal from '../../hooks/useMessageModal';
-import { useUserContextState } from '../../context/UserContext';
+import withAuth from '../../components/withAuth';
+
 
 const Mensuales = () => {
-  const { userLevel } = useUserContextState();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [porcentajesMensuales, setPorcentajesMensuales] = useState([]);
   const [parametrosMensuales, setParametrosMensuales] = useState({
     queryTiendaPlaza: 0,
-    tienda: getInitialTienda(),
-    plaza: getInitialPlaza(),
+    tienda: 0,
+    plaza: 0,
     delAgno: Number(getYearFromDate(formatedDate())) - 5,
     alAgno: Number(getYearFromDate(formatedDate())),
     conIva: 0,
@@ -218,6 +218,6 @@ const Mensuales = () => {
   )
 }
 
-Mensuales.getLayout = getVentasLayout;
-
-export default Mensuales
+const MensualesWithAuth = withAuth(Mensuales);
+MensualesWithAuth.getLayout = getVentasLayout;
+export default MensualesWithAuth;

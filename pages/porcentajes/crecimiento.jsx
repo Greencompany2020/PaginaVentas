@@ -11,6 +11,7 @@ import { isError, validateDate } from '../../utils/functions';
 import { getPorcentajeCrecimiento } from '../../services/PorcentajesService';
 import { numberWithCommas } from '../../utils/resultsFormated';
 import useMessageModal from "../../hooks/useMessageModal";
+import withAuth from '../../components/withAuth';
 
 const Crecimiento = () => {
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
@@ -171,6 +172,6 @@ const Crecimiento = () => {
   )
 }
 
-Crecimiento.getLayout = getVentasLayout;
-
-export default Crecimiento
+const CrecimientoWithAuth = withAuth(Crecimiento);
+CrecimientoWithAuth.getLayout = getVentasLayout;
+export default CrecimientoWithAuth;

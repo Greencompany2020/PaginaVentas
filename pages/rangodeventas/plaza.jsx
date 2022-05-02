@@ -12,12 +12,13 @@ import { getRangoVentasPlaza } from '../../services/RangoVentasService';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
+import withAuth from '../../components/withAuth';
 
 const Plaza = () => {
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [paramPlaza, setParamPlaza] = useState({
-    plaza: getInitialPlaza(),
+    plaza:0,
     fechaInicio: getBeginEndMonth(true)[0],
     fechaFin: getBeginEndMonth(true)[1],
     rangos: '100,200,300,400,500,600',
@@ -93,6 +94,6 @@ const Plaza = () => {
   )
 }
 
-Plaza.getLayout = getVentasLayout;
-
-export default Plaza
+const PlazaWithAuth = withAuth(Plaza);
+PlazaWithAuth.getLayout = getVentasLayout;
+export default PlazaWithAuth;

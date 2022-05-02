@@ -6,6 +6,8 @@ import useMessageModal from '../../hooks/useMessageModal';
 import { getSemanaSantaPeriodos } from '../../services/semanaSantaService';
 import { MENSAJE_ERROR } from '../../utils/data';
 import { isError } from '../../utils/functions';
+import withAuth from '../../components/withAuth';
+
 
 const Periodos = () => {
   const { message, modalOpen, setMessage, setModalOpen} = useMessageModal();
@@ -35,6 +37,6 @@ const Periodos = () => {
   )
 }
 
-Periodos.getLayout = getVentasLayout;
-
-export default Periodos
+const PeriodosWithAuth = withAuth(Periodos);
+PeriodosWithAuth.getLayout = getVentasLayout;
+export default PeriodosWithAuth;

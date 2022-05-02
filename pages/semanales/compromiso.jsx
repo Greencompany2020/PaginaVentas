@@ -12,6 +12,7 @@ import { dateRangeTitle, isError, validateInputDateRange } from '../../utils/fun
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { handleChange } from '../../utils/handlers';
 import useMessageModal from '../../hooks/useMessageModal';
+import withAuth from '../../components/withAuth';
 
 const Compromiso = () => {
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
@@ -138,6 +139,6 @@ const Compromiso = () => {
   )
 }
 
-Compromiso.getLayout = getVentasLayout;
-
-export default Compromiso;
+const CompromisoWithAuth = withAuth(Compromiso);
+CompromisoWithAuth.getLayout = getVentasLayout;
+export default CompromisoWithAuth;

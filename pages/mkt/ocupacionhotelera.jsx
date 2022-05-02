@@ -1,5 +1,5 @@
 import { getVentasLayout } from '../../components/layout/VentasLayout';
-
+import withAuth from '../../components/withAuth';
 const OcupacionHotelera = () => {
   return (
     <>
@@ -8,6 +8,7 @@ const OcupacionHotelera = () => {
   )
 }
 
-OcupacionHotelera.getLayout = getVentasLayout;
+const OcupacionHoteleraWithAuth = withAuth(OcupacionHotelera);
+OcupacionHoteleraWithAuth.getLayout = getVentasLayout;
+export default OcupacionHoteleraWithAuth;
 
-export default OcupacionHotelera

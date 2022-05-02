@@ -7,6 +7,9 @@ import { getDiariasFechas } from '../../services/DiariasServices';
 import { MENSAJE_ERROR } from '../../utils/data';
 import { formatLastDate } from '../../utils/dateFunctions';
 import { isError } from '../../utils/functions';
+import withAuth from '../../components/withAuth';
+
+
 
 const Fechas = () => {
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
@@ -52,6 +55,6 @@ const Fechas = () => {
   )
 }
 
-Fechas.getLayout = getVentasLayout;
-
-export default Fechas
+const FechasWithAuth = withAuth(Fechas);
+FechasWithAuth.getLayout = getVentasLayout;
+export default FechasWithAuth;

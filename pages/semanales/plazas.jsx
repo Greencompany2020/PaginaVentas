@@ -12,6 +12,7 @@ import { getCurrentWeekDateRange, getYearFromDate } from '../../utils/dateFuncti
 import { dateRangeTitle, isError, validateInputDateRange } from '../../utils/functions';
 import { handleChange } from '../../utils/handlers';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
+import withAuth from '../../components/withAuth';
 
 
 const Plazas = () => {
@@ -158,6 +159,6 @@ const Plazas = () => {
   )
 }
 
-Plazas.getLayout = getVentasLayout;
-
-export default Plazas
+const PlazasWithAuth = withAuth(Plazas);
+PlazasWithAuth.getLayout = getVentasLayout;
+export default PlazasWithAuth;

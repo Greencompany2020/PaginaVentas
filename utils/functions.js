@@ -517,3 +517,18 @@ export const createRangoVentasDataset = (data, updateLabels, updateDataset) => {
  * @returns {boolean}
  */
 export const isError = (obj) => obj instanceof Error;
+
+/**
+ * Agrupa los arreglo de objetos
+ * @param {object} object 
+ * @param {string}} key 
+ * @returns {object} 
+ */
+export const groupBykey = (object, key) => {
+  return object.reduce((pre, next) => {
+    (pre[next[key]] = pre[next[key]] || []).push(next);
+    return pre;
+  },[]);
+}
+
+

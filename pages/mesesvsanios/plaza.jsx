@@ -12,14 +12,13 @@ import { handleChange } from '../../utils/handlers';
 import { getMesesAgnosPlazas } from '../../services/MesesAgnosService';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
-import { useUserContextState } from '../../context/UserContext';
+import withAuth from '../../components/withAuth';
 
 const Plaza = () => {
-  const { userLevel } = useUserContextState();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [parametrosPlazas, setParametrosPlazas] = useState({
-    plaza: getInitialPlaza(userLevel),
+    plaza: 0,
     delMes: 1,
     alMes: getCurrentMonth() - 1,
     delAgno: getCurrentYear() - 5,
@@ -203,6 +202,6 @@ const Plaza = () => {
   )
 }
 
-Plaza.getLayout = getVentasLayout;
-
-export default Plaza
+const PlazaWithAuth = withAuth(Plaza);
+PlazaWithAuth.getLayout = getVentasLayout;
+export default PlazaWithAuth;

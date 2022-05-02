@@ -11,6 +11,8 @@ import { handleChange } from '../../utils/handlers';
 import { getSemanaSantaAcumulado } from '../../services/semanaSantaService';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 import useMessageModal from '../../hooks/useMessageModal';
+import withAuth from '../../components/withAuth';
+
 
 const Acumulado = () => {
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
@@ -177,6 +179,6 @@ const Acumulado = () => {
   )
 }
 
-Acumulado.getLayout = getVentasLayout;
-
-export default Acumulado
+const AcumuladoWithAuth = withAuth(Acumulado);
+AcumuladoWithAuth.getLayout = getVentasLayout;
+export default AcumuladoWithAuth;

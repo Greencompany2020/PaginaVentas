@@ -16,6 +16,7 @@ import Trash from '../public/images/trash-icon.png';
 import Menu from '../public/icons/dot-menu.svg';
 import Close from '../public/icons/close.svg';
 import { isError } from '../utils/functions';
+import withAuth from '../components/withAuth';
 
 const Minutas = () => {
   const [carpetasArchivos, setcarpetasArchivos] = useState({
@@ -387,4 +388,4 @@ const Minutas = () => {
   )
 }
 
-export default Minutas
+export default withAuth(Minutas);

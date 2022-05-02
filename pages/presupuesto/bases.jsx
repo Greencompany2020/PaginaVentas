@@ -14,6 +14,7 @@ import {
 import { VentasTableContainer } from "../../components/table";
 import PresupuestoBasesTable from "../../components/table/PresupuestoBasesTable";
 import { checkboxLabels } from "utils/data";
+import withAuth from '../../components/withAuth';
 
 const porplaza = () => {
   const year = 2000;
@@ -57,6 +58,6 @@ const porplaza = () => {
   );
 };
 
-porplaza.getLayout = getVentasLayout;
-
-export default porplaza;
+const PorPlazaWithAuth = withAuth(porplaza);
+PorPlazaWithAuth.getLayout = getVentasLayout;
+export default PorPlazaWithAuth;

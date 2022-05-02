@@ -12,14 +12,13 @@ import { getInitialTienda, getTiendaName, isError, validateMonthRange, validateY
 import { handleChange } from '../../utils/handlers';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
-import { useUserContextState } from '../../context/UserContext';
+import withAuth from '../../components/withAuth';
 
 const Tienda = () => {
-  const { userLevel } = useUserContextState();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTienda, setParamTienda] = useState({
-    tienda: getInitialTienda(userLevel),
+    tienda: 0,
     delMes: 1,
     alMes: getCurrentMonth() - 1,
     delAgno: getCurrentYear() - 1,
@@ -167,6 +166,6 @@ const Tienda = () => {
   )
 }
 
-Tienda.getLayout = getVentasLayout;
-
-export default Tienda
+const TiendaWithAuth = withAuth(Tienda);
+TiendaWithAuth.getLayout = getVentasLayout;
+export default TiendaWithAuth;
