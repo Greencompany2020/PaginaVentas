@@ -12,27 +12,32 @@ import { getMonthByNumber } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
+import { useUser } from '../../context/UserContext';
 
 const Simple = () => {
+  const { tiendas } = useUser();
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [tiendaSimple, setTiendaSimple] = useState([]);
   const [tiendaSimpleParametros, setTiendaSimpleParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
-    tienda: 'none',
+    tienda: getInitialTienda(tiendas),
     conIva: 0,
   });
 
   useEffect(() => {
-    getDiariasTiendaSimple(tiendaSimpleParametros)
-      .then(response => {
-        if (isError(response)) {
-          setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-          setModalOpen(true);
-        } else {
-          setTiendaSimple(response)
-        }
-      })
+
+    if (tiendaSimpleParametros.tienda) {
+      getDiariasTiendaSimple(tiendaSimpleParametros)
+        .then(response => {
+          if (isError(response)) {
+            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
+            setModalOpen(true);
+          } else {
+            setTiendaSimple(response)
+          }
+        })
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tiendaSimpleParametros]);
 
@@ -42,7 +47,7 @@ const Simple = () => {
       <ParametersContainer>
         <Parameters>
           <InputContainer>
-            <SelectTiendas onChange={(e) => handleChange(e, setTiendaSimpleParametros)} />
+            <SelectTiendas value={tiendaSimpleParametros.tienda} onChange={(e) => handleChange(e, setTiendaSimpleParametros)} />
             <InputYear
               value={tiendaSimpleParametros.delAgno}
               onChange={(e) => handleChange(e, setTiendaSimpleParametros)}

@@ -14,16 +14,15 @@ import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
 import { useUser } from '../../context/UserContext';
 
-// TODO: Añadir plaza
+
 const Plaza = () => {
-
-
+  const { plazas } = useUser();
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [diariasPlaza, setDiariasPlaza] = useState([]);
   const [plazaParametros, setPlazaParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
-    plaza: 0,
+    plaza: getInitialPlaza(plazas),
     conIva: 0,
     semanaSanta: 1,
     conVentasEventos: 0,
