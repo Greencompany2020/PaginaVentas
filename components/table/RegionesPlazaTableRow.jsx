@@ -25,7 +25,7 @@ const RegionesPlazaTableRow = ({ item, type }) => {
       {formatNumber(item.porcentajePromedios)}
       <td>{numberWithCommas(item.promedioAnterior)}</td>
       <td>{numberWithCommas(item.articulosActual)}</td>
-      <td>{numberWithCommas(item.articulosPorcentaje)}</td>
+      {formatNumber(item.articulosPorcentaje)}
       <td>{numberWithCommas(item.articulosAnterior)}</td>
     </tr>
   )

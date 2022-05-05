@@ -6,7 +6,7 @@
  */
 export const formatNumber = (num) => {
   let numberText = "";
-  if (num <= 0) {
+  if (num < 0) {
     numberText = `(${Math.abs(num)})`;
     return (<td style={{
       color: "rgb(220 38 38)",

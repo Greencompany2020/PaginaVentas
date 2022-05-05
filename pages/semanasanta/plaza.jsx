@@ -22,12 +22,14 @@ import { handleChange } from '../../utils/handlers';
 import { getSemanaSantaPlazas } from '../../services/semanaSantaService';
 import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
+import { useUser } from '../../context/UserContext';
 
 const Plaza = () => {
+  const { plazas } = useUser();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [semanaSantaPlazas, setSemanaSantaPlazas] = useState({});
   const [paramPlaza, setParamPlaza] = useState({
-    plaza: 0,
+    plaza: getInitialPlaza(plazas),
     tiendas: 0,
     delAgno: getCurrentYear(),
     conIva: 0,

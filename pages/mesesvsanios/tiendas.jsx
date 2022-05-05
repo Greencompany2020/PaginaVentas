@@ -14,12 +14,14 @@ import { handleChange } from '../../utils/handlers';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
+import { useUser } from '../../context/UserContext';
 
 const Tiendas = () => {
+  const { tiendas } = useUser();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [parametrosTiendas, setParametrosTiendas] = useState({
-    tienda: 'none',
+    tienda: getInitialTienda(tiendas),
     delMes: 1,
     alMes: getCurrentMonth() - 1,
     delAgno: getCurrentYear() - 5,

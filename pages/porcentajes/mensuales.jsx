@@ -12,15 +12,17 @@ import { handleChange } from '../../utils/handlers';
 import { getPorcentajesMensuales } from '../../services/PorcentajesService';
 import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
+import { useUser } from "../../context/UserContext";
 
 
 const Mensuales = () => {
+  const { tiendas, plazas } = useUser();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [porcentajesMensuales, setPorcentajesMensuales] = useState([]);
   const [parametrosMensuales, setParametrosMensuales] = useState({
     queryTiendaPlaza: 0,
-    tienda: 0,
-    plaza: 0,
+    tienda: getInitialTienda(tiendas),
+    plaza: getInitialPlaza(plazas),
     delAgno: Number(getYearFromDate(formatedDate())) - 5,
     alAgno: Number(getYearFromDate(formatedDate())),
     conIva: 0,

@@ -13,12 +13,14 @@ import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
 import { MENSAJE_ERROR } from '../../utils/data';
 import withAuth from '../../components/withAuth';
+import { useUser } from '../../context/UserContext';
 
 const Tienda = () => {
+  const { tiendas } = useUser();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [paramTienda, setParamTienda] = useState({
-    tienda:'none',
+    tienda: getInitialTienda(tiendas),
     fechaInicio: getBeginEndMonth(true)[0],
     fechaFin: getBeginEndMonth(true)[1],
     rangos: '100,200,300,400,500,600'

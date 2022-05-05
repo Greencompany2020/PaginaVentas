@@ -13,12 +13,14 @@ import { handleChange } from '../../utils/handlers';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
+import { useUser } from '../../context/UserContext';
 
 const Tienda = () => {
+  const { tiendas } = useUser();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTienda, setParamTienda] = useState({
-    tienda: 0,
+    tienda: getInitialTienda(tiendas),
     delMes: 1,
     alMes: getCurrentMonth() - 1,
     delAgno: getCurrentYear() - 1,
@@ -153,7 +155,7 @@ const Tienda = () => {
       </ParametersContainer>
 
       <ComparativoVentas
-        title={`Operaciones Realizadas Tienda ${getTiendaName(paramTienda.tienda)} ${paramTienda.alAgno} ${paramTienda.delAgno}`}
+        title={`Operaciones Realizadas Tienda ${getTiendaName(paramTienda.tienda)} ${paramTienda.alAgno} - ${paramTienda.delAgno}`}
       >
         <BarChart
           data={{

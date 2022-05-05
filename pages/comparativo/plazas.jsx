@@ -175,7 +175,7 @@ const Plazas = () => {
                         {formatNumber(plaza.porcentajeMensual)}
                         <td>{numberWithCommas(plaza.ventasAnualActual)}</td>
                         <td>{numberWithCommas(plaza.ventasAnualAnterior)}</td>
-                        <td>{numberWithCommas(plaza.ventasMensualesActual)}</td>
+                        <td>{numberWithCommas(plaza.presupuestoAnual)}</td>
                         {formatNumber(plaza.diferenciaAnual)}
                         {formatNumber(plaza.porcentajeAnual)}
                       </tr>
