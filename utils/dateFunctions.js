@@ -205,7 +205,7 @@ export const getPrevDate = (days, year = 0) => {
  * @param {number} year El año a obtener la semana santa
  * @returns {string[]} Un array con la fechas de inicio y de fin.
  */
-export const semanaSanta = (year, timestamp = false) => {
+export const semanaSanta = (year, timestamp = false, finSemanaAnterior = false) => {
   const pDig = parseInt(year / 100, 10);
   const pDec = year % 19;
 
@@ -255,7 +255,13 @@ export const semanaSanta = (year, timestamp = false) => {
   // y 7 delante para obtener los 14 dias a evaluar (Sem.Sta y Pascua)
   const domingo = new Date(year, mes - 1, dia);
 
-  let fechaInicio = sub(domingo, { days: 9 });
+  let fechaInicio = null;
+
+  if (finSemanaAnterior) {
+    fechaInicio = sub(domingo, { days: 9 }); // Sumamos 9 por el fin de semana a incluir
+  } else {
+    fechaInicio = sub(domingo, { days: 6 });
+  }
 
   if (timestamp) fechaInicio = fechaInicio.getTime();
   else fechaInicio = format(fechaInicio, "yyyy-MM-dd", { weekStartsOn: 1 });

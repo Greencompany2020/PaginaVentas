@@ -108,6 +108,7 @@ const Grupo = () => {
             />
             <Checkbox
               className="mb-3"
+              name={inputNames.CON_TIENDAS_CERRADAS}
               labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
               onChange={(e) => { handleChange(e, setParamGrupo) }}
             />

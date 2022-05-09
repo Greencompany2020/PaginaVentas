@@ -28,6 +28,7 @@ const Acumulado = () => {
     incluirFinSemanaAnterior: 1,
     resultadosPesos: 1
   });
+  const [finSemana, setFinSemana] = useState(paramAcumulado.incluirFinSemanaAnterior ? true : false);
 
   useEffect(() => {
     if (validateDate(paramAcumulado.fecha) && validateYear(paramAcumulado.versusAgno)) {
@@ -45,6 +46,10 @@ const Acumulado = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramAcumulado]);
 
+  useEffect(() => {
+    setFechaInicioSemana(semanaSanta(getYearFromDate(paramAcumulado.fecha), false, finSemana)[0])
+  }, [finSemana, paramAcumulado.fecha]);
+
   return (
     <>
       <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
@@ -55,7 +60,7 @@ const Acumulado = () => {
               value={paramAcumulado.fecha}
               onChange={(e) => {
                 handleChange(e, setParamAcumulado);
-                setFechaInicioSemana(semanaSanta(getYearFromDate(paramAcumulado.fecha))[0])
+                setFechaInicioSemana(semanaSanta(getYearFromDate(paramAcumulado.fecha), false, false)[0])
               }}
             />
             <InputVsYear 
@@ -95,7 +100,10 @@ const Acumulado = () => {
               className='mb-3'
               labelText={checkboxLabels.INCLUIR_FIN_DE_SEMANA_ANTERIOR}
               name={inputNames.INCLUIR_FIN_SEMANA_ANTERIOR}
-              onChange={(e) => handleChange(e, setParamAcumulado)}
+              onChange={(e) => {
+                handleChange(e, setParamAcumulado)
+                setFinSemana(prev => !prev);
+              }}
               checked={paramAcumulado.incluirFinSemanaAnterior}
             />
             <Checkbox
