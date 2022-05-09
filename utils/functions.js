@@ -427,7 +427,7 @@ export const createOperacionesDatasets = (data, agno, updateLabels, updateDatase
     }
 
     const operacionesActualesData = {
-      label: `Operaciones ${agno}`,
+      label: agno,
       data: operacionesActual,
       backgroundColor: colors[0]
     };
@@ -435,7 +435,7 @@ export const createOperacionesDatasets = (data, agno, updateLabels, updateDatase
     operacionesDataset.push(operacionesActualesData);
 
     const operacionesAnteriorData = {
-      label: `Operaciones ${agno - 1}`,
+      label: agno - 1,
       data: operacionesAnterior,
       backgroundColor: colors[1]
     };

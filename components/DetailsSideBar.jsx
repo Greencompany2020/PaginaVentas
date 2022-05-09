@@ -20,10 +20,12 @@ const DetailsSideBar = ({ summaryText, links }) => {
       <ul>
         {
           links.map(item => (
-            <Link href={item.link} key={item.linkText} passHref>
-              <li className={`pl-5 p-1 border-b-2 border-gray-300 cursor-pointer ${activeLink(item.link)} rounded-md transition ease-in-out duration-200`}>
-                <a>{item.linkText}</a>
-              </li>
+            <Link href={item.link} key={item.linkText}>
+              <a>
+                <li className={`pl-5 p-1 border-b-2 border-gray-300 ${activeLink(item.link)} rounded-md transition ease-in-out duration-200`}>
+                  {item.linkText}
+                </li>
+              </a>
             </Link>
           ))
         }

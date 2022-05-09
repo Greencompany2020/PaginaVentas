@@ -129,9 +129,6 @@ const Plazas = () => {
         <SmallContainer>
           un dia desface para respetar esto.
         </SmallContainer>
-        <SmallContainer>
-          En esta temporada de semana santa se habilitará el check para intercambiar los dias de la temporada del año anterior.
-        </SmallContainer>
       </ParametersContainer>
 
       <VentasTableContainer

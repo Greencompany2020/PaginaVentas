@@ -113,7 +113,7 @@ const Tiendas = () => {
           </InputContainer>
         </Parameters>
         <SmallContainer>
-          Este informe muestra un compartivo de la semana o en rango de fecha selecionado. Recuerde que la comparacions se realiza lunes contra lunes,
+          Este reporte muestra un compartivo de la semana o en rango de fecha selecionado. Recuerde que la comparacion se realiza lunes contra lunes,
         </SmallContainer>
         <SmallContainer>
           lo cual quiere decir que las ventas del año anterior no seran por fecha sino lo que corresponda a los dias de la semana.
