@@ -13,13 +13,14 @@ import { getPresupuestoPlazas } from '../../services/PresupuestoService';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
-
+import { useUser } from '../../context/UserContext';
 
 const Plaza = () => {
+  const { plazas } = useUser();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramPlazas, setParamPlazas] = useState({
-    plaza: 0,
+    plaza: getInitialPlaza(plazas),
     delAgno: getCurrentYear(),
     delMes: 1,
     alMes: getCurrentMonth() - 1,

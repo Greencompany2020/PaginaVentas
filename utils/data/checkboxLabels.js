@@ -69,8 +69,6 @@ export const inputNames = {
   CON_TIENDAS_CERRADAS: 'conTiendasCerradas', // Componente: Checkbox
   SIN_TIENDAS_SUSPENDIDAS: 'sinTiendasSuspendidas', // Componente: Checkbox
   RESULTADOS_PESOS: 'resultadosPesos', // Componente: Checkbox
-  FECHA_INICIO: 'fechaInicio', // Componente: InputDateRange
-  FECHA_FIN: 'fechaFin', // Componente: InputDateRange
   VENTAS_MILES_DLLS: 'ventasMilesDlls', // Componente: Checkbox
   PORCENTAJE_COMPROMISO: 'porcentajeVentasCompromiso', // Componente: Checkbox
   NO_HORAS_VENTAS_PARCIALES: 'noHorasVentasParciales', // Componente: Checkbox

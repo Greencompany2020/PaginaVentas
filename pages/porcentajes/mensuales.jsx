@@ -12,15 +12,17 @@ import { handleChange } from '../../utils/handlers';
 import { getPorcentajesMensuales } from '../../services/PorcentajesService';
 import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
+import { useUser } from "../../context/UserContext";
 
 
 const Mensuales = () => {
+  const { tiendas, plazas } = useUser();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [porcentajesMensuales, setPorcentajesMensuales] = useState([]);
   const [parametrosMensuales, setParametrosMensuales] = useState({
     queryTiendaPlaza: 0,
-    tienda: 0,
-    plaza: 0,
+    tienda: getInitialTienda(tiendas),
+    plaza: getInitialPlaza(plazas),
     delAgno: Number(getYearFromDate(formatedDate())) - 5,
     alAgno: Number(getYearFromDate(formatedDate())),
     conIva: 0,
@@ -125,7 +127,7 @@ const Mensuales = () => {
           </InputContainer>
         </Parameters>
         <SmallContainer>
-          ESTA GRAFICA MUESTRA UN EL PORCENTAJE DE VENTA DEL MES EN RAZON DE LA VENTA ANUAL LA TIENDA SELECCIONADA EN EL RANGO DE AÑOS ESPECIFICADO.
+          ESTA GRAFICA MUESTRA EL PORCENTAJE DE VENTA DEL MES EN RAZON DE LA VENTA ANUAL LA TIENDA SELECCIONADA EN EL RANGO DE AÑOS ESPECIFICADO.
         </SmallContainer>
         <SmallContainer>
           RECUERDE QUE EL RANGO DE AÑOS DEBE SER CAPTURADO DE MENOR A EL MAYOR, AUNQUE EN EL REPORTE SE MOSTRARA EN ORDEN DESCENDENTE.

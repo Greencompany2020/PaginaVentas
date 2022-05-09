@@ -13,12 +13,14 @@ import { getMesesAgnosTodasTiendas } from '../../services/MesesAgnosService';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
+import { useUser } from '../../context/UserContext';
 
 const TodasTiendas = () => {
+  const { plazas } = useUser();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [paramTiendas, setParamTiendas] = useState({
-    plaza: 0,
+    plaza: getInitialPlaza(plazas),
     delAgno: getCurrentYear(),
     conIva: 0,
     conTiendasCerradas: 0,

@@ -13,12 +13,14 @@ import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import useGraphData from '../../hooks/useGraphData';
 import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
+import { useUser } from '../../context/UserContext';
 
 const Plaza = () => {
+  const { plazas } = useUser();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [paramPlaza, setParamPlaza] = useState({
-    plaza:0,
+    plaza: getInitialPlaza(plazas),
     fechaInicio: getBeginEndMonth(true)[0],
     fechaFin: getBeginEndMonth(true)[1],
     rangos: '100,200,300,400,500,600',

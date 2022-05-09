@@ -108,6 +108,7 @@ const Grupo = () => {
             />
             <Checkbox
               className="mb-3"
+              name={inputNames.CON_TIENDAS_CERRADAS}
               labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
               onChange={(e) => { handleChange(e, setParamGrupo) }}
             />
@@ -136,8 +137,7 @@ const Grupo = () => {
           </InputContainer>
         </Parameters>
         <SmallContainer>
-          Esta tabla muestra las ventas del día por día del mes y año
-          especificado.
+          ESTE REPORTE MUESTRA LAS VENTAS DE SEMANA SANTA DEL AÑO SELECCIONADO COMPARADAS CON EL AÑO ANTERIOR Y SU PORCENTAJE DE VARIACION.
         </SmallContainer>
       </ParametersContainer>
 

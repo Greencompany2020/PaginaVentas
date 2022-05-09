@@ -94,20 +94,17 @@ export const validateDate = (date) => {
 
 /**
  * Obtiene el valor de la tienda que estará por defecto.
- * @returns {string} El identificador de la tienda
+ * @returns {object[]} El identificador de la tienda
  */
-export const getInitialTienda = (userLevel) => {
-  if (userLevel !== 10)
-    return tiendas.find((tienda => parseInt(tienda.value.slice(0, 2), 10) === userLevel))?.value
-  else
-    return tiendas.find((tienda => tienda.text === "M1")).value
+export const getInitialTienda = (tiendas) => {
+  return `${tiendas[0]?.EmpresaWeb}${tiendas[0]?.NoTienda}`;
 }
 /**
  * Obtiene el valor de la plaza que estará por defecto.
  * @returns {number} El identificador de la plaza
  */
-export const getInitialPlaza = (userLevel) => {
-  return userLevel !== 10 ? userLevel : 3;
+export const getInitialPlaza = (plazas) => {
+  return plazas[0]?.NoEmpresa;
 };
 /**
  * Crea los array de etiquetas y de dato para la gráfica de barras.
@@ -430,7 +427,7 @@ export const createOperacionesDatasets = (data, agno, updateLabels, updateDatase
     }
 
     const operacionesActualesData = {
-      label: `Operaciones ${agno}`,
+      label: agno,
       data: operacionesActual,
       backgroundColor: colors[0]
     };
@@ -438,7 +435,7 @@ export const createOperacionesDatasets = (data, agno, updateLabels, updateDatase
     operacionesDataset.push(operacionesActualesData);
 
     const operacionesAnteriorData = {
-      label: `Operaciones ${agno - 1}`,
+      label: agno - 1,
       data: operacionesAnterior,
       backgroundColor: colors[1]
     };

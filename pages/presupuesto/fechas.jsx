@@ -20,13 +20,14 @@ import { getPresupuestoFechas } from '../../services/PresupuestoService';
 import useMessageModal from '../../hooks/useMessageModal';
 import { MENSAJE_ERROR } from '../../utils/data';
 import withAuth from '../../components/withAuth';
-
+import { useUser } from '../../context/UserContext';
 
 const Fechas = () => {
+  const { plazas } = useUser();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [prespuestos, setPrespuestos] = useState({});
   const [paramFechas, setParamFechas] = useState({
-    plaza:0,
+    plaza: getInitialPlaza(plazas),
     fechaInicio: getBeginEndMonth()[0],
     fechaFin: getBeginEndMonth()[1],
   });
@@ -53,7 +54,8 @@ const Fechas = () => {
       <ParametersContainer>
         <Parameters>
           <InputContainer>
-            <SelectPlazas 
+            <SelectPlazas
+              value={paramFechas.plaza}
               onChange={(e) => { handleChange(e, setParamFechas) }}
             />
             <InputDateRange 

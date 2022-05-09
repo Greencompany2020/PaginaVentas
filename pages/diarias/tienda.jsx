@@ -11,14 +11,16 @@ import { getInitialTienda, getTiendaName, isError } from '../../utils/functions'
 import { handleChange } from '../../utils/handlers';
 import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
+import { useUser } from '../../context/UserContext';
 
 const Tienda = () => {
+  const { tiendas } = useUser();
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [diariasTienda, setDiariasTienda] = useState([]);
   const [tiendasParametros, setTiendaParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
-    tienda:'none',
+    tienda: getInitialTienda(tiendas),
     conIva: 0,
     semanaSanta: 1,
     resultadosPesos: 0

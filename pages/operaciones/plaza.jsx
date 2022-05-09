@@ -13,12 +13,14 @@ import { getOperacionesPlaza } from '../../services/OperacionesService';
 import useMessageModal from '../../hooks/useMessageModal';
 import useGraphData from '../../hooks/useGraphData';
 import withAuth from '../../components/withAuth';
+import { useUser } from '../../context/UserContext';
 
 const Plaza = () => {
+  const { plazas } = useUser();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [paramPlaza, setParamPlaza] = useState({
-    plaza: 0,
+    plaza: getInitialPlaza(plazas),
     delMes: 1,
     alMes: getCurrentMonth() - 1,
     delAgno: getCurrentYear(),
@@ -127,7 +129,7 @@ const Plaza = () => {
           </InputContainer>
         </Parameters>   
           <SmallContainer>
-            Esta grafica muestra un comparativo de las ventas vs compromiso del grupo en el periodo de meses y
+            Esta grafica muestra un comparativo de las ventas vs presupuesto del grupo en el periodo de meses y
           </SmallContainer>
           <SmallContainer>
             el año especificado, este siempre será comparado contra el año anterior.

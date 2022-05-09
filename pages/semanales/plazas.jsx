@@ -73,6 +73,7 @@ const Plazas = () => {
               className='mb-3'
               labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
               name={inputNames.CON_TIENDAS_CERRADAS}
+              onChange={(e) => handleChange(e, setPlazasParametros)}
             />
             <Checkbox
               labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
@@ -96,7 +97,7 @@ const Plazas = () => {
           </InputContainer>
         </Parameters>
         <SmallContainer>
-          Este informe muestra un compartivo de la semana o en rango de fecha selecionado. Recuerde que la comparacions se realiza lunes contra lunes,
+          Este reporte muestra un compartivo de la semana o en rango de fecha selecionado. Recuerde que la comparacion se realiza lunes contra lunes,
         </SmallContainer>
         <SmallContainer>
           lo cual quiere decir que las ventas del año anterior no seran por fecha sino lo que corresponda a los dias de la semana.

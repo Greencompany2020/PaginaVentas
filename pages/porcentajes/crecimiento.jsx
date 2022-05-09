@@ -5,9 +5,9 @@ import { InputContainer, Checkbox, SelectTiendasGeneral, InputDate } from '../..
 import { VentasTableContainer, VentasTable, TableBody, TableHead } from '../../components/table';
 import { MessageModal } from '../../components/modals';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
-import { getCurrentWeekDateRange, getMonthByNumber, getYearFromDate } from '../../utils/dateFunctions';
+import { getMonthByNumber, getPrevDate, getYearFromDate } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
-import { isError, validateDate } from '../../utils/functions';
+import { getLastTwoNumbers, isError, validateDate } from '../../utils/functions';
 import { getPorcentajeCrecimiento } from '../../services/PorcentajesService';
 import { numberWithCommas } from '../../utils/resultsFormated';
 import useMessageModal from "../../hooks/useMessageModal";
@@ -17,8 +17,8 @@ const Crecimiento = () => {
   const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [dateRange, setDateRange] = useState([]);
   const [crecimiento, setCrecimiento] = useState([]);
-  const [parametrosCrecimiento, setParametrosCrecimiento] = useState({
-    fecha: getCurrentWeekDateRange()[0],
+  const [paramCrecimiento, setParamCrecimiento] = useState({
+    fecha: getPrevDate(1),
     tiendas: 0,
     conIva: 0,
     conVentasEventos: 0,
@@ -29,16 +29,16 @@ const Crecimiento = () => {
 
   const createDateRange = useCallback(() => {
     const dateRange = [];
-    const year = Number(getYearFromDate(parametrosCrecimiento.fecha))
+    const year = Number(getYearFromDate(paramCrecimiento.fecha))
     for (let i = year; i >= year - 5; i--) {
       dateRange.push(i)
     }
     setDateRange(dateRange);
-  }, [parametrosCrecimiento.fecha])
+  }, [paramCrecimiento.fecha])
 
   useEffect(() => {
-    if (validateDate(parametrosCrecimiento.fecha)) {
-      getPorcentajeCrecimiento(parametrosCrecimiento)
+    if (validateDate(paramCrecimiento.fecha)) {
+      getPorcentajeCrecimiento(paramCrecimiento)
         .then(response => {
 
           if (isError(response)) {
@@ -52,7 +52,15 @@ const Crecimiento = () => {
         })
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parametrosCrecimiento, createDateRange]);
+  }, [paramCrecimiento, createDateRange]);
+
+  const createTableHeadForYears = () => {
+    return dateRange.map((year) => (
+      <th key={year}>
+        {getLastTwoNumbers(year)}
+      </th>
+    ));
+  }
 
   return (
     <>
@@ -61,12 +69,12 @@ const Crecimiento = () => {
         <Parameters>
           <InputContainer>
             <InputDate
-              value={parametrosCrecimiento.fecha}
-              onChange={(e) => handleChange(e, setParametrosCrecimiento)}
+              value={paramCrecimiento.fecha}
+              onChange={(e) => handleChange(e, setParamCrecimiento)}
             />
             <SelectTiendasGeneral
-              value={parametrosCrecimiento.tiendas}
-              onChange={(e) => handleChange(e, setParametrosCrecimiento)}
+              value={paramCrecimiento.tiendas}
+              onChange={(e) => handleChange(e, setParamCrecimiento)}
             />
           </InputContainer>
           <InputContainer>
@@ -74,19 +82,19 @@ const Crecimiento = () => {
               className='mb-3'
               labelText={checkboxLabels.VENTAS_IVA}
               name={inputNames.CON_IVA}
-              onChange={(e) => handleChange(e, setParametrosCrecimiento)}
+              onChange={(e) => handleChange(e, setParamCrecimiento)}
             />
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
               name={inputNames.CON_VENTAS_EVENTOS}
-              onChange={(e) => handleChange(e, setParametrosCrecimiento)}
+              onChange={(e) => handleChange(e, setParamCrecimiento)}
             />
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
               name={inputNames.CON_TIENDAS_CERRADAS}
-              onChange={(e) => handleChange(e, setParametrosCrecimiento)}
+              onChange={(e) => handleChange(e, setParamCrecimiento)}
             />
           </InputContainer>
           <InputContainer>
@@ -94,14 +102,14 @@ const Crecimiento = () => {
               className='mb-3'
               labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
               name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
-              checked={parametrosCrecimiento.sinTiendasSuspendidas ? true : false}
-              onChange={(e) => handleChange(e, setParametrosCrecimiento)}
+              checked={paramCrecimiento.sinTiendasSuspendidas ? true : false}
+              onChange={(e) => handleChange(e, setParamCrecimiento)}
             />
             <Checkbox
               className='mb-3'
               labelText={checkboxLabels.RESULTADO_PESOS}
               name={inputNames.RESULTADOS_PESOS}
-              onChange={(e) => handleChange(e, setParametrosCrecimiento)}
+              onChange={(e) => handleChange(e, setParamCrecimiento)}
             />
           </InputContainer>
         </Parameters>
@@ -115,32 +123,22 @@ const Crecimiento = () => {
 
       <VentasTableContainer
         title={`Factor de crecimiento al 
-          ${parametrosCrecimiento.fecha.split("-")[2]} de 
-          ${getMonthByNumber(parametrosCrecimiento.fecha.split("-")[1])} de 
-          ${getYearFromDate(parametrosCrecimiento.fecha)} Acumulado y Anual`
+          ${paramCrecimiento.fecha.split("-")[2]} de 
+          ${getMonthByNumber(paramCrecimiento.fecha.split("-")[1])} de 
+          ${getYearFromDate(paramCrecimiento.fecha)} Acumulado y Anual`
         }>
         <VentasTable className='last-row-bg'>
           <TableHead>
             <tr>
               <th rowSpan={2}>Tiendas</th>
-              <th rowSpan={2}>Ventas Acum. 2022</th>
+              <th rowSpan={2}>Ventas Acum. {getYearFromDate(paramCrecimiento.fecha)}</th>
               <th colSpan={6}>Factor Crecimiento</th>
               <th colSpan={7}>Factor Crecimiento</th>
             </tr>
             <tr>
-              <th>22</th>
-              <th>21</th>
-              <th>20</th>
-              <th>19</th>
-              <th>18</th>
-              <th>17</th>
-              <th>Enero-2022</th>
-              <th>22</th>
-              <th>21</th>
-              <th>20</th>
-              <th>19</th>
-              <th>18</th>
-              <th>17</th>
+              {createTableHeadForYears()}
+              <th>{getMonthByNumber(paramCrecimiento.fecha.split("-")[1])}-{getYearFromDate(paramCrecimiento.fecha)}</th>
+              {createTableHeadForYears()}
             </tr>
           </TableHead>
           <TableBody>

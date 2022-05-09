@@ -129,9 +129,6 @@ const Plazas = () => {
         <SmallContainer>
           un dia desface para respetar esto.
         </SmallContainer>
-        <SmallContainer>
-          En esta temporada de semana santa se habilitará el check para intercambiar los dias de la temporada del año anterior.
-        </SmallContainer>
       </ParametersContainer>
 
       <VentasTableContainer
@@ -175,7 +172,7 @@ const Plazas = () => {
                         {formatNumber(plaza.porcentajeMensual)}
                         <td>{numberWithCommas(plaza.ventasAnualActual)}</td>
                         <td>{numberWithCommas(plaza.ventasAnualAnterior)}</td>
-                        <td>{numberWithCommas(plaza.ventasMensualesActual)}</td>
+                        <td>{numberWithCommas(plaza.presupuestoAnual)}</td>
                         {formatNumber(plaza.diferenciaAnual)}
                         {formatNumber(plaza.porcentajeAnual)}
                       </tr>

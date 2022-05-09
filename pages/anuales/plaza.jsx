@@ -109,7 +109,7 @@ const Plazas = () => {
           Esta gráfica muestra las ventas anuales por plaza seguna el rango de años especificado.
         </SmallContainer>
         <SmallContainer>
-          Recuerde que el rango de años debe ser capturado de el menor a el mayor, aunque en el reporte se mostraraa el orden descendiente.
+          Recuerde que el rango de años debe ser capturado de el menor a el mayor, aunque en el reporte se mostrarara el orden descendiente.
         </SmallContainer>
       </ParametersContainer>
 

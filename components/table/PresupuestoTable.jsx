@@ -14,7 +14,7 @@ const PresupuestoTable = ({ title, presupuestos = [] }) => {
               <td className="text-center">{item.SFecha ?? item.Descrip}</td>
               <td className="text-center">{numberWithCommas(item.Presupuesto)}</td>
               <td className="text-center">{numberWithCommas(item.Operaciones)}</td>
-              <td>{numberWithCommas(item.Promedios)}</td>
+              <td>{item.SFecha ? numberWithCommas(item.Promedios) : "-"}</td>
               <td>{numberWithCommas(item.ImporteB)}</td>
               <td>{numberWithCommas(item.ImporteC)}</td>
             </tr>

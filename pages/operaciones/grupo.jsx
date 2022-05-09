@@ -102,7 +102,7 @@ const Grupo = () => {
           </InputContainer>
         </Parameters>   
           <SmallContainer>
-            Esta grafica muestra un comparativo de las ventas vs compromiso del grupo en el periodo de meses y
+            Esta grafica muestra un comparativo de las ventas vs presupuesto del grupo en el periodo de meses y
           </SmallContainer>
           <SmallContainer>
             el año especificado, este siempre será comparado contra el año anterior.
