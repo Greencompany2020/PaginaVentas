@@ -1,8 +1,9 @@
 import Image from 'next/image'
 import unauthorizeImage from '../public/images/unauthorized.jpg' 
+import witAuth from '../components/withAuth';
 import { getVentasLayout } from '../components/layout/VentasLayout';
 
-export default function Unauthorized(){
+const  Unauthorized = () => {
     return(
         <div className="w-full grid place-items-center  overflow-hidden">
             <Image src={ unauthorizeImage} className=" object-contain"/>
@@ -10,5 +11,7 @@ export default function Unauthorized(){
     )
 }
 
-Unauthorized.getLayout = getVentasLayout;
+const UnauthorizedWithAuth = witAuth(Unauthorized);
+UnauthorizedWithAuth.getLayout = getVentasLayout
+export default UnauthorizedWithAuth
 

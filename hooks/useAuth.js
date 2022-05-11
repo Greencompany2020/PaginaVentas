@@ -1,5 +1,5 @@
 import jsCookie from 'js-cookie';
-import { post_login, post_logouth} from '../services/AuthServices';
+import { post_login, get_logouth} from '../services/AuthServices';
 
 function useAuth(){
 
@@ -11,10 +11,11 @@ function useAuth(){
     }
 
     const logOut = async () => {
-        const data = await post_logouth();
-        if(data) return false;
+        const data = await get_logouth();
+        if(!data) return false;
         jsCookie.remove('accessToken');
-       return true;
+        jsCookie.remove('jwt');
+        return true;
     }
 
     return {

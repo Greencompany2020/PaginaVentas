@@ -20,10 +20,14 @@ const Navbar = () => {
   const [showDialog, setShowDialog] = useState(false);
   const auth = useAuth();
   const router = useRouter();
+  
   useClickOutside(userMenuRef, () => { setShowDialog(false) });
+
   const handleLogout = () => {
-    auth.logOut();
-    router.push('/');
+    const data = auth.logOut();
+    if(data){
+      router.push('/');
+    }
   }
   return (
     <>

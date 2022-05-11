@@ -12,16 +12,16 @@ export const post_login = async (body) => {
 }
 
 
-export const post_logouth = async () => {
+export const get_logouth = async () => {
     try{
-        const {status} = await ApiProvider.post('/auth/logout');
-        if(status !== 200) return false;
+        const {data, status} = await ApiProvider.get('/auth/logout');
         return true;
     }catch(err){
         const {status} = err;
         return false;
     }
 }
+
 
 export const post_accessTo = async (point) => {
     const body = {point};
