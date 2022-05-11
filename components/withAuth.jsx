@@ -1,15 +1,10 @@
+import { post_accessTo } from "../services/AuthServices";
 import { useRouter} from "next/router";
-import { useAuth } from "../context/AuthContext";
 import cookie from "js-cookie";
-import * as jose from 'jose';
-import dayjs from "dayjs";
-import { useEffect } from "react";
-
 
 const witAuth = (Component) => {
 
     const AuthorizationComponent = () => {
-        const auth = useAuth();
         const router = useRouter();
 
         /**
@@ -40,7 +35,7 @@ const witAuth = (Component) => {
          * @param {*} page 
          * @param {*} opt 
          */
-        const RedirecTo = (page, opt = 'push') => {
+        const redirecTo = (page, opt = 'push') => {
             switch (opt){
                 case 'replace':
                     router.replace(page);
@@ -60,19 +55,10 @@ const witAuth = (Component) => {
          * Si lo tiene y esa expirado tratara de refrescarlo
          * @returns boolean
          */
-        const userHastoken = async () =>{
+        const userHastoken = () =>{
             const token = cookie.get('accessToken');
             const isTokenAvailable = token ? true : false;
-            if(!isTokenAvailable){ 
-                return false;
-            }
-            const decodeToken = jose.decodeJwt(token);
-            const isExpired = (dayjs.unix(decodeToken.exp).diff(dayjs()) < 1);
-            if(!isExpired){
-                return true
-            };
-            const isTokenRefresh = await auth.refreshToken();
-            return isTokenRefresh
+            return isTokenAvailable;
         }
 
 
@@ -81,11 +67,13 @@ const witAuth = (Component) => {
          * @returns data
          */
         const getAuthToPath = async ()  => {
-            const data = await auth.getRoute(router.asPath);
+            const data = await post_accessTo(router.asPath);
             return data;
         }
 
 
+        const attemptException = exceptions.find(paths => paths.pathname == router.asPath);
+        const userToken = userHastoken();
         /**
          * evalua el pint al que se quiere ingresar
          * recibe una callbacl que ejecuta el redirect o el push
@@ -95,32 +83,23 @@ const witAuth = (Component) => {
          * @param {*} cb 
          * @returns 
          */
-        const pathEvaluate = async (cb) => {
-            const attemptException = exceptions.find(paths => paths.pathname == router.asPath);
-            const userToken = await userHastoken();
-
+        const pathEvaluate = async () => {
             if(attemptException){
-                if(attemptException.tokenRequired && !userToken) cb('/', 'push');
-                if(attemptException.pathname == '/' && userToken) cb('/dashboard', 'push');
+                if(attemptException.tokenRequired && !userToken) redirecTo('/', 'push');
+                if(attemptException.pathname == '/' && userToken) redirecTo('/dashboard', 'push');
             }else{
                 if(!userToken) cb('/', 'push');
                 const userAccess = await getAuthToPath();
-                if(!userAccess.access)  return cb('/unauthorized', 'replace');
+                if(!userAccess.access)  return redirecTo('/unauthorized', 'replace');
             }
-            
+            return false;
         }
 
-       
+        pathEvaluate();
 
-        useEffect(() => {
-            pathEvaluate(RedirecTo);
-        },[eval]);
-
-        return <Component/> 
+        return <Component/>
     }
     return AuthorizationComponent;
 }
-
-
 
 export default witAuth;

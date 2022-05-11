@@ -2,18 +2,22 @@ import Head from 'next/head';
 import Image from 'next/image';
 import Logo from '../public/images/green-company.png';
 import {useState} from 'react'
+import { useRouter } from 'next/router';
 import {Formik, Form, Field} from 'formik'
-import { useAuth } from '../context/AuthContext';
+import useAuth from '../hooks/useAuth';
 import * as Yup from 'yup';
 import witAuth from '../components/withAuth';
 import { MessageModal } from '../components/modals';
 import useMessageModal from '../hooks/useMessageModal';
 import { post_resetPassword } from '../services/UserServices';
+import { useUser } from '../context/UserContext';
 
 
 export const Home = () => {
 
   const auth = useAuth();
+  const router = useRouter();
+  const {getUserData, getPlazas, getTiendas} = useUser();
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [attemptLogin ,setAttemp] = useState(true);
 
@@ -25,6 +29,13 @@ export const Home = () => {
       setMessage('Usuario o contraseña invalido');
       setModalOpen(true);
     }
+    else{
+      getUserData();
+      getPlazas();
+      getTiendas();
+      router.push('/dashboard');
+    }
+    
   }
 
   const resetPassword = async (values) => {

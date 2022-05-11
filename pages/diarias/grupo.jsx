@@ -11,9 +11,10 @@ import { inputNames } from '../../utils/data/checkboxLabels';
 import { handleChange } from '../../utils/handlers';
 import useMessageModal from '../../hooks/useMessageModal';
 import { isError } from '../../utils/functions';
-import withAuth from '../../components/withAuth';
+import WithAuth from '../../components/withAuth';
 
-const Grupo = () => {
+const Grupo = (props) => {
+  console.log(props);
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [parametrosConsulta, setParametrosConsulta] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
@@ -147,6 +148,6 @@ const Grupo = () => {
   )
 }
 
-const GrupoWithAuth = withAuth(Grupo);
+const GrupoWithAuth = WithAuth(Grupo);
 GrupoWithAuth.getLayout = getVentasLayout;
 export default GrupoWithAuth;
