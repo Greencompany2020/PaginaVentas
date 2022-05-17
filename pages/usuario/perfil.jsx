@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import {useEffect, useState} from 'react'
 import {  Flex } from '../../components/containers';
 import { getBaseLayout } from '../../components/layout/BaseLayout';
 import Frogs from '../../public/images/rana10.png';

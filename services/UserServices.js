@@ -1,6 +1,5 @@
 import ApiProvider from "./ApiProvider";
 
-
 export const get_plazasGrupo = async () =>{
     try{
         const {data, status} = await ApiProvider.get('/tiendasplazas/plazas');

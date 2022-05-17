@@ -99,7 +99,7 @@ const witAuth = (Component) => {
             pathEvaluate();
         },[])
 
-        return loading ? <></> : <Component/>
+        return loading ? <p>Wait</p> : <Component/>
     }
 
     /**
