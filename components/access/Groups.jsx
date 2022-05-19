@@ -76,7 +76,7 @@ const Groups = ({groups, handleModal, handleSelect, handleDelete}) => {
                 <div className="flex-1">
                     <span className=" block font-bold text-md bg-slate-300 rounded-md p-1 mb-1">Grupos</span>
                     <input
-                        className=" bg-yellow-100 w-full rounded-md border-2 h-8"
+                        className=" bg-yellow-100 w-full rounded-md border-2 h-8 pl-2"
                     />
                     <ul className="space-y-2 mt-3">
                         <GroupList items={groups} handleSelect={handleSelect} handleModal={handleModal} handleDelete={handleDelete}/>

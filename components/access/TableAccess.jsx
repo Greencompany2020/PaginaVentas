@@ -37,7 +37,8 @@ const TableAccess = ({data, handleSearch, pages, current, next, updateUserAccess
                             <tr>
                                 <th colSpan={5}>
                                     <input
-                                        className=" bg-yellow-100 w-full rounded-md border-2 h-8"
+                                        className=" bg-yellow-100 w-full rounded-md border-2 h-8 pl-2"
+                                        placeholder='Buscar...'
                                         onChange={handleSearch}
                                     />
                                 </th>

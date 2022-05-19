@@ -196,9 +196,17 @@ export default function useAccess(){
 
     const handleSearch = (evt) => {
         const {value} = evt.target;
-        const equals = state?.access?.data.filter(access => (access.nombreReporte.includes(value) || access.menu.includes(value) || access.reporte.includes(value)));
-        const {slicer} = sliceFilter(equals, state?.access?.show, 1);
-        dispatch({type:'FILTER_ACCESS',payload:{slicer}})
+        const search = value.replace(/\s+/g, '');
+        if(search.length > 0){
+            const equals = state?.access?.data.filter(access => (access.nombreReporte.includes(search) || access.menu.includes(search) || access.reporte.includes(search)));
+            const {slicer} = sliceFilter(equals, state?.access?.show, 1);
+            dispatch({type:'FILTER_ACCESS',payload:{slicer}})
+        }else{
+            const {slicer} = sliceFilter(state?.access?.data, state?.access?.show, state?.access?.current);
+            dispatch({type:'FILTER_ACCESS',payload:{slicer}})
+        }
+        
+        
     }
 
     
