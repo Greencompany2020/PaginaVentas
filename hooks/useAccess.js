@@ -77,13 +77,14 @@ export default function useAccess(){
             const user = state.users.filter(user => user.Id === data.Id)[0];
             const access = data.Accesos;
             const replaced = replaceAccess(state.access.data, access);
-            console.log(replaced);
             const {slicer, pages} = sliceFilter(replaced, state?.access?.show, state?.access?.current);
             dispatch({type: 'SET_SELECTED_USER', payload:{user, access}});
             dispatch({type:'SET_ACCESS', payload:replaced});
             dispatch({type:'PAGINATE_ACCESS', payload:{slicer, pages}});
         }
     }
+
+
 
     const selectGroup = selectItem => {
         const group = state.groups.filter(item => item === selectItem)[0];
@@ -98,8 +99,7 @@ export default function useAccess(){
         const body = {idDashboard: id, idUser: state.user.data.Id, enabled};
         const response = await service.post_assignAccesToUser(body);
         if(!response) return {success:false, message: 'No se pudo asignar el acceso al usuario'}
-
-        getUserAccess(state.user.data.Id);
+        getUserAccess(state.user.data.Id)
         return {success:true, message: (current == true) ? 'Acceso retirado' : 'Acceso asignado' }
     }
 
@@ -185,7 +185,6 @@ export default function useAccess(){
     }
 
     const handleNext = (next) => {
-        console.log(next);
         if(state?.access?.data){
             if(next > 0 && next <= state.access.pages){
                 const {slicer} = sliceFilter(state?.access.data, state?.access?.show, next);
@@ -198,7 +197,7 @@ export default function useAccess(){
     const handleSearch = (evt) => {
         const {value} = evt.target;
         const equals = state?.access?.data.filter(access => (access.nombreReporte.includes(value) || access.menu.includes(value) || access.reporte.includes(value)));
-        const {slicer} = sliceFilter(equals, state?.access?.show, state?.access?.current);
+        const {slicer} = sliceFilter(equals, state?.access?.show, 1);
         dispatch({type:'FILTER_ACCESS',payload:{slicer}})
     }
 
