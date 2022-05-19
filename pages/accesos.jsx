@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import Image from 'next/image';
 import Verify from '../public/icons/ok-08.png';
 import useAccess from '../hooks/useAccess';
@@ -7,6 +7,10 @@ import Groups, {GroupForm} from '../components/access/Groups';
 import Users, {UserForm} from '../components/access/Users';
 import TableAccess from '../components/access/TableAccess';
 import {FormModal} from '../components/modals'
+import Navbar from '../components/Navbar';
+import { ConfirmModal } from '../components/modals';
+import { MessageModal } from '../components/modals';
+import useMessageModal from '../hooks/useMessageModal';
 
 
 const Accesos = () => {
@@ -22,18 +26,28 @@ const Accesos = () => {
         handleNext, 
         getUserAccess,
         updateUserAccess,
-        createUser
+        createUser,
+        createGroup,
+        updateGroup,
+        selectGroup,
+        updateUser,
+        deleteGroup,
+        deleteUser,
+        assignAccess
     } = useAccess();
+
+    const confirmModalRef = useRef(null);
+    const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
 
     const ShowForm = () => {
         switch(showForm.target){
             case 'users':
-                if(showForm.action == 'create') return <UserForm handleSubmit = {handleCreateUser} groups={state?.groups}/>
-                if(showForm.action == 'update') return <UserForm selectedUser = {state?.user?.data} groups={state?.groups}/>
+                if(showForm.action == 'create') return <UserForm handleSubmit = {handleCreateUser} groups={state?.groups} toggleModal={toggleVisible}/>
+                if(showForm.action == 'update') return <UserForm handleSubmit={handleUpdateUser} selectedUser = {state?.user?.data} groups={state?.groups}  toggleModal={toggleVisible}/>
     
             case 'groups':
-                if(showForm.action == 'create') return <GroupForm/>
-                if(showForm.action == 'update') return <GroupForm/>
+                if(showForm.action == 'create') return <GroupForm handleSubmit={handleCreateGroup}  toggleModal={toggleVisible}/>
+                if(showForm.action == 'update') return <GroupForm handleSubmit={handleUpdateGroup} selectedGroup = {state?.group}  toggleModal={toggleVisible}/>
             default:
                 return <></>
         }
@@ -50,21 +64,69 @@ const Accesos = () => {
        }
     }
 
-    const handleCreateUser = (body) => createUser(body);
+
+    const handleCreateUser = async(id,body) => {
+        const response = await createUser(body);
+        const message = (response == true) ? 'Nuevo usuario creado' : 'No se pudo crear el usuario'
+        setMessage(message);
+        setModalOpen(true);
+    };
+
+    const handleUpdateUser = async (id, body) => {
+        const response = await updateUser(id, body)
+        const message = (response == true) ? 'Usuario actualizado' : 'No se pudo actualizar el usuario'
+        setMessage(message);
+        setModalOpen(true);
+    }
+
+    const handleDeleteUser = async (id) => {
+        const confirm = await confirmModalRef.current.show();
+        if(confirm){
+            deleteUser(id);
+        }
+    }
+
+    const handleCreateGroup = async (id,body) => {
+        const response = await createGroup(body);
+        const message = (response == true) ? 'Nuevo grupo creado' : 'No se pudo crear el grupo'
+        setMessage(message);
+        setModalOpen(true);
+    }
+
+    const handleUpdateGroup = async (id, body) => {
+        const response = await updateGroup(id, body);
+        const message = (response == true) ? 'Grupo actualizado' : 'No se pudo actualizar el grupo'
+        setMessage(message);
+        setModalOpen(true);
+    }
+
+    const handleDeleteGroup = async (id) => {
+        const confirm = await confirmModalRef.current.show();
+        if(confirm){
+            deleteGroup(id);
+        }
+    }
+
+    const handleAssign = async (id, current) => {
+        const {message} = await assignAccess(id, current);
+        setMessage(message);
+        setModalOpen(true);
+    }
 
     return(
         <>
+            <Navbar/>
             <section className="flex flex-col md:flex-row justify-between  mb-4 p-4">
                 <span className=" text-2xl font-bold">Página de ventas</span>
                 <span className=" text-3xl font-bold">Configuración de Accesos</span>
             </section>
 
             <section className="flex flex-col  p-4 space-y-8  md:flex-row md:space-x-8 md:space-y-0">
-                <Groups groups={state?.groups} handleModal={handleModal}/>
-                <Users users={state?.users} getUsers={getUserAccess} handleModal={handleModal}/>
+                <Groups groups={state?.groups} handleModal={handleModal} handleSelect={selectGroup} handleDelete ={handleDeleteGroup}/>
+                <Users users={state?.users} getUsers={getUserAccess} handleModal={handleModal} handleDelete={handleDeleteUser}/>
                 
                 <div className="flex-[4] flex flex-col  space-y-5">
-                    <p className=" font-bold text-xl">Editando usuario: <span className=" text-blue-400 font-bold">{state?.user?.UserCode}</span></p>
+                    <p className=" font-bold text-xl">Editando usuario: <span className=" text-blue-400 font-bold">{state?.user?.data?.UserCode}</span></p>
                     <div className="grid gap-4 md:grid-cols-6">
 
                         <div className='flex flex-col space-y-2 relative w-[150px] md:w-full'>
@@ -120,6 +182,7 @@ const Accesos = () => {
                         current={state?.access?.current} 
                         next={handleNext}
                         updateUserAccess = {updateUserAccess}
+                        handleAssign = {handleAssign}
                     />
                 </div>
             </section>
@@ -127,7 +190,8 @@ const Accesos = () => {
             <FormModal active={visible} handleToggle = {toggleVisible}>
                 <ShowForm/>
             </FormModal>
-            
+            <ConfirmModal ref={confirmModalRef}/>
+            <MessageModal message={message} setModalOpen={setModalOpen} modalOpen={modalOpen} />
         </>
     )
 }

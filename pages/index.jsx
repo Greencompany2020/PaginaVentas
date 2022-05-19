@@ -105,8 +105,9 @@ export const Home = () => {
 
             <button
               type='submit'
-              className='w-full h-12 rounded-md bg-sky-500 mt-4 sm:mt-10 md:mt-16 lg:mt-12 text-center text-gray-200 hover:cursor-pointer hover:bg-sky-400 transition ease-in-out duration-200 font-bold'
+              className='primary-btn w-full mt-4 sm:mt-10 md:mt-16 lg:mt-12 '
             >Iniciar sesion</button>
+
           </Form>
         )}
       </Formik>

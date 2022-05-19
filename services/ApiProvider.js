@@ -25,6 +25,8 @@ const refreshToken = async () => {
     jsCookie.set('accessToken',  newToken);
     return newToken;
   }catch(err){
+     jsCookie.remove('accessToken');
+     jsCookie.remove('jwt');
     return false;
   }
 }
@@ -34,8 +36,8 @@ ApiProvider.interceptors.response.use(
   response => response,
   async (err) => {
     const prevRequest = err?.config;
-    if(err?.response?.status === 401 && !prevRequest?.sent){
-      prevRequest.sent = true;
+    if(err?.response?.status === 401 && !prevRequest.__isRetryRequest){
+      prevRequest.__isRetryRequest = true;
       const newToken = await refreshToken();
       prevRequest.headers['Authorization'] = `Bearer ${newToken}`;
       return ApiProvider(prevRequest);

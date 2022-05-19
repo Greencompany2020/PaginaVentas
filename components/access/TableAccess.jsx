@@ -2,17 +2,17 @@ import {PlusCircleIcon,CogIcon} from '@heroicons/react/outline';
 import Pagination from '../Pagination';
 import TooggleSwitch from '../inputs/TooggleSwitch';
 
-const TableRows = ({items,updateUserAccess}) => {
+const TableRows = ({items,updateUserAccess, handleAssign}) => {
     if(!items) return <></>
     const rows = items.map((item, index)=> {
-        const handleSwitch = () => updateUserAccess(item.id, item.acceso)
+        const handleSwitch = () => handleAssign(item.idDashboard,item.acceso)
         return(
             <tr key={index}>
                 <td className='hidden lg:table-cell'>{item.menu}</td>
                 <td className='hidden lg:table-cell'>{item.reporte}</td>
                 <td >{item.nombreReporte}</td>
                 <td className='flex justify-center'> <CogIcon width={32}/></td>
-                <td > <TooggleSwitch key={index} id={item.Id} value={item.acceso} onChange={handleSwitch}/> </td>
+                <td > <TooggleSwitch key={index} id={item.idDashboard} value={item.acceso} onChange={handleSwitch}/> </td>
             </tr>
         )
     });
@@ -20,7 +20,7 @@ const TableRows = ({items,updateUserAccess}) => {
 }
 
 
-const TableAccess = ({data, handleSearch, pages, current, next, updateUserAccess}) => {
+const TableAccess = ({data, handleSearch, pages, current, next, updateUserAccess, handleAssign}) => {
     return(
         <div className="flex items-start space-x-1">
             <div className="flex-1 space-y-8 overflow-hidden">
@@ -45,7 +45,7 @@ const TableAccess = ({data, handleSearch, pages, current, next, updateUserAccess
                         </thead>
 
                         <tbody>
-                            <TableRows items={data} updateUserAccess={updateUserAccess}/>
+                            <TableRows items={data} updateUserAccess={updateUserAccess} handleAssign={handleAssign}/>
                         </tbody>
                     </table>
                 </div>

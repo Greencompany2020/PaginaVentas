@@ -1,5 +1,6 @@
 import * as service from '../services/AccessService';
 import { useEffect, useReducer} from 'react';
+import { sliceFilter } from '../utils/functions';
 
 
 const initialState = {
@@ -15,7 +16,8 @@ const initialState = {
     user: {
         data:{},
         access:[]
-    }
+    },
+    group:{}
 }
 
 export default function useAccess(){
@@ -35,7 +37,9 @@ export default function useAccess(){
             case "FILTER_ACCESS":
                 return{...state, access:{...state.access, dataFilter:[...action.payload.slicer]}}
             case "SET_SELECTED_USER":
-                return{...state, user:{data: action.payload.user, access:[...action.payload.access]}}
+                return{...state, user:{data:action.payload.user, access:[...action.payload.access]}}
+            case "SET_SELECTED_GROUP":
+                return{...state, group:action.payload}
             default:
                 return state;
         }
@@ -72,12 +76,34 @@ export default function useAccess(){
         if(data){
             const user = state.users.filter(user => user.Id === data.Id)[0];
             const access = data.Accesos;
-            replaceAccess(state.access.data, access);
+            const replaced = replaceAccess(state.access.data, access);
+            console.log(replaced);
+            const {slicer, pages} = sliceFilter(replaced, state?.access?.show, state?.access?.current);
             dispatch({type: 'SET_SELECTED_USER', payload:{user, access}});
-            console.log(state);
+            dispatch({type:'SET_ACCESS', payload:replaced});
+            dispatch({type:'PAGINATE_ACCESS', payload:{slicer, pages}});
         }
     }
 
+    const selectGroup = selectItem => {
+        const group = state.groups.filter(item => item === selectItem)[0];
+        dispatch({type: 'SET_SELECTED_GROUP', payload:group});
+    }
+
+    const assignAccess = async(id, current) => {
+        if(Object.keys(state.user.data).length == 0) return {success: false, message: 'No hay ningun usuario seleccionado'}
+        if(!id) return {success: false, message: 'Este acceso no se encuentra correctamente configurado'}
+
+        const enabled =  (current == true) ? 'N' : 'Y';
+        const body = {idDashboard: id, idUser: state.user.data.Id, enabled};
+        const response = await service.post_assignAccesToUser(body);
+        if(!response) return {success:false, message: 'No se pudo asignar el acceso al usuario'}
+
+        getUserAccess(state.user.data.Id);
+        return {success:true, message: (current == true) ? 'Acceso retirado' : 'Acceso asignado' }
+    }
+
+    
     const updateUserAccess = async(id, value) => {
         const enabled = (value == true) ? 'N' : 'Y' ;
         const data = await service.put_updateUserAccess(id, enabled);
@@ -89,36 +115,82 @@ export default function useAccess(){
 
     const createUser = async(body) => {
         const response = await service.post_createUser(body);
-        if(response) getUsers();
-    }
-
-    const replaceAccess = (prev, next) => {
-      const filtered = prev.map(item => {
-          const before = next.map(nextItem => {
-              if(nextItem.idDashboard == item.idDashboard)return({...item, hola:'h'});
-          });
-          return before;
-      });
-
-      console.log(filtered);
-    }
-
-    const sliceFilter = (data, show ,current) =>{
-        const dataLength = data.length;
-        const pages = Math.ceil(dataLength / show);
-        const limit = current * show;
-        const offset = (current == 1) ? 0 : limit - show;
-        const slicer = data.slice(offset, limit);
-        return {
-            slicer,
-            pages
+        if(response){
+            getUsers();
+            return true;
         }
+        return false;
+    }
+
+    const updateUser = async(id, body) => {
+        let {password, ...values} = body;
+        const data = await service.put_updateUser(id, values);
+        if(data){
+            getUsers();
+            return true;
+        }
+        return false;
+    }
+
+    const deleteUser = async(id) => {
+        const response = await service.del_deleteUser(id);
+        if(response){
+            getUsers();
+            return true;
+        }
+        return false;
+    }
+
+    const createGroup = async(id) => {
+        const response  = await service.post_createGroup(id);
+        if(response){
+            getGroups();
+            return true;
+        }
+        return false;
+    }
+
+
+    const updateGroup = async (id, body) => {
+        const {Nombre} = body;
+        const response = await service.put_updateGroup(id, Nombre);
+        if(response){
+            getGroups();
+            return true;
+        }
+        return false;
+    }
+    
+    const deleteGroup = async (id) => {
+        const response = await service.del_deleteGroup(id);
+        if(response){
+            getGroups();
+            return true;
+        }
+        return false;
+    }
+
+    const replaceAccess = (current, next) => {
+        const modified = current.map(item => {
+            let modify = {}
+            next.forEach(userAccess => {
+                if(item.idDashboard == userAccess.idDashboard){
+                    modify = {...item, acceso:userAccess.acceso}
+                }
+            });
+            if(Object.keys(modify).length > 0) return modify
+            return {...item, acceso:false};
+        });
+        return modified
     }
 
     const handleNext = (next) => {
+        console.log(next);
         if(state?.access?.data){
-            const {slicer} = sliceFilter(state?.access.data, state?.access?.show, next);
-            dispatch({type:'SELECT_ACCESS_PAGE', payload:{slicer, next}});
+            if(next > 0 && next <= state.access.pages){
+                const {slicer} = sliceFilter(state?.access.data, state?.access?.show, next);
+                dispatch({type:'SELECT_ACCESS_PAGE', payload:{slicer, next}});
+            }
         }
     }
 
@@ -145,5 +217,12 @@ export default function useAccess(){
         getUserAccess,
         updateUserAccess,
         createUser,
+        createGroup,
+        updateGroup,
+        selectGroup,
+        updateUser,
+        deleteGroup,
+        deleteUser,
+        assignAccess,
     }
 }

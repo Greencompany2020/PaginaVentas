@@ -2,6 +2,7 @@ import { post_accessTo } from "../services/AuthServices";
 import { useRouter} from "next/router";
 import cookie from "js-cookie";
 import {useEffect, useState} from 'react'
+import LoaderComponent from "./Loader";
 const witAuth = (Component) => {
 
     const AuthorizationComponent = () => {
@@ -71,7 +72,7 @@ const witAuth = (Component) => {
          * @returns data
          */
         const getAuthToPath = async ()  => {
-            const data = post_accessTo(router.asPath);
+            const data =  post_accessTo(router.asPath);
             return data;
         }
         /**
@@ -80,8 +81,7 @@ const witAuth = (Component) => {
          * si el usuario tiene token y quiere ingresar al login lo redirige al dashboard
          * @returns 
          */
-        const pathEvaluate = async () => {
-            const userAccess = await getAuthToPath();  
+        const pathEvaluate = async () => { 
             const attemptException = exceptions.find(paths => paths.pathname == router.asPath);
             const userToken = userHastoken();
             if(attemptException){
@@ -90,6 +90,7 @@ const witAuth = (Component) => {
                 setLoading(false);
             }else{
                 if(!userToken) redirecTo('/', 'push');
+                const userAccess = await getAuthToPath();
                 if(!userAccess.access)  return redirecTo('/unauthorized', 'replace');
                 setLoading(false);
             }
@@ -97,9 +98,9 @@ const witAuth = (Component) => {
 
         useEffect(()=> {
             pathEvaluate();
-        },[])
+        },[]);
 
-        return loading ? <p>Wait</p> : <Component/>
+        return loading ? <LoaderComponent/> : <Component/>
     }
 
     /**

@@ -1,9 +1,9 @@
 import {ChevronLeftIcon, ChevronRightIcon} from '@heroicons/react/solid'
 
-export default function Pagination({pages, current ,next, back}){
+export default function Pagination({pages, current ,next}){
     
     return(
-        <div className='w-full flex justify-center'>
+        <div className='w-full flex justify-end'>
             <div className='w-fit bg-slate-200 rounded-md flex items-center'>
                 <button 
                     className='w-12 h-10 bg-slate-300 rounded-l-md flex justify-center items-center'

@@ -3,7 +3,7 @@ import {PlusCircleIcon, PencilAltIcon, TrashIcon} from '@heroicons/react/outline
 import * as Yup from 'yup';
 
 
-const UserList = ({items ,handleOnclick, handleModal}) => {
+const UserList = ({items ,handleOnclick, handleModal, handleDelete}) => {
     if(!items) return <></>
     const itemsList = items.map((item, index) => (
             <li 
@@ -13,7 +13,7 @@ const UserList = ({items ,handleOnclick, handleModal}) => {
                 <span>{item.UserCode}</span>
                 <div className='flex'>
                     <PencilAltIcon width={26} onClick={() => handleModal('users', 'update')}/>
-                    <TrashIcon width={26}/>
+                    <TrashIcon width={26} onClick={() => handleDelete(item.Id)}/>
                 </div>
             </li>
     ));
@@ -21,7 +21,8 @@ const UserList = ({items ,handleOnclick, handleModal}) => {
 }
 
 
-export const UserForm = ({groups, selectedUser, handleSubmit}) => {
+export const UserForm = ({groups, selectedUser, handleSubmit,toggleModal}) => {
+
 
     const initialValues = {
         UserCode: selectedUser?.UserCode || '',
@@ -32,17 +33,19 @@ export const UserForm = ({groups, selectedUser, handleSubmit}) => {
         Nombre: selectedUser?.Nombre || '',
         Apellidos: selectedUser?.Apellidos || '',
         password: '',
+        idGrupo: selectedUser?.IdGrupo || 0,
     }
 
     const validationSchema = Yup.object().shape({
-        UserCode: Yup.number().transform(v => (parseInt(v))).required('Requerido'),
+        UserCode: Yup.string().required('Requerido'),
         Email: Yup.string().email('Ingrese un email con formato valido @example.com').required('Requerido'),
-        NoEmpleado: Yup.number().required('Requerido'),
+        NoEmpleado: Yup.number().transform(v => (parseInt(v))).required('Requerido'),
         Level: Yup.number().transform(v => (parseInt(v))),
         Clase: Yup.number().transform(v =>(parseInt(v))),
         Nombre: Yup.string().required('Requerido'),
         Apellidos: Yup.string().required('Requrido'),
-        password: Yup.string()
+        idGrupo: Yup.number().transform(v => (parseInt(v))),
+        password: (!selectedUser) && Yup.string().required('Requerido')
     })
 
     const ListGroups = () =>{
@@ -60,7 +63,7 @@ export const UserForm = ({groups, selectedUser, handleSubmit}) => {
             <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
-                onSubmit={(values) => handleSubmit(values)}
+                onSubmit={(values) =>  handleSubmit(selectedUser?.Id, values)}
             >
                 {({errors, touched}) => (
                     <Form>
@@ -92,7 +95,7 @@ export const UserForm = ({groups, selectedUser, handleSubmit}) => {
                             <div className='flex flex-col space-y-1'>
                                 <label htmlFor="NoEmplead" className='font-semibold  text-gray-600'>No. Empleado</label>
                                 <Field 
-                                    type='text' 
+                                    type='number' 
                                     className='h-10 border rounded-md border-slate-400 w-44 pl-2'
                                     id='NoEmpleado'
                                     name = 'NoEmpleado'
@@ -121,49 +124,63 @@ export const UserForm = ({groups, selectedUser, handleSubmit}) => {
                                 />
                                 {errors?.Email && touched?.Email ? <span className='font-semibold text-red-500'>{errors?.Email}</span> : null}
                             </div>
-
-                            <div className='flex flex-col space-y-1'>
-                                <label htmlFor="Email" className='font-semibold  text-gray-600'>Password</label>
-                                <Field 
-                                    type='password' 
-                                    className='h-10 border rounded-md border-slate-400 pl-2'
-                                    id='password'
-                                    name='password'
-                                />
-                                {errors?.password && touched?.password ? <span className='font-semibold text-red-500'>{errors?.password}</span> : null}
-                            </div>
-
+                            {
+                                (!selectedUser) &&
+                                <div className='flex flex-col space-y-1'>
+                                    <label htmlFor="Email" className='font-semibold  text-gray-600'>Password</label>
+                                    <Field 
+                                        type='password' 
+                                        className='h-10 border rounded-md border-slate-400 pl-2'
+                                        id='password'
+                                        name='password'
+                                    />
+                                    {errors?.password && touched?.password ? <span className='font-semibold text-red-500'>{errors?.password}</span> : null}
+                                </div>
+                            }
                             <div className='flex flex-row space-x-4'> 
                                 <div className='flex flex-col space-y-1'>
                                     <label htmlFor="Clase" className='font-semibold  text-gray-600'>Clase</label>
                                     <Field component='select' id='Clase' name='Clase' className='h-8 border rounded-md border-slate-400 w-20'>
+                                        <option number={0}>0</option>
                                         <option number={1}>1</option>
-                                        <option number={2}>2</option>
                                     </Field>
                                     {errors?.Clase && touched?.Clase ? <span className='font-semibold text-red-500'>{errors?.Clase}</span> : null}
                                 </div>
                                 <div className='flex flex-col space-y-1'>
                                     <label htmlFor="Level" className='font-semibold  text-gray-600'>Level</label>
                                     <Field as='select' id='Level' name = 'Level' className='h-8 border rounded-md border-slate-400 w-20'>
-                                        <option value={1}>1</option>
-                                        <option value={2}>2</option>
+                                        <option value={3}>3</option>
+                                        <option value={5}>5</option>
+                                        <option value={6}>6</option>
+                                        <option value={7}>7</option>
+                                        <option value={10}>10</option>
+                                        <option value={11}>11</option>
+                                        <option value={20}>20</option>
                                     </Field>
                                     {errors?.Level&& touched?.Level? <span className='font-semibold text-red-500'>{errors?.Level}</span> : null}
                                 </div>
                                 <div className='flex flex-col space-y-1'>
-                                    <label htmlFor="Grupo" className='font-semibold  text-gray-600'>Grupo</label>
-                                    <Field as='select' id='Grupo' name = 'Grupo' className='h-8 border rounded-md border-slate-400 w-44'>
+                                    <label htmlFor="idGrupo" className='font-semibold  text-gray-600'>Grupo</label>
+                                    <Field as='select' id='idGrupo' name = 'idGrupo' className='h-8 border rounded-md border-slate-400 w-44'>
                                         <ListGroups/>
                                     </Field>
-                                    {errors?.Grupo&& touched?.Grupo? <span className='font-semibold text-red-500'>{errors?.Grupo}</span> : null}
+                                    {errors?.idGrupo&& touched?.idGrupo? <span className='font-semibold text-red-500'>{errors?.idGrupo}</span> : null}
                                 </div>
                             </div>
                         </div>
                         <div className='flex justify-end mt-8'>
                             <button
-                               type='submit'
-                               value='submit'
-                                className=' bg-cyan-500 w-28 h-10 text-white p-1 rounded-md place-self-end font-bold' 
+                                type='reset'
+                                value='reset'
+                                className='secondary-btn w-28 mr-2'
+                                onClick={toggleModal}
+                            >
+                             Cancelar</button>
+
+                            <button
+                                type='submit'
+                                value='submit'
+                                className='primary-btn w-28' 
                             >
                             Guardar</button>
                         </div>
@@ -176,7 +193,7 @@ export const UserForm = ({groups, selectedUser, handleSubmit}) => {
 
 
 
-const Users = ({users, getUsers, handleModal}) => {
+const Users = ({users, getUsers, handleModal, handleDelete}) => {
     return(
         <div  className="flex-[1] ">
             <div className="flex  items-start space-x-1">
@@ -186,7 +203,7 @@ const Users = ({users, getUsers, handleModal}) => {
                         className=" bg-yellow-100 w-full rounded-md border-2 h-8"
                     />
                     <ul className="space-y-2 mt-3">
-                        <UserList items={users} handleOnclick={getUsers} handleModal={handleModal}/>
+                        <UserList items={users} handleOnclick={getUsers} handleModal={handleModal} handleDelete={handleDelete}/>
                     </ul>
                 </div>
                 <PlusCircleIcon width={32} className="block cursor-pointer" onClick={()=>handleModal('users', 'create')}/>
