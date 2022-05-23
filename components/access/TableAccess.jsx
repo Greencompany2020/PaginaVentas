@@ -1,4 +1,4 @@
-import {PlusCircleIcon,CogIcon,PencilAltIcon} from '@heroicons/react/outline';
+import {PlusCircleIcon,TrashIcon,PencilAltIcon} from '@heroicons/react/outline';
 import {Formik, Form, Field} from 'formik'
 import * as Yup from 'yup'
 import Pagination from '../Pagination';
@@ -90,7 +90,7 @@ export const AccessForm = ({toggleModal, handleSubmit, selectedAccess}) => {
 }
 
 
-const TableRows = ({items,updateUserAccess, handleAssign, selectAccess, handleModal}) => {
+const TableRows = ({items,updateUserAccess, handleAssign, selectAccess, handleModal, handleDelete}) => {
     if(!items) return <></>
     const rows = items.map((item, index)=> {
         const handleSwitch = () => handleAssign(item.idDashboard,item.acceso)
@@ -104,10 +104,10 @@ const TableRows = ({items,updateUserAccess, handleAssign, selectAccess, handleMo
                         width={32} className='cursor-pointer hover:text-blue-500'
                         onClick={() => handleModal('access', 'update')}
                     />
-                     <CogIcon 
+                     <TrashIcon 
                         width={32} 
                         className='cursor-pointer hover:text-blue-500'
-                        onClick={() => handleModal('access', 'update')}
+                        onClick={() => handleDelete(item.idDashboard)}
                     />
                 </td>
                 <td > <TooggleSwitch key={index} id={item.idDashboard} value={item.acceso} onChange={handleSwitch}/> </td>
@@ -118,7 +118,7 @@ const TableRows = ({items,updateUserAccess, handleAssign, selectAccess, handleMo
 }
 
 
-const TableAccess = ({data, handleSearch, pages, current, next, updateUserAccess, handleAssign, handleModal, selectAccess}) => {
+const TableAccess = ({data, handleSearch, pages, current, next, updateUserAccess, handleAssign, handleModal, selectAccess, handleDelete}) => {
     return(
         <div className="flex items-start space-x-1">
             <div className="flex-1 space-y-8 overflow-hidden">
@@ -150,6 +150,7 @@ const TableAccess = ({data, handleSearch, pages, current, next, updateUserAccess
                                 handleAssign={handleAssign}  
                                 selectAccess={selectAccess}
                                 handleModal={handleModal}
+                                handleDelete={handleDelete}
                             />
                         </tbody>
                     </table>

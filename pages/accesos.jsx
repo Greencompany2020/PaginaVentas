@@ -38,7 +38,8 @@ const Accesos = () => {
         selectAccess,
         updateAccess,
         handleNextUser,
-        handleSearchUser
+        handleSearchUser,
+        deleteAccess
     } = useAccess();
 
     const confirmModalRef = useRef(null);
@@ -147,6 +148,14 @@ const Accesos = () => {
         setModalOpen(true);
     }
 
+    const handleDeleteAccess = async (id) => {
+        const confirm = await confirmModalRef.current.show();
+        if(confirm){
+            deleteAccess(id);
+        }
+
+    }
+
     return(
         <>
             <Navbar/>
@@ -228,6 +237,7 @@ const Accesos = () => {
                         handleAssign = {handleAssign}
                         handleModal={handleModal}
                         selectAccess = {selectAccess}
+                        handleDelete = {handleDeleteAccess}
                     />
                 </div>
             </section>

@@ -145,6 +145,16 @@ const put_updateAccess = async(id,body) => {
     }
 }
 
+const del_deleteAccess = async(id) => {
+    try{
+        const {data, status} = await ApiProvider.delete(`configurador/accesos/delete/${id}`);
+        if(status !== 200) return false;
+        return data;
+    }catch(err){
+        return false;
+    }
+}
+
 export {
     get_groups,
     get_access,
@@ -159,5 +169,6 @@ export {
     del_deleteUser,
     post_assignAccesToUser,
     post_createAccess,
-    put_updateAccess
+    put_updateAccess,
+    del_deleteAccess
 }

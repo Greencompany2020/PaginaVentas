@@ -229,6 +229,15 @@ export default function useAccess(){
         return false;
     }
 
+    const deleteAccess = async(id) => {
+        const response = await service.del_deleteAccess(id);
+        if(response){
+            await getAccess();
+            return true;
+        }
+        return false;
+    }
+
     const handleNext = (next) => {
         if(state?.access?.data){
             if(next > 0 && next <= state.access.pages){
@@ -309,6 +318,7 @@ export default function useAccess(){
         selectAccess,
         updateAccess,
         handleNextUser,
-        handleSearchUser
+        handleSearchUser,
+        deleteAccess
     }
 }
