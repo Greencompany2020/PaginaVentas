@@ -5,7 +5,7 @@ import useAccess from '../hooks/useAccess';
 import useToggle from '../hooks/useToggle';
 import Groups, {GroupForm} from '../components/access/Groups';
 import Users, {UserForm} from '../components/access/Users';
-import TableAccess from '../components/access/TableAccess';
+import TableAccess, {AccessForm} from '../components/access/TableAccess';
 import {FormModal} from '../components/modals'
 import Navbar from '../components/Navbar';
 import { ConfirmModal } from '../components/modals';
@@ -33,7 +33,12 @@ const Accesos = () => {
         updateUser,
         deleteGroup,
         deleteUser,
-        assignAccess
+        assignAccess,
+        createAccess,
+        selectAccess,
+        updateAccess,
+        handleNextUser,
+        handleSearchUser
     } = useAccess();
 
     const confirmModalRef = useRef(null);
@@ -42,12 +47,27 @@ const Accesos = () => {
     const ShowForm = () => {
         switch(showForm.target){
             case 'users':
-                if(showForm.action == 'create') return <UserForm handleSubmit = {handleCreateUser} groups={state?.groups} toggleModal={toggleVisible}/>
-                if(showForm.action == 'update') return <UserForm handleSubmit={handleUpdateUser} selectedUser = {state?.user?.data} groups={state?.groups}  toggleModal={toggleVisible}/>
+                if(showForm.action == 'create'){
+                    return <UserForm handleSubmit = {handleCreateUser} groups={state?.groups} toggleModal={toggleVisible}/>
+                } 
+                if(showForm.action == 'update') {
+                    return <UserForm handleSubmit={handleUpdateUser} selectedUser = {state?.user?.data} groups={state?.groups}  toggleModal={toggleVisible}/>
+                }
     
             case 'groups':
-                if(showForm.action == 'create') return <GroupForm handleSubmit={handleCreateGroup}  toggleModal={toggleVisible}/>
-                if(showForm.action == 'update') return <GroupForm handleSubmit={handleUpdateGroup} selectedGroup = {state?.group}  toggleModal={toggleVisible}/>
+                if(showForm.action == 'create'){
+                    return <GroupForm handleSubmit={handleCreateGroup}  toggleModal={toggleVisible}/>
+                }
+                if(showForm.action == 'update'){
+                    return <GroupForm handleSubmit={handleUpdateGroup} selectedGroup = {state?.group}  toggleModal={toggleVisible}/>
+                }
+            case 'access':
+                if(showForm.action == 'create'){ 
+                    return <AccessForm handleSubmit={handleCreateAccess} toggleModal={toggleVisible}/>
+                }
+                if(showForm.action == 'update'){
+                    return  <AccessForm handleSubmit={handleUpdateAccess} toggleModal={toggleVisible} selectedAccess={state.access.selected}/>
+                }
             default:
                 return <></>
         }
@@ -113,6 +133,20 @@ const Accesos = () => {
         setModalOpen(true);
     }
 
+    const handleCreateAccess = async (body) => {
+        const response = await createAccess(body);
+        const message = (response == true) ? 'Acceso creado' : 'No se pudo crear el acceso'
+        setMessage(message);
+        setModalOpen(true);
+    }
+
+    const handleUpdateAccess = async (body) => {
+        const response = await updateAccess(body);
+        const message = (response == true) ? 'Acceso actualizado' : 'No se pudo actualizar el acceso'
+        setMessage(message);
+        setModalOpen(true);
+    }
+
     return(
         <>
             <Navbar/>
@@ -123,7 +157,16 @@ const Accesos = () => {
 
             <section className="flex flex-col  p-4 space-y-8  md:flex-row md:space-x-8 md:space-y-0">
                 <Groups groups={state?.groups} handleModal={handleModal} handleSelect={selectGroup} handleDelete ={handleDeleteGroup}/>
-                <Users users={state?.users} getUsers={getUserAccess} handleModal={handleModal} handleDelete={handleDeleteUser}/>
+                <Users 
+                    users={state?.users?.dataFilter} 
+                    getUsers={getUserAccess} 
+                    handleModal={handleModal} 
+                    handleDelete={handleDeleteUser}
+                    handleSearch={handleSearchUser}
+                    pages={state?.users?.pages} 
+                    current={state?.users?.current} 
+                    next={handleNextUser}
+                />
                 
                 <div className="flex-[4] flex flex-col  space-y-5">
                     <p className=" font-bold text-xl">Editando usuario: <span className=" text-blue-400 font-bold">{state?.user?.data?.UserCode}</span></p>
@@ -183,6 +226,8 @@ const Accesos = () => {
                         next={handleNext}
                         updateUserAccess = {updateUserAccess}
                         handleAssign = {handleAssign}
+                        handleModal={handleModal}
+                        selectAccess = {selectAccess}
                     />
                 </div>
             </section>

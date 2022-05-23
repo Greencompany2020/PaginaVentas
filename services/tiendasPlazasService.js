@@ -7,7 +7,6 @@ export async function getTiendas(userLevel) {
     });
     return data.result;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }
@@ -19,7 +18,6 @@ export async function getPlazas(userLevel) {
     });
     return data.result;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }

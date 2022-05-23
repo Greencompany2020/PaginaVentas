@@ -25,9 +25,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     const data = auth.logOut();
-    if(data){
-      router.push('/');
-    }
+    router.push('/');
   }
   return (
     <>

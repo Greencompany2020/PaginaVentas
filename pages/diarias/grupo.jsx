@@ -14,7 +14,6 @@ import { isError } from '../../utils/functions';
 import WithAuth from '../../components/withAuth';
 
 const Grupo = (props) => {
-  console.log(props);
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [parametrosConsulta, setParametrosConsulta] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,

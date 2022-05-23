@@ -61,8 +61,16 @@ const GroupList = ({items, handleSelect, handleModal, handleDelete}) => {
             <li key={index} className="flex w-full justify-between hover:bg-slate-200 rounded-md p-1 cursor-pointer" onClick={()=>handleSelect(item)}>
                 <span>{item.Nombre}</span>
                 <div className='flex'>
-                    <PencilAltIcon width={26} onClick={() => handleModal('groups', 'update')}/>
-                    <TrashIcon width={26} onClick={() =>handleDelete(item.Id)}/>
+                    <PencilAltIcon 
+                        width={26} 
+                        onClick={() => handleModal('groups', 'update')}
+                        className='cursor-pointer hover:text-blue-500'
+                    />
+                    <TrashIcon 
+                        width={26} 
+                        onClick={() =>handleDelete(item.Id)}
+                        className='cursor-pointer hover:text-blue-500' 
+                    />
                 </div>
             </li>
     ));
@@ -82,7 +90,11 @@ const Groups = ({groups, handleModal, handleSelect, handleDelete}) => {
                         <GroupList items={groups} handleSelect={handleSelect} handleModal={handleModal} handleDelete={handleDelete}/>
                     </ul>
                 </div>
-                <PlusCircleIcon width={32} className="block cursor-pointer" onClick={()=> handleModal('groups', 'create')}/>
+                <PlusCircleIcon 
+                    width={32} 
+                    onClick={()=> handleModal('groups', 'create')}
+                    className='block cursor-pointer hover:text-blue-500'
+                />
             </div>
         </div>
     )

@@ -19,7 +19,6 @@ export async function getListaArchivos(fileDir) {
     });
     return data;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }
@@ -29,7 +28,6 @@ export async function crearDirectorio(dirData) {
     await ApiProvider.post("/minutas/directorio", dirData);
     return true;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }
@@ -43,7 +41,6 @@ export async function crearMinuta(minutaData, fileDir) {
     });
     return true;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }
@@ -57,7 +54,6 @@ export async function eliminarDirectorio(fileDir) {
     });
     return true;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }
@@ -71,7 +67,6 @@ export async function eliminarMinuta(fileDir) {
     });
     return true;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }

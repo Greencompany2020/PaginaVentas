@@ -4,14 +4,21 @@ import { sliceFilter } from '../utils/functions';
 
 
 const initialState = {
-    users: [],
+    users: {
+        dataFilter:[],
+        data:[],
+        show:10,
+        pages:0,
+        current:1,
+    },
     groups: [],
     access: {
         dataFilter:[],
         data:[],
         show: 10,
         pages: 0,
-        current: 1
+        current: 1,
+        selected:{}
     },
     user: {
         data:{},
@@ -25,7 +32,7 @@ export default function useAccess(){
     const reducer = (state, action) => {
         switch(action.type){
             case "SET_USERS":
-                return{...state, users:action.payload}
+                return{...state, users:{...state.users, data:action.payload}}
             case "SET_GROUPS":
                 return{...state, groups:action.payload}
             case "SET_ACCESS":
@@ -40,6 +47,14 @@ export default function useAccess(){
                 return{...state, user:{data:action.payload.user, access:[...action.payload.access]}}
             case "SET_SELECTED_GROUP":
                 return{...state, group:action.payload}
+            case "SET_SELECTED_ACCESS":
+                return{...state, access:{...state.access, selected:action.payload}}
+            case "PAGINATE_USERS":
+                return{...state, users:{...state.users, dataFilter:[...action.payload.slicer], pages:action.payload.pages}}
+            case "SELECT_USERS_PAGE":
+                return{...state, users:{...state.users, dataFilter:[...action.payload.slicer], current:action.payload.next}}
+            case "FILTER_USERS":
+                return{...state, users:{...state.users, dataFilter:[...action.payload.slicer]}}
             default:
                 return state;
         }
@@ -50,7 +65,9 @@ export default function useAccess(){
     const getUsers = async () => {
         const data = await service.get_users();
         if(data) {
-            dispatch({type: 'SET_USERS', payload:data})
+            const {slicer, pages} = sliceFilter(data, state?.users?.show, state?.users?.current);
+            dispatch({type: 'SET_USERS', payload:data});
+            dispatch({type:'PAGINATE_USERS', payload:{slicer, pages}});
         }
     }
 
@@ -74,7 +91,7 @@ export default function useAccess(){
         
         const data = await service.get_userAccess(id);
         if(data){
-            const user = state.users.filter(user => user.Id === data.Id)[0];
+            const user = state.users.data.filter(user => user.Id === data.Id)[0];
             const access = data.Accesos;
             const replaced = replaceAccess(state.access.data, access);
             const {slicer, pages} = sliceFilter(replaced, state?.access?.show, state?.access?.current);
@@ -89,6 +106,11 @@ export default function useAccess(){
     const selectGroup = selectItem => {
         const group = state.groups.filter(item => item === selectItem)[0];
         dispatch({type: 'SET_SELECTED_GROUP', payload:group});
+    }
+
+    const selectAccess = selectItem => {
+        const access = state.access.data.filter(item => item.idDashboard === selectItem.idDashboard)[0];
+        dispatch({type: 'SET_SELECTED_ACCESS', payload:access});
     }
 
     const assignAccess = async(id, current) => {
@@ -108,7 +130,7 @@ export default function useAccess(){
         const enabled = (value == true) ? 'N' : 'Y' ;
         const data = await service.put_updateUserAccess(id, enabled);
         if(data){
-            getUserAccess(state.user.Id);
+            await getUserAccess(state.user.Id);
         }
     }
 
@@ -116,7 +138,7 @@ export default function useAccess(){
     const createUser = async(body) => {
         const response = await service.post_createUser(body);
         if(response){
-            getUsers();
+            await getUsers();
             return true;
         }
         return false;
@@ -126,7 +148,8 @@ export default function useAccess(){
         let {password, ...values} = body;
         const data = await service.put_updateUser(id, values);
         if(data){
-            getUsers();
+            await getUsers();
+            getUserAccess(id);
             return true;
         }
         return false;
@@ -135,7 +158,7 @@ export default function useAccess(){
     const deleteUser = async(id) => {
         const response = await service.del_deleteUser(id);
         if(response){
-            getUsers();
+            await getUsers();
             return true;
         }
         return false;
@@ -144,7 +167,7 @@ export default function useAccess(){
     const createGroup = async(id) => {
         const response  = await service.post_createGroup(id);
         if(response){
-            getGroups();
+            await getGroups();
             return true;
         }
         return false;
@@ -155,7 +178,7 @@ export default function useAccess(){
         const {Nombre} = body;
         const response = await service.put_updateGroup(id, Nombre);
         if(response){
-            getGroups();
+            await getGroups();
             return true;
         }
         return false;
@@ -164,7 +187,7 @@ export default function useAccess(){
     const deleteGroup = async (id) => {
         const response = await service.del_deleteGroup(id);
         if(response){
-            getGroups();
+            await getGroups();
             return true;
         }
         return false;
@@ -182,6 +205,28 @@ export default function useAccess(){
             return {...item, acceso:false};
         });
         return modified
+    }
+
+
+    const createAccess = async(body) => {
+        const response = await service.post_createAccess(body);
+        if(response) {
+            await getAccess();
+            return true;
+        }
+        return false;
+    }
+
+    const updateAccess = async(body) => {
+        if(Object.keys(state?.access?.selected).length == 0) return false
+        const id = state?.access?.selected?.idDashboard;
+        const response = await service.put_updateAccess(id, body);
+        if(response){
+            await getAccess();
+            selectAccess(state?.access?.selected);
+            return true;
+        }
+        return false;
     }
 
     const handleNext = (next) => {
@@ -209,11 +254,40 @@ export default function useAccess(){
         
     }
 
+
+    const handleNextUser = (next) => {
+        if(state?.users?.data){
+            if(next > 0 && next <= state.users.pages){
+                const {slicer} = sliceFilter(state?.users?.data, state?.users?.show, next);
+                dispatch({type:'SELECT_USERS_PAGE', payload:{slicer, next}});
+            }
+        }
+    }
+
+
+    const handleSearchUser = (evt) => {
+        const {value} = evt.target;
+        const search = value.replace(/\s+/g, '');
+        if(search.length > 0){
+            const equals = state?.users?.data.filter(user => (user.UserCode.includes(search) || user .Nombre.includes(search) || user.Email.includes(search)));
+            const {slicer} = sliceFilter(equals, state?.users?.show, 1);
+            dispatch({type:'FILTER_USERS',payload:{slicer}})
+        }else{
+            const {slicer} = sliceFilter(state?.users?.data, state?.users?.show, state?.users?.current);
+            dispatch({type:'FILTER_USERS',payload:{slicer}})
+        }
+        
+        
+    }
+
+
+
     
     useEffect(()=>{
        getUsers();
        getGroups();
        getAccess();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
 
 
@@ -231,5 +305,10 @@ export default function useAccess(){
         deleteGroup,
         deleteUser,
         assignAccess,
+        createAccess,
+        selectAccess,
+        updateAccess,
+        handleNextUser,
+        handleSearchUser
     }
 }

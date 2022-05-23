@@ -28,7 +28,6 @@ export default function RestorePassword(){
         if(!router.query?.resetToken) return false;
         const {resetToken} = router.query;
         const response = await post_newPassword(body, resetToken);
-        console.log(response);
         const mesage =  response ? 'Su contraseña ha sido cambiada' : 'upsss problemas';
         setMessage(mesage);
         setModalOpen(true);

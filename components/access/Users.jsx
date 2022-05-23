@@ -1,6 +1,7 @@
 import {Form, Formik, Field} from 'formik'
 import {PlusCircleIcon, PencilAltIcon, TrashIcon} from '@heroicons/react/outline';
 import * as Yup from 'yup';
+import Pagination from '../Pagination';
 
 
 const UserList = ({items ,handleOnclick, handleModal, handleDelete}) => {
@@ -12,8 +13,16 @@ const UserList = ({items ,handleOnclick, handleModal, handleDelete}) => {
             >
                 <span>{item.UserCode}</span>
                 <div className='flex'>
-                    <PencilAltIcon width={26} onClick={() => handleModal('users', 'update')}/>
-                    <TrashIcon width={26} onClick={() => handleDelete(item.Id)}/>
+                    <PencilAltIcon 
+                        width={26} 
+                        onClick={() => handleModal('users', 'update')}
+                        className='cursor-pointer hover:text-blue-500'
+                    />
+                    <TrashIcon 
+                        width={26} 
+                        onClick={() => handleDelete(item.Id)}
+                        className='cursor-pointer hover:text-blue-500'
+                    />
                 </div>
             </li>
     ));
@@ -193,7 +202,7 @@ export const UserForm = ({groups, selectedUser, handleSubmit,toggleModal}) => {
 
 
 
-const Users = ({users, getUsers, handleModal, handleDelete}) => {
+const Users = ({users, getUsers, handleModal, handleDelete, pages, current, next, handleSearch}) => {
     return(
         <div  className="flex-[1] ">
             <div className="flex  items-start space-x-1">
@@ -201,12 +210,19 @@ const Users = ({users, getUsers, handleModal, handleDelete}) => {
                     <span className=" block font-bold text-md bg-slate-300 rounded-md p-1 mb-1">Usuarios</span>
                     <input
                         className=" bg-yellow-100 w-full rounded-md border-2 h-8 pl-2"
+                        placeholder='Buscar...'
+                        onChange={handleSearch}
                     />
-                    <ul className="space-y-2 mt-3">
+                    <ul className="space-y-2 mt-3 mb-3">
                         <UserList items={users} handleOnclick={getUsers} handleModal={handleModal} handleDelete={handleDelete}/>
                     </ul>
+                    <Pagination pages={pages} current={current} next={next}/>
                 </div>
-                <PlusCircleIcon width={32} className="block cursor-pointer" onClick={()=>handleModal('users', 'create')}/>
+                <PlusCircleIcon 
+                    width={32} 
+                    onClick={()=>handleModal('users', 'create')}
+                    className='block cursor-pointer hover:text-blue-500'
+                />
             </div>
         </div>
     )

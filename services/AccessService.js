@@ -124,6 +124,27 @@ const del_deleteGroup = async (id) => {
     }
 }
 
+const post_createAccess = async(body) => {
+    try {
+        const {data, status} = await ApiProvider.post('configurador/accesos/create', body)
+        if(status !== 200) return false;
+        return data;
+    } catch (error) {
+        return false;
+    }
+}
+
+
+const put_updateAccess = async(id,body) => {
+    try{
+        const {data, status} = await ApiProvider.put(`configurador/accesos/update/${id}` ,body);
+        if(status !== 200) return false;
+        return data;
+    }catch(err){
+        return false;
+    }
+}
+
 export {
     get_groups,
     get_access,
@@ -137,4 +158,6 @@ export {
     del_deleteGroup,
     del_deleteUser,
     post_assignAccesToUser,
+    post_createAccess,
+    put_updateAccess
 }

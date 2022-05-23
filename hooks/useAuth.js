@@ -12,7 +12,6 @@ function useAuth(){
 
     const logOut = async () => {
         const data = await get_logouth();
-        if(!data) return false;
         jsCookie.remove('accessToken');
         jsCookie.remove('jwt');
         return true;
