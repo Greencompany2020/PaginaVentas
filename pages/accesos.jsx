@@ -99,6 +99,7 @@ const Accesos = () => {
         const message = (response == true) ? 'Usuario actualizado' : 'No se pudo actualizar el usuario'
         setMessage(message);
         setModalOpen(true);
+        toggleVisible();
     }
 
     const handleDeleteUser = async (id) => {
@@ -120,6 +121,7 @@ const Accesos = () => {
         const message = (response == true) ? 'Grupo actualizado' : 'No se pudo actualizar el grupo'
         setMessage(message);
         setModalOpen(true);
+        toggleVisible();
     }
 
     const handleDeleteGroup = async (id) => {
@@ -147,6 +149,7 @@ const Accesos = () => {
         const message = (response == true) ? 'Acceso actualizado' : 'No se pudo actualizar el acceso'
         setMessage(message);
         setModalOpen(true);
+        toggleVisible();
     }
 
     const handleDeleteAccess = async (id) => {

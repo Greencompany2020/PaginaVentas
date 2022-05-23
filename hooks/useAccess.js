@@ -290,8 +290,6 @@ export default function useAccess(){
     }
 
 
-
-    
     useEffect(()=>{
        getUsers();
        getGroups();
