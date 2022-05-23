@@ -64,7 +64,7 @@ const Navbar = () => {
             </Flex>
           </a>
         </Link>
-        <Link href="/dashboard">
+        <Link href="/accesos">
           <a className='hover:bg-sky-500 hover:bg-opacity-20 rounded-md transition ease-in-out duration-200'>
             <Flex className='justify-start mx-2 border-b border-b-gray-100 p-2'>
               <Image src={Config} height={20} width={25} alt='Cerrar' className='invert' />
