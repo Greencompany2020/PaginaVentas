@@ -11,6 +11,7 @@ import Navbar from '../components/Navbar';
 import { ConfirmModal } from '../components/modals';
 import { MessageModal } from '../components/modals';
 import useMessageModal from '../hooks/useMessageModal';
+import withAuth from '../components/withAuth'
 
 
 const Accesos = () => {
@@ -251,4 +252,4 @@ const Accesos = () => {
     )
 }
 
-export default Accesos;
+export default withAuth(Accesos);
