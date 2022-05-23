@@ -23,9 +23,11 @@ const Navbar = () => {
   
   useClickOutside(userMenuRef, () => { setShowDialog(false) });
 
-  const handleLogout = () => {
-    const data = auth.logOut();
-    router.push('/');
+  const handleLogout = async() => {
+    const response = await auth.logOut();
+    if(response){
+      router.push('/');
+    }
   }
   return (
     <>
