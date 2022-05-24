@@ -7,11 +7,14 @@ import Logo from '../public/images/green-company.png';
 import { post_newPassword } from "../services/UserServices";
 import { MessageModal } from '../components/modals';
 import useMessageModal from '../hooks/useMessageModal';
+import LoaderComponent from "../components/LoaderComponent";
+import useToggle from "../hooks/useToggle";
 
 
 export default function RestorePassword(){
     const router = useRouter();
     const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
+    const [isLoading, setLoading] = useToggle(false);
 
     const validationSchema = Yup.object().shape({
         password: Yup.string().min(4, 'La contraseña es muy corta').required('Es necesario rellenar este campo'),
@@ -27,8 +30,10 @@ export default function RestorePassword(){
         const body = {password:values.password}
         if(!router.query?.resetToken) return false;
         const {resetToken} = router.query;
+        setLoading(false);
         const response = await post_newPassword(body, resetToken);
-        const mesage =  response ? 'Su contraseña ha sido cambiada' : 'upsss problemas';
+        setLoading(false);
+        const mesage =  response ? 'Su contraseña ha sido cambiada' : 'No se pudo restablecer su contraseña';
         setMessage(mesage);
         setModalOpen(true);
         
@@ -81,6 +86,7 @@ export default function RestorePassword(){
                         <Link href='/'>
                                 <a className="text-lg cursor-pointer text-sky-500">Volver al inicio</a>
                         </Link>
+                        <LoaderComponent isLoading={isLoading}/>
                     </div>
                 </div>
             </div>
