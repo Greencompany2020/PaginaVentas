@@ -1,30 +1,15 @@
 import Image from 'next/image';
-import {useEffect, useState} from 'react'
 import {  Flex } from '../../components/containers';
 import { getBaseLayout } from '../../components/layout/BaseLayout';
 import Frogs from '../../public/images/rana10.png';
 import Verify from '../../public/icons/ok-08.png';
 import { DashboardList } from '../../components/profile';
 import withAuth from '../../components/withAuth';
-import { useAuth } from '../../context/AuthContext';
+import { useUser } from '../../context/UserContext';
 
 const Perfil = () => {
 
-  const auth = useAuth();
-  const [user, setUser] = useState();
-  const [dashboards, setDashboards] = useState();
-
-
-  const getData = async () =>{
-    const data = await auth.getUserData();
-    setUser(data?.user);
-    setDashboards(data?.dashboards);
-  }
-  
-  useEffect(()=>{
-    getData();
-  },[]);
-
+  const {user, dashboard} = useUser();
 
   return (
     <>
@@ -162,7 +147,7 @@ const Perfil = () => {
               <span className='text-xl font-semibold mb-3 md:mb-0'>Definicón de Dashboard</span>
               <span className=' font-semibold'>Página de ventas</span>
             </div>
-            <DashboardList dashboards={dashboards}/>
+            <DashboardList dashboards={dashboard}/>
           </div>
         </section>
 

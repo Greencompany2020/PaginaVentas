@@ -5,7 +5,6 @@ export async function getMesesAgnosGrupo(body) {
     const { data } = await ApiProvider.post("/mesesvsanios/grupo", body);
     return data.result;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }
@@ -15,7 +14,6 @@ export async function getMesesAgnosPlazas(body) {
     const { data } = await ApiProvider.post("/mesesvsanios/plazas", body);
     return data.result;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }
@@ -25,7 +23,6 @@ export async function getMesesAgnosTiendas(body) {
     const { data } = await ApiProvider.post("/mesesvsanios/tiendas", body);
     return data.result;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }
@@ -35,7 +32,6 @@ export async function getMesesAgnosTodasTiendas(body) {
     const { data } = await ApiProvider.post("/mesesvsanios/todastiendas", body);
     return data.result;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }

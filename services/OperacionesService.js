@@ -5,7 +5,6 @@ export async function getOperacionesGrupo(body) {
     const { data } = await ApiProvider.post("/operaciones/grupo", body);
     return data.result;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }
@@ -15,7 +14,6 @@ export async function getOperacionesPlaza(body) {
     const { data } = await ApiProvider.post("/operaciones/plaza", body);
     return data.result;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }
@@ -25,7 +23,6 @@ export async function getOperacionesTienda(body) {
     const { data } = await ApiProvider.post("/operaciones/tienda", body);
     return data.result;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { Flex } from '../components/containers';
 import { ChevronDownIcon } from '@heroicons/react/solid';
 import Logo from '../public/images/green-company-logo.png';
@@ -12,14 +13,22 @@ import Password from '../public/icons/password-11.png'
 import Config from '../public/icons/config-5.png';
 import Close from '../public/icons/close-37.png';
 import useClickOutside from '../hooks/useClickOutside';
-import { useAuth } from '../context/AuthContext';
+import useAuth from '../hooks/useAuth';
 
 const Navbar = () => {
   const userMenuRef = useRef(null);
   const [showDialog, setShowDialog] = useState(false);
   const auth = useAuth();
+  const router = useRouter();
+  
   useClickOutside(userMenuRef, () => { setShowDialog(false) });
 
+  const handleLogout = async() => {
+    const response = await auth.logOut();
+    if(response){
+      router.push('/');
+    }
+  }
   return (
     <>
       <nav className="w-full h-14 bg-black flex items-center justify-between pl-3 md:pl-7">
@@ -55,7 +64,7 @@ const Navbar = () => {
             </Flex>
           </a>
         </Link>
-        <Link href="/dashboard">
+        <Link href="/accesos">
           <a className='hover:bg-sky-500 hover:bg-opacity-20 rounded-md transition ease-in-out duration-200'>
             <Flex className='justify-start mx-2 border-b border-b-gray-100 p-2'>
               <Image src={Config} height={20} width={25} alt='Cerrar' className='invert' />
@@ -63,7 +72,7 @@ const Navbar = () => {
             </Flex>
           </a>
         </Link>
-        <a className='hover:bg-sky-500 hover:bg-opacity-20 rounded-md transition ease-in-out duration-200 cursor-pointer' onClick={()=> auth.logOut()}>
+        <a className='hover:bg-sky-500 hover:bg-opacity-20 rounded-md transition ease-in-out duration-200 cursor-pointer' onClick={handleLogout}>
             <Flex className='justify-start mx-2 border-b border-b-gray-100 p-2'>
               <Image src={Close} height={20} width={25} alt='Cerrar' className='invert' />
               <p className="text-white text-base ml-5">Cerrar Sesión</p>

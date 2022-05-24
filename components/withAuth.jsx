@@ -1,17 +1,13 @@
+import { post_accessTo } from "../services/AuthServices";
 import { useRouter} from "next/router";
-import { useAuth } from "../context/AuthContext";
 import cookie from "js-cookie";
-import * as jose from 'jose';
-import dayjs from "dayjs";
-import { useEffect } from "react";
-
-
+import {useEffect, useState} from 'react'
+import LoaderComponent from "./Loader";
 const witAuth = (Component) => {
 
     const AuthorizationComponent = () => {
-        const auth = useAuth();
         const router = useRouter();
-
+        const [loading, setLoading] = useState(true);
         /**
          * paginas con reglas expeciales
          */
@@ -32,6 +28,10 @@ const witAuth = (Component) => {
                 pathname: '/ventas',
                 tokenRequired: true,
             },
+            {
+                pathname: '/unauthorized',
+                tokenRequired: true,
+            }
         ]
 
 
@@ -40,7 +40,7 @@ const witAuth = (Component) => {
          * @param {*} page 
          * @param {*} opt 
          */
-        const RedirecTo = (page, opt = 'push') => {
+        const redirecTo = (page, opt = 'push') => {
             switch (opt){
                 case 'replace':
                     router.replace(page);
@@ -60,19 +60,10 @@ const witAuth = (Component) => {
          * Si lo tiene y esa expirado tratara de refrescarlo
          * @returns boolean
          */
-        const userHastoken = async () =>{
+        const userHastoken = () =>{
             const token = cookie.get('accessToken');
             const isTokenAvailable = token ? true : false;
-            if(!isTokenAvailable){ 
-                return false;
-            }
-            const decodeToken = jose.decodeJwt(token);
-            const isExpired = (dayjs.unix(decodeToken.exp).diff(dayjs()) < 1);
-            if(!isExpired){
-                return true
-            };
-            const isTokenRefresh = await auth.refreshToken();
-            return isTokenRefresh
+            return isTokenAvailable;
         }
 
 
@@ -81,46 +72,69 @@ const witAuth = (Component) => {
          * @returns data
          */
         const getAuthToPath = async ()  => {
-            const data = await auth.getRoute(router.asPath);
+            const data =  post_accessTo(router.asPath);
             return data;
         }
-
-
         /**
-         * evalua el pint al que se quiere ingresar
-         * recibe una callbacl que ejecuta el redirect o el push
          * si el usuario no esta autorizado remplaza la direccion
          * si el usuario no tiene token lo redirecciona al login
          * si el usuario tiene token y quiere ingresar al login lo redirige al dashboard
-         * @param {*} cb 
          * @returns 
          */
-        const pathEvaluate = async (cb) => {
+        const pathEvaluate = async () => { 
             const attemptException = exceptions.find(paths => paths.pathname == router.asPath);
-            const userToken = await userHastoken();
-
+            const userToken = userHastoken();
             if(attemptException){
-                if(attemptException.tokenRequired && !userToken) cb('/', 'push');
-                if(attemptException.pathname == '/' && userToken) cb('/dashboard', 'push');
+                if(attemptException.tokenRequired && !userToken) redirecTo('/', 'push');
+                if(attemptException.pathname == '/' && userToken) redirecTo('/dashboard', 'push');
+                setLoading(false);
             }else{
-                if(!userToken) cb('/', 'push');
+                if(!userToken) redirecTo('/', 'push');
                 const userAccess = await getAuthToPath();
-                if(!userAccess.access)  return cb('/unauthorized', 'replace');
+                if(!userAccess.access)  return redirecTo('/unauthorized', 'replace');
+                setLoading(false);
             }
-            
         }
 
-       
+        useEffect(()=> {
+            pathEvaluate();
+        },[]);
 
-        useEffect(() => {
-            pathEvaluate(RedirecTo);
-        },[eval]);
-
-        return <Component/> 
+        return loading ? <LoaderComponent/> : <Component/>
     }
+
+    /**
+     * Este procedimiento solo se ejecuta desde el servidor
+     * @param {*} req
+     * @param {*} res 
+     * @returns 
+     */
+
+    AuthorizationComponent.getInitialProps = async ({req,res}) => {
+        if(req && res){
+            const {url} = req;
+            const {accessToken} = req.cookies;
+
+            if(url !== '/' && !accessToken){
+                res.writeHead(302,{
+                    location: '/'
+                });
+                res.end();
+            }
+            else if( url == '/' && accessToken){
+                res.writeHead(302,{
+                    location: '/dashboard'
+                });
+                res.end();
+            }
+        }
+        /**
+         * ¯\_(ツ)_/¯
+         */
+        return{nothingToseeHere:'yay'}
+    }
+
     return AuthorizationComponent;
 }
-
-
 
 export default witAuth;

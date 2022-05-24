@@ -528,4 +528,24 @@ export const groupBykey = (object, key) => {
   },[]);
 }
 
+/**
+ * Pagina los resultados
+ * @param {*} data Data que se va a paginar
+ * @param {*} show  Total de registros a mostrar por pagina
+ * @param {*} current Pagina actual
+ * @returns 
+ */
+
+export const sliceFilter = (data, show ,current) =>{
+  const dataLength = data.length;
+  const pages = Math.ceil(dataLength / show);
+  const limit = current * show;
+  const offset = (current == 1) ? 0 : limit - show;
+  const slicer = data.slice(offset, limit);
+  return {
+      slicer,
+      pages
+  }
+}
+
 

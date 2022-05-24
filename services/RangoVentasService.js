@@ -5,7 +5,6 @@ export async function getRangoVentasPlaza(body) {
     const { data } = await ApiProvider.post("/rangoventas/plaza", body);
     return data.result;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }
@@ -15,7 +14,6 @@ export async function getRangoVentasTienda(body) {
     const { data } = await ApiProvider.post("/rangoventas/tienda", body);
     return data.result;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }
