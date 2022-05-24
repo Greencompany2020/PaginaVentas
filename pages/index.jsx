@@ -11,7 +11,8 @@ import { MessageModal } from '../components/modals';
 import useMessageModal from '../hooks/useMessageModal';
 import { post_resetPassword } from '../services/UserServices';
 import { useUser } from '../context/UserContext';
-
+import LoaderComponent from '../components/LoaderComponent';
+import useToggle from '../hooks/useToggle';
 
 export const Home = () => {
 
@@ -20,11 +21,14 @@ export const Home = () => {
   const {getUserData, getPlazas, getTiendas} = useUser();
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [attemptLogin ,setAttemp] = useState(true);
+  const [isLoading, setLoading] = useToggle(false);
 
   const handleChange = () => setAttemp(!attemptLogin);
 
   const login = async (values) => {
+    setLoading(true);
     const response = await auth.login(values);
+    setLoading(false);
     if(!response){
       setMessage('Usuario o contraseña invalido');
       setModalOpen(true);
@@ -39,7 +43,9 @@ export const Home = () => {
   }
 
   const resetPassword = async (values) => {
+    setLoading(true);
     const data = await post_resetPassword(values);
+    setLoading(false);
     const mesage = data ? 'Se ha enviado un link a su correo electronico' : 'Este correo no existe';
     setMessage(mesage);
     setModalOpen(true);
@@ -170,6 +176,7 @@ export const Home = () => {
                   <a onClick={handleChange} className=' text-lg cursor-pointer text-sky-500 text-center mt-5'>Olvide Mi contraseña</a> :
                   <a onClick={handleChange} className=' text-lg cursor-pointer text-sky-500 text-center mt-5'>Regresar</a>
                 }
+                <LoaderComponent isLoading={isLoading}/>
             </div>
         </div>
       </section>

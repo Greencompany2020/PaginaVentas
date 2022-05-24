@@ -73,6 +73,7 @@ export default function RestorePassword(){
                                             type="submit"
                                             className="bg-sky-500 h-12 w-full text-white rounded-md mt-1 font-bold"
                                         >Guardar</button>
+                                       
                                     </Form>
                                 )}
                             </Formik>
