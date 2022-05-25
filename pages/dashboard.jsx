@@ -31,7 +31,7 @@ const Dashboard = () => {
               <Image src={SalesForecast} alt='ventas' className='w-32 h-32 m-auto' height={128} width={128} />
               <p>Estadísticas de Venta</p>
             </DashboardButtonContainer>
-            <DashboardButtonContainer link='/minutas'>
+            <DashboardButtonContainer link='/accesos'>
               <Image src={Config} alt='ventas' className='w-32 h-32 m-auto' height={128} width={128} />
               <p>Configuraciones</p>
             </DashboardButtonContainer>

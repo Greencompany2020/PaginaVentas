@@ -9,13 +9,13 @@ import TableAccess, {AccessForm} from '../components/access/TableAccess';
 import {FormModal} from '../components/modals'
 import Navbar from '../components/Navbar';
 import { ConfirmModal } from '../components/modals';
-import { MessageModal } from '../components/modals';
-import useMessageModal from '../hooks/useMessageModal';
-import withAuth from '../components/withAuth'
+import withAuth from '../components/withAuth';
+import {useAlert} from '../context/alertContext';
 
 
 const Accesos = () => {
 
+    const alert = useAlert();
     const [showForm, setShowForm] = useState({
         target: '',
         action: ''
@@ -26,7 +26,6 @@ const Accesos = () => {
         handleSearch, 
         handleNext, 
         getUserAccess,
-        updateUserAccess,
         createUser,
         createGroup,
         updateGroup,
@@ -44,8 +43,6 @@ const Accesos = () => {
     } = useAccess();
 
     const confirmModalRef = useRef(null);
-    const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
-
     const ShowForm = () => {
         switch(showForm.target){
             case 'users':
@@ -90,15 +87,16 @@ const Accesos = () => {
     const handleCreateUser = async(id,body) => {
         const response = await createUser(body);
         const message = (response == true) ? 'Nuevo usuario creado' : 'No se pudo crear el usuario'
-        setMessage(message);
-        setModalOpen(true);
+        const type = (response == true) ? 'info' : 'warning';
+        alert.showAlert(message, type, 1000);
+        toggleVisible();
     };
 
     const handleUpdateUser = async (id, body) => {
         const response = await updateUser(id, body)
         const message = (response == true) ? 'Usuario actualizado' : 'No se pudo actualizar el usuario'
-        setMessage(message);
-        setModalOpen(true);
+        const type = (response == true) ? 'info' : 'warning';
+        alert.showAlert(message, type, 1000);
         toggleVisible();
     }
 
@@ -112,15 +110,16 @@ const Accesos = () => {
     const handleCreateGroup = async (id,body) => {
         const response = await createGroup(body);
         const message = (response == true) ? 'Nuevo grupo creado' : 'No se pudo crear el grupo'
-        setMessage(message);
-        setModalOpen(true);
+        const type = (response == true) ? 'info' : 'warning';
+        alert.showAlert(message, type, 1000);
+        toggleVisible();
     }
 
     const handleUpdateGroup = async (id, body) => {
         const response = await updateGroup(id, body);
         const message = (response == true) ? 'Grupo actualizado' : 'No se pudo actualizar el grupo'
-        setMessage(message);
-        setModalOpen(true);
+        const type = (response == true) ? 'info' : 'warning';
+        alert.showAlert(message, type, 1000);
         toggleVisible();
     }
 
@@ -132,23 +131,25 @@ const Accesos = () => {
     }
 
     const handleAssign = async (id, current) => {
-        const {message} = await assignAccess(id, current);
-        setMessage(message);
-        setModalOpen(true);
+        const {success,message} = await assignAccess(id, current);
+        if(!success){
+            alert.showAlert(message, 'warning', 1000)
+        }
     }
 
     const handleCreateAccess = async (body) => {
         const response = await createAccess(body);
         const message = (response == true) ? 'Acceso creado' : 'No se pudo crear el acceso'
-        setMessage(message);
-        setModalOpen(true);
+        const type = (response == true) ? 'info' : 'warning';
+        alert.showAlert(message, type, 1000);
+        toggleVisible();
     }
 
     const handleUpdateAccess = async (body) => {
         const response = await updateAccess(body);
         const message = (response == true) ? 'Acceso actualizado' : 'No se pudo actualizar el acceso'
-        setMessage(message);
-        setModalOpen(true);
+        const type = (response == true) ? 'info' : 'warning';
+        alert.showAlert(message, type, 1000);
         toggleVisible();
     }
 
@@ -237,7 +238,6 @@ const Accesos = () => {
                         pages={state?.access?.pages} 
                         current={state?.access?.current} 
                         next={handleNext}
-                        updateUserAccess = {updateUserAccess}
                         handleAssign = {handleAssign}
                         handleModal={handleModal}
                         selectAccess = {selectAccess}
@@ -250,7 +250,6 @@ const Accesos = () => {
                 <ShowForm/>
             </FormModal>
             <ConfirmModal ref={confirmModalRef}/>
-            <MessageModal message={message} setModalOpen={setModalOpen} modalOpen={modalOpen} />
         </>
     )
 }

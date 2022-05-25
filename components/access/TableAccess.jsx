@@ -90,7 +90,7 @@ export const AccessForm = ({toggleModal, handleSubmit, selectedAccess}) => {
 }
 
 
-const TableRows = ({items,updateUserAccess, handleAssign, selectAccess, handleModal, handleDelete}) => {
+const TableRows = ({items, handleAssign, selectAccess, handleModal, handleDelete}) => {
     if(!items) return <></>
     const rows = items.map((item, index)=> {
         const handleSwitch = () => handleAssign(item.idDashboard,item.acceso)

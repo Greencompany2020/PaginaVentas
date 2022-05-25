@@ -18,21 +18,20 @@ import useAuth from '../hooks/useAuth';
 const Navbar = () => {
   const userMenuRef = useRef(null);
   const [showDialog, setShowDialog] = useState(false);
-  const auth = useAuth();
-  const router = useRouter();
-  
+  const auth = useAuth();  
   useClickOutside(userMenuRef, () => { setShowDialog(false) });
 
-  const handleLogout = async() => {
-    const response = await auth.logOut();
-    if(response){
-      router.push('/');
-    }
+  const handleLogout = () => {
+   auth.logOut();
   }
   return (
     <>
       <nav className="w-full h-14 bg-black flex items-center justify-between pl-3 md:pl-7">
-        <Image src={Logo} alt="Logo Green Company" height={40} width={45}/>
+        <Link href="/dashboard">
+          <a href="">
+          <Image src={Logo} alt="Logo Green Company" height={40} width={45}/>
+          </a>
+        </Link>
         <Flex>
           <Link href="/dashboard"><a className='ml-3 md:mr-4'><Image src={Menu} alt="menu" height={35} width={35}/></a></Link>
           <Flex>          
@@ -64,7 +63,7 @@ const Navbar = () => {
             </Flex>
           </a>
         </Link>
-        <Link href="/accesos">
+        <Link href="">
           <a className='hover:bg-sky-500 hover:bg-opacity-20 rounded-md transition ease-in-out duration-200'>
             <Flex className='justify-start mx-2 border-b border-b-gray-100 p-2'>
               <Image src={Config} height={20} width={25} alt='Cerrar' className='invert' />
