@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
-import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
+import { VentasTableContainer, VentasTable, TableHead, TableRow } from '../../components/table';
 import { InputContainer, Checkbox, InputDate } from '../../components/inputs';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getMonthByNumber, getPrevDate, getYearFromDate } from '../../utils/dateFunctions';
@@ -163,7 +163,7 @@ const Plazas = () => {
                 <tbody className='text-center'>
                   {
                     value.map(plaza => (
-                      <tr key={plaza.plaza} className='bg-white text-black'>
+                      <TableRow key={plaza.plaza} rowId={plaza.plaza} className='bg-white text-black'>
                         <td>{plaza.plaza}</td>
                         <td>{numberWithCommas(plaza.ventasMensualesActual)}</td>
                         <td>{numberWithCommas(plaza.ventasMensualesAnterior)}</td>
@@ -175,7 +175,7 @@ const Plazas = () => {
                         <td>{numberWithCommas(plaza.presupuestoAnual)}</td>
                         {formatNumber(plaza.diferenciaAnual)}
                         {formatNumber(plaza.porcentajeAnual)}
-                      </tr>
+                      </TableRow>
                     ))
                   }
                 </tbody>

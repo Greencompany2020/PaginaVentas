@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
-import { VentasTableContainer, VentasTable, VentasDiariasTableFooter, VentasDiariasTableHead } from '../../components/table';
+import { VentasTableContainer, VentasTable, VentasDiariasTableFooter, VentasDiariasTableHead, TableRow } from '../../components/table';
 import { InputContainer, SelectMonth, InputYear, SelectTiendas, Checkbox } from '../../components/inputs';
 import { MessageModal } from '../../components/modals';
 import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
@@ -89,7 +89,7 @@ const Tienda = () => {
           <tbody className='bg-white text-center'>
             {
               diariasTienda?.map((diaria) => (
-                <tr key={diaria.dia} className='p-1'>
+                <TableRow key={diaria.dia} rowId={diaria.dia}>
                   <td className='text-center'>{diaria.dia}</td>
                   <td className='text-center'>{diaria.dia}</td>
                   <td>{numberWithCommas(diaria.ventaActual)}</td>
@@ -106,7 +106,7 @@ const Tienda = () => {
                   <td>{numberWithCommas(diaria.compromisoAnual)}</td>
                   {formatNumber(diaria.crecimientoAnual)}
                   <td className='text-center'>{diaria.dia}</td>
-                </tr>
+                </TableRow>
               ))
             }
           </tbody>

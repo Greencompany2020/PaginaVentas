@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer, Flex } from '../../components/containers';
 import { InputContainer, InputYear, InputToYear, Checkbox, SelectTiendas, SelectPlazas } from '../../components/inputs';
-import { VentasTableContainer, VentasTable, TableBody, TableHead } from '../../components/table';
+import { VentasTableContainer, VentasTable, TableBody, TableHead, TableRow } from '../../components/table';
 import { MessageModal } from '../../components/modals';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getInitialPlaza, getInitialTienda, isError, validateYearRange } from '../../utils/functions';
@@ -183,7 +183,7 @@ const Mensuales = () => {
           <TableBody>
             {
               porcentajesMensuales?.map((item, index) => (
-                <tr className='text-center' key={item.agno}>
+                <TableRow key={item.agno} rowId={item.agno} className='text-center'>
                   <td>{item.agno}</td>
                   <td>{numberWithCommas(item.enero)}</td>
                   <td className={index !== porcentajesMensuales.length - 1 ? "bg-gray-200" : ""}>{item.porcentajeEnero}</td>
@@ -210,7 +210,7 @@ const Mensuales = () => {
                   <td>{numberWithCommas(item.diciembre)}</td>
                   <td className={index !== porcentajesMensuales.length - 1 ? "bg-gray-200" : ""}>{item.porcentajeDiciembre}</td>
                   <td>{numberWithCommas(item.total)}</td>
-                </tr>
+                </TableRow>
               ))
             }
           </TableBody>

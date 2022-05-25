@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
-import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
+import { VentasTableContainer, VentasTable, TableHead, TableRow } from '../../components/table';
 import { InputContainer, InputYear, Checkbox } from '../../components/inputs';
 import { MessageModal } from '../../components/modals';
 import { checkboxLabels, concentradoPlazas, MENSAJE_ERROR } from '../../utils/data';
@@ -130,7 +130,7 @@ const Concentrado = () => {
           <tbody className='bg-white'>
             {
               concentrado?.map(items => (
-                <tr key={items.tienda} className={`text-center p-1 ${concentradoPlazas.includes(items.tienda) ? 'bg-gray-300' : ''}`}>
+                <TableRow key={items.tienda} rowId={items.tienda} className={`text-center ${concentradoPlazas.includes(items.tienda) ? 'bg-gray-300' : ''}`}>
                   <td className='bg-black text-white font-bold'>{items.tienda}</td>
                   <td>{numberWithCommas(items.enero)}</td>
                   <td>{numberWithCommas(items.febrero)}</td>
@@ -145,7 +145,7 @@ const Concentrado = () => {
                   <td>{numberWithCommas(items.noviembre)}</td>
                   <td>{numberWithCommas(items.diciembre)}</td>
                   <td>{numberWithCommas(items.total)}</td>
-                </tr>
+                </TableRow>
               ))
             }
           </tbody>

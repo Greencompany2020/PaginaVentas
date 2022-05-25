@@ -1,6 +1,7 @@
 import { formatNumber, numberWithCommas } from "../../utils/resultsFormated";
+import TableRow from "./TableRow";
 
-const RegionesPlazaTableRow = ({ item, type }) => {
+const RegionesPlazaTableRow = ({ item, type, rowId }) => {
   const rowColor = (type) => {
     if (type === "plaza") return "bg-gray-300";
     else if (type === "region") return "bg-gray-400";
@@ -8,7 +9,7 @@ const RegionesPlazaTableRow = ({ item, type }) => {
   }
 
   return (
-    <tr className={rowColor(type)}>
+    <TableRow className={rowColor(type)} rowId={rowId}>
       <td className='text-center bg-black text-white font-bold'>
         {item.plaza}
       </td>
@@ -27,7 +28,7 @@ const RegionesPlazaTableRow = ({ item, type }) => {
       <td>{numberWithCommas(item.articulosActual)}</td>
       {formatNumber(item.articulosPorcentaje)}
       <td>{numberWithCommas(item.articulosAnterior)}</td>
-    </tr>
+    </TableRow>
   )
 }
 

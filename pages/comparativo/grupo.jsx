@@ -3,7 +3,7 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { MessageModal } from '../../components/modals';
 import { InputContainer, Checkbox, InputDate } from '../../components/inputs';
-import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
+import { VentasTableContainer, VentasTable, TableHead, TableRow } from '../../components/table';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { handleChange } from '../../utils/handlers';
 import { getComparativoGrupo } from '../../services/ComparativoService';
@@ -189,7 +189,7 @@ function Grupo(){
                 <tbody className='text-center bg-white text-black'>
                   {
                     value?.map(tienda => (
-                      <tr key={tienda.tienda} className={rowColor(tienda)}>
+                      <TableRow key={tienda.tienda} rowId={tienda.tienda} className={rowColor(tienda)}>
                         <td className='font-bold'>{tienda.tienda}</td>
                         <td>{numberWithCommas(tienda.ventasActuales)}</td>
                         <td>{numberWithCommas(tienda.ventasAnterior)}</td>
@@ -216,7 +216,7 @@ function Grupo(){
                         {formatNumber(tienda.diferenciaAnual)}
                         {formatNumber(tienda.porcentajeAnual)}
                         <td className='font-bold'>{tienda.tienda}</td>
-                      </tr>
+                      </TableRow>
                     ))
                   }
                 </tbody>

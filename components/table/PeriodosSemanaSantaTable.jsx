@@ -1,4 +1,5 @@
 import { VentasTable } from ".";
+import TableRow from "./TableRow";
 
 const PeriodosSemanaSantaTable = ({ dates }) => {
   return (
@@ -15,12 +16,12 @@ const PeriodosSemanaSantaTable = ({ dates }) => {
       <tbody className="bg-white text-center">
         {
           dates?.map(fecha => (
-            <tr key={fecha.agno} className={fecha.agno === new Date().getFullYear() ? "font-bold" : ""}>
+            <TableRow key={fecha.agno} rowId={fecha.agno} className={fecha.agno === new Date().getFullYear() ? "font-bold" : ""}>
               <td>{fecha.agno}</td>
               <td>{fecha.carnaval}</td>
               <td>{fecha.fechaInicio}</td>
               <td>{fecha.fechaFin}</td>
-            </tr>
+            </TableRow>
           ))
         }
       </tbody>

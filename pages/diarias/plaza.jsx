@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import VentasLayout, { getVentasLayout } from '../../components/layout/VentasLayout';
+import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
-import { VentasTableContainer, VentasTable, VentasDiariasTableHead, VentasDiariasTableFooter } from '../../components/table';
+import { VentasTableContainer, VentasTable, VentasDiariasTableHead, VentasDiariasTableFooter, TableRow } from '../../components/table';
 import { InputContainer, SelectPlazas, SelectMonth, InputYear, Checkbox } from '../../components/inputs';
 import { MessageModal } from '../../components/modals';
 import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
@@ -123,7 +123,7 @@ const Plaza = () => {
           <tbody className='bg-white text-center'>
             {
               diariasPlaza?.map((diaria) => (
-                <tr key={diaria.dia} className='p-1'>
+                <TableRow key={diaria.dia} rowId={diaria.dia}>
                   <td className='text-center'>{diaria.dia}</td>
                   <td className='text-center'>{diaria.dia}</td>
                   <td>{numberWithCommas(diaria.ventaActual)}</td>
@@ -140,7 +140,7 @@ const Plaza = () => {
                   <td>{numberWithCommas(diaria.compromisoAnual)}</td>
                   {formatNumber(diaria.crecimientoAnual)}
                   <td className='text-center'>{diaria.dia}</td>
-                </tr>
+                </TableRow>
               ))
             }
           </tbody>
