@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { MessageModal } from '../../components/modals';
-import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
+import { VentasTableContainer, VentasTable, TableHead, TableRow } from '../../components/table';
 import useMessageModal from '../../hooks/useMessageModal';
 import { getDiariasFechas } from '../../services/DiariasServices';
 import { MENSAJE_ERROR } from '../../utils/data';
@@ -42,10 +42,10 @@ const Fechas = () => {
           <tbody className='bg-white'>
             {
               fechas?.map((fecha, index) => (
-                <tr key={index} className='text-center'>
+                <TableRow key={index} rowId={index} className='text-center'>
                   <td>{fecha.tienda}</td>
                   <td>{formatLastDate(fecha.fecha)}</td>
-                </tr>
+                </TableRow>
               ))
             }
           </tbody>

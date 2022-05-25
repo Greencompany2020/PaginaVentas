@@ -3,7 +3,7 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { InputContainer, InputDateRange, SelectPlazas, Checkbox } from '../../components/inputs';
 import { MessageModal } from '../../components/modals';
-import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
+import { VentasTableContainer, VentasTable, TableHead, TableRow } from '../../components/table';
 import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
 import { getSemanalesCompromisos } from '../../services/SemanalesService';
 import { numberWithCommas } from '../../utils/resultsFormated';
@@ -105,7 +105,7 @@ const Compromiso = () => {
           <tbody className='bg-white'>
             {
               semanalesCompromisos?.map(compromiso => (
-                <tr key={compromiso.Descrip} className='text-right'>
+                <TableRow key={compromiso.Descrip} rowId={compromiso.Descrip} className='text-right'>
                   <td colSpan={2} className='text-center bg-black text-white font-bold p-2'>
                     {compromiso.Descrip}
                   </td>
@@ -126,7 +126,7 @@ const Compromiso = () => {
                       onChange={() => { }}
                     />
                   </td>
-                </tr>
+                </TableRow>
               ))
             }
           </tbody>

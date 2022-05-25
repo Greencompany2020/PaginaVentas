@@ -1,6 +1,7 @@
 import { VentasSemanaSantaHead, VentasTable } from ".";
 import { getDayName, validateDate } from "../../utils/functions";
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated'
+import TableRow from "./TableRow";
 
 const SemanaSantaTable = ({ year1, year2, title, ventas = [] }) => {
   return (
@@ -10,12 +11,12 @@ const SemanaSantaTable = ({ year1, year2, title, ventas = [] }) => {
         <VentasSemanaSantaHead year1={year1} year2={year2} />
         <tbody className="bg-white text-center">
           {ventas?.map((venta) => (
-            <tr key={venta?.dia ?? venta?.plaza}>
+            <TableRow key={venta?.dia ?? venta?.plaza} rowId={venta?.dia ?? venta?.plaza}>
               <td className="text-center">{getDayName(venta?.dia) ?? venta?.plaza}</td>
               <td className="text-center">{numberWithCommas(venta.ventaActual)}</td>
               <td className="text-center">{numberWithCommas(venta.ventaAnterior)}</td>
               {formatNumber(venta.crecimiento)}
-            </tr>
+            </TableRow>
           ))}
         </tbody>
       </VentasTable>

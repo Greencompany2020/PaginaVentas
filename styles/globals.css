@@ -121,6 +121,10 @@ table.last-row-bg tr:last-child {
     transform scale-100 
   }
 
+  /* Renglones tablas hover y seleccionado */
+  tbody tr:hover {
+    @apply bg-blue-200
+  }
 }
 
 /*Estilos del loader component*/

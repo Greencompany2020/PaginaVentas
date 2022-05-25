@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
-import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
+import { VentasTableContainer, VentasTable, TableHead, TableRow } from '../../components/table';
 import { MessageModal } from '../../components/modals';
 import { SelectTiendas, SelectMonth, InputYear, InputContainer, Checkbox } from '../../components/inputs';
 import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
@@ -89,13 +89,13 @@ const Simple = () => {
           <tbody className='bg-white text-center'>
             {
               tiendaSimple?.map(ventas => (
-                <tr key={ventas.dia}>
+                <TableRow key={ventas.dia} rowId={ventas.dia} >
                   <td>{ventas.dia}</td>
                   <td>{ventas.dia}</td>
                   <td>{numberWithCommas(ventas.ventaActual)}</td>
                   <td>{numberWithCommas(ventas.ventaAnterior)}</td>
                   <td>{numberWithCommas(ventas.acumulado)}</td>
-                </tr>
+                </TableRow>
               ))
             }
           </tbody>

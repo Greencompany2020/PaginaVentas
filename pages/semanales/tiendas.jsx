@@ -48,12 +48,12 @@ const Tiendas = () => {
 
   const renderRow = (item) => {
     if (plazas.findIndex(plaza => plaza.text === item.plaza) !== -1) {
-      return (<RegionesPlazaTableRow item={item} type="plaza" key={item.plaza} />)
+      return (<RegionesPlazaTableRow item={item} type="plaza" key={item.plaza} rowId={item.plaza} />)
     }
     if (regiones.includes(item.plaza)) {
-      return (<RegionesPlazaTableRow item={item} type="region" key={item.plaza} />)
+      return (<RegionesPlazaTableRow item={item} type="region" key={item.plaza} rowId={item.plaza} />)
     }
-    return (<RegionesPlazaTableRow item={item} key={item.plaza} />)
+    return (<RegionesPlazaTableRow item={item} key={item.plaza} rowId={item.plaza} />)
   }
 
   return (
@@ -152,7 +152,7 @@ const Tiendas = () => {
           </TableHead>
           <tbody className='bg-white text-center'>
             {
-              semanalesTienda?.map(tienda => renderRow(tienda))
+              semanalesTienda?.map((tienda) => renderRow(tienda))
             }
           </tbody>
         </VentasTable>

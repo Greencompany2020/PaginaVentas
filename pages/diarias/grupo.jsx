@@ -3,7 +3,7 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, InputYear, SelectMonth, Checkbox, SelectTiendasGeneral } from '../../components/inputs';
 import { MessageModal } from '../../components/modals';
-import { VentasTableContainer, VentasTable, VentasDiariasTableFooter, VentasDiariasTableHead } from '../../components/table';
+import { VentasTableContainer, VentasTable, VentasDiariasTableFooter, VentasDiariasTableHead, TableRow } from '../../components/table';
 import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
 import { getDiariasGrupo } from '../../services/DiariasServices';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
@@ -119,7 +119,7 @@ const Grupo = (props) => {
           <tbody className='bg-white text-center'>
             {
               diariasGrupo?.map((diaria) => (
-                <tr key={diaria.dia} className='p-1'>
+                <TableRow key={diaria.dia} rowId={diaria.dia}>
                   <td className='text-center'>{diaria.dia}</td>
                   <td className='text-center'>{diaria.dia}</td>
                   <td>{numberWithCommas(diaria.ventaActual)}</td>
@@ -136,7 +136,7 @@ const Grupo = (props) => {
                   <td>{numberWithCommas(diaria.compromisoAnual)}</td>
                   {formatNumber(diaria.crecimientoAnual)}
                   <td className='text-center'>{diaria.dia}</td>
-                </tr>
+                </TableRow>
               ))
             }
           </tbody>

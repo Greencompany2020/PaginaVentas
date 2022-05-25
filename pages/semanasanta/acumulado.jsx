@@ -1,7 +1,7 @@
 import { useState, useEffect, Fragment } from 'react';
 import { SmallContainer, ParametersContainer, Parameters } from '../../components/containers';
 import { getVentasLayout} from '../../components/layout/VentasLayout';
-import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
+import { VentasTableContainer, VentasTable, TableHead, TableRow } from '../../components/table';
 import { InputContainer, Checkbox, InputOfTheDate, InputVsYear } from '../../components/inputs';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { MessageModal } from '../../components/modals';
@@ -157,7 +157,7 @@ const Acumulado = () => {
                 <tbody className='bg-white text-center'>
                   {
                     value?.map((venta) => (
-                      <tr key={venta.tienda} className={rowColor(venta)}>
+                      <TableRow key={venta.tienda} rowId={venta.tienda} className={rowColor(venta)}>
                         <td>{venta.tienda}</td>
                         <td>{numberWithCommas(venta.ventaActual)}</td>
                         <td>{numberWithCommas(venta.ventaAnterior)}</td>
@@ -173,7 +173,7 @@ const Acumulado = () => {
                         <td>{numberWithCommas(venta.ventaAcumuladaAnterior)}</td>
                         <td>{numberWithCommas(venta.presupuestoAcumulado)}</td>
                         {formatNumber(venta.porcentajeAcumulado)}
-                      </tr>
+                      </TableRow>
                     ))
                   }
                 </tbody>

@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { InputContainer, Checkbox, SelectTiendasGeneral, InputDate } from '../../components/inputs';
-import { VentasTableContainer, VentasTable, TableBody, TableHead } from '../../components/table';
+import { VentasTableContainer, VentasTable, TableBody, TableHead, TableRow } from '../../components/table';
 import { MessageModal } from '../../components/modals';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getMonthByNumber, getPrevDate, getYearFromDate } from '../../utils/dateFunctions';
@@ -144,7 +144,7 @@ const Crecimiento = () => {
           <TableBody>
             {
               crecimiento?.map(item => (
-                <tr key={item.tiendas} className='text-center'>
+                <TableRow key={item.tiendas} rowId={item.tiendas} className='text-center'>
                   <td>{item.tiendas}</td>
                   <td>{numberWithCommas(item.ventaAcumuladaActual)}</td>
                   <td>{item[`porcentajeAcumulado${dateRange[0]}`]}</td>
@@ -160,7 +160,7 @@ const Crecimiento = () => {
                   <td>{item[`porcentajeMensual${dateRange[3]}`]}</td>
                   <td className={`${item.tiendas !== "TOTAL" ? "bg-gray-200" : ""}`}>{item[`porcentajeMensual${dateRange[4]}`]}</td>
                   <td>{item[`porcentajeMensual${dateRange[5]}`]}</td>
-                </tr>
+                </TableRow>
               ))
             }
           </TableBody>

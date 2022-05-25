@@ -1,6 +1,7 @@
 import PresupuestoFechaHead from "./PresupuestoFechasTableHead";
 import { numberWithCommas } from "../../utils/resultsFormated";
 import VentasTable from "./VentasTable";
+import TableRow from "./TableRow";
 
 const PresupuestoTable = ({ title, presupuestos = [] }) => {
   return (
@@ -10,14 +11,14 @@ const PresupuestoTable = ({ title, presupuestos = [] }) => {
       <PresupuestoFechaHead />
         <tbody className="bg-white text-center">
           {presupuestos?.map((item, index) => (
-            <tr key={index}>
+            <TableRow key={index} rowId={index}>
               <td className="text-center">{item.SFecha ?? item.Descrip}</td>
               <td className="text-center">{numberWithCommas(item.Presupuesto)}</td>
               <td className="text-center">{numberWithCommas(item.Operaciones)}</td>
               <td>{item.SFecha ? numberWithCommas(item.Promedios) : "-"}</td>
               <td>{numberWithCommas(item.ImporteB)}</td>
               <td>{numberWithCommas(item.ImporteC)}</td>
-            </tr>
+            </TableRow>
           ))}
         </tbody>
       </VentasTable>

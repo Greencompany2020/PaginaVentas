@@ -3,7 +3,7 @@ import { SmallContainer, ParametersContainer, Parameters } from '../../component
 import { InputContainer, InputDateRange, Checkbox } from '../../components/inputs'
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { MessageModal } from '../../components/modals';
-import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
+import { VentasTableContainer, VentasTable, TableHead, TableRow } from '../../components/table';
 import useMessageModal from '../../hooks/useMessageModal';
 import { getSemanalesPlazas } from '../../services/SemanalesService';
 import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data'
@@ -134,7 +134,7 @@ const Plazas = () => {
           <tbody className='bg-white text-center'>
             {
               semanalesPlaza?.map(semPlaza => (
-                <tr key={semPlaza.plaza}>
+                <TableRow key={semPlaza.plaza} rowId={semPlaza.plaza}>
                   <td className='text-left bg-black text-white font-bold'>
                     {semPlaza.plaza}
                   </td>
@@ -150,7 +150,7 @@ const Plazas = () => {
                   <td>{numberWithCommas(semPlaza.promedioActual)}</td>
                   {formatNumber(semPlaza.porcentajePromedios)}
                   <td>{numberWithCommas(semPlaza.promedioAnterior)}</td>
-                </tr>
+                </TableRow>
               ))
             }
           </tbody>

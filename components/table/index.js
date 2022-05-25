@@ -15,3 +15,4 @@ export { default as PresupuestoBasesTableHead} from './PresupuestoBasesTableHead
 export { default as PresupuestoTable } from './PresupuestoTable';
 export { default as PresupuestoFechasTableHead } from './PresupuestoFechasTableHead';
 export { default as PresupuestoFechasFooter} from './PresupuestoFechasFooter'
+export { default as TableRow } from './TableRow';
