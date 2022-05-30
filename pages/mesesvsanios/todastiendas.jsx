@@ -5,20 +5,21 @@ import { InputContainer, InputYear, SelectPlazas, Checkbox } from '../../compone
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import BarChart from '../../components/BarChart';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
-import { MessageModal } from '../../components/modals';
 import { getInitialPlaza, getPlazaName, isError, validateYear } from '../../utils/functions';
 import { formatLastDate, getCurrentYear, getMonthByNumber, getPrevDate } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getMesesAgnosTodasTiendas } from '../../services/MesesAgnosService';
 import useGraphData from '../../hooks/useGraphData';
-import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
 import { useUser } from '../../context/UserContext';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
+
 
 const TodasTiendas = () => {
+  const alert = useAlert();
   const { plazas } = useUser();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [paramTiendas, setParamTiendas] = useState({
     plaza: getInitialPlaza(plazas),
     delAgno: getCurrentYear(),
@@ -33,8 +34,7 @@ const TodasTiendas = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             createMesesAgnosTiendasDataset(response);
           }
@@ -82,7 +82,6 @@ const TodasTiendas = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -117,18 +116,17 @@ const TodasTiendas = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Esta grafica muestra un comparativo de las ventas por mes de todas las tiendas de la plaza seleccionada en el año que fue especificado.
-        </SmallContainer>
-        <SmallContainer>
-          Recuerde que el rango de años debe ser capturado de menor a el mayor, aunque en el reporte se mostrara en orden descendente.
-        </SmallContainer>
-
+        
       </ParametersContainer>
 
-      <ComparativoVentas
+      <TitleReport 
         title={`Ventas por Mes Tiendas Plaza ${getPlazaName(paramTiendas.plaza)} año ${paramTiendas.delAgno} (mls.${paramTiendas.resultadosPesos ? "pesos" : "dlls"})`}
-      >
+        description = {`Esta grafica muestra un comparativo de las ventas por mes de todas las tiendas de la plaza seleccionada en el año que fue especificado. 
+        Recuerde que el rango de años debe ser capturado de menor a el mayor, aunque en el reporte se mostrara en orden descendente.
+        `}
+      />
+
+      <ComparativoVentas>
         <BarChart
           text={`Ventas al ${formatLastDate(getPrevDate(0, paramTiendas.delAgno))}`}
           data={{

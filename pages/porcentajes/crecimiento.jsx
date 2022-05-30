@@ -3,18 +3,18 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { InputContainer, Checkbox, SelectTiendasGeneral, InputDate } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableBody, TableHead, TableRow } from '../../components/table';
-import { MessageModal } from '../../components/modals';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getMonthByNumber, getPrevDate, getYearFromDate } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getLastTwoNumbers, isError, validateDate } from '../../utils/functions';
 import { getPorcentajeCrecimiento } from '../../services/PorcentajesService';
 import { numberWithCommas } from '../../utils/resultsFormated';
-import useMessageModal from "../../hooks/useMessageModal";
 import withAuth from '../../components/withAuth';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
 
 const Crecimiento = () => {
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
+  const alert = useAlert();
   const [dateRange, setDateRange] = useState([]);
   const [crecimiento, setCrecimiento] = useState([]);
   const [paramCrecimiento, setParamCrecimiento] = useState({
@@ -42,8 +42,7 @@ const Crecimiento = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             createDateRange()
             setCrecimiento(response);
@@ -64,7 +63,6 @@ const Crecimiento = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -113,13 +111,18 @@ const Crecimiento = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Este reporte muestra el factor de crecimiento de las tiendas sobre la ventas del mes y acumuladas,
-        </SmallContainer>
-        <SmallContainer>
-          con respecto a años anteriores segun la fecha especificada.
-        </SmallContainer>
       </ParametersContainer>
+
+      <TitleReport 
+        title={`Factor de crecimiento al 
+          ${paramCrecimiento.fecha.split("-")[2]} de 
+          ${getMonthByNumber(paramCrecimiento.fecha.split("-")[1])} de 
+          ${getYearFromDate(paramCrecimiento.fecha)} Acumulado y Anual`
+        }
+        description = {`Este reporte muestra el factor de crecimiento de las tiendas sobre la ventas del mes y acumuladas, 
+        con respecto a años anteriores segun la fecha especificada.
+        `}
+      />
 
       <VentasTableContainer
         title={`Factor de crecimiento al 
@@ -147,14 +150,14 @@ const Crecimiento = () => {
                 <TableRow key={item.tiendas} rowId={item.tiendas} className='text-center'>
                   <td>{item.tiendas}</td>
                   <td>{numberWithCommas(item.ventaAcumuladaActual)}</td>
-                  <td>{item[`porcentajeAcumulado${dateRange[0]}`]}</td>
+                  <td className='font-bold'>{item[`porcentajeAcumulado${dateRange[0]}`]}</td>
                   <td className={`${item.tiendas !== "TOTAL" ? "bg-gray-200" : ""}`}>{item[`porcentajeAcumulado${dateRange[1]}`]}</td>
                   <td>{item[`porcentajeAcumulado${dateRange[2]}`]}</td>
                   <td className={`${item.tiendas !== "TOTAL" ? "bg-gray-200" : ""}`}>{item[`porcentajeAcumulado${dateRange[3]}`]}</td>
                   <td>{item[`porcentajeAcumulado${dateRange[4]}`]}</td>
                   <td className={`${item.tiendas !== "TOTAL" ? "bg-gray-200" : ""}`}>{item[`porcentajeAcumulado${dateRange[5]}`]}</td>
                   <td>{numberWithCommas(item.ventaMensualActual)}</td>
-                  <td className={`${item.tiendas !== "TOTAL" ? "bg-gray-200" : ""}`}>{item[`porcentajeMensual${dateRange[0]}`]}</td>
+                  <td className={`${item.tiendas !== "TOTAL" ? "bg-gray-200 font-bold" : ""}`}>{item[`porcentajeMensual${dateRange[0]}`]}</td>
                   <td>{item[`porcentajeMensual${dateRange[1]}`]}</td>
                   <td className={`${item.tiendas !== "TOTAL" ? "bg-gray-200" : ""}`}>{item[`porcentajeMensual${dateRange[2]}`]}</td>
                   <td>{item[`porcentajeMensual${dateRange[3]}`]}</td>

@@ -4,6 +4,9 @@ import { InputContainer, InputDate, Checkbox } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
 import { checkboxLabels } from '../../utils/data';
 import withAuth from '../../components/withAuth';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
+
 
 const acumulado = () => {
   return (
@@ -19,10 +22,13 @@ const acumulado = () => {
             <Checkbox className='mb-3' labelText='Solo Piezas' />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          ESTA REPORTE MUESTRA LAS VENTAS ACUMULADAS DIA - SEMANA - MES -AÑO
-        </SmallContainer>
       </ParametersContainer>
+
+      <TitleReport 
+        title='VENTAS ACUMULADO CEDIS'
+        description = 'ESTA REPORTE MUESTRA LAS VENTAS ACUMULADAS DIA - SEMANA - MES -AÑO'
+      />
+
       <VentasTableContainer>
         <VentasTable>
           <TableHead>

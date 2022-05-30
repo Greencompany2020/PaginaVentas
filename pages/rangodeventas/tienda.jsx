@@ -3,22 +3,22 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, InputDateRange, InputRangos, SelectTiendas, } from '../../components/inputs';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
-import { MessageModal } from '../../components/modals';
 import PieChart from '../../components/Pie';
 import { createRangoVentasDataset, getInitialTienda, isError, validateInputDateRange } from '../../utils/functions';
 import { getBeginEndMonth } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getRangoVentasTienda } from '../../services/RangoVentasService';
 import useGraphData from '../../hooks/useGraphData';
-import useMessageModal from '../../hooks/useMessageModal';
 import { MENSAJE_ERROR } from '../../utils/data';
 import withAuth from '../../components/withAuth';
 import { useUser } from '../../context/UserContext';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
 
 const Tienda = () => {
+  const alert = useAlert();
   const { tiendas } = useUser();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [paramTienda, setParamTienda] = useState({
     tienda: getInitialTienda(tiendas),
     fechaInicio: getBeginEndMonth(true)[0],
@@ -32,8 +32,7 @@ const Tienda = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             createRangoVentasDataset(response, setLabels, setDatasets)
           }
@@ -44,7 +43,6 @@ const Tienda = () => {
   
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -64,15 +62,16 @@ const Tienda = () => {
             />
           </InputContainer>
         </Parameters> 
-        <SmallContainer>
-          ESTE REPORTE OBTIENE LOS RANGOS DE VENTA, DE LAS FECHAS ESTABLECIDAS. EL RANGO ESTABLEZCALO
-        </SmallContainer>
-        <SmallContainer>
-          DE LA FORMA 1,150,250,350,400 QUE INDICA P.E. DEL 1 AL 149.00 DEL 150 AL 249.99.
-        </SmallContainer>
       </ParametersContainer>
 
-      <ComparativoVentas title='Rangos de ventas por Tienda'>
+      <TitleReport 
+        title='Rangos de ventas por Tienda'
+        description = {` ESTE REPORTE OBTIENE LOS RANGOS DE VENTA, DE LAS FECHAS ESTABLECIDAS. EL RANGO ESTABLEZCALO 
+        DE LA FORMA 1,150,250,350,400 QUE INDICA P.E. DEL 1 AL 149.00 DEL 150 AL 249.99.
+        `}
+      />
+
+      <ComparativoVentas>
         <PieChart
           data={{
             labels,

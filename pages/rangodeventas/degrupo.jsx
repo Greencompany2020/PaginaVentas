@@ -4,6 +4,7 @@ import { InputContainer, SelectTiendasGeneral, InputDateDate } from '../../compo
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import PieChart from '../../components/Pie';
 import withAuth from '../../components/withAuth';
+import TitleReport from '../../components/TitleReport';
 
 const degrupo = () => {
   return (
@@ -16,13 +17,14 @@ const degrupo = () => {
           <SelectTiendasGeneral />
           </InputContainer>
         </Parameters> 
-          <SmallContainer>
-        Este reporte obtiene rangos de venta de las fechas establecidas 
-        </SmallContainer>
-
       </ParametersContainer>
 
-      <ComparativoVentas title='Rangos de ventas de grupo'>
+      <TitleReport 
+        title='Rangos de ventas de grupo'
+        description = ' Este reporte obtiene rangos de venta de las fechas establecidas '
+      />
+
+      <ComparativoVentas>
         <PieChart
           text='Rangos de ventas de grupo'
           data={{

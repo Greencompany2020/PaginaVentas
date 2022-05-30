@@ -11,14 +11,17 @@ import { formatLastDate, getCurrentMonth, getCurrentYear, getMonthByNumber, getP
 import { handleChange } from '../../utils/handlers';
 import { getMesesAgnosPlazas } from '../../services/MesesAgnosService';
 import useGraphData from '../../hooks/useGraphData';
-import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
 import { useUser } from '../../context/UserContext';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
+
+
 
 const Plaza = () => {
+  const alert = useAlert();
   const { plazas } = useUser();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [parametrosPlazas, setParametrosPlazas] = useState({
     plaza: getInitialPlaza(plazas),
     delMes: 1,
@@ -42,8 +45,7 @@ const Plaza = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             createMesesAgnosPlazasDataset(response, parametrosPlazas.delAgno, parametrosPlazas.alAgno)
           }
@@ -97,7 +99,6 @@ const Plaza = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -148,6 +149,7 @@ const Plaza = () => {
               onChange={(e) => { handleChange(e, setParametrosPlazas) }}
             />
             <Checkbox
+              className='mb-3'
               labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
               name={inputNames.SIN_AGNO_VENTA}
               onChange={(e) => { handleChange(e, setParametrosPlazas) }}
@@ -179,19 +181,18 @@ const Plaza = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Esta grafica muestra las ventas de cada mes del año de la plaza seleccionada por cada uno de los años del rango especificado.
-        </SmallContainer>
-        <SmallContainer>
-          Recuerde que el rango de años debe ser capturado de menor a el mayor, aunque en el reporte se mostrara en orden descendente.
-        </SmallContainer>
-
       </ParametersContainer>
 
-      <ComparativoVentas
+      <TitleReport 
         title={`Ventas Plaza del año ${parametrosPlazas.delAgno} al año ${parametrosPlazas.alAgno} 
-        (mls.${parametrosPlazas.resultadosPesos === 1 ? "pesos." : "dlls."})`
-        }>
+          mls.${parametrosPlazas.resultadosPesos === 1 ? "pesos." : "dlls."})`
+        }
+        description = {` Esta grafica muestra las ventas de cada mes del año de la plaza seleccionada por cada uno de los años del rango especificado.
+        Recuerde que el rango de años debe ser capturado de menor a el mayor, aunque en el reporte se mostrara en orden descendente. 
+        `}
+      />
+
+      <ComparativoVentas>
         <BarChart
           text={`${parametrosPlazas.alMes === getCurrentMonth() ? `Ventas al ${formatLastDate(getPrevDate(0, parametrosPlazas.alAgno))}` : ""}`}
           data={{

@@ -4,19 +4,20 @@ import BarChart from '../../components/BarChart';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, SelectMonth, SelectTiendasGeneral, InputYear, Checkbox, InputToYear, SelectToMonth } from '../../components/inputs';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
-import { MessageModal } from '../../components/modals';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { formatLastDate, getCurrentMonth, getCurrentYear, getPrevDate } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getMesesAgnosGrupo } from '../../services/MesesAgnosService';
 import useGraphData from '../../hooks/useGraphData';
-import useMessageModal from "../../hooks/useMessageModal";
 import { createMesesAgnosGrupoDataset, isError, validateMonthRange, validateYearRange } from '../../utils/functions';
 import withAuth from '../../components/withAuth';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
+
 
 const Grupo = () => {
+  const alert = useAlert();
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [parametrosGrupo, setParametrosGrupo] = useState({
     delAgno: getCurrentYear() - 5,
     alAgno: getCurrentYear(),
@@ -38,8 +39,7 @@ const Grupo = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             createMesesAgnosGrupoDataset(
                 response,
@@ -56,7 +56,6 @@ const Grupo = () => {
   
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -127,16 +126,16 @@ const Grupo = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Esta gráfica muestra las ventas anuales del grupo para cada uno de los años del rango especificado.
-        </SmallContainer>
-        <SmallContainer>
-          Recuerde que el rango de años debe ser capturado de el menor a el mayor aunque en el reporte se mostrará en orden descendente.
-        </SmallContainer>
-
       </ParametersContainer>
 
-      <ComparativoVentas title={`Comparativo de ventas del año ${parametrosGrupo.delAgno} al año ${parametrosGrupo.alAgno} (mls.dlls)`}>
+      <TitleReport 
+          title={`Comparativo de ventas del año ${parametrosGrupo.delAgno} al año ${parametrosGrupo.alAgno} (mls.dlls)`}
+          description = {`Esta gráfica muestra las ventas anuales del grupo para cada uno de los años del rango especificado. 
+          Recuerde que el rango de años debe ser capturado de el menor a el mayor aunque en el reporte se mostrará en orden descendente.
+          `}
+      />
+
+      <ComparativoVentas>
         <BarChart
           text={`${parametrosGrupo.alMes === getCurrentMonth() ? `Ventas al ${formatLastDate(getPrevDate(0, parametrosGrupo.alAgno))}` : ""}`}
           data={{

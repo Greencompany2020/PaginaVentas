@@ -4,19 +4,20 @@ import { Parameters, ParametersContainer, SmallContainer } from '../../component
 import { InputContainer, SelectMonth, SelectToMonth, InputYear, SelectTiendasGeneral, Checkbox } from '../../components/inputs';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import BarChart from '../../components/BarChart';
-import { MessageModal } from '../../components/modals';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getCurrentMonth, getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { validateMonthRange, validateYear, createPresupuestoDatasets, isError } from '../../utils/functions';
 import useGraphData from '../../hooks/useGraphData';
-import useMessageModal from '../../hooks/useMessageModal';
 import { getPresupuestoGrupo } from '../../services/PresupuestoService';
 import withAuth from '../../components/withAuth';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
+
 
 const Grupo = () => {
+  const alert = useAlert();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [paramGrupo, setParamGrupo] = useState({
     delMes: 1,
     alMes: getCurrentMonth() - 1,
@@ -37,8 +38,7 @@ const Grupo = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             createPresupuestoDatasets(response, paramGrupo.delAgno, setLabels, setDatasets);
           }
@@ -49,7 +49,6 @@ const Grupo = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -117,16 +116,16 @@ const Grupo = () => {
             />
           </InputContainer>
         </Parameters>   
-          <SmallContainer>
-          Esta grafica muestra las ventas vs. compromiso del grupo en el periodo de meses y 
-        </SmallContainer>
-          <SmallContainer>
-          el año especificado,este siempre será comparado contra el año anterior.        
-          </SmallContainer>
-
       </ParametersContainer>
 
-      <ComparativoVentas title={`Ventas vs. Compromiso del Grupo del año ${paramGrupo.delAgno}`}>
+      <TitleReport 
+        title={`Ventas vs. Compromiso del Grupo del año ${paramGrupo.delAgno}`}
+        description = {` Esta grafica muestra las ventas vs. compromiso del grupo en el periodo de meses y 
+        el año especificado,este siempre será comparado contra el año anterior.
+        `}
+      />
+
+      <ComparativoVentas>
         <BarChart
           data={{
             labels,

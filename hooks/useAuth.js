@@ -14,7 +14,6 @@ function useAuth(){
         await get_logouth();
         jsCookie.remove('accessToken');
         jsCookie.remove('jwt');
-        console.log('salido');
         window.location.href = '/'
         return true;
     }

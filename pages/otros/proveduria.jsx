@@ -4,6 +4,7 @@ import { ParametersContainer, Parameters, SmallContainer } from '../../component
 import { InputContainer, InputDate } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableHead, TableBody } from '../../components/table';
 import withAuth from '../../components/withAuth';
+import TitleReport from '../../components/TitleReport';
 
 const proveduria = () => {
   return (
@@ -14,12 +15,13 @@ const proveduria = () => {
             <InputDate />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Este reporte muestra las ventas acumuladas dia-semana-mes-año por proveduria.
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title='PROVEEDURIA COMPARATIVO VENTAS DEL AÑO 2022 (AL 11 DE ENERO S/IVA M.N. )'>
+      <TitleReport 
+        title='PROVEEDURIA COMPARATIVO VENTAS DEL AÑO 2022 (AL 11 DE ENERO S/IVA M.N. )'
+        description = 'Este reporte muestra las ventas acumuladas dia-semana-mes-año por proveduria.'
+      />
+      <VentasTableContainer>
         <VentasTable className='last-row-bg'>
           <TableHead>
             <tr>

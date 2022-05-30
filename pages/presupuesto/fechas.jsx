@@ -12,19 +12,20 @@ import {
 } from "../../components/inputs";
 import { VentasTableContainer } from "../../components/table";
 import { PresupuestoTable } from "../../components/table";
-import { MessageModal } from '../../components/modals';
 import { handleChange } from '../../utils/handlers'
 import { getInitialPlaza, getPlazaName, isError, validateInputDateRange } from '../../utils/functions';
 import { formatLastDate, getBeginEndMonth } from '../../utils/dateFunctions';
 import { getPresupuestoFechas } from '../../services/PresupuestoService';
-import useMessageModal from '../../hooks/useMessageModal';
 import { MENSAJE_ERROR } from '../../utils/data';
 import withAuth from '../../components/withAuth';
 import { useUser } from '../../context/UserContext';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
+
 
 const Fechas = () => {
+  const alert = useAlert();
   const { plazas } = useUser();
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [prespuestos, setPrespuestos] = useState({});
   const [paramFechas, setParamFechas] = useState({
     plaza: getInitialPlaza(plazas),
@@ -38,8 +39,7 @@ const Fechas = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             setPrespuestos(response)
           }
@@ -50,7 +50,6 @@ const Fechas = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -65,13 +64,14 @@ const Fechas = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          ESTE REPORTE OBTIENE EL COMPROMISO DE VENTAS PARA CIERTO RANGO DE FECHAS,
-        </SmallContainer>
-        <SmallContainer>
-          QUE PUEDE SER UN MES, UNA SEMANA, UN FIN DE SEMANA, BASADO EN LA FECHAS ESTABLECIDA...
-        </SmallContainer>
       </ParametersContainer>
+
+      <TitleReport 
+          title={`Compromisos plaza ${getPlazaName(paramFechas.plaza)} del ${formatLastDate(paramFechas.fechaInicio)} al ${formatLastDate(paramFechas.fechaFin)}`}
+          description = {`ESTE REPORTE OBTIENE EL COMPROMISO DE VENTAS PARA CIERTO RANGO DE FECHAS, 
+          QUE PUEDE SER UN MES, UNA SEMANA, UN FIN DE SEMANA, BASADO EN LA FECHAS ESTABLECIDA...
+          `}
+        />
 
       <VentasTableContainer 
         title={`Compromisos plaza ${getPlazaName(paramFechas.plaza)} del ${formatLastDate(paramFechas.fechaInicio)} al ${formatLastDate(paramFechas.fechaFin)}`}

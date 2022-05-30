@@ -19,7 +19,7 @@ export default function Pagination({pages, current ,next}){
                                 className={`w-12 h-10 hover:bg-indigo-200 ${(i+1 == current) && 'bg-indigo-400 text-white font-bold'}`}
                                 onClick={() => next(i+1)}
                             >
-                            {i+1}</button>
+                            {i}</button>
                         )
                     }
                     return items;

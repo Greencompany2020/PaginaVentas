@@ -5,19 +5,20 @@ import { InputContainer, SelectMonth, SelectToMonth, InputYear, SelectPlazas, Ch
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import BarChart from '../../components/BarChart';
-import { MessageModal } from '../../components/modals';
 import { getInitialPlaza, getPlazaName, validateMonthRange, validateYear, createPresupuestoDatasets, isError } from '../../utils/functions';
 import { getCurrentMonth, getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getPresupuestoPlazas } from '../../services/PresupuestoService';
 import useGraphData from '../../hooks/useGraphData';
-import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
 import { useUser } from '../../context/UserContext';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
+
 
 const Plaza = () => {
+  const alert = useAlert();
   const { plazas } = useUser();
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramPlazas, setParamPlazas] = useState({
     plaza: getInitialPlaza(plazas),
@@ -39,8 +40,7 @@ const Plaza = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             createPresupuestoDatasets(response, paramPlazas.delAgno, setLabels, setDatasets)
           }
@@ -51,7 +51,6 @@ const Plaza = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -119,16 +118,16 @@ const Plaza = () => {
             />
           </InputContainer>
         </Parameters>   
-          <SmallContainer>
-        Esta grafica muestra un comparativo de las ventas vs compromiso del grupo en el periodo de meses y
-        </SmallContainer>
-          <SmallContainer>
-        el año especificado, este siempre será comparado contra el año anterior.
-        </SmallContainer>
-
       </ParametersContainer>
 
-      <ComparativoVentas title={`Ventas por Mes Tiendas Plaza ${getPlazaName(paramPlazas.plaza)} año ${paramPlazas.delAgno}`}>
+      <TitleReport 
+        title={`Ventas por Mes Tiendas Plaza ${getPlazaName(paramPlazas.plaza)} año ${paramPlazas.delAgno}`}
+        description = {`Esta grafica muestra un comparativo de las ventas vs compromiso del grupo en el periodo de meses y 
+        el año especificado, este siempre será comparado contra el año anterior.
+        `}
+      />
+
+      <ComparativoVentas>
         <BarChart
           data={{
             labels,

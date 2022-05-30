@@ -4,21 +4,21 @@ import { Parameters, ParametersContainer, SmallContainer } from '../../component
 import { InputContainer, SelectPlazas, InputRangos, InputDateRange, Checkbox } from '../../components/inputs';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import PieChart from '../../components/Pie';
-import { MessageModal } from '../../components/modals';
 import { createRangoVentasDataset, getInitialPlaza, isError, validateInputDateRange } from '../../utils/functions';
 import { getBeginEndMonth } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getRangoVentasPlaza } from '../../services/RangoVentasService';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import useGraphData from '../../hooks/useGraphData';
-import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
 import { useUser } from '../../context/UserContext';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
 
 const Plaza = () => {
+  const alert = useAlert();
   const { plazas } = useUser();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [paramPlaza, setParamPlaza] = useState({
     plaza: getInitialPlaza(plazas),
     fechaInicio: getBeginEndMonth(true)[0],
@@ -33,8 +33,7 @@ const Plaza = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             createRangoVentasDataset(response, setLabels, setDatasets);
           }
@@ -47,7 +46,6 @@ const Plaza = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -74,14 +72,14 @@ const Plaza = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          ESTE REPORTE OBTIENE LOS RANGOS DE VENTA, DE LAS FECHAS ESTABLECIDAS. EL RANGO ESTABLEZCALO
-        </SmallContainer>
-        <SmallContainer>
-          DE LA FORMA 1,150,250,350,400 QUE INDICA P.E. DEL 1 AL 149.00 DEL 150 AL 249.99.
-        </SmallContainer>
-
       </ParametersContainer>
+
+      <TitleReport 
+        title='Rangos de ventas por plaza'
+        description = {`ESTE REPORTE OBTIENE LOS RANGOS DE VENTA, DE LAS FECHAS ESTABLECIDAS. EL RANGO ESTABLEZCALO 
+        DE LA FORMA 1,150,250,350,400 QUE INDICA P.E. DEL 1 AL 149.00 DEL 150 AL 249.99.
+        `}
+      />
 
       <ComparativoVentas title='Rangos de ventas por plaza'>
         <PieChart

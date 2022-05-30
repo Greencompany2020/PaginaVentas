@@ -11,11 +11,12 @@ import { dateRangeTitle, isError, validateInputDateRange } from '../../utils/fun
 import { getSemanalesTiendas } from '../../services/SemanalesService';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { handleChange } from '../../utils/handlers';
-import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
 
 const Tiendas = () => {
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
+  const alert = useAlert();
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesTienda, setSemanalesTienda] = useState([]);
   const [tiendasParametros, setTiendasParametros] = useState({
@@ -35,8 +36,7 @@ const Tiendas = () => {
       getSemanalesTiendas(tiendasParametros)
         .then(response => {
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             setSemanalesTienda(response)
           }
@@ -58,7 +58,6 @@ const Tiendas = () => {
 
   return (
     <>
-      <MessageModal message={message} setModalOpen={setModalOpen} modalOpen={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputDateRange
@@ -80,6 +79,7 @@ const Tiendas = () => {
               onChange={(e) => handleChange(e, setTiendasParametros)}
             />
             <Checkbox
+              className='mb-3'
               labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
               name={inputNames.CON_VENTAS_EVENTOS}
               onChange={(e) => handleChange(e, setTiendasParametros)}
@@ -93,6 +93,7 @@ const Tiendas = () => {
               onChange={(e) => handleChange(e, setTiendasParametros)}
             />
             <Checkbox
+              className='mb-3'
               labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
               name={inputNames.SIN_AGNO_VENTA}
               onChange={(e) => handleChange(e, setTiendasParametros)}
@@ -112,15 +113,16 @@ const Tiendas = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Este reporte muestra un compartivo de la semana o en rango de fecha selecionado. Recuerde que la comparacion se realiza lunes contra lunes,
-        </SmallContainer>
-        <SmallContainer>
-          lo cual quiere decir que las ventas del año anterior no seran por fecha sino lo que corresponda a los dias de la semana.
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title="Detalles de información / Semanales por Tienda">
+      <TitleReport 
+        title="Detalles de información / Semanales por Tienda"
+        description = {` Este reporte muestra un compartivo de la semana o en rango de fecha selecionado. Recuerde que la comparacion se realiza lunes contra lunes,
+        lo cual quiere decir que las ventas del año anterior no seran por fecha sino lo que corresponda a los dias de la semana.
+        `}
+      />
+
+      <VentasTableContainer>
         <VentasTable className='tfooter'>
           <TableHead>
             <tr>

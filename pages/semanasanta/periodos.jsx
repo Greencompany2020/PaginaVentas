@@ -1,16 +1,16 @@
 import { useState ,useEffect } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
-import { MessageModal } from '../../components/modals';
 import { VentasTableContainer, PeriodosSemanaSantaTable } from '../../components/table';
-import useMessageModal from '../../hooks/useMessageModal';
 import { getSemanaSantaPeriodos } from '../../services/semanaSantaService';
 import { MENSAJE_ERROR } from '../../utils/data';
 import { isError } from '../../utils/functions';
 import withAuth from '../../components/withAuth';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
 
 
 const Periodos = () => {
-  const { message, modalOpen, setMessage, setModalOpen} = useMessageModal();
+  const alert = useAlert();
   const [periodos, setPeriodos] = useState([]);
 
   useEffect(() => {
@@ -18,8 +18,7 @@ const Periodos = () => {
       .then(response => {
 
         if (isError(response)) {
-          setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-          setModalOpen(true);
+          alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
         } else {
           setPeriodos(response)
         }
@@ -29,7 +28,10 @@ const Periodos = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
+      <TitleReport 
+         title="PERIODOS DE SEMANA SANTA"
+      />
+      
       <VentasTableContainer title="PERIODOS DE SEMANA SANTA">
         <PeriodosSemanaSantaTable  dates={periodos}/>
       </VentasTableContainer>

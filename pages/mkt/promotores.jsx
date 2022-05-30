@@ -3,18 +3,18 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { InputContainer, Checkbox, SelectMonth, SelectToMonth, InputYear } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableHead, TableBody } from '../../components/table';
-import { MessageModal } from '../../components/modals';
 import { checkboxLabels, inputNames, MENSAJE_ERROR, meses } from '../../utils/data';
 import { handleChange } from '../../utils/handlers';
 import { getCurrentMonth, getCurrentYear, getMonthChars } from '../../utils/dateFunctions';
 import { isError, validateMonthRange, validateYear } from '../../utils/functions';
 import { getPromotores } from '../../services/MKTService';
-import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
 
 
 const Promotores = () => {
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
+  const alert = useAlert();
   const [promotores, setPromotores] = useState({});
   const [paramPromotores, setParamPromotores] = useState({
     delMes: 1,
@@ -29,8 +29,7 @@ const Promotores = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             setPromotores(response)
           }
@@ -107,7 +106,6 @@ const Promotores = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -131,12 +129,14 @@ const Promotores = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Esta tabla le muestra los ingresgos generados por promotores asi como los canjes resultantes.
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title={`Ingresos Promotores ${paramPromotores.delAgno}`}>
+      <TitleReport 
+          title={`Ingresos Promotores ${paramPromotores.delAgno}`}
+          description = ' Esta tabla le muestra los ingresgos generados por promotores asi como los canjes resultantes.'
+        />
+
+      <VentasTableContainer>
         <VentasTable>
           <TableHead>
             <tr>

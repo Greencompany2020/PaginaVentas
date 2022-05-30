@@ -15,6 +15,7 @@ import { VentasTableContainer } from "../../components/table";
 import PresupuestoBasesTable from "../../components/table/PresupuestoBasesTable";
 import { checkboxLabels } from "utils/data";
 import withAuth from '../../components/withAuth';
+import TitleReport from '../../components/TitleReport';
 
 const porplaza = () => {
   const year = 2000;
@@ -37,13 +38,14 @@ const porplaza = () => {
           <Checkbox className="mb-3" labelText={checkboxLabels.RESULTADO_PESOS} />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Esta tabla muestra las ventas del día por día del mes y año
-          especificado.
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title="Ventas Semana Santa">
+      <TitleReport 
+        title="Ventas Semana Santa"
+        description = ' Esta tabla muestra las ventas del día por día del mes y año especificado.'
+      />
+
+      <VentasTableContainer>
         <PresupuestoBasesTable title="M1"></PresupuestoBasesTable>
         <PresupuestoBasesTable title="M2"></PresupuestoBasesTable>
         <PresupuestoBasesTable title="M3"></PresupuestoBasesTable>

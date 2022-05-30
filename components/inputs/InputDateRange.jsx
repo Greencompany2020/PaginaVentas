@@ -3,7 +3,7 @@ import { Flex } from '../containers';
 const InputDateRange = ({ beginDate, endDate, onChange }) => {
   return (
     <div className='flex flex-col pr-16'>
-      <Flex className='xl:justify-between mb-2'>
+      <Flex className=''>
         <label htmlFor="fechaInicio">Fecha inicial:</label>
         <input
           type="date"
@@ -13,7 +13,7 @@ const InputDateRange = ({ beginDate, endDate, onChange }) => {
           value={beginDate}
         />
       </Flex>
-      <Flex className='xl:justify-between'>
+      <Flex className=''>
         <label htmlFor="fechaFin">Fecha final:</label>
         <input
           type="date"

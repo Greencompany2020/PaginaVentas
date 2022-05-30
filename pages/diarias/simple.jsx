@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { VentasTableContainer, VentasTable, TableHead, TableRow } from '../../components/table';
-import { MessageModal } from '../../components/modals';
 import { SelectTiendas, SelectMonth, InputYear, InputContainer, Checkbox } from '../../components/inputs';
 import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
 import { getDiariasTiendaSimple } from '../../services/DiariasServices';
@@ -10,13 +9,15 @@ import { getInitialTienda, getLastTwoNumbers, getTiendaName, isError } from '../
 import { numberWithCommas } from '../../utils/resultsFormated';
 import { getMonthByNumber } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
-import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
 import { useUser } from '../../context/UserContext';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
+
 
 const Simple = () => {
+  const alert = useAlert();
   const { tiendas } = useUser();
-  const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [tiendaSimple, setTiendaSimple] = useState([]);
   const [tiendaSimpleParametros, setTiendaSimpleParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
@@ -31,8 +32,7 @@ const Simple = () => {
       getDiariasTiendaSimple(tiendaSimpleParametros)
         .then(response => {
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             setTiendaSimple(response)
           }
@@ -43,7 +43,6 @@ const Simple = () => {
 
   return (
     <>
-      <MessageModal message={message} setModalOpen={setModalOpen} modalOpen={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -64,14 +63,14 @@ const Simple = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Esta tabla muestra las ventas vs presupuesto del grupo en el periodo de mes y año especificado, este siempre será comparado contra el año anterior.
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer
+      <TitleReport 
         title={`Ventas Diarias ${getTiendaName(tiendaSimpleParametros.tienda)} ${getMonthByNumber(tiendaSimpleParametros.delMes)} ${tiendaSimpleParametros.delAgno}`}
-      >
+        description = ' Esta tabla muestra las ventas vs presupuesto del grupo en el periodo de mes y año especificado, este siempre será comparado contra el año anterior.'
+      />
+
+      <VentasTableContainer>
         <VentasTable>
           <TableHead>
             <tr>
@@ -90,9 +89,9 @@ const Simple = () => {
             {
               tiendaSimple?.map(ventas => (
                 <TableRow key={ventas.dia} rowId={ventas.dia} >
+                  <td className='font-bold'>{ventas.dia}</td>
                   <td>{ventas.dia}</td>
-                  <td>{ventas.dia}</td>
-                  <td>{numberWithCommas(ventas.ventaActual)}</td>
+                  <td className='font-bold'>{numberWithCommas(ventas.ventaActual)}</td>
                   <td>{numberWithCommas(ventas.ventaAnterior)}</td>
                   <td>{numberWithCommas(ventas.acumulado)}</td>
                 </TableRow>

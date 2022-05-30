@@ -15,18 +15,19 @@ import {
 import { VentasTableContainer } from "../../components/table";
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
 import SemanaSantaTable from "../../components/table/SemanaSantaTable";
-import { MessageModal } from '../../components/modals';
 import { getInitialPlaza, isError, validateYear } from '../../utils/functions';
 import { getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getSemanaSantaPlazas } from '../../services/semanaSantaService';
-import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
 import { useUser } from '../../context/UserContext';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
+
 
 const Plaza = () => {
+  const alert = useAlert();
   const { plazas } = useUser();
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [semanaSantaPlazas, setSemanaSantaPlazas] = useState({});
   const [paramPlaza, setParamPlaza] = useState({
     plaza: getInitialPlaza(plazas),
@@ -45,8 +46,7 @@ const Plaza = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             setSemanaSantaPlazas(response)
           }
@@ -57,7 +57,6 @@ const Plaza = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -111,10 +110,12 @@ const Plaza = () => {
           />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          ESTA GRAFICA MUESTRA LAS VENTAS DE CADA DIA DE SEMANA SANTA Y PASCUA DE LA PLAZA SELECCIONADA EN EL AÑO ESPECIFICADO.
-        </SmallContainer>
       </ParametersContainer>
+
+      <TitleReport 
+        title={`Ventas De Semana Santa del Año ${paramPlaza.delAgno}`}
+        description = 'ESTA GRAFICA MUESTRA LAS VENTAS DE CADA DIA DE SEMANA SANTA Y PASCUA DE LA PLAZA SELECCIONADA EN EL AÑO ESPECIFICADO.'
+      />
 
       <VentasTableContainer title={`Ventas De Semana Santa del Año ${paramPlaza.delAgno}`}>
         {

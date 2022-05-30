@@ -4,20 +4,21 @@ import { Parameters, ParametersContainer, SmallContainer } from '../../component
 import { InputContainer, SelectTiendas,SelectMonth, SelectToMonth, InputYear, Checkbox } from '../../components/inputs';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import BarChart from '../../components/BarChart';
-import { MessageModal } from '../../components/modals';
 import { getPresupuestoTienda } from '../../services/PresupuestoService';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getInitialTienda, validateMonthRange, validateYear, createPresupuestoDatasets, getTiendaName, isError } from '../../utils/functions'
 import { getCurrentMonth, getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import useGraphData from '../../hooks/useGraphData';
-import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
 import { useUser } from '../../context/UserContext';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
+
 
 const Tienda = () => {
+  const alert = useAlert();
   const { tiendas } = useUser();
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTienda, setParamTienda] = useState({
     tienda: getInitialTienda(tiendas),
@@ -37,8 +38,7 @@ const Tienda = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             createPresupuestoDatasets(response, paramTienda.delAgno, setLabels, setDatasets);
           }
@@ -49,7 +49,6 @@ const Tienda = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -97,16 +96,16 @@ const Tienda = () => {
             />
           </InputContainer>
         </Parameters>   
-        <SmallContainer>
-          Esta grafica muestra un comparativo de las ventas vs compromiso del grupo en el periodo de meses y
-        </SmallContainer>
-          <SmallContainer>
-          el año especificado, este siempre será comparado contra el año anterior.
-        </SmallContainer>
-
       </ParametersContainer>
 
-      <ComparativoVentas title={`Ventas por Mes Tienda ${getTiendaName(paramTienda.tienda)} del año ${paramTienda.delAgno}`}>
+      <TitleReport 
+        title={`Ventas por Mes Tienda ${getTiendaName(paramTienda.tienda)} del año ${paramTienda.delAgno}`}
+        description = {`Esta grafica muestra un comparativo de las ventas vs compromiso del grupo en el periodo de meses y
+        el año especificado, este siempre será comparado contra el año anterior.
+        `}
+      />
+
+      <ComparativoVentas>
         <BarChart
           data={{
             labels,

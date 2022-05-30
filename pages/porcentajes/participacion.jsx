@@ -3,19 +3,19 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { InputContainer, SelectTiendasGeneral, Checkbox, InputToYear } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableHead, TableBody, TableRow } from '../../components/table';
-import { MessageModal } from '../../components/modals';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { numberWithCommas } from '../../utils/resultsFormated'
 import { getPorcenatajesParticipacion } from '../../services/PorcentajesService';
-import useMessageModal from '../../hooks/useMessageModal';
 import { isError, validateYear } from '../../utils/functions';
 import withAuth from '../../components/withAuth';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
 
 
 const Participacion = () => {
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
+  const alert = useAlert();
   const [participacionVentas, setParticipacionVentas] = useState([]);
   const [parametrosParticipacion, setParametrosParticipacion] = useState({
     alAgno: getCurrentYear(),
@@ -33,8 +33,7 @@ const Participacion = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             setParticipacionVentas(response)
           }
@@ -46,7 +45,6 @@ const Participacion = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -95,12 +93,14 @@ const Participacion = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Este reporte muestra la participación de ventas en el mes de cada una de las tiendas en razon de las vents generales en el año especificado.
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title={`PARTICIPACION DE VENTAS DE TIENDAS EN EL AÑO ${parametrosParticipacion.alAgno}`}>
+      <TitleReport 
+        title={`PARTICIPACION DE VENTAS DE TIENDAS EN EL AÑO ${parametrosParticipacion.alAgno}`}
+        description = 'Este reporte muestra la participación de ventas en el mes de cada una de las tiendas en razon de las vents generales en el año especificado.'
+      />
+
+      <VentasTableContainer>
         <VentasTable className='last-row-bg'>
           <TableHead>
             <tr>

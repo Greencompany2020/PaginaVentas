@@ -3,18 +3,19 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { VentasTableContainer, VentasTable, TableHead, TableRow } from '../../components/table';
 import { InputContainer, InputYear, Checkbox } from '../../components/inputs';
-import { MessageModal } from '../../components/modals';
 import { checkboxLabels, concentradoPlazas, MENSAJE_ERROR } from '../../utils/data';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { getMensualesConcentrado } from '../../services/MensualesServices';
 import { numberWithCommas } from '../../utils/resultsFormated';
 import { handleChange } from '../../utils/handlers';
-import useMessageModal from '../../hooks/useMessageModal';
 import { isError } from '../../utils/functions';
 import withAuth from '../../components/withAuth';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
+
 
 const Concentrado = () => {
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
+  const alert = useAlert();
   const [concentrado, setConcentrado] = useState([]);
   const [concentradoParametros, setConcentradoParametros] = useState({
     delAgno: new Date(Date.now()).getFullYear(),
@@ -30,8 +31,7 @@ const Concentrado = () => {
       getMensualesConcentrado(concentradoParametros)
         .then(response => {
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             setConcentrado(response);
           }
@@ -42,7 +42,6 @@ const Concentrado = () => {
 
   return (
     <>
-      <MessageModal message={message} setModalOpen={setModalOpen} modalOpen={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -87,12 +86,14 @@ const Concentrado = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Este reporte muestra las ventas por tienda en el año especificado.
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title='Ventas Mensuales de tiendas en el año 2022'>
+      <TitleReport 
+        title='Ventas Mensuales de tiendas en el año 2022'
+        description = 'Este reporte muestra las ventas por tienda en el año especificado.'
+      />
+
+      <VentasTableContainer>
         <VentasTable className='tfooter'>
           <TableHead>
             <tr>
@@ -130,7 +131,7 @@ const Concentrado = () => {
           <tbody className='bg-white'>
             {
               concentrado?.map(items => (
-                <TableRow key={items.tienda} rowId={items.tienda} className={`text-center ${concentradoPlazas.includes(items.tienda) ? 'bg-gray-300' : ''}`}>
+                <TableRow key={items.tienda} rowId={items.tienda} className={`text-center ${concentradoPlazas.includes(items.tienda) && 'bg-gray-300 font-bold'}`}>
                   <td className='bg-black text-white font-bold'>{items.tienda}</td>
                   <td>{numberWithCommas(items.enero)}</td>
                   <td>{numberWithCommas(items.febrero)}</td>

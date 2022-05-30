@@ -8,19 +8,19 @@ import { MENSAJE_ERROR } from '../../utils/data';
 import { formatLastDate } from '../../utils/dateFunctions';
 import { isError } from '../../utils/functions';
 import withAuth from '../../components/withAuth';
-
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
 
 
 const Fechas = () => {
-  const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
+  const alert = useAlert();
   const [fechas, setFechas] = useState([]);
 
   useEffect(() => {
     getDiariasFechas()
       .then(response => {
         if (isError(response)) {
-          setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-          setModalOpen(true);
+          alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
         } else {
           setFechas(response);
         }
@@ -30,8 +30,10 @@ const Fechas = () => {
 
   return (
     <>
-      <MessageModal message={message} setModalOpen={setModalOpen} modalOpen={modalOpen} />
-      <VentasTableContainer title="Reporte de la ultima fecha de venta registrada por tienda">
+     <TitleReport 
+         title="Reporte de la ultima fecha de venta registrada por tienda"   
+      />
+      <VentasTableContainer>
         <VentasTable>
           <TableHead>
             <tr>

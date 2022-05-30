@@ -3,22 +3,23 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { Parameters, ParametersContainer, SmallContainer } from '../../components/containers';
 import { InputContainer, SelectPlazas,SelectMonth, SelectToMonth, InputYear, Checkbox } from '../../components/inputs';
 import BarChart from '../../components/BarChart';
-import { MessageModal } from '../../components/modals';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { createOperacionesDatasets, getInitialPlaza, getPlazaName, validateMonthRange, validateYear, isError } from '../../utils/functions';
 import { getCurrentMonth, getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getOperacionesPlaza } from '../../services/OperacionesService';
-import useMessageModal from '../../hooks/useMessageModal';
 import useGraphData from '../../hooks/useGraphData';
 import withAuth from '../../components/withAuth';
 import { useUser } from '../../context/UserContext';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
+
 
 const Plaza = () => {
+  const alert = useAlert();
   const { plazas } = useUser();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [paramPlaza, setParamPlaza] = useState({
     plaza: getInitialPlaza(plazas),
     delMes: 1,
@@ -39,8 +40,7 @@ const Plaza = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             createOperacionesDatasets(response, paramPlaza.delAgno, setLabels, setDatasets);
           }
@@ -52,7 +52,6 @@ const Plaza = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -128,15 +127,16 @@ const Plaza = () => {
           />
           </InputContainer>
         </Parameters>   
-          <SmallContainer>
-            Esta grafica muestra un comparativo de las ventas vs presupuesto del grupo en el periodo de meses y
-          </SmallContainer>
-          <SmallContainer>
-            el año especificado, este siempre será comparado contra el año anterior.
-          </SmallContainer>
       </ParametersContainer>
 
-      <ComparativoVentas title={`Operaciones realizadas Plaza ${getPlazaName(paramPlaza.plaza)} ${paramPlaza.delAgno}`}>
+      <TitleReport 
+        title={`Operaciones realizadas Plaza ${getPlazaName(paramPlaza.plaza)} ${paramPlaza.delAgno}`}
+        description = {` Esta grafica muestra un comparativo de las ventas vs presupuesto del grupo en el periodo de meses y 
+        el año especificado, este siempre será comparado contra el año anterior.
+        `}
+      />
+
+      <ComparativoVentas>
         <BarChart
           data={{
             labels,

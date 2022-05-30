@@ -3,19 +3,20 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { VentasTableContainer, VentasTable, VentasDiariasTableFooter, VentasDiariasTableHead, TableRow } from '../../components/table';
 import { InputContainer, SelectMonth, InputYear, SelectTiendas, Checkbox } from '../../components/inputs';
-import { MessageModal } from '../../components/modals';
 import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
 import { getDiariasTienda } from '../../services/DiariasServices';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 import { getInitialTienda, getTiendaName, isError } from '../../utils/functions';
 import { handleChange } from '../../utils/handlers';
-import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
 import { useUser } from '../../context/UserContext';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
+
 
 const Tienda = () => {
+  const alert = useAlert();
   const { tiendas } = useUser();
-  const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [diariasTienda, setDiariasTienda] = useState([]);
   const [tiendasParametros, setTiendaParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
@@ -30,8 +31,7 @@ const Tienda = () => {
     getDiariasTienda(tiendasParametros)
       .then(response => {
         if (isError(response)) {
-          setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-          setModalOpen(true);
+          alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
         } else {
           setDiariasTienda(response);
         }
@@ -41,7 +41,6 @@ const Tienda = () => {
 
   return (
     <>
-      <MessageModal message={message} setModalOpen={setModalOpen} modalOpen={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -78,34 +77,36 @@ const Tienda = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Esta tabla muestra las ventas vs presupuesto del grupo en el periodo de mes y año especificado, este siempre será comparado contra el año anterior.
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title={`Ventas Diarias ${getTiendaName(tiendasParametros.tienda)}`}>
+      <TitleReport 
+        title={`Ventas Diarias ${getTiendaName(tiendasParametros.tienda)}`}
+        description = 'Esta tabla muestra las ventas vs presupuesto del grupo en el periodo de mes y año especificado, este siempre será comparado contra el año anterior.'
+      />
+
+      <VentasTableContainer>
         <VentasTable>
           <VentasDiariasTableHead currentYear={tiendasParametros.delAgno} month={tiendasParametros.delMes} />
           <tbody className='bg-white text-center'>
             {
               diariasTienda?.map((diaria) => (
                 <TableRow key={diaria.dia} rowId={diaria.dia}>
+                  <td className='text-center font-bold'>{diaria.dia}</td>
                   <td className='text-center'>{diaria.dia}</td>
-                  <td className='text-center'>{diaria.dia}</td>
-                  <td>{numberWithCommas(diaria.ventaActual)}</td>
+                  <td className='font-bold'>{numberWithCommas(diaria.ventaActual)}</td>
                   <td>{numberWithCommas(diaria.ventaAnterior)}</td>
                   <td>{numberWithCommas(diaria.compromisoDiario)}</td>
                   {formatNumber(diaria.crecimientoDiario)}
-                  <td>{numberWithCommas(diaria.acumMensualActual)}</td>
+                  <td className='font-bold'>{numberWithCommas(diaria.acumMensualActual)}</td>
                   <td>{numberWithCommas(diaria.acumMensualAnterior)}</td>
                   <td>{numberWithCommas(diaria.compromisoAcum)}</td>
                   {formatNumber(diaria.diferencia)}
                   {formatNumber(diaria.crecimientoMensual)}
-                  <td>{numberWithCommas(diaria.acumAnualActual)}</td>
+                  <td className='font-bold'>{numberWithCommas(diaria.acumAnualActual)}</td>
                   <td>{numberWithCommas(diaria.acumAnualAnterior)}</td>
                   <td>{numberWithCommas(diaria.compromisoAnual)}</td>
                   {formatNumber(diaria.crecimientoAnual)}
-                  <td className='text-center'>{diaria.dia}</td>
+                  <td className='text-center font-bold'>{diaria.dia}</td>
                 </TableRow>
               ))
             }

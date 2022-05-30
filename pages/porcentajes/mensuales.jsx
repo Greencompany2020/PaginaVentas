@@ -3,21 +3,21 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer, Flex } from '../../components/containers';
 import { InputContainer, InputYear, InputToYear, Checkbox, SelectTiendas, SelectPlazas } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableBody, TableHead, TableRow } from '../../components/table';
-import { MessageModal } from '../../components/modals';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getInitialPlaza, getInitialTienda, isError, validateYearRange } from '../../utils/functions';
 import { formatedDate, formatLastDate, getPrevDate, getYearFromDate } from '../../utils/dateFunctions';
 import { numberWithCommas } from '../../utils/resultsFormated';
 import { handleChange } from '../../utils/handlers';
 import { getPorcentajesMensuales } from '../../services/PorcentajesService';
-import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
 import { useUser } from "../../context/UserContext";
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
 
 
 const Mensuales = () => {
+  const alert = useAlert();
   const { tiendas, plazas } = useUser();
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const [porcentajesMensuales, setPorcentajesMensuales] = useState([]);
   const [parametrosMensuales, setParametrosMensuales] = useState({
     queryTiendaPlaza: 0,
@@ -39,8 +39,7 @@ const Mensuales = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             setPorcentajesMensuales(response)
           }
@@ -69,7 +68,6 @@ const Mensuales = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -126,15 +124,16 @@ const Mensuales = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          ESTA GRAFICA MUESTRA EL PORCENTAJE DE VENTA DEL MES EN RAZON DE LA VENTA ANUAL LA TIENDA SELECCIONADA EN EL RANGO DE AÑOS ESPECIFICADO.
-        </SmallContainer>
-        <SmallContainer>
-          RECUERDE QUE EL RANGO DE AÑOS DEBE SER CAPTURADO DE MENOR A EL MAYOR, AUNQUE EN EL REPORTE SE MOSTRARA EN ORDEN DESCENDENTE.
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title={`PROPORCION DE VENTAS MENSUALES VS. VENTA ANUAL - Ventas al ${formatLastDate(getPrevDate(0, parametrosMensuales.alAgno))}`}>
+      <TitleReport 
+        title={`PROPORCION DE VENTAS MENSUALES VS. VENTA ANUAL - Ventas al ${formatLastDate(getPrevDate(0, parametrosMensuales.alAgno))}`}
+        description = {`ESTA GRAFICA MUESTRA EL PORCENTAJE DE VENTA DEL MES EN RAZON DE LA VENTA ANUAL LA TIENDA SELECCIONADA EN EL RANGO DE AÑOS ESPECIFICADO. 
+          RECUERDE QUE EL RANGO DE AÑOS DEBE SER CAPTURADO DE MENOR A EL MAYOR, AUNQUE EN EL REPORTE SE MOSTRARA EN ORDEN DESCENDENTE.
+        `}
+      />
+
+      <VentasTableContainer >
         <VentasTable className='last-row-bg'>
           <TableHead>
             <tr>

@@ -13,20 +13,19 @@ import {
   SelectTiendasGeneral,
 } from "../../components/inputs";
 import { VentasTableContainer } from "../../components/table";
-import { MessageModal } from '../../components/modals';
 import SemanaSantaTable from "../../components/table/SemanaSantaTable";
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
 import { getCurrentYear } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { isError, validateYear } from '../../utils/functions';
 import { getSemanaSantaGrupo, getSemanaSantaGrupoConcentrado } from '../../services/semanaSantaService';
-import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
-
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
 
 
 const Grupo = () => {
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
+  const alert = useAlert();
   const [concentrado, setConcentrado] = useState(false);
   const [semanaSantaGrupo, setSemanaSantaGrupo] = useState({});
   const [paramGrupo, setParamGrupo] = useState({
@@ -47,8 +46,7 @@ const Grupo = () => {
           .then(response => {
 
             if (isError(response)) {
-              setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-              setModalOpen(true);
+              alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
             } else {
               setSemanaSantaGrupo(response)
             }
@@ -71,7 +69,6 @@ const Grupo = () => {
   
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -136,10 +133,12 @@ const Grupo = () => {
           <InputContainer>
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          ESTE REPORTE MUESTRA LAS VENTAS DE SEMANA SANTA DEL AÑO SELECCIONADO COMPARADAS CON EL AÑO ANTERIOR Y SU PORCENTAJE DE VARIACION.
-        </SmallContainer>
       </ParametersContainer>
+
+      <TitleReport 
+        title={`Ventas De Semana Santa del Año ${paramGrupo.delAgno}`}
+        description = 'ESTE REPORTE MUESTRA LAS VENTAS DE SEMANA SANTA DEL AÑO SELECCIONADO COMPARADAS CON EL AÑO ANTERIOR Y SU PORCENTAJE DE VARIACION.'
+      />
 
       <VentasTableContainer title={`Ventas De Semana Santa del Año ${paramGrupo.delAgno}`}>
         {

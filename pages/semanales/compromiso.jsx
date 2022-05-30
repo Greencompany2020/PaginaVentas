@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { InputContainer, InputDateRange, SelectPlazas, Checkbox } from '../../components/inputs';
-import { MessageModal } from '../../components/modals';
 import { VentasTableContainer, VentasTable, TableHead, TableRow } from '../../components/table';
 import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
 import { getSemanalesCompromisos } from '../../services/SemanalesService';
@@ -11,11 +10,12 @@ import { getCurrentWeekDateRange } from '../../utils/dateFunctions';
 import { dateRangeTitle, isError, validateInputDateRange } from '../../utils/functions';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { handleChange } from '../../utils/handlers';
-import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
 
 const Compromiso = () => {
-  const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
+  const alert = useAlert();
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesCompromisos, setSemanalesCompromisos] = useState([]);
   const [compromisosParametros, setCompromisosParametros] = useState({
@@ -32,8 +32,7 @@ const Compromiso = () => {
       getSemanalesCompromisos(compromisosParametros)
         .then(response => {
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             setSemanalesCompromisos(response);
           }
@@ -44,7 +43,6 @@ const Compromiso = () => {
 
   return (
     <>
-      <MessageModal message={message} setModalOpen={setModalOpen} modalOpen={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -79,15 +77,16 @@ const Compromiso = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Este informe muestra un compartivo de la semana o en rango de fecha seleccionado. Recuerde que la comparacion se realiza lunes contra lunes,
-        </SmallContainer>
-        <SmallContainer>
-          lo cual quiere decir que las ventas del año anterior no seran por fecha sino lo que corresponda a los dias de la semana.
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title={`DEFINICION METAS: Semana ${dateRangeTitle(compromisosParametros.fechaInicio, compromisosParametros.fechaFin)}`}>
+      <TitleReport 
+          title={`DEFINICION METAS: Semana ${dateRangeTitle(compromisosParametros.fechaInicio, compromisosParametros.fechaFin)}`}
+          description = {`Este informe muestra un compartivo de la semana o en rango de fecha seleccionado. Recuerde que la comparacion se realiza lunes contra lunes,
+            lo cual quiere decir que las ventas del año anterior no seran por fecha sino lo que corresponda a los dias de la semana.
+          `}
+        />
+
+      <VentasTableContainer>
         <VentasTable>
           <TableHead>
             <tr>

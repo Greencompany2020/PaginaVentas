@@ -5,17 +5,18 @@ import { VentasTableContainer, VentasTable, TableHead, TableRow } from '../../co
 import { InputContainer, Checkbox, InputDate } from '../../components/inputs';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { getMonthByNumber, getPrevDate, getYearFromDate } from '../../utils/dateFunctions';
-import { MessageModal } from '../../components/modals';
 import { handleChange } from '../../utils/handlers';
 import { getTableName, isError, validateDate } from '../../utils/functions';
 import { getComparativoPlazas } from '../../services/ComparativoService';
 import { Fragment } from 'react/cjs/react.production.min';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
-import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
+
 
 const Plazas = () => {
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
+  const alert = useAlert();
   const [comparativoPlazas, setComparativoPlazas] = useState({});
   const [semanaSanta, setSemanaSanta] = useState(true);
   const [parametrosPlazas, setParametrosPlazas] = useState({
@@ -35,8 +36,7 @@ const Plazas = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             setComparativoPlazas(response)
           }
@@ -48,7 +48,6 @@ const Plazas = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -120,22 +119,19 @@ const Plazas = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Este reporte muestra un comparativo entre las ventas del año contra el año anterior. El comparativo se realiza por día, mes y año.
-        </SmallContainer>
-        <SmallContainer>
-          Recuerde que la comparación se realiza lunes contra lunes, lo cual quiere decir que las ventas mensuales y anuales saldran con
-        </SmallContainer>
-        <SmallContainer>
-          un dia desface para respetar esto.
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer
+      <TitleReport 
         title={`COMPARATIVO VENTAS DEL AÑO 
           ${parametrosPlazas.fecha.split("-")[0]} (AL ${parametrosPlazas.fecha.split("-")[2]} DE ${getMonthByNumber(parametrosPlazas.fecha.split("-")[1]).toUpperCase()})`
         }
-      >
+        description = {`Este reporte muestra un comparativo entre las ventas del año contra el año anterior. El comparativo se realiza por día, mes y año. 
+         Recuerde que la comparación se realiza lunes contra lunes, lo cual quiere decir que las ventas mensuales y anuales saldran con
+         un dia desface para respetar esto.
+        `}
+      />
+
+      <VentasTableContainer>
         {
           Object.entries(comparativoPlazas)?.map(([key, value]) => (
             <Fragment key={key}>
@@ -163,14 +159,14 @@ const Plazas = () => {
                 <tbody className='text-center'>
                   {
                     value.map(plaza => (
-                      <TableRow key={plaza.plaza} rowId={plaza.plaza} className='bg-white text-black'>
-                        <td>{plaza.plaza}</td>
-                        <td>{numberWithCommas(plaza.ventasMensualesActual)}</td>
+                      <TableRow key={plaza.plaza} rowId={plaza.plaza} className='bg-white text-black '>
+                        <td className='font-bold'>{plaza.plaza}</td>
+                        <td className='font-bold'>{numberWithCommas(plaza.ventasMensualesActual)}</td>
                         <td>{numberWithCommas(plaza.ventasMensualesAnterior)}</td>
                         <td>{numberWithCommas(plaza.presupuestoMensual)}</td>
                         {formatNumber(plaza.diferenciaMensual)}
                         {formatNumber(plaza.porcentajeMensual)}
-                        <td>{numberWithCommas(plaza.ventasAnualActual)}</td>
+                        <td className='font-bold'>{numberWithCommas(plaza.ventasAnualActual)}</td>
                         <td>{numberWithCommas(plaza.ventasAnualAnterior)}</td>
                         <td>{numberWithCommas(plaza.presupuestoAnual)}</td>
                         {formatNumber(plaza.diferenciaAnual)}

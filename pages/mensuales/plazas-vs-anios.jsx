@@ -4,19 +4,20 @@ import { ParametersContainer, Parameters, SmallContainer } from '../../component
 import { VentasTableContainer } from '../../components/table';
 import { InputContainer, Checkbox, SelectMonth, InputYear, SelectTiendasGeneral, InputToYear } from '../../components/inputs';
 import BarChart from '../../components/BarChart';
-import { MessageModal } from '../../components/modals';
 import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data';
 import { formatedDate, formatLastDate, getCurrentMonth, getCurrentYear, getMonthByNumber } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { inputNames } from '../../utils/data/checkboxLabels';
 import { getMensualesPlazasAgnos } from '../../services/MensualesServices';
 import { createDatasets, isError, validateYearRange } from '../../utils/functions';
-import useMessageModal from '../../hooks/useMessageModal';
 import useGraphData from '../../hooks/useGraphData';
 import withAuth from '../../components/withAuth';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
+
 
 const PlazasVS = () => {
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
+  const alert = useAlert();
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
   const [plazasAgnosParametros, setPlazasAgnosParametros] = useState({
     delMes: getCurrentMonth(),
@@ -35,8 +36,7 @@ const PlazasVS = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true)
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
               createDatasets(
               response,
@@ -54,7 +54,6 @@ const PlazasVS = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -83,6 +82,7 @@ const PlazasVS = () => {
               onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
             />
             <Checkbox
+              className='mb-3'
               labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
               name={inputNames.CON_VENTAS_EVENTOS}
               onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
@@ -103,17 +103,16 @@ const PlazasVS = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Esta gráfica muestra las ventas por plaza del mes seleccionado en el rango de años especificado.
-        </SmallContainer>
-        <SmallContainer>
-          Recuerde que el rango de años debe ser capturado de menor a el mayor, aunque en el reporte se mostrara en orden descendente.
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer
+      <TitleReport 
         title={`Ventas del mes de ${getMonthByNumber(plazasAgnosParametros.delMes)} del ${plazasAgnosParametros.alAgno} al ${plazasAgnosParametros.delAgno}`}
-      >
+        description = {` Esta gráfica muestra las ventas por plaza del mes seleccionado en el rango de años especificado.
+        Recuerde que el rango de años debe ser capturado de menor a el mayor, aunque en el reporte se mostrara en orden descendente.
+        `}
+      />
+
+      <VentasTableContainer>
         <BarChart
           text={`Ventas al ${formatLastDate(formatedDate(plazasAgnosParametros.alAgno, plazasAgnosParametros.delMes))
             }`}

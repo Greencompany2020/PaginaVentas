@@ -4,20 +4,21 @@ import { Checkbox, InputContainer, InputToYear, InputYear, SelectMonth, SelectTi
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import ComparativoVentas from '../../components/table/ComparativoVentas';
 import { getOperacionesTienda } from '../../services/OperacionesService';
-import { MessageModal } from '../../components/modals';
 import BarChart from '../../components/BarChart';
 import { checkboxLabels, inputNames, MENSAJE_ERROR, meses } from '../../utils/data';
 import { getCurrentMonth, getCurrentYear } from '../../utils/dateFunctions';
 import { getInitialTienda, getTiendaName, isError, validateMonthRange, validateYearRange } from '../../utils/functions';
 import { handleChange } from '../../utils/handlers';
 import useGraphData from '../../hooks/useGraphData';
-import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
 import { useUser } from '../../context/UserContext';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
+
 
 const Tienda = () => {
+  const alert = useAlert();
   const { tiendas } = useUser();
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTienda, setParamTienda] = useState({
     tienda: getInitialTienda(tiendas),
@@ -37,8 +38,7 @@ const Tienda = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true)
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             createOperacionesDatasets(response)
           }
@@ -92,7 +92,6 @@ const Tienda = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -146,17 +145,16 @@ const Tienda = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          ESTA GRAFICA MUESTRA LAS OPERACIONES REALIZADAS POR LA TIENDA SELECCIONADA EN EL PERIODO DE MESES 
-        </SmallContainer>
-        <SmallContainer>
-          Y EL AÑO ESPECIFICADO, ESTE SIEMPRE SERA COMPARADO CONTRA EL AÑO ANTERIOR.
-        </SmallContainer>
       </ParametersContainer>
 
-      <ComparativoVentas
+      <TitleReport 
         title={`Operaciones Realizadas Tienda ${getTiendaName(paramTienda.tienda)} ${paramTienda.alAgno} - ${paramTienda.delAgno}`}
-      >
+        description = {` ESTA GRAFICA MUESTRA LAS OPERACIONES REALIZADAS POR LA TIENDA SELECCIONADA EN EL PERIODO DE MESES
+        Y EL AÑO ESPECIFICADO, ESTE SIEMPRE SERA COMPARADO CONTRA EL AÑO ANTERIOR. 
+        `}
+      />
+
+      <ComparativoVentas>
         <BarChart
           data={{
             labels,

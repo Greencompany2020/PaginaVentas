@@ -10,7 +10,7 @@ const VentasLayout = ({ children }) => {
   return (
     <>
       <Navbar />
-      <div className='flex relative min-h-screen'>
+      <div className='flex flex-col relative'>
         <SideMenu />
         <section className='flex flex-1 flex-col items-center overflow-hidden'>
           {children}

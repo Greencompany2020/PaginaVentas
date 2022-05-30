@@ -3,6 +3,7 @@ import { ParametersContainer, Parameters, SmallContainer } from '../../component
 import { InputContainer, InputDate } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableHead, TableBody } from '../../components/table';
 import withAuth from '../../components/withAuth';
+import TitleReport from '../../components/TitleReport';
 
 const tiendasweb = () => {
   return (
@@ -13,12 +14,14 @@ const tiendasweb = () => {
             <InputDate />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Este reporte muestra las ventas acumuladas semana-mes-año
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title='TIENDAS WEB COMPARATIVO VENTAS DEL AÑO 2022 (AL 12 DE ENERO S/IVA M.N. )'>
+      <TitleReport 
+        title='TIENDAS WEB COMPARATIVO VENTAS DEL AÑO 2022 (AL 12 DE ENERO S/IVA M.N. )'
+        description = 'Este reporte muestra las ventas acumuladas semana-mes-año'
+      />
+
+      <VentasTableContainer>
         <VentasTable className='last-row-bg'>
           <TableHead>
             <tr>

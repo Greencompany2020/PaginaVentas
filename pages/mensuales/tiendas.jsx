@@ -3,19 +3,20 @@ import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { InputContainer, SelectMonth, InputToYear, SelectTiendasGeneral, Checkbox } from '../../components/inputs';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
 import { VentasTableContainer } from '../../components/table';
-import { MessageModal } from '../../components/modals';
 import BarChart from '../../components/BarChart';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
 import { formatedDate, formatLastDate, getCurrentMonth, getCurrentYear, getMonthByNumber } from '../../utils/dateFunctions';
 import { handleChange } from '../../utils/handlers';
 import { getMensualesTiendas } from '../../services/MensualesServices';
 import { createSimpleDatasets, isError, validateYear } from '../../utils/functions';
-import useMessageModal from '../../hooks/useMessageModal';
 import useGraphData from '../../hooks/useGraphData';
 import withAuth from '../../components/withAuth';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
+
 
 const Tiendas = () => {
-  const { message, modalOpen, setModalOpen, setMessage } = useMessageModal();
+  const alert = useAlert();
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
   const [tiendasParametros, setTiendasParametros] = useState({
     delMes: getCurrentMonth(),
@@ -32,8 +33,7 @@ const Tiendas = () => {
       getMensualesTiendas(tiendasParametros)
         .then(response => {
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             createSimpleDatasets(response, setLabels, setDatasets)
           }
@@ -44,7 +44,6 @@ const Tiendas = () => {
 
   return (
     <>
-      <MessageModal setModalOpen={setModalOpen} message={message} modalOpen={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -54,6 +53,10 @@ const Tiendas = () => {
             />
             <InputToYear
               value={tiendasParametros.alAgno}
+              onChange={(e) => handleChange(e, setTiendasParametros)}
+            />
+             <SelectTiendasGeneral
+              value={tiendasParametros.tiendas}
               onChange={(e) => handleChange(e, setTiendasParametros)}
             />
           </InputContainer>
@@ -68,10 +71,6 @@ const Tiendas = () => {
               className='mb-3'
               labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
               name={inputNames.CON_VENTAS_EVENTOS}
-              onChange={(e) => handleChange(e, setTiendasParametros)}
-            />
-            <SelectTiendasGeneral
-              value={tiendasParametros.tiendas}
               onChange={(e) => handleChange(e, setTiendasParametros)}
             />
           </InputContainer>
@@ -90,14 +89,14 @@ const Tiendas = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Esta grafica muestra las ventas de todas las tiendas del grupo del mes seleccionado en el año especificado.
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer
+      <TitleReport 
         title={`Ventas del mes de ${getMonthByNumber(tiendasParametros.delMes)} del año ${tiendasParametros.alAgno}`}
-      >
+        description = 'Esta grafica muestra las ventas de todas las tiendas del grupo del mes seleccionado en el año especificado.'
+      />
+
+      <VentasTableContainer>
         <BarChart
           text={`Ventas al ${formatLastDate(formatedDate(tiendasParametros.alAgno, tiendasParametros.delMes))}`}
           data={{

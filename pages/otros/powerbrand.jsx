@@ -3,6 +3,7 @@ import { ParametersContainer, Parameters, SmallContainer } from '../../component
 import { InputContainer, InputDate } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableHead, TableBody } from '../../components/table';
 import withAuth from '../../components/withAuth';
+import TitleReport from '../../components/TitleReport';
 
 const powerbrand = () => {
   return (
@@ -13,12 +14,14 @@ const powerbrand = () => {
             <InputDate />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Este reporte muestra las ventas acumuladas dia-semana-año
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer className='POWERBRAND COMPARATIVO VENTAS DEL AÑO 2022 (AL 11 DE ENERO S/IVA M.N. )'>
+      <TitleReport 
+        title='POWERBRAND COMPARATIVO VENTAS DEL AÑO 2022 (AL 11 DE ENERO S/IVA M.N. )'
+        description = 'Este reporte muestra las ventas acumuladas dia-semana-año'
+      />
+      
+      <VentasTableContainer>
         <VentasTable className='last-row-bg'>
           <TableHead>
             <tr>

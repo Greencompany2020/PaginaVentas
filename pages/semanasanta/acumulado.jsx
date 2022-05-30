@@ -4,18 +4,18 @@ import { getVentasLayout} from '../../components/layout/VentasLayout';
 import { VentasTableContainer, VentasTable, TableHead, TableRow } from '../../components/table';
 import { InputContainer, Checkbox, InputOfTheDate, InputVsYear } from '../../components/inputs';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
-import { MessageModal } from '../../components/modals';
 import { getCurrentDate, getCurrentYear, getYearFromDate, semanaSanta } from '../../utils/dateFunctions';
 import { getDayName, rowColor, validateDate, validateYear, getTableName, dateRangeTitleSemanaSanta, isError } from '../../utils/functions';
 import { handleChange } from '../../utils/handlers';
 import { getSemanaSantaAcumulado } from '../../services/semanaSantaService';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
-import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
 
 
 const Acumulado = () => {
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
+  const alert = useAlert();
   const [fechaInicioSemana, setFechaInicioSemana] = useState(semanaSanta(getCurrentYear())[0]);
   const [acumulado, setAcumulado] = useState([]);
   const [paramAcumulado, setParamAcumulado] = useState({
@@ -36,8 +36,7 @@ const Acumulado = () => {
         .then(response => {
 
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true)
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             setAcumulado(response)
           }
@@ -52,7 +51,6 @@ const Acumulado = () => {
 
   return (
     <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -114,12 +112,14 @@ const Acumulado = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Este reporte muestra la venta del dia y la venta acumulada de la semana santa en la fecha especificada.
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title={`Ventas Semana Santa del año ${getYearFromDate(paramAcumulado.fecha)}`}>
+      <TitleReport 
+        title={`Ventas Semana Santa del año ${getYearFromDate(paramAcumulado.fecha)}`}
+        description = ' Este reporte muestra la venta del dia y la venta acumulada de la semana santa en la fecha especificada.'
+      />
+
+      <VentasTableContainer>
         {
           Object.entries(acumulado).map(([key, value]) => (
             <Fragment key={key}>
@@ -159,17 +159,17 @@ const Acumulado = () => {
                     value?.map((venta) => (
                       <TableRow key={venta.tienda} rowId={venta.tienda} className={rowColor(venta)}>
                         <td>{venta.tienda}</td>
-                        <td>{numberWithCommas(venta.ventaActual)}</td>
+                        <td className='font-bold'>{numberWithCommas(venta.ventaActual)}</td>
                         <td>{numberWithCommas(venta.ventaAnterior)}</td>
                         <td>{numberWithCommas(venta.presupuesto)}</td>
                         {formatNumber(venta.porcentaje)}
-                        <td>{numberWithCommas(venta.promedioActual)}</td>
+                        <td className='font-bold'>{numberWithCommas(venta.promedioActual)}</td>
                         <td>{numberWithCommas(venta.promedioAnterior)}</td>
                         {formatNumber(venta.porcentajePromedios)}
-                        <td>{numberWithCommas(venta.operacionesActual)}</td>
+                        <td className='font-bold'>{numberWithCommas(venta.operacionesActual)}</td>
                         <td>{numberWithCommas(venta.operacionesAnterior)}</td>
                         {formatNumber(venta.porcentajeOperaciones)}
-                        <td>{numberWithCommas(venta.ventaAcumuladaActual)}</td>
+                        <td className='font-bold'>{numberWithCommas(venta.ventaAcumuladaActual)}</td>
                         <td>{numberWithCommas(venta.ventaAcumuladaAnterior)}</td>
                         <td>{numberWithCommas(venta.presupuestoAcumulado)}</td>
                         {formatNumber(venta.porcentajeAcumulado)}

@@ -1,7 +1,6 @@
 import { useState, useEffect, Fragment } from 'react';
 import { getVentasLayout } from '../../components/layout/VentasLayout';
 import { ParametersContainer, Parameters, SmallContainer } from '../../components/containers';
-import { MessageModal } from '../../components/modals';
 import { InputContainer, Checkbox, InputDate } from '../../components/inputs';
 import { VentasTableContainer, VentasTable, TableHead, TableRow } from '../../components/table';
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
@@ -10,11 +9,12 @@ import { getComparativoGrupo } from '../../services/ComparativoService';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 import { getBeginCurrentWeekDateRange, getMonthByNumber, getNameDay, getPrevDate, getYearFromDate } from '../../utils/dateFunctions';
 import { getDayWeekName, validateDate, getTableName, rowColor, isError } from '../../utils/functions';
-import useMessageModal from '../../hooks/useMessageModal';
 import withAuth from '../../components/withAuth';
+import {useAlert} from '../../context/alertContext'
+import TitleReport from '../../components/TitleReport';
 
 function Grupo(){
-  const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
+  const alert = useAlert();
   const [comparativoGrupo, setComparativoGrupo] = useState({});
   const [acumuladoSemanal, setAcumuladoSemanal] = useState(false);
   const [parametrosGrupo, setParametrosGrupo] = useState({
@@ -36,8 +36,7 @@ function Grupo(){
       getComparativoGrupo(parametrosGrupo)
         .then(response => {
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             setComparativoGrupo(response)
           }
@@ -48,7 +47,6 @@ function Grupo(){
 
   return (
     <>
-      <MessageModal message={message} setModalOpen={setModalOpen} modalOpen={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputContainer>
@@ -124,25 +122,20 @@ function Grupo(){
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Este reporte muestra un comparativo entre las ventas del año contra el año anterior. El comparativo se realiza por día, mes y año.
-        </SmallContainer>
-        <SmallContainer>
-          Recuerde que la comparación se realiza lunes contra lunes, lo cual quiere decir que las ventas mensuales y anuales saldran con
-        </SmallContainer>
-        <SmallContainer>
-          un dia desface para respetar esto.
-        </SmallContainer>
-        <SmallContainer>
-          En esta temporada de semana santa se habilitará el check para intercambiar los dias de la temporada del año anterior.
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer
+      <TitleReport 
         title={`COMPARATIVO VENTAS DEL AÑO 
           ${parametrosGrupo.fecha.split("-")[0]} (AL ${parametrosGrupo.fecha.split("-")[2]} DE ${getMonthByNumber(parametrosGrupo.fecha.split("-")[1]).toUpperCase()})`
         }
-      >
+        description = {`Este reporte muestra un comparativo entre las ventas del año contra el año anterior. El comparativo se realiza por día, mes y año.
+         Recuerde que la comparación se realiza lunes contra lunes, lo cual quiere decir que las ventas mensuales y anuales saldran con
+         un dia desface para respetar esto.
+          En esta temporada de semana santa se habilitará el check para intercambiar los dias de la temporada del año anterior.
+        `}
+      />
+
+      <VentasTableContainer>
         {
           Object?.entries(comparativoGrupo ?? {})?.map(([key, value]) => (
             <Fragment key={key}>
@@ -190,8 +183,8 @@ function Grupo(){
                   {
                     value?.map(tienda => (
                       <TableRow key={tienda.tienda} rowId={tienda.tienda} className={rowColor(tienda)}>
-                        <td className='font-bold'>{tienda.tienda}</td>
-                        <td>{numberWithCommas(tienda.ventasActuales)}</td>
+                        <td>{tienda.tienda}</td>
+                        <td className='font-bold'>{numberWithCommas(tienda.ventasActuales)}</td>
                         <td>{numberWithCommas(tienda.ventasAnterior)}</td>
                         <td>{numberWithCommas(tienda.presupuesto)}</td>
                         {formatNumber(tienda.porcentaje)}
@@ -205,17 +198,17 @@ function Grupo(){
                             </>
                           )
                         }
-                        <td>{numberWithCommas(tienda.ventasMensualesActual)}</td>
+                        <td className='font-bold'>{numberWithCommas(tienda.ventasMensualesActual)}</td>
                         <td>{numberWithCommas(tienda.ventasMensualesAnterior)}</td>
                         <td>{numberWithCommas(tienda.presupuestoMensual)}</td>
                         {formatNumber(tienda.diferenciaMensual)}
                         {formatNumber(tienda.porcentajeMensual)}
-                        <td>{numberWithCommas(tienda.ventasAnualActual)}</td>
+                        <td className='font-bold'>{numberWithCommas(tienda.ventasAnualActual)}</td>
                         <td>{numberWithCommas(tienda.ventasAnualAnterior)}</td>
                         <td>{numberWithCommas(tienda.presupuestoAnual)}</td>
                         {formatNumber(tienda.diferenciaAnual)}
                         {formatNumber(tienda.porcentajeAnual)}
-                        <td className='font-bold'>{tienda.tienda}</td>
+                        <td>{tienda.tienda}</td>
                       </TableRow>
                     ))
                   }

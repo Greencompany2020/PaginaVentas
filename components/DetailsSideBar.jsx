@@ -13,7 +13,7 @@ const DetailsSideBar = ({ summaryText, links }) => {
 
   return (
     <details>
-      <summary className='cursor-pointer flex items-center'>
+      <summary className='cursor-pointer flex items-center pb-2'>
         <Image src={Plus} alt='Plus' height={16} width={16} />
         <span className='ml-1'>{summaryText}</span>
       </summary>
@@ -22,7 +22,7 @@ const DetailsSideBar = ({ summaryText, links }) => {
           links.map(item => (
             <Link href={item.link} key={item.linkText}>
               <a>
-                <li className={`pl-5 p-1 border-b-2 border-gray-300 ${activeLink(item.link)} rounded-md transition ease-in-out duration-200`}>
+                <li className={`pl-5 p-1 border-b-2 border-gray-300 ${activeLink(item.link)} transition-all ease-in-out duration-200`}>
                   {item.linkText}
                 </li>
               </a>

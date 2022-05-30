@@ -1,16 +1,24 @@
-import Image from 'next/image'
-import { Flex } from './index'
-import Settings from '../../public/images/settings.png'
+import { useState } from 'react'
+import {AdjustmentsIcon, XIcon} from '@heroicons/react/solid'
 
 const ParametersContainer = ({ children }) => {
+  const [toggle, setToggle] = useState(false);
+  const handleToggle = () => setToggle(!toggle);
   return (
-    <Flex className='flex-col border-b-2 border-gray-300 pl-3 pt-2'>
-      <Flex className='m-auto xl:m-0'>
-        <Image src={Settings} alt='parámetros' className='w-7 h-7' height={28} width={28}/>
-        <p className='ml-3 font-bold'>Introduzca los parámetros para el reporte</p>
-      </Flex>
-      {children}
-    </Flex>
+    <>
+      <figure className='fixed top-32 left-1 rounded-full z-10 border-2 p-1 bg-slate-500 cursor-pointer'>
+        <AdjustmentsIcon 
+          width={34}
+          className=' text-gray-100'
+          onClick={handleToggle}
+        />
+      </figure>
+      <div className={`fixed w-[90%] md:w-fit top-[180px] left-2 z-30 p-4 md:left-3 bg-slate-50 border-2 rounded-md ${!toggle && 'hidden'}`}>
+        <XIcon width={28} className='absolute right-1 top-1 cursor-pointer text-slate-500' onClick={handleToggle}/>
+        <p className='font-semibold mb-4 text-lg'>Parametros de busqueda</p>
+        {children}
+      </div>
+    </>
   )
 }
 

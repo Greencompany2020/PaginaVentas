@@ -6,6 +6,7 @@ import { VentasTableContainer } from '../../components/table';
 import BarChart from '../../components/BarChart';
 import { checkboxLabels} from '../../utils/data';
 import withAuth from '../../components/withAuth';
+import TitleReport from '../../components/TitleReport';
 
 const Grafica = ({year1,year2}) => {
   year1 = 1
@@ -58,12 +59,14 @@ const Grafica = ({year1,year2}) => {
             <Checkbox className='mb-3' labelText={checkboxLabels.RESULTADO_PESOS} /> 
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-        Este reporte muestra las ventas de semana santa del año seleccionado comparadas con el año anterior y su porcentaje de variacion. 
-        </SmallContainer>
       </ParametersContainer>
 
-      <VentasTableContainer title='Comparativo Semana Santa Grupo Frogs 2018 vs 2019 (mls.pesos) -iva no incluido'>
+      <TitleReport 
+        title='Comparativo Semana Santa Grupo Frogs 2018 vs 2019 (mls.pesos) -iva no incluido'
+        description = 'Este reporte muestra las ventas de semana santa del año seleccionado comparadas con el año anterior y su porcentaje de variacion.'
+      />
+
+      <VentasTableContainer>
         <BarChart
           text='Años'
           data={{

@@ -2,9 +2,7 @@ import { useEffect, useState } from 'react';
 import { SmallContainer, ParametersContainer, Parameters } from '../../components/containers';
 import { InputContainer, InputDateRange, Checkbox } from '../../components/inputs'
 import { getVentasLayout } from '../../components/layout/VentasLayout';
-import { MessageModal } from '../../components/modals';
 import { VentasTableContainer, VentasTable, TableHead, TableRow } from '../../components/table';
-import useMessageModal from '../../hooks/useMessageModal';
 import { getSemanalesPlazas } from '../../services/SemanalesService';
 import { checkboxLabels, MENSAJE_ERROR } from '../../utils/data'
 import { inputNames } from '../../utils/data/checkboxLabels';
@@ -13,10 +11,12 @@ import { dateRangeTitle, isError, validateInputDateRange } from '../../utils/fun
 import { handleChange } from '../../utils/handlers';
 import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
 import withAuth from '../../components/withAuth';
+import {useAlert} from '../../context/alertContext';
+import TitleReport from '../../components/TitleReport';
 
 
 const Plazas = () => {
-  const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
+  const alert = useAlert();
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesPlaza, setSemanalesPlaza] = useState([]);
   const [plazasParametros, setPlazasParametros] = useState({
@@ -35,8 +35,7 @@ const Plazas = () => {
       getSemanalesPlazas(plazasParametros)
         .then(response => {
           if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
+            alert.showAlert(response?.response?.data ?? MENSAJE_ERROR, 'warning', 1000);
           } else {
             setSemanalesPlaza(response);
           }
@@ -47,7 +46,6 @@ const Plazas = () => {
 
   return (
     <>
-      <MessageModal message={message} setModalOpen={setModalOpen} modalOpen={modalOpen} />
       <ParametersContainer>
         <Parameters>
           <InputDateRange
@@ -63,6 +61,7 @@ const Plazas = () => {
               onChange={(e) => handleChange(e, setPlazasParametros)}
             />
             <Checkbox
+              className='mb-3'
               labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
               name={inputNames.CON_VENTAS_EVENTOS}
               onChange={(e) => handleChange(e, setPlazasParametros)}
@@ -76,6 +75,7 @@ const Plazas = () => {
               onChange={(e) => handleChange(e, setPlazasParametros)}
             />
             <Checkbox
+              className='mb-3'
               labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
               name={inputNames.SIN_AGNO_VENTA}
               onChange={(e) => handleChange(e, setPlazasParametros)}
@@ -96,16 +96,17 @@ const Plazas = () => {
             />
           </InputContainer>
         </Parameters>
-        <SmallContainer>
-          Este reporte muestra un compartivo de la semana o en rango de fecha selecionado. Recuerde que la comparacion se realiza lunes contra lunes,
-        </SmallContainer>
-        <SmallContainer>
-          lo cual quiere decir que las ventas del año anterior no seran por fecha sino lo que corresponda a los dias de la semana.
-        </SmallContainer>
       </ParametersContainer>
 
+      <TitleReport 
+          title='Detalles de información / Semanales por plaza'
+          description = {`Este reporte muestra un compartivo de la semana o en rango de fecha selecionado. Recuerde que la comparacion se realiza lunes contra lunes,
+          lo cual quiere decir que las ventas del año anterior no seran por fecha sino lo que corresponda a los dias de la semana.
+          `}
+        />
+
       {/* Table */}
-      <VentasTableContainer title='Detalles de información / Semanales por plaza'>
+      <VentasTableContainer>
         <VentasTable className='tfooter'>
           <TableHead>
             <tr>
@@ -139,15 +140,15 @@ const Plazas = () => {
                     {semPlaza.plaza}
                   </td>
                   <td>{numberWithCommas(semPlaza.compromiso)}</td>
-                  <td>{numberWithCommas(semPlaza.ventasActuales)}</td>
+                  <td className='font-bold'>{numberWithCommas(semPlaza.ventasActuales)}</td>
                   {formatNumber(semPlaza.porcentaje)}
                   <td>{numberWithCommas(semPlaza.ventasAnterior)}</td>
-                  <td>{numberWithCommas(semPlaza.operacionesComp)}</td>
-                  <td>{numberWithCommas(semPlaza.operacionesActual)}</td>
+                  <td className='font-bold'>{numberWithCommas(semPlaza.operacionesComp)}</td>
+                  <td className='font-bold'>{numberWithCommas(semPlaza.operacionesActual)}</td>
                   {formatNumber(semPlaza.porcentajeOperaciones)}
                   <td>{numberWithCommas(semPlaza.operacionesAnterior)}</td>
-                  <td>{numberWithCommas(semPlaza.promedioComp)}</td>
-                  <td>{numberWithCommas(semPlaza.promedioActual)}</td>
+                  <td className='font-bold'>{numberWithCommas(semPlaza.promedioComp)}</td>
+                  <td className='font-bold'>{numberWithCommas(semPlaza.promedioActual)}</td>
                   {formatNumber(semPlaza.porcentajePromedios)}
                   <td>{numberWithCommas(semPlaza.promedioAnterior)}</td>
                 </TableRow>
