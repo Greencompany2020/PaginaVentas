@@ -100,7 +100,7 @@ table.last-row-bg tr:last-child {
   .Message-modal{
     @apply 
     fixed
-    bg-black 
+    bg-red-300
     border-2 
     border-gray-100 
     w-4/5 
@@ -110,10 +110,9 @@ table.last-row-bg tr:last-child {
     z-40
     justify-center 
     items-center p-4 rounded-md
-    translate-x-[calc(50vw_-_50%)]
-    top-4
+    translate-x-[calc(100vw_-_100%)]
+    bottom-4
     transition ease-in-out duration-200
-    transform scale-0
   }
 
   .Message-modal.active{
@@ -125,6 +124,35 @@ table.last-row-bg tr:last-child {
   tbody tr:hover {
     @apply bg-blue-200
   }
+
+
+  .Alert-Modal{
+    @apply 
+    fixed 
+    flex 
+    flex-row 
+    items-center 
+    right-1
+    bottom-0
+    w-fit 
+    h-14    
+    space-x-4
+    rounded-md 
+    p-3
+    border-2   
+    transition-all ease-in-out duration-200
+    translate-y-[calc(100vh_-_100%)]
+  }
+  .Alert-Modal.active{
+    @apply translate-y-[-40px]
+  }
+  .Alert-Modal.warning{
+   @apply bg-red-400
+  }
+  .Alert-Modal.info{
+    @apply bg-sky-400
+  }
+  
 }
 
 /*Estilos del loader component*/

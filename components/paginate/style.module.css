@@ -1,0 +1,69 @@
+.Selector{
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+}
+
+.Selector label{
+    font-size: 16px;
+    margin-right: 0.5rem;
+    font-weight:500;
+}
+
+.Selector select{
+    min-width: 4rem;
+    width: auto;
+    height: 2rem;
+    border-radius: 0.2rem;
+    outline: none;
+}
+
+.Pagination{
+    display: flex;
+    margin-top:0.5rem;
+}
+
+.PaginationButtom{
+    border: none;
+    color: #7e7e7e;
+    background-color: #eeeeee;
+    border-radius:  0.2rem;
+    padding: 0.3rem;
+    font-size: 16px;
+    font-weight: 500;
+    margin-right: 0.4rem;
+}
+
+.PaginationButtom:hover{
+    background-color: #cccccc;
+}
+
+.PaginationPage{
+    background-color: #eeeeee;
+    margin-right: 0.5rem;
+    min-width:32px;
+    border-radius:  0.2rem;
+}
+
+.PaginationPage:hover ,.PaginationActive{
+    background-color: #4f77d9;
+    color: #fff;
+    font-weight: bolder;
+}
+
+.Search{
+    background-color: #eeeeee;
+    padding: 0.2rem;
+    margin-left: 0.5rem;
+    padding-left: 0.5rem;
+    font-size: 18px;
+    border-radius:  0.2rem;
+    outline: none;
+}
+
+.HeadContainer{
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    margin-bottom: 0.4rem;
+}

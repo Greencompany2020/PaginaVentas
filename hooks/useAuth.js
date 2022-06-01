@@ -11,9 +11,10 @@ function useAuth(){
     }
 
     const logOut = async () => {
-        const data = await get_logouth();
+        await get_logouth();
         jsCookie.remove('accessToken');
         jsCookie.remove('jwt');
+        window.location.href = '/'
         return true;
     }
 

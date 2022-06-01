@@ -14,18 +14,18 @@ const RegionesPlazaTableRow = ({ item, type, rowId }) => {
         {item.plaza}
       </td>
       <td>{numberWithCommas(item.compromiso)}</td>
-      <td>{numberWithCommas(item.ventasActuales)}</td>
+      <td className="font-bold">{numberWithCommas(item.ventasActuales)}</td>
       {formatNumber(item.porcentaje)}
       <td>{numberWithCommas(item.ventasAnterior)}</td>
-      <td>{numberWithCommas(item.operacionesComp)}</td>
-      <td>{numberWithCommas(item.operacionesActual)}</td>
+      <td className="font-bold">{numberWithCommas(item.operacionesComp)}</td>
+      <td className="font-bold">{numberWithCommas(item.operacionesActual)}</td>
       {formatNumber(item.porcentajeOperaciones)}
       <td>{numberWithCommas(item.operacionesAnterior)}</td>
-      <td>{numberWithCommas(item.promedioComp)}</td>
-      <td>{numberWithCommas(item.promedioActual)}</td>
+      <td className="font-bold">{numberWithCommas(item.promedioComp)}</td>
+      <td className="font-bold">{numberWithCommas(item.promedioActual)}</td>
       {formatNumber(item.porcentajePromedios)}
       <td>{numberWithCommas(item.promedioAnterior)}</td>
-      <td>{numberWithCommas(item.articulosActual)}</td>
+      <td className="font-bold">{numberWithCommas(item.articulosActual)}</td>
       {formatNumber(item.articulosPorcentaje)}
       <td>{numberWithCommas(item.articulosAnterior)}</td>
     </TableRow>

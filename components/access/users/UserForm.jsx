@@ -1,48 +1,20 @@
-import {Form, Formik, Field} from 'formik'
-import {PlusCircleIcon, PencilAltIcon, TrashIcon} from '@heroicons/react/outline';
+import React from 'react';
+import {Form, Formik, Field} from 'formik';
 import * as Yup from 'yup';
-import Pagination from '../Pagination';
 
-
-const UserList = ({items ,handleOnclick, handleModal, handleDelete}) => {
-    if(!items) return <></>
-    const itemsList = items.map((item, index) => (
-            <li 
-                key={index} className="flex w-full justify-between hover:bg-slate-200 rounded-md p-1 cursor-pointer"
-                onClick={()=>handleOnclick(item?.Id)}
-            >
-                <span>{item.UserCode}</span>
-                <div className='flex'>
-                    <PencilAltIcon 
-                        width={26} 
-                        onClick={() => handleModal('users', 'update')}
-                        className='cursor-pointer hover:text-blue-500'
-                    />
-                    <TrashIcon 
-                        width={26} 
-                        onClick={() => handleDelete(item.Id)}
-                        className='cursor-pointer hover:text-blue-500'
-                    />
-                </div>
-            </li>
-    ));
-    return itemsList;
-}
-
-
-export const UserForm = ({groups, selectedUser, handleSubmit,toggleModal}) => {
-
-
+export default function UserForm(props) {
+    const {groups, item, handleSubmit,toggleVisible} = props;
+    
     const initialValues = {
-        UserCode: selectedUser?.UserCode || '',
-        Email: selectedUser?.Email || '',
-        NoEmpleado: selectedUser?.NoEmpleado || '',
-        Level: selectedUser?.Level || 1,
-        Clase: selectedUser?.Clase || 1,
-        Nombre: selectedUser?.Nombre || '',
-        Apellidos: selectedUser?.Apellidos || '',
+        UserCode:  item?.UserCode || '',
+        Email:  item?.Email || '',
+        NoEmpleado:  item?.NoEmpleado || '',
+        Level:  item?.Level || 1,
+        Clase:  item?.Clase || 1,
+        Nombre:  item?.Nombre || '',
+        Apellidos:  item?.Apellidos || '',
         password: '',
-        idGrupo: selectedUser?.IdGrupo || 0,
+        idGrupo:  item?.IdGrupo || 0,
     }
 
     const validationSchema = Yup.object().shape({
@@ -54,7 +26,7 @@ export const UserForm = ({groups, selectedUser, handleSubmit,toggleModal}) => {
         Nombre: Yup.string().required('Requerido'),
         Apellidos: Yup.string().required('Requrido'),
         idGrupo: Yup.number().transform(v => (parseInt(v))),
-        password: (!selectedUser) && Yup.string().required('Requerido')
+        password: (!item) && Yup.string().required('Requerido')
     })
 
     const ListGroups = () =>{
@@ -72,7 +44,15 @@ export const UserForm = ({groups, selectedUser, handleSubmit,toggleModal}) => {
             <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
-                onSubmit={(values) =>  handleSubmit(selectedUser?.Id, values)}
+                onSubmit={(values) =>  {
+                    if(!item){
+                        handleSubmit( values);
+                        toggleVisible();
+                    }else{
+                        handleSubmit( item.Id, values);
+                        toggleVisible();
+                    }
+                }}
             >
                 {({errors, touched}) => (
                     <Form>
@@ -134,7 +114,7 @@ export const UserForm = ({groups, selectedUser, handleSubmit,toggleModal}) => {
                                 {errors?.Email && touched?.Email ? <span className='font-semibold text-red-500'>{errors?.Email}</span> : null}
                             </div>
                             {
-                                (!selectedUser) &&
+                                (! item) &&
                                 <div className='flex flex-col space-y-1'>
                                     <label htmlFor="Email" className='font-semibold  text-gray-600'>Password</label>
                                     <Field 
@@ -182,7 +162,7 @@ export const UserForm = ({groups, selectedUser, handleSubmit,toggleModal}) => {
                                 type='reset'
                                 value='reset'
                                 className='secondary-btn w-28 mr-2'
-                                onClick={toggleModal}
+                                onClick={toggleVisible}
                             >
                              Cancelar</button>
 
@@ -199,33 +179,3 @@ export const UserForm = ({groups, selectedUser, handleSubmit,toggleModal}) => {
         </div>
     )
 }
-
-
-
-const Users = ({users, getUsers, handleModal, handleDelete, pages, current, next, handleSearch}) => {
-    return(
-        <div  className="flex-[1] ">
-            <div className="flex  items-start space-x-1">
-                <div className="flex-1">
-                    <span className=" block font-bold text-md bg-slate-300 rounded-md p-1 mb-1">Usuarios</span>
-                    <input
-                        className=" bg-yellow-100 w-full rounded-md border-2 h-8 pl-2"
-                        placeholder='Buscar...'
-                        onChange={handleSearch}
-                    />
-                    <ul className="space-y-2 mt-3 mb-3">
-                        <UserList items={users} handleOnclick={getUsers} handleModal={handleModal} handleDelete={handleDelete}/>
-                    </ul>
-                    <Pagination pages={pages} current={current} next={next}/>
-                </div>
-                <PlusCircleIcon 
-                    width={32} 
-                    onClick={()=>handleModal('users', 'create')}
-                    className='block cursor-pointer hover:text-blue-500'
-                />
-            </div>
-        </div>
-    )
-}
-
-export default Users;

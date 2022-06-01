@@ -8,7 +8,7 @@ const FormModal = ({name, active, handleToggle,children}) => {
                 <XCircleIcon className='w-[32px] cursor-pointer text-white' onClick={handleToggle}/>
             </div>
             <section>
-                <div className='bg-slate-50 min-w-[400px] min-h-[200px]'>
+                <div className='bg-slate-50 min-w-[400px] min-h-[200px] h-fit w-fit overflow-hidden'>
                     {children}
                 </div>
             </section>

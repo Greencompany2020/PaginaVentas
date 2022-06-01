@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import jsCookie from "js-cookie";
-import {get_plazasGrupo, get_tiendasGrupo, get_user} from '../services/UserServices';
+import {get_plazasGrupo, get_tiendasGrupo, get_user, post_resetPassword} from '../services/UserServices';
 
 function useProvideUser(){
 
@@ -31,9 +30,9 @@ function useProvideUser(){
         setDashboard(dashboards)
     }
 
-    const checkToken = () => {
-        const token = jsCookie.get('accessToken')
-        if(!token) return false;
+    const changePassword = async (body) => {
+        const response = await post_resetPassword(body);
+        if(!response) return false;
         return true;
     }
 
@@ -50,7 +49,9 @@ function useProvideUser(){
         dashboard,
         getUserData,
         getPlazas,
-        getTiendas
+        getTiendas,
+        changePassword
+
     }
 }
 

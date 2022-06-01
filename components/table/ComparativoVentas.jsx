@@ -1,22 +1,16 @@
-import Image from 'next/image';
+import Image from "next/image";
 // Componentes propios
-import { Flex } from '../containers';
+import { Flex } from "../containers";
 // Funciones y hooks
 // Recursos (img, js, css)
-import Trend from '../../public/images/trend.png';
+import Trend from "../../public/images/trend.png";
 
-const ComparativoVentas = ({ children, title }) => {
+const ComparativoVentas = ({ children }) => {
   return (
-    <Flex className='flex-col w-full lg:w-3/4 mt-2'>
-      <Flex>
-          <Image src={Trend} alt='' className='w-8 h-8 text-black' height={32} width={32}/>
-          <p className='ml-3 font-bold'>{title}</p>
-        </Flex>
-        <div className='bg-gray-100 p-5 rounded-lg overflow-x-scroll'>
-          {children}
-        </div>
-    </Flex>
-  )
-}
+    <section className="h-full overflow-hidden">
+      <div className="h-[70%]  overflow-y-auto rounded-xl">{children}</div>
+    </section>
+  );
+};
 
-export default ComparativoVentas
+export default ComparativoVentas;

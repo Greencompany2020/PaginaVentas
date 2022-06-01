@@ -321,10 +321,10 @@ export const getDayName = (date) => {
  */
 export const rowColor = (item) => {
   if (concentradoPlazas.findIndex(plaza => plaza === item.tienda) !== -1) {
-    return "bg-gray-200";
+    return "bg-gray-200 font-semibold";
   }
   if (regiones.includes(item.tienda)) {
-    return "bg-gray-300";
+    return "bg-gray-300 font-bold";
   }
   return ""
 }
@@ -546,6 +546,15 @@ export const sliceFilter = (data, show ,current) =>{
       slicer,
       pages
   }
+}
+
+/**
+ * Genera una llave key con timestamp
+ * @param {*} pre 
+ * @returns 
+ */
+export const generateLivKey = (pre) => {
+  return `${pre}_${Date.now()}`
 }
 
 
