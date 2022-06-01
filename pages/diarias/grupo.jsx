@@ -28,14 +28,16 @@ import { isError } from "../../utils/functions";
 import WithAuth from "../../components/withAuth";
 import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
-import dayjs from "dayjs";
+import { currentDate } from "../../utils/dateFunctions";
 
 const Grupo = (props) => {
   const alert = useAlert();
-  const currentDate = dayjs();
+
+  const { year, month } = currentDate();
+
   const [parametrosConsulta, setParametrosConsulta] = useState({
-    delMes: currentDate.month(),
-    delAgno: currentDate.year(),
+    delMes: month,
+    delAgno: year,
     tiendas: 0,
     conIva: 0,
     semanaSanta: 1,

@@ -308,3 +308,15 @@ export const getBeginEndMonth = (prevMonth = false, prevYear = false) => {
   const endMonth = format(endOfMonth(today), "yyyy-MM-dd");
   return [beginMonth, endMonth];
 }
+
+export const currentDate = () => {
+  const date = format(new Date(Date.now()), 'yyyy-MM-dd');
+  const year = parseInt(date.split('-')[0], 10);
+  const month = parseInt(date.split('-')[1], 10);
+  const day = parseInt(date.split('')[2], 10);
+  return{
+    year,
+    month,
+    day
+  }
+}
