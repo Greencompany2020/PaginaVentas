@@ -48,7 +48,6 @@ const Grupo = (props) => {
     resultadosPesos: 0,
   });
 
-  console.log(parametrosConsulta);
   const [diariasGrupo, setDiariasGrupo] = useState([]);
 
   useEffect(() => {
