@@ -28,12 +28,16 @@ import { isError } from "../../utils/functions";
 import WithAuth from "../../components/withAuth";
 import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { formatISO, getMonth, parseISO } from "date-fns";
 
 const Grupo = (props) => {
   const alert = useAlert();
+  const current = new Date(Date.now());
+  const currentMonth = parseInt(current.getMonth().toLocaleString("es-CA")) + 1;
+  const currenYear = parseInt(current.getFullYear().toLocaleString("es-CA"));
   const [parametrosConsulta, setParametrosConsulta] = useState({
-    delMes: new Date(Date.now()).getMonth() + 1,
-    delAgno: new Date(Date.now()).getFullYear(),
+    delMes: currentMonth,
+    delAgno: currenYear,
     tiendas: 0,
     conIva: 0,
     semanaSanta: 1,
@@ -44,6 +48,7 @@ const Grupo = (props) => {
     resultadosPesos: 0,
   });
 
+  console.log(parametrosConsulta);
   const [diariasGrupo, setDiariasGrupo] = useState([]);
 
   useEffect(() => {
