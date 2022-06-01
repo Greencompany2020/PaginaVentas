@@ -71,7 +71,7 @@ export const Home = () => {
               <div className="flex flex-col justify-start">
                 <Field
                   type="text"
-                  placeholder="Ususario"
+                  placeholder="Usuario"
                   name="UserCode"
                   id="UserCode"
                   className={`rounded-md p-3 outline-none  ${

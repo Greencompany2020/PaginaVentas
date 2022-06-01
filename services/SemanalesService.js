@@ -26,3 +26,12 @@ export async function getSemanalesTiendas(body) {
     return error;
   }
 }
+
+export async function updateSemalesCompromisos(body) {
+  try {
+    const { data } = await ApiProvider.put("/semanales/compromisos/update", body);
+    return data;
+  } catch (error) {
+    return error;
+  }
+}

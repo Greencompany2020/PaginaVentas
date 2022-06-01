@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -18,7 +17,7 @@ import {
   TableRow,
 } from "../../components/table";
 import { checkboxLabels, MENSAJE_ERROR } from "../../utils/data";
-import { getSemanalesCompromisos } from "../../services/SemanalesService";
+import { getSemanalesCompromisos, updateSemalesCompromisos } from "../../services/SemanalesService";
 import { numberWithCommas } from "../../utils/resultsFormated";
 import { getCurrentWeekDateRange } from "../../utils/dateFunctions";
 import {
@@ -66,6 +65,49 @@ const Compromiso = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [compromisosParametros]);
+
+  const handleUpdatePromedio = (tienda, promedio) => {
+    setSemanalesCompromisos(current => 
+      current.map(compromiso => {
+        if (compromiso.NoTienda === tienda) return { ...compromiso, Promedio: parseInt(promedio, 10) }
+        return compromiso
+      })
+    );
+  }
+  
+  const handleSubmitPromedios = async () => {
+    const promedios = semanalesCompromisos.map((tiendaComp) => ({
+      promedio: tiendaComp.Promedio,
+      tienda: tiendaComp.NoTienda
+    }));
+    
+    const updatePromedios = {
+      empresa: compromisosParametros.plaza,
+      fechaInicio: compromisosParametros.fechaInicio,
+      fechaFin: compromisosParametros.fechaFin,
+      nuevosPromedios: promedios
+    }
+    
+    const result = await updateSemalesCompromisos(updatePromedios);
+    
+    if (result) {
+      alert.showAlert("Promedio Actualizado", "info", 1500);
+
+      const compromisos = await getSemanalesCompromisos(compromisosParametros);
+
+      if (isError(compromisos)) {
+        alert.showAlert(
+          compromisos?.response?.data ?? MENSAJE_ERROR,
+          "warning",
+          1000
+        );
+      } else {
+        setSemanalesCompromisos(compromisos);
+      }
+    } else {
+      alert.showAlert("No se pudo actualizar", "warning", 1500);
+    }
+  }
 
   return (
     <>
@@ -147,8 +189,8 @@ const Compromiso = () => {
             <tbody className="bg-white">
               {semanalesCompromisos?.map((compromiso) => (
                 <TableRow
-                  key={compromiso.Descrip}
-                  rowId={compromiso.Descrip}
+                  key={compromiso.NoTienda}
+                  rowId={compromiso.NoTienda}
                   className="text-right"
                 >
                   <td
@@ -163,7 +205,7 @@ const Compromiso = () => {
                       type="text"
                       value={compromiso.Promedio}
                       className="w-16 outline-none bg-gray-200 text-right rounded-md pr-2"
-                      onChange={() => {}}
+                      onChange={(e) => handleUpdatePromedio(compromiso.NoTienda, e.target.value)}
                     />
                   </td>
                   <td colSpan={2} className="pr-4">
@@ -178,8 +220,10 @@ const Compromiso = () => {
               ))}
             </tbody>
           </VentasTable>
+          <div className="pt-4">
+            <button className="blue-button text-white" onClick={handleSubmitPromedios}>Grabar</button>
+          </div>
         </VentasTableContainer>
-        <button className="blue-button text-white">Grabar</button>
       </main>
     </>
   );
