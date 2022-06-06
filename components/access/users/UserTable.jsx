@@ -14,7 +14,7 @@ export default function UserTable(props) {
     toggleAccess,
   } = props;
   return (
-    <div className="h-[400px] overflow-y-auto">
+    <div className="h-[400px] md:h-[400px] overflow-y-auto">
       <table className="min-w-full">
         <thead className="text-left">
           <tr>

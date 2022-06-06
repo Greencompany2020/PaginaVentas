@@ -70,7 +70,7 @@ export default function Access(props) {
             showItems={5}
             options={{
               labelSelector: "Mostrar",
-              optionRange: [20, 50, 100],
+              optionRange: [1, 20, 50, 100],
               searchBy: ["menu", "reporte", "nombreReporte"],
             }}
             actionsToChild={{

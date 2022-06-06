@@ -119,8 +119,9 @@ export default function Users(props) {
             Agregar
           </button>
         </div>
-        <section>
+        <section className="h-full">
           <Paginate
+            key={generateKey(13)}
             data={data}
             showItems={5}
             options={{
@@ -155,11 +156,22 @@ export default function Users(props) {
         active={showAccess}
         handleToggle={toggleAccess}
       >
-        <div className=" p-8  h-[400px] w-[400px] md:h-[400px] md:w-[500px] lg:w-[1000px] overflow-y-auto">
-          <UserAccessTable
-            items={replacedAccesEnabled}
-            handleAssignAccess={handleAssignAccess}
-          />
+        <div className=" p-8  h-[500px] w-[400px] md:h-[570px] md:w-[500px] lg:w-[1000px] overflow-y-auto">
+          <Paginate
+            key={generateKey(12)}
+            data={replacedAccesEnabled}
+            showItems={5}
+            options={{
+              labelSelector: "Mostrar",
+              optionRange: [20, 50, 100],
+              searchBy: ["Nombre", "UserCode", "NoEmpleado"],
+            }}
+            actionsToChild={{
+              handleAssignAccess,
+            }}
+          >
+            <UserAccessTable />
+          </Paginate>
         </div>
       </FormModal>
       <ConfirmModal ref={confirmModalRef} />

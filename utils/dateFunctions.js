@@ -310,9 +310,10 @@ export const getBeginEndMonth = (prevMonth = false, prevYear = false) => {
 }
 
 export const currentDate = () => {
- const day = new Date().getDate();
- const month = new Date().getMonth() + 1;
- const year = new Date().getFullYear();
+  const currentDate = new Date(Date.now());
+  const month = parseInt(currentDate.getMonth().toLocaleString("es-CA")) + 1;
+  const year = parseInt(currentDate.getFullYear().toLocaleString("es-CA"));
+  const day = parseInt(currentDate.getDate().toLocaleString("es-CA"));
 
  return{
    day,
