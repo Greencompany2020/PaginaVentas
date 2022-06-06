@@ -5,23 +5,28 @@ const VentasDiariasTableHead = ({ currentYear, month }) => {
   const lastYear = currentYear - 1;
 
   return (
-    <thead className="bg-black-shape text-white text-center">
+    <thead className=" text-white text-center  rounded-md">
       <tr>
-        <th colSpan={2} className="border border-white">
+        <th
+          colSpan={2}
+          className="border bg-black-shape rounded-tl-xl border-white"
+        >
           Dia
         </th>
-        <th colSpan={4} className="border border-white">
+        <th colSpan={4} className="border bg-black-shape border-white">
           Venta por Dia
         </th>
-        <th colSpan={5} className="border border-white">
+        <th colSpan={5} className="border bg-black-shape border-white">
           Acumulado {getMonthByNumber(month)}
         </th>
-        <th colSpan={4} className="border border-white">
+        <th colSpan={4} className="border bg-black-shape border-white">
           Acumulado Anual
         </th>
-        <th className="border border-white">Dia</th>
+        <th className="border bg-black-shape rounded-tr-xl border-white">
+          Dia
+        </th>
       </tr>
-      <tr>
+      <tr className="bg-black-shape">
         <th className="border border-white">
           {getLastTwoNumbers(currentYear)}
         </th>

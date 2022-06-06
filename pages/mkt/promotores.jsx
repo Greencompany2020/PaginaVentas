@@ -129,13 +129,13 @@ const Promotores = () => {
   };
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ingresos Promotores ${paramPromotores.delAgno}`}
         description=" Esta tabla le muestra los ingresgos generados por promotores asi como los canjes resultantes."
       />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -168,7 +168,8 @@ const Promotores = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable>
             <TableHead>
@@ -186,8 +187,8 @@ const Promotores = () => {
             </TableBody>
           </VentasTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

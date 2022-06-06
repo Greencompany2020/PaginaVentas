@@ -6,7 +6,13 @@ import {
 } from "@heroicons/react/outline";
 
 export default function UserTable(props) {
-  const { items, handleOnSelect, handleModalContent, handleDeleteUser } = props;
+  const {
+    items,
+    handleOnSelect,
+    handleModalContent,
+    handleDeleteUser,
+    toggleAccess,
+  } = props;
   return (
     <div className="h-[400px] overflow-y-auto">
       <table className="min-w-full">
@@ -40,9 +46,7 @@ export default function UserTable(props) {
                 <LockOpenIcon
                   width={32}
                   className="cursor-pointer hover:text-blue-500"
-                  onClick={() => {
-                    handleModalContent("assignAccess", "Asignar acceso");
-                  }}
+                  onClick={toggleAccess}
                 />
                 <PencilAltIcon
                   width={32}

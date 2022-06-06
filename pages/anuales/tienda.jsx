@@ -62,15 +62,14 @@ const Tienda = () => {
   }, [tiendasParametros]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas Acumuladas a ${getMonthByNumber(
           tiendasParametros.alMes
         )} del ${tiendasParametros.alAgno}`}
         description="Esta gráfica muestra las ventas de cada una de las tiendas del grupo acumuladas del año especificado."
       />
-
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -117,7 +116,8 @@ const Tienda = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer>
           <BarChart
             text={`Ventas al ${formatLastDate(
@@ -129,8 +129,8 @@ const Tienda = () => {
             }}
           />
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

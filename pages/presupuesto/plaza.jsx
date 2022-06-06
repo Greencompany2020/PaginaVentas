@@ -77,7 +77,7 @@ const Plaza = () => {
   }, [paramPlazas]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas por Mes Tiendas Plaza ${getPlazaName(
           paramPlazas.plaza
@@ -86,8 +86,7 @@ const Plaza = () => {
         el año especificado, este siempre será comparado contra el año anterior.
         `}
       />
-
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -178,7 +177,8 @@ const Plaza = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <ComparativoVentas>
           <BarChart
             data={{
@@ -187,8 +187,8 @@ const Plaza = () => {
             }}
           />
         </ComparativoVentas>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

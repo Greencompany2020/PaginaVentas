@@ -112,7 +112,7 @@ const TodasTiendas = () => {
   };
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas por Mes Tiendas Plaza ${getPlazaName(
           paramTiendas.plaza
@@ -124,7 +124,7 @@ const TodasTiendas = () => {
         `}
       />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -170,7 +170,8 @@ const TodasTiendas = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <ComparativoVentas>
           <BarChart
             text={`Ventas al ${formatLastDate(
@@ -182,8 +183,8 @@ const TodasTiendas = () => {
             }}
           />
         </ComparativoVentas>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

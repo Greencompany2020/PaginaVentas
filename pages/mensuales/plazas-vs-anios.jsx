@@ -79,7 +79,7 @@ const PlazasVS = () => {
   }, [plazasAgnosParametros]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas del mes de ${getMonthByNumber(
           plazasAgnosParametros.delMes
@@ -90,7 +90,8 @@ const PlazasVS = () => {
         Recuerde que el rango de años debe ser capturado de menor a el mayor, aunque en el reporte se mostrara en orden descendente.
         `}
       />
-      <main className="w-full h-full p-4 md:p-8">
+
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -141,7 +142,9 @@ const PlazasVS = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
+      </section>
 
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer>
           <BarChart
             text={`Ventas al ${formatLastDate(
@@ -156,8 +159,8 @@ const PlazasVS = () => {
             }}
           />
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

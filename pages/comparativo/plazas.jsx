@@ -60,7 +60,7 @@ const Plazas = () => {
   }, [parametrosPlazas]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`COMPARATIVO VENTAS DEL AÑO 
           ${parametrosPlazas.fecha.split("-")[0]} (AL ${
@@ -73,7 +73,7 @@ const Plazas = () => {
          un dia desface para respetar esto.
         `}
       />
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -148,7 +148,8 @@ const Plazas = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer>
           {Object.entries(comparativoPlazas)?.map(([key, value]) => (
             <Fragment key={key}>
@@ -156,28 +157,36 @@ const Plazas = () => {
               <VentasTable className="last-row-bg">
                 <TableHead>
                   <tr>
-                    <th rowSpan={2}>Plaza</th>
-                    <th colSpan={5}>
+                    <th rowSpan={2} className="bg-black-shape rounded-tl-xl">
+                      Plaza
+                    </th>
+                    <th colSpan={5} className="bg-black-shape">
                       Acumulado{" "}
                       {getMonthByNumber(parametrosPlazas.fecha.split("-")[1])}
                     </th>
-                    <th colSpan={5}>Acumulado Anual</th>
+                    <th colSpan={5} className="bg-black-shape rounded-tr-xl">
+                      Acumulado Anual
+                    </th>
                   </tr>
                   <tr>
-                    <th>{getYearFromDate(parametrosPlazas.fecha)}</th>
-                    <th>
+                    <th className="bg-black-shape">
+                      {getYearFromDate(parametrosPlazas.fecha)}
+                    </th>
+                    <th className="bg-black-shape">
                       {Number(getYearFromDate(parametrosPlazas.fecha)) - 1}
                     </th>
-                    <th>PPTO.</th>
-                    <th>(-)</th>
-                    <th>%</th>
-                    <th>{getYearFromDate(parametrosPlazas.fecha)}</th>
-                    <th>
+                    <th className="bg-black-shape">PPTO.</th>
+                    <th className="bg-black-shape">(-)</th>
+                    <th className="bg-black-shape">%</th>
+                    <th className="bg-black-shape">
+                      {getYearFromDate(parametrosPlazas.fecha)}
+                    </th>
+                    <th className="bg-black-shape">
                       {Number(getYearFromDate(parametrosPlazas.fecha)) - 1}
                     </th>
-                    <th>PPTO.</th>
-                    <th>(-)</th>
-                    <th>%</th>
+                    <th className="bg-black-shape">PPTO.</th>
+                    <th className="bg-black-shape">(-)</th>
+                    <th className="bg-black-shape">%</th>
                   </tr>
                 </TableHead>
                 <tbody className="text-center">
@@ -217,8 +226,8 @@ const Plazas = () => {
             </Fragment>
           ))}
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

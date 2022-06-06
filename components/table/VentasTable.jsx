@@ -4,7 +4,9 @@
 // recurso (img, js, css)
 
 const VentasTable = ({ children, className }) => {
-  return <table className={`w-full rounded-lg ${className}`}>{children}</table>;
+  return (
+    <table className={`w-full h-full${className} table-head`}>{children}</table>
+  );
 };
 
 export default VentasTable;

@@ -36,29 +36,33 @@ const Fechas = () => {
   }, []);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport title="Reporte de la ultima fecha de venta registrada por tienda" />
-      <main className="w-full h-full p-4 md:p-8">
+      <section className=" p-4 md:p-8 xl:p-16 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable>
             <TableHead>
               <tr>
-                <th className="border border-white">Tienda</th>
-                <th className="border border-white">Ultima Fecha Registrada</th>
+                <th className="border border-white bg-black-shape rounded-tl-xl">
+                  Tienda
+                </th>
+                <th className="border border-white bg-black-shape rounded-tr-xl">
+                  Ultima Fecha Registrada
+                </th>
               </tr>
             </TableHead>
             <tbody className="bg-white">
               {fechas?.map((fecha, index) => (
                 <TableRow key={index} rowId={index} className="text-center">
-                  <td>{fecha.tienda}</td>
+                  <td className="">{fecha.tienda}</td>
                   <td>{formatLastDate(fecha.fecha)}</td>
                 </TableRow>
               ))}
             </tbody>
           </VentasTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

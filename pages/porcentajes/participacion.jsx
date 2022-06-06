@@ -59,13 +59,13 @@ const Participacion = () => {
   }, [parametrosParticipacion]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`PARTICIPACION DE VENTAS DE TIENDAS EN EL AÑO ${parametrosParticipacion.alAgno}`}
         description="Este reporte muestra la participación de ventas en el mes de cada una de las tiendas en razon de las vents generales en el año especificado."
       />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -117,7 +117,9 @@ const Participacion = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
+      </section>
 
+      <section className=" pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable className="last-row-bg">
             <TableHead>
@@ -247,8 +249,8 @@ const Participacion = () => {
             </TableBody>
           </VentasTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

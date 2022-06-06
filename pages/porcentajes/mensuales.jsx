@@ -98,7 +98,7 @@ const Mensuales = () => {
   };
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`PROPORCION DE VENTAS MENSUALES VS. VENTA ANUAL - Ventas al ${formatLastDate(
           getPrevDate(0, parametrosMensuales.alAgno)
@@ -108,7 +108,7 @@ const Mensuales = () => {
         `}
       />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -179,7 +179,8 @@ const Mensuales = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable className="last-row-bg">
             <TableHead>
@@ -360,8 +361,8 @@ const Mensuales = () => {
             </TableBody>
           </VentasTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

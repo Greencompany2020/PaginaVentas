@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
+import Image from "next/image";
 import Link from "next/link";
-import { ChevronRightIcon } from "@heroicons/react/solid";
+import Plus from "../public/icons/plus.svg";
 
 const DetailsSideBar = ({ summaryText, links }) => {
   const router = useRouter();
@@ -12,7 +13,7 @@ const DetailsSideBar = ({ summaryText, links }) => {
   return (
     <details>
       <summary className="cursor-pointer flex items-center pb-2 text-white">
-        <ChevronRightIcon width={16} />
+        <Image src={Plus} alt="Plus" height={16} width={16} />
         <span className="ml-1">{summaryText}</span>
       </summary>
       <ul>

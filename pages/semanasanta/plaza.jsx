@@ -57,13 +57,13 @@ const Plaza = () => {
   }, [paramPlaza]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas De Semana Santa del Año ${paramPlaza.delAgno}`}
         description="ESTA GRAFICA MUESTRA LAS VENTAS DE CADA DIA DE SEMANA SANTA Y PASCUA DE LA PLAZA SELECCIONADA EN EL AÑO ESPECIFICADO."
       />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -134,7 +134,8 @@ const Plaza = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer
           title={`Ventas De Semana Santa del Año ${paramPlaza.delAgno}`}
         >
@@ -148,8 +149,8 @@ const Plaza = () => {
             />
           ))}
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

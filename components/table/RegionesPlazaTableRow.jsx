@@ -6,11 +6,11 @@ const RegionesPlazaTableRow = ({ item, type, rowId }) => {
     if (type === "plaza") return "bg-gray-300";
     else if (type === "region") return "bg-gray-400";
     return "";
-  }
+  };
 
   return (
     <TableRow className={rowColor(type)} rowId={rowId}>
-      <td className='text-center bg-black text-white font-bold'>
+      <td className="text-center bg-black-shape text-white font-bold">
         {item.plaza}
       </td>
       <td>{numberWithCommas(item.compromiso)}</td>
@@ -29,7 +29,7 @@ const RegionesPlazaTableRow = ({ item, type, rowId }) => {
       {formatNumber(item.articulosPorcentaje)}
       <td>{numberWithCommas(item.articulosAnterior)}</td>
     </TableRow>
-  )
-}
+  );
+};
 
-export default RegionesPlazaTableRow
+export default RegionesPlazaTableRow;

@@ -310,13 +310,13 @@ export const getBeginEndMonth = (prevMonth = false, prevYear = false) => {
 }
 
 export const currentDate = () => {
-  const date = format(new Date(), 'MM/dd/yyyy').toString();
-  const month = parseInt(date.split('/')[0], 10);
-  const day = parseInt(date.split('/')[1], 10);
-  const year = parseInt(date.split('/')[2]);
-  return{
-    day,
-    month,
-    year
-  }
+ const day = new Date().getDate();
+ const month = new Date.getMonth() + 1;
+ const year = new Date.getFullYear();
+
+ return{
+   day,
+   month,
+   year
+ }
 }

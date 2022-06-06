@@ -77,7 +77,7 @@ const Plaza = () => {
   }, [paramPlaza]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Operaciones realizadas Plaza ${getPlazaName(
           paramPlaza.plaza
@@ -87,7 +87,7 @@ const Plaza = () => {
         `}
       />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -185,7 +185,8 @@ const Plaza = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <ComparativoVentas>
           <BarChart
             data={{
@@ -194,8 +195,8 @@ const Plaza = () => {
             }}
           />
         </ComparativoVentas>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

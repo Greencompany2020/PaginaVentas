@@ -71,7 +71,7 @@ const Plazas = () => {
   }, [plazasParametros]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas Plazas Acumuladas a ${getMonthByNumber(
           plazasParametros.alMes
@@ -83,7 +83,7 @@ const Plazas = () => {
         `}
       />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -136,7 +136,8 @@ const Plazas = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className=" pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer>
           <BarChart
             data={{
@@ -145,8 +146,8 @@ const Plazas = () => {
             }}
           />
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

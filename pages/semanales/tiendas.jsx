@@ -105,14 +105,14 @@ const Tiendas = () => {
   };
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title="Detalles de información / Semanales por Tienda"
         description={` Este reporte muestra un compartivo de la semana o en rango de fecha selecionado. Recuerde que la comparacion se realiza lunes contra lunes,
         lo cual quiere decir que las ventas del año anterior no seran por fecha sino lo que corresponda a los dias de la semana.
         `}
       />
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputDateRange
@@ -169,15 +169,22 @@ const Tiendas = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable className="tfooter">
             <TableHead>
               <tr>
-                <td rowSpan={3} className="border border-white">
+                <td
+                  rowSpan={3}
+                  className="border border-white bg-black-shape rounded-tl-xl"
+                >
                   Plaza
                 </td>
-                <td colSpan={15} className="border border-white">
+                <td
+                  colSpan={15}
+                  className="border border-white bg-black-shape rounded-tr-xl"
+                >
                   {dateRangeTitle(
                     tiendasParametros.fechaInicio,
                     tiendasParametros.fechaFin
@@ -185,50 +192,50 @@ const Tiendas = () => {
                 </td>
               </tr>
               <tr>
-                <td rowSpan={2} className="border border-white">
+                <td rowSpan={2} className="border border-white bg-black-shape">
                   Comp
                 </td>
-                <td rowSpan={2} className="border border-white">
+                <td rowSpan={2} className="border border-white bg-black-shape">
                   {getYearFromDate(tiendasParametros.fechaFin)}
                 </td>
-                <td rowSpan={2} className="border border-white">
+                <td rowSpan={2} className="border border-white bg-black-shape">
                   %
                 </td>
-                <td rowSpan={2} className="border border-white">
+                <td rowSpan={2} className="border border-white bg-black-shape">
                   {getYearFromDate(tiendasParametros.fechaFin) - 1}
                 </td>
-                <td colSpan={4} className="border border-white">
+                <td colSpan={4} className="border border-white bg-black-shape">
                   operaciones
                 </td>
-                <td colSpan={4} className="border border-white">
+                <td colSpan={4} className="border border-white bg-black-shape">
                   promedios
                 </td>
-                <td colSpan={3} className="border border-white">
+                <td colSpan={3} className="border border-white bg-black-shape">
                   Articulos Prom.
                 </td>
               </tr>
               <tr>
-                <td className="border border-white">Comp</td>
-                <td className="border border-white">
+                <td className="border border-white bg-black-shape">Comp</td>
+                <td className="border border-white bg-black-shape">
                   {getYearFromDate(tiendasParametros.fechaFin)}
                 </td>
-                <td className="border border-white">%</td>
-                <td className="border border-white">
+                <td className="border border-white bg-black-shape">%</td>
+                <td className="border border-white bg-black-shape">
                   {getYearFromDate(tiendasParametros.fechaFin) - 1}
                 </td>
-                <td className="border border-white">comp</td>
-                <td className="border border-white">
+                <td className="border border-white bg-black-shape">comp</td>
+                <td className="border border-white bg-black-shape">
                   {getYearFromDate(tiendasParametros.fechaFin)}
                 </td>
-                <td className="border border-white">%</td>
-                <td className="border border-white">
+                <td className="border border-white bg-black-shape">%</td>
+                <td className="border border-white bg-black-shape">
                   {getYearFromDate(tiendasParametros.fechaFin) - 1}
                 </td>
-                <td className="border border-white">
+                <td className="border border-white bg-black-shape">
                   {getYearFromDate(tiendasParametros.fechaFin)}
                 </td>
-                <td className="border border-white">%</td>
-                <td className="border border-white">
+                <td className="border border-white bg-black-shape">%</td>
+                <td className="border border-white bg-black-shape">
                   {getYearFromDate(tiendasParametros.fechaFin) - 1}
                 </td>
               </tr>
@@ -238,8 +245,8 @@ const Tiendas = () => {
             </tbody>
           </VentasTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

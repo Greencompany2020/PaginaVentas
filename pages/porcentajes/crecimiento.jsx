@@ -84,7 +84,7 @@ const Crecimiento = () => {
   };
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Factor de crecimiento al 
           ${paramCrecimiento.fecha.split("-")[2]} de 
@@ -94,7 +94,7 @@ const Crecimiento = () => {
         con respecto a años anteriores segun la fecha especificada.
         `}
       />
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -144,7 +144,8 @@ const Crecimiento = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer
           title={`Factor de crecimiento al 
           ${paramCrecimiento.fecha.split("-")[2]} de 
@@ -249,8 +250,8 @@ const Crecimiento = () => {
             </TableBody>
           </VentasTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

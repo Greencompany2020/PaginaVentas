@@ -6,11 +6,7 @@ import { Flex } from "../containers";
 import Trend from "../../public/images/trend.png";
 
 const ComparativoVentas = ({ children }) => {
-  return (
-    <section className="h-full overflow-hidden">
-      <div className="h-[70%]  overflow-y-auto rounded-xl">{children}</div>
-    </section>
-  );
+  return <div className="overflow-y-auto">{children}</div>;
 };
 
 export default ComparativoVentas;

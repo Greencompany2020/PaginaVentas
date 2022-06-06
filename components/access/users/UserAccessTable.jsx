@@ -1,5 +1,5 @@
-import React from "react";
 import TooggleSwitch from "../../inputs/TooggleSwitch";
+import generateKey from "../../paginate/generateKey";
 
 export default function UserAccessTable(props) {
   const { items, handleAssignAccess } = props;
@@ -19,7 +19,7 @@ export default function UserAccessTable(props) {
       </thead>
       <tbody>
         {items.map((item, index) => (
-          <tr key={item.idDashboard + index} className="cursor-pointer">
+          <tr key={generateKey(index)} className="cursor-pointer">
             <td className=" hidden lg:table-cell">{item.menu}</td>
             <td className=" hidden lg:table-cell">{item.reporte}</td>
             <td>{item.nombreReporte}</td>

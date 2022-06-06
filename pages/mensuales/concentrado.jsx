@@ -56,12 +56,12 @@ const Concentrado = () => {
   }, [concentradoParametros]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title="Ventas Mensuales de tiendas en el año 2022"
         description="Este reporte muestra las ventas por tienda en el año especificado."
       />
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -107,40 +107,43 @@ const Concentrado = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable className="tfooter">
             <TableHead>
               <tr>
-                <th rowSpan={2}>TDA.</th>
-                <th>ENE</th>
-                <th>FEB</th>
-                <th>MAR</th>
-                <th>ABR</th>
-                <th>MAY</th>
-                <th>JUN</th>
-                <th>JUL</th>
-                <th>AGO</th>
-                <th>SEP</th>
-                <th>OCT</th>
-                <th>NOV</th>
-                <th>DIC</th>
-                <th>TTAL</th>
+                <th rowSpan={2} className=" bg-black-shape  rounded-tl-xl">
+                  TDA.
+                </th>
+                <th className=" bg-black-shape">ENE</th>
+                <th className=" bg-black-shape">FEB</th>
+                <th className=" bg-black-shape">MAR</th>
+                <th className=" bg-black-shape">ABR</th>
+                <th className=" bg-black-shape">MAY</th>
+                <th className=" bg-black-shape">JUN</th>
+                <th className=" bg-black-shape">JUL</th>
+                <th className=" bg-black-shape">AGO</th>
+                <th className=" bg-black-shape">SEP</th>
+                <th className=" bg-black-shape">OCT</th>
+                <th className=" bg-black-shape">NOV</th>
+                <th className=" bg-black-shape">DIC</th>
+                <th className=" bg-black-shape  rounded-tr-xl">TTAL</th>
               </tr>
               <tr className="text-center">
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>Año</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">Año</th>
               </tr>
             </TableHead>
             <tbody className="bg-white">
@@ -153,7 +156,7 @@ const Concentrado = () => {
                     "bg-gray-300 font-bold"
                   }`}
                 >
-                  <td className="bg-black text-white font-bold">
+                  <td className="bg-black-shape text-white font-bold">
                     {items.tienda}
                   </td>
                   <td className="text-sm">{numberWithCommas(items.enero)}</td>
@@ -180,8 +183,8 @@ const Concentrado = () => {
             </tbody>
           </VentasTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

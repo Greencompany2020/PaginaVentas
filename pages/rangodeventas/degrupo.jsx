@@ -16,23 +16,23 @@ import TitleReport from "../../components/TitleReport";
 
 const degrupo = () => {
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title="Rangos de ventas de grupo"
         description=" Este reporte obtiene rangos de venta de las fechas establecidas "
       />
-
-      <ParametersContainer>
-        <Parameters>
-          <InputContainer>
-            <h1>Obtener Rangos de Ventas de las fechas:</h1>
-            <InputDateDate />
-            <SelectTiendasGeneral />
-          </InputContainer>
-        </Parameters>
-      </ParametersContainer>
-
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
+        <ParametersContainer>
+          <Parameters>
+            <InputContainer>
+              <h1>Obtener Rangos de Ventas de las fechas:</h1>
+              <InputDateDate />
+              <SelectTiendasGeneral />
+            </InputContainer>
+          </Parameters>
+        </ParametersContainer>
+      </section>
+      <section className=" pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <ComparativoVentas>
           <PieChart
             text="Rangos de ventas de grupo"
@@ -74,8 +74,8 @@ const degrupo = () => {
             }}
           />
         </ComparativoVentas>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

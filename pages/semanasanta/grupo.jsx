@@ -73,13 +73,13 @@ const Grupo = () => {
   }, [paramGrupo, concentrado]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas De Semana Santa del Año ${paramGrupo.delAgno}`}
         description="ESTE REPORTE MUESTRA LAS VENTAS DE SEMANA SANTA DEL AÑO SELECCIONADO COMPARADAS CON EL AÑO ANTERIOR Y SU PORCENTAJE DE VARIACION."
       />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -162,7 +162,8 @@ const Grupo = () => {
             <InputContainer></InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className=" pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer
           title={`Ventas De Semana Santa del Año ${paramGrupo.delAgno}`}
         >
@@ -176,8 +177,8 @@ const Grupo = () => {
             />
           ))}
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

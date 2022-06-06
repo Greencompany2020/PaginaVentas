@@ -1,9 +1,9 @@
 const TableHead = ({ children }) => {
   return (
-    <thead className='bg-black text-white font-bold text-center'>
+    <thead className="text-white font-bold text-center table-head table-head-rl table-head-rr">
       {children}
     </thead>
-  )
-}
+  );
+};
 
-export default TableHead
+export default TableHead;

@@ -81,7 +81,7 @@ const Grupo = () => {
   }, [parametrosGrupo]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Comparativo de ventas del año ${parametrosGrupo.delAgno} al año ${parametrosGrupo.alAgno} (mls.dlls)`}
         description={`Esta gráfica muestra las ventas anuales del grupo para cada uno de los años del rango especificado. 
@@ -89,7 +89,7 @@ const Grupo = () => {
           `}
       />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -181,7 +181,8 @@ const Grupo = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <ComparativoVentas>
           <BarChart
             text={`${
@@ -197,8 +198,8 @@ const Grupo = () => {
             }}
           />
         </ComparativoVentas>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

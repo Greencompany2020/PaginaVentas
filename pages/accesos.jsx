@@ -10,14 +10,8 @@ import TabButton from "../components/access/users/TabButton";
 const Accesos = () => {
   const accessHook = useAccess();
   const [tabActive, setTabActive] = useState(1);
-  const handleDeleteAccess = async (id) => {
-    const confirm = await confirmModalRef.current.show();
-    if (confirm) {
-      deleteAccess(id);
-    }
-  };
-
   const RenderTab = () => {
+    console.log("voli aqui");
     if (tabActive == 1) {
       return (
         <Users
@@ -45,7 +39,6 @@ const Accesos = () => {
     }
 
     if (tabActive == 3) {
-      console.log("aca Ando");
       return (
         <Access
           data={accessHook.access}
@@ -62,14 +55,14 @@ const Accesos = () => {
   return (
     <>
       <Navbar />
-      <div className="flex flex-col md:flex-row justify-between h-fit p-4 md:p-8">
+      <div className="flex flex-col md:flex-row justify-between h-fit p-4 md:p-8 bg-slate-50">
         <span className=" text-2xl font-semibold">Página de ventas</span>
         <span className=" text-3xl font-semibold">
           Configuración de Accesos
         </span>
       </div>
 
-      <div className="bg-slate-50 h-14 flex items-center p-4 md:p-8 space-x-4">
+      <div className="h-14 flex items-center p-4 md:p-8 space-x-4">
         <TabButton setActive={setTabActive} tabActive={tabActive} />
       </div>
 

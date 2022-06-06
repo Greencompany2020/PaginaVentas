@@ -55,7 +55,7 @@ const Fechas = () => {
   }, [paramFechas]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Compromisos plaza ${getPlazaName(
           paramFechas.plaza
@@ -66,8 +66,7 @@ const Fechas = () => {
           QUE PUEDE SER UN MES, UNA SEMANA, UN FIN DE SEMANA, BASADO EN LA FECHAS ESTABLECIDA...
           `}
       />
-
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -87,7 +86,8 @@ const Fechas = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className=" pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer
           title={`Compromisos plaza ${getPlazaName(
             paramFechas.plaza
@@ -99,8 +99,8 @@ const Fechas = () => {
             <PresupuestoTable key={key} title={key} presupuestos={value} />
           ))}
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

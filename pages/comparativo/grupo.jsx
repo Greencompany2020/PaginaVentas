@@ -70,7 +70,7 @@ function Grupo() {
   }, [parametrosGrupo]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`COMPARATIVO VENTAS DEL AÑO 
           ${parametrosGrupo.fecha.split("-")[0]} (AL ${
@@ -85,7 +85,7 @@ function Grupo() {
         `}
       />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -164,7 +164,8 @@ function Grupo() {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer>
           {Object?.entries(comparativoGrupo ?? {})?.map(([key, value]) => (
             <Fragment key={key}>
@@ -172,52 +173,66 @@ function Grupo() {
               <VentasTable className="last-row-bg">
                 <TableHead>
                   <tr>
-                    <th rowSpan={2}>Tienda</th>
-                    <th colSpan={4}>
+                    <th rowSpan={2} className="bg-black-shape rounded-tl-xl">
+                      Tienda
+                    </th>
+                    <th colSpan={4} className="bg-black-shape">
                       {getNameDay(parametrosGrupo.fecha)}{" "}
                       {getDayWeekName(parametrosGrupo.fecha)}
                     </th>
                     {acumuladoSemanal && (
                       <th colSpan={4}>Semana Del {dateRangeText}</th>
                     )}
-                    <th colSpan={5}>
+                    <th colSpan={5} className="bg-black-shape">
                       Acumulado{" "}
                       {getMonthByNumber(parametrosGrupo.fecha.split("-")[1])}
                     </th>
-                    <th colSpan={5}>Acumlado Anual</th>
-                    <th rowSpan={2}>Tienda</th>
+                    <th colSpan={5} className="bg-black-shape">
+                      Acumlado Anual
+                    </th>
+                    <th rowSpan={2} className="bg-black-shape rounded-tr-xl">
+                      Tienda
+                    </th>
                   </tr>
                   <tr>
-                    <th>{getYearFromDate(parametrosGrupo.fecha)}</th>
-                    <th>
+                    <th className="bg-black-shape">
+                      {getYearFromDate(parametrosGrupo.fecha)}
+                    </th>
+                    <th className="bg-black-shape">
                       {Number(getYearFromDate(parametrosGrupo.fecha)) - 1}
                     </th>
-                    <th>PPTO.</th>
-                    <th>%</th>
+                    <th className="bg-black-shape">PPTO.</th>
+                    <th className="bg-black-shape">%</th>
                     {acumuladoSemanal && (
                       <>
-                        <th>{getYearFromDate(parametrosGrupo.fecha)}</th>
-                        <th>
+                        <th className="bg-black-shape">
+                          {getYearFromDate(parametrosGrupo.fecha)}
+                        </th>
+                        <th className="bg-black-shape">
                           {Number(getYearFromDate(parametrosGrupo.fecha)) - 1}
                         </th>
-                        <th>PPTO.</th>
-                        <th>%</th>
+                        <th className="bg-black-shape">PPTO.</th>
+                        <th className="bg-black-shape">%</th>
                       </>
                     )}
-                    <th>{getYearFromDate(parametrosGrupo.fecha)}</th>
-                    <th>
+                    <th className="bg-black-shape">
+                      {getYearFromDate(parametrosGrupo.fecha)}
+                    </th>
+                    <th className="bg-black-shape">
                       {Number(getYearFromDate(parametrosGrupo.fecha)) - 1}
                     </th>
-                    <th>PPTO.</th>
-                    <th>(-)</th>
-                    <th>%</th>
-                    <th>{getYearFromDate(parametrosGrupo.fecha)}</th>
-                    <th>
+                    <th className="bg-black-shape">PPTO.</th>
+                    <th className="bg-black-shape">(-)</th>
+                    <th className="bg-black-shape">%</th>
+                    <th className="bg-black-shape">
+                      {getYearFromDate(parametrosGrupo.fecha)}
+                    </th>
+                    <th className="bg-black-shape">
                       {Number(getYearFromDate(parametrosGrupo.fecha)) - 1}
                     </th>
-                    <th>PPTO.</th>
-                    <th>(-)</th>
-                    <th>%</th>
+                    <th className="bg-black-shape">PPTO.</th>
+                    <th className="bg-black-shape">(-)</th>
+                    <th className="bg-black-shape">%</th>
                   </tr>
                 </TableHead>
                 <tbody className="text-center bg-white text-black">
@@ -282,8 +297,8 @@ function Grupo() {
             </Fragment>
           ))}
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 }
 

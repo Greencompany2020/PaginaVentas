@@ -17,13 +17,13 @@ import TitleReport from "../../components/TitleReport";
 
 const acumulado = () => {
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title="VENTAS ACUMULADO CEDIS"
         description="ESTA REPORTE MUESTRA LAS VENTAS ACUMULADAS DIA - SEMANA - MES -AÑO"
       />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -39,31 +39,45 @@ const acumulado = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
+      </section>
 
+      <section className=" pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable>
             <TableHead>
               <tr>
-                <th rowSpan={2}>Linea</th>
-                <th rowSpan={2}>Incremental</th>
-                <th rowSpan={2}>Regular</th>
-                <th rowSpan={2}>Vta. Actual</th>
-                <th colSpan={3}>Semana 10-Ene</th>
-                <th colSpan={3}>Acumulado Anual</th>
+                <th rowSpan={2} className="bg-black-shape rounded-tl-xl">
+                  Linea
+                </th>
+                <th rowSpan={2} className="bg-black-shape">
+                  Incremental
+                </th>
+                <th rowSpan={2} className="bg-black-shape">
+                  Regular
+                </th>
+                <th rowSpan={2} className="bg-black-shape">
+                  Vta. Actual
+                </th>
+                <th colSpan={3} className="bg-black-shape">
+                  Semana 10-Ene
+                </th>
+                <th colSpan={3} className="bg-black-shape rounded-tr-xl">
+                  Acumulado Anual
+                </th>
               </tr>
               <tr>
-                <th>2021</th>
-                <th>2021</th>
-                <th>2021</th>
-                <th>2021</th>
-                <th>2021</th>
-                <th>2021</th>
+                <th className="bg-black-shape">2021</th>
+                <th className="bg-black-shape">2021</th>
+                <th className="bg-black-shape">2021</th>
+                <th className="bg-black-shape">2021</th>
+                <th className="bg-black-shape">2021</th>
+                <th className="bg-black-shape">2021</th>
               </tr>
             </TableHead>
           </VentasTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

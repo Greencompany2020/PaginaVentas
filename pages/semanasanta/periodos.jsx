@@ -31,15 +31,14 @@ const Periodos = () => {
   }, []);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport title="PERIODOS DE SEMANA SANTA" />
-
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer title="PERIODOS DE SEMANA SANTA">
           <PeriodosSemanaSantaTable dates={periodos} />
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

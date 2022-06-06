@@ -7,6 +7,7 @@ import UserAccessTable from "./UserAccessTable";
 import { FormModal } from "../../modals";
 import useToggle from "../../../hooks/useToggle";
 import { ConfirmModal } from "../../modals";
+import generateKey from "../../paginate/generateKey";
 
 export default function Users(props) {
   const {
@@ -25,6 +26,8 @@ export default function Users(props) {
   const [itemDetail, setItemDetail] = useState({});
   const [replacedAccesEnabled, setReplacedAccessEnabled] = useState([]);
   const [visible, toggleVisible] = useToggle();
+  const [showAccess, toggleAccess] = useToggle();
+
   const [modalContent, setmodalContent] = useState({
     target: "",
     item: {},
@@ -33,17 +36,6 @@ export default function Users(props) {
 
   const ModalContent = () => {
     const { target, item } = modalContent;
-
-    if (target === "assignAccess") {
-      return (
-        <div className=" p-8  h-[400px] w-[400px] md:h-[400px] md:w-[500px] lg:w-[1000px] overflow-y-auto">
-          <UserAccessTable
-            items={replacedAccesEnabled}
-            handleAssignAccess={handleAssignAccess}
-          />
-        </div>
-      );
-    }
 
     if (target === "addUser") {
       return (
@@ -140,6 +132,7 @@ export default function Users(props) {
               handleOnSelect,
               handleModalContent,
               handleDeleteUser,
+              toggleAccess,
             }}
           >
             <UserTable />
@@ -148,11 +141,26 @@ export default function Users(props) {
       </div>
 
       <FormModal
+        key={generateKey(1)}
         name={modalContent.title}
         active={visible}
         handleToggle={toggleVisible}
       >
         <ModalContent />
+      </FormModal>
+
+      <FormModal
+        key={generateKey(2)}
+        name="Accesos de usuario"
+        active={showAccess}
+        handleToggle={toggleAccess}
+      >
+        <div className=" p-8  h-[400px] w-[400px] md:h-[400px] md:w-[500px] lg:w-[1000px] overflow-y-auto">
+          <UserAccessTable
+            items={replacedAccesEnabled}
+            handleAssignAccess={handleAssignAccess}
+          />
+        </div>
       </FormModal>
       <ConfirmModal ref={confirmModalRef} />
     </>

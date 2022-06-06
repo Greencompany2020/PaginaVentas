@@ -63,7 +63,7 @@ const Simple = () => {
   }, [tiendaSimpleParametros]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas Diarias ${getTiendaName(
           tiendaSimpleParametros.tienda
@@ -72,7 +72,7 @@ const Simple = () => {
         }`}
         description=" Esta tabla muestra las ventas vs presupuesto del grupo en el periodo de mes y año especificado, este siempre será comparado contra el año anterior."
       />
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -97,32 +97,39 @@ const Simple = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable>
             <TableHead>
               <tr>
-                <th colSpan={2} className="border border-white">
+                <th
+                  colSpan={2}
+                  className="border border-white bg-black-shape rounded-tl-xl"
+                >
                   Dia
                 </th>
-                <th colSpan={3} className="border border-white">
+                <th
+                  colSpan={3}
+                  className="border border-white bg-black-shape  rounded-tr-xl"
+                >
                   Venta por Dia
                 </th>
               </tr>
               <tr>
-                <th className="border border-white">
+                <th className="border border-white bg-black-shape">
                   {getLastTwoNumbers(tiendaSimpleParametros.delAgno)}
                 </th>
-                <th className="border border-white">
+                <th className="border border-white bg-black-shape">
                   {getLastTwoNumbers(tiendaSimpleParametros.delAgno - 1)}
                 </th>
-                <th className="border border-white">
+                <th className="border border-white bg-black-shape">
                   {tiendaSimpleParametros.delAgno}
                 </th>
-                <th className="border border-white">
+                <th className="border border-white bg-black-shape">
                   {tiendaSimpleParametros.delAgno - 1}
                 </th>
-                <th className="border border-white">Acum</th>
+                <th className="border border-white bg-black-shape">Acum</th>
               </tr>
             </TableHead>
             <tbody className="bg-white text-center">
@@ -142,35 +149,41 @@ const Simple = () => {
                 </TableRow>
               ))}
             </tbody>
-            <tfoot className="bg-black text-white text-center font-bold">
+            <tfoot className=" text-white text-center font-bold">
               <tr>
-                <th className="border border-white">
+                <th className="border border-white bg-black">
                   {getLastTwoNumbers(tiendaSimpleParametros.delAgno)}
                 </th>
-                <th className="border border-white">
+                <th className="border border-white bg-black">
                   {getLastTwoNumbers(tiendaSimpleParametros.delAgno - 1)}
                 </th>
-                <th className="border border-white">
+                <th className="border border-white bg-black">
                   {tiendaSimpleParametros.delAgno}
                 </th>
-                <th className="border border-white">
+                <th className="border border-white bg-black">
                   {tiendaSimpleParametros.delAgno - 1}
                 </th>
-                <th className="border border-white">Acum</th>
+                <th className="border border-white bg-black">Acum</th>
               </tr>
               <tr>
-                <th colSpan={2} className="border border-white">
+                <th
+                  colSpan={2}
+                  className="border border-white bg-black rounded-bl-xl"
+                >
                   Dia
                 </th>
-                <th colSpan={3} className="border border-white">
+                <th
+                  colSpan={3}
+                  className="border border-white bg-black rounded-br-xl"
+                >
                   Venta por Dia
                 </th>
               </tr>
             </tfoot>
           </VentasTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 
