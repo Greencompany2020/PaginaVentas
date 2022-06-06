@@ -6,11 +6,14 @@ const InputYear = ({ value, onChange }) => {
       <label htmlFor="anio">Del Año: </label>
       <input
         type="number"
+        pattern="d*"
+        inputMode="decimal"
         name="delAgno"
         id=""
         className="select ml-2"
         value={value}
-        min={20}
+        min={2000}
+        step={1}
         onChange={onChange}
       />
     </Flex>
