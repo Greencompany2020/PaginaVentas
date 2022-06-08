@@ -20,7 +20,10 @@ export default function Access(props) {
     const { target, item } = modalContent;
     if (target == "createAccess") {
       return (
-        <AccessForm toggleVisible={toggleVisible} handleSubmit={createAccess} />
+        <AccessForm
+          toggleVisible={toggleVisible}
+          handleSubmit={handleCreateAccess}
+        />
       );
     }
 
@@ -29,11 +32,21 @@ export default function Access(props) {
         <AccessForm
           item={item}
           toggleVisible={toggleVisible}
-          handleSubmit={updateAccess}
+          handleSubmit={handleUpdateAccess}
         />
       );
     }
     return <></>;
+  };
+
+  const handleCreateAccess = async (body) => {
+    await createAccess(body);
+    toggleVisible();
+  };
+
+  const handleUpdateAccess = async (id, body) => {
+    await updateAccess(id, body);
+    toggleVisible();
   };
 
   const handleModalContent = (target, title, item = null) => {
@@ -70,15 +83,14 @@ export default function Access(props) {
             showItems={5}
             options={{
               labelSelector: "Mostrar",
-              optionRange: [1, 20, 50, 100],
+              optionRange: [20, 50, 100],
               searchBy: ["menu", "reporte", "nombreReporte"],
             }}
-            actionsToChild={{
-              handleModalContent,
-              handleDeleteAccess,
-            }}
           >
-            <TableAccess />
+            <TableAccess
+              handleModalContent={handleModalContent}
+              handleDeleteAccess={handleDeleteAccess}
+            />
           </Paginate>
         </section>
       </div>

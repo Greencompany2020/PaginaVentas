@@ -47,7 +47,7 @@ const Dashboard = () => {
               />
               <p>Estadísticas de Ventas</p>
             </DashboardButtonContainer>
-            <DashboardButtonContainer link="/accesos">
+            <DashboardButtonContainer link="/accesos/usuarios">
               <Image
                 src={Config}
                 alt="ventas"

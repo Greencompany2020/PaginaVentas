@@ -2,8 +2,9 @@ import React from "react";
 import Navbar from "../../components/Navbar";
 import Access from "../../components/access/access";
 import useAccess from "../../hooks/useAccess";
-
-export default function AccessView() {
+import withAuth from "../../components/withAuth";
+import TabButton from "../../components/access/TabButton";
+const AccessView = () => {
   const accessHook = useAccess();
   return (
     <>
@@ -14,6 +15,9 @@ export default function AccessView() {
           Configuración de Accesos
         </span>
       </div>
+      <div className="flex mt-2 pl-8 pr-8 md:pl-8 md:pr-8 space-x-3">
+        <TabButton />
+      </div>
       <Access
         data={accessHook.access}
         createAccess={accessHook.createAccess}
@@ -22,5 +26,7 @@ export default function AccessView() {
       />
     </>
   );
-}
+};
+
+export default withAuth(AccessView);
 

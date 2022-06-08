@@ -51,19 +51,14 @@ const Grupo = (props) => {
   const [diariasGrupo, setDiariasGrupo] = useState([]);
 
   useEffect(() => {
-    if (parametrosConsulta.delAgno.toString().length === 4) {
-      getDiariasGrupo(parametrosConsulta).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
-          setDiariasGrupo(response);
-        }
-      });
-    }
+    (async () => {
+      try {
+        const response = await getDiariasGrupo(parametrosConsulta);
+        setDiariasGrupo(response);
+      } catch (error) {
+        alert.showAlert(error.message, "warning", 1000);
+      }
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parametrosConsulta]);
 
@@ -151,44 +146,49 @@ const Grupo = (props) => {
               month={parametrosConsulta.delMes}
             />
             <tbody className="bg-white text-center">
-              {diariasGrupo?.map((diaria) => (
-                <TableRow key={diaria.dia} rowId={diaria.dia}>
-                  <td className="text-center font-bold">{diaria.dia}</td>
-                  <td className="text-center text-sm">{diaria.dia}</td>
-                  <td className="font-bold">
-                    {numberWithCommas(diaria.ventaActual)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.ventaAnterior)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.compromisoDiario)}
-                  </td>
-                  {formatNumber(diaria.crecimientoDiario)}
-                  <td className="font-bold">
-                    {numberWithCommas(diaria.acumMensualActual)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.acumMensualAnterior)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.compromisoAcum)}
-                  </td>
-                  {formatNumber(diaria.diferencia)}
-                  {formatNumber(diaria.crecimientoMensual)}
-                  <td className="font-bold">
-                    {numberWithCommas(diaria.acumAnualActual)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.acumAnualAnterior)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.compromisoAnual)}
-                  </td>
-                  {formatNumber(diaria.crecimientoAnual)}
-                  <td className="text-center font-bold">{diaria.dia}</td>
-                </TableRow>
-              ))}
+              {(() => {
+                if (Array.isArray(diariasGrupo)) {
+                  const items = diariasGrupo?.map((diaria, index) => (
+                    <tr key={index}>
+                      <td className="text-center font-bold">{diaria.dia}</td>
+                      <td className="text-center text-sm">{diaria.dia}</td>
+                      <td className="font-bold">
+                        {numberWithCommas(diaria.ventaActual)}
+                      </td>
+                      <td className="text-sm">
+                        {numberWithCommas(diaria.ventaAnterior)}
+                      </td>
+                      <td className="text-sm">
+                        {numberWithCommas(diaria.compromisoDiario)}
+                      </td>
+                      {formatNumber(diaria.crecimientoDiario)}
+                      <td className="font-bold">
+                        {numberWithCommas(diaria.acumMensualActual)}
+                      </td>
+                      <td className="text-sm">
+                        {numberWithCommas(diaria.acumMensualAnterior)}
+                      </td>
+                      <td className="text-sm">
+                        {numberWithCommas(diaria.compromisoAcum)}
+                      </td>
+                      {formatNumber(diaria.diferencia)}
+                      {formatNumber(diaria.crecimientoMensual)}
+                      <td className="font-bold">
+                        {numberWithCommas(diaria.acumAnualActual)}
+                      </td>
+                      <td className="text-sm">
+                        {numberWithCommas(diaria.acumAnualAnterior)}
+                      </td>
+                      <td className="text-sm">
+                        {numberWithCommas(diaria.compromisoAnual)}
+                      </td>
+                      {formatNumber(diaria.crecimientoAnual)}
+                      <td className="text-center font-bold">{diaria.dia}</td>
+                    </tr>
+                  ));
+                  return items;
+                }
+              })()}
             </tbody>
             <VentasDiariasTableFooter
               currentYear={parametrosConsulta.delAgno}

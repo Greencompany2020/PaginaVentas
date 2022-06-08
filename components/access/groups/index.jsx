@@ -20,7 +20,10 @@ export default function Groups(props) {
     const { target, item } = modalContent;
     if (target == "createGroup") {
       return (
-        <GroupForm toggleVisible={toggleVisible} handleSubmit={createGroup} />
+        <GroupForm
+          toggleVisible={toggleVisible}
+          handleSubmit={handleCreateGroup}
+        />
       );
     }
 
@@ -29,7 +32,7 @@ export default function Groups(props) {
         <GroupForm
           item={item}
           toggleVisible={toggleVisible}
-          handleSubmit={updateGroup}
+          handleSubmit={handleUpdateGroup}
         />
       );
     }
@@ -50,6 +53,16 @@ export default function Groups(props) {
   const handleDeleteGroup = async (id) => {
     const confirm = await confirmModalRef.current.show();
     if (confirm) deleteGroup(id);
+  };
+
+  const handleUpdateGroup = async (id, body) => {
+    await updateGroup(id, body);
+    toggleVisible();
+  };
+
+  const handleCreateGroup = async (body) => {
+    await createGroup(body);
+    toggleVisible();
   };
 
   return (
@@ -73,12 +86,11 @@ export default function Groups(props) {
               optionRange: [20, 50, 100],
               searchBy: ["Nombre", "UserCode", "NoEmpleado"],
             }}
-            actionsToChild={{
-              handleModalContent,
-              handleDeleteGroup,
-            }}
           >
-            <GroupTable />
+            <GroupTable
+              handleModalContent={handleModalContent}
+              handleDeleteGroup={handleDeleteGroup}
+            />
           </Paginate>
         </section>
       </div>

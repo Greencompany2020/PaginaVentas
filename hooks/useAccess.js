@@ -44,9 +44,10 @@ export default function useAccess() {
     try {
       const response = await service.getUserDetail(userId);
       const { Accesos, ...Usuario } = response;
+      const formatedAcces = replaceAccess(access, Accesos)
       const formatedData = {
         userDetail: Usuario,
-        userAccess:Accesos,
+        userAccess:formatedAcces,
       };
       return formatedData;
     } catch (error) {}

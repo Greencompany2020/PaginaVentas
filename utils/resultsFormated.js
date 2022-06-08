@@ -28,5 +28,5 @@ export const formatNumber = (num) => {
  * @returns {string} El valor formateado
  */
 export const numberWithCommas = (num) => {
-  return num?.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+  return num.toLocaleString();
 }

@@ -29,7 +29,7 @@ const SideMenu = () => {
 
       <aside
         ref={menuRef}
-        className={`w-80 h-[calc(_100%_-_3rem)] bg-black-light left-0 top-[3rem] z-40  transform absolute  ${
+        className={`w-80 h-[calc(_100vh_-_3rem)] bg-black-light left-0 top-[3rem] z-40  transform fixed  ${
           visible && "-translate-x-full"
         } transition duration-200 ease-in-out`}
       >
