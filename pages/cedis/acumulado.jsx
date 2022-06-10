@@ -18,10 +18,7 @@ import TitleReport from "../../components/TitleReport";
 const acumulado = () => {
   return (
     <div className=" flex flex-col h-full">
-      <TitleReport
-        title="VENTAS ACUMULADO CEDIS"
-        description="ESTA REPORTE MUESTRA LAS VENTAS ACUMULADAS DIA - SEMANA - MES -AÑO"
-      />
+      <TitleReport title="VENTAS ACUMULADO CEDIS" />
 
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>

@@ -78,11 +78,6 @@ function Grupo() {
         } DE ${getMonthByNumber(
           parametrosGrupo.fecha.split("-")[1]
         ).toUpperCase()})`}
-        description={`Este reporte muestra un comparativo entre las ventas del año contra el año anterior. El comparativo se realiza por día, mes y año.
-         Recuerde que la comparación se realiza lunes contra lunes, lo cual quiere decir que las ventas mensuales y anuales saldran con
-         un dia desface para respetar esto.
-          En esta temporada de semana santa se habilitará el check para intercambiar los dias de la temporada del año anterior.
-        `}
       />
 
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
@@ -235,61 +230,49 @@ function Grupo() {
                     <th className="bg-black-shape">%</th>
                   </tr>
                 </TableHead>
-                <tbody className="text-center bg-white text-black">
+                <tbody className="text-xs text-right bg-white text-black">
                   {value?.map((tienda) => (
                     <TableRow
                       key={tienda.tienda}
                       rowId={tienda.tienda}
                       className={rowColor(tienda)}
                     >
-                      <td className="text-sm">{tienda.tienda}</td>
+                      <td className="text-left">{tienda.tienda}</td>
                       <td className="font-bold">
                         {numberWithCommas(tienda.ventasActuales)}
                       </td>
-                      <td className="text-sm">
-                        {numberWithCommas(tienda.ventasAnterior)}
-                      </td>
-                      <td className="text-sm">
-                        {numberWithCommas(tienda.presupuesto)}
-                      </td>
+                      <td>{numberWithCommas(tienda.ventasAnterior)}</td>
+                      <td>{numberWithCommas(tienda.presupuesto)}</td>
                       {formatNumber(tienda.porcentaje)}
                       {acumuladoSemanal && (
                         <>
                           <td>
                             {numberWithCommas(tienda.ventasSemanalesActual)}
                           </td>
-                          <td className="text-sm">
+                          <td c>
                             {numberWithCommas(tienda.ventasSemanalesAnterior)}
                           </td>
-                          <td className="text-sm">
-                            {numberWithCommas(tienda.presupuestoSemanal)}
-                          </td>
+                          <td>{numberWithCommas(tienda.presupuestoSemanal)}</td>
                           {formatNumber(tienda.porcentajeSemanal)}
                         </>
                       )}
                       <td className="font-bold">
                         {numberWithCommas(tienda.ventasMensualesActual)}
                       </td>
-                      <td className="text-sm">
+                      <td>
                         {numberWithCommas(tienda.ventasMensualesAnterior)}
                       </td>
-                      <td className="text-sm">
-                        {numberWithCommas(tienda.presupuestoMensual)}
-                      </td>
+                      <td>{numberWithCommas(tienda.presupuestoMensual)}</td>
                       {formatNumber(tienda.diferenciaMensual)}
                       {formatNumber(tienda.porcentajeMensual)}
                       <td className="font-bold">
                         {numberWithCommas(tienda.ventasAnualActual)}
                       </td>
-                      <td className="text-sm">
-                        {numberWithCommas(tienda.ventasAnualAnterior)}
-                      </td>
-                      <td className="text-sm">
-                        {numberWithCommas(tienda.presupuestoAnual)}
-                      </td>
+                      <td>{numberWithCommas(tienda.ventasAnualAnterior)}</td>
+                      <td>{numberWithCommas(tienda.presupuestoAnual)}</td>
                       {formatNumber(tienda.diferenciaAnual)}
                       {formatNumber(tienda.porcentajeAnual)}
-                      <td className="text-sm">{tienda.tienda}</td>
+                      <td className="text-left pl-3">{tienda.tienda}</td>
                     </TableRow>
                   ))}
                 </tbody>

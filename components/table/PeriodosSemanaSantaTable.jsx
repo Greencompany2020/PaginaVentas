@@ -5,7 +5,7 @@ const PeriodosSemanaSantaTable = ({ dates }) => {
   return (
     <>
       <VentasTable className="my-7 ">
-        <thead className=" bg-black-shape text-white text-center">
+        <thead className=" text-white text-center text-xs table-head table-head-rl table-head-rr">
           <tr>
             <th className="border border-white">Año</th>
             <th className="border border-white">Carnaval</th>
@@ -22,10 +22,10 @@ const PeriodosSemanaSantaTable = ({ dates }) => {
                 fecha.agno === new Date().getFullYear() ? "font-bold" : ""
               }
             >
-              <td className="text-sm">{fecha.agno}</td>
-              <td className="text-sm">{fecha.carnaval}</td>
-              <td className="text-sm">{fecha.fechaInicio}</td>
-              <td className="text-sm">{fecha.fechaFin}</td>
+              <td className="text-xs text-right">{fecha.agno}</td>
+              <td className="text-xs text-left pl-3">{fecha.carnaval}</td>
+              <td className="text-xs text-left">{fecha.fechaInicio}</td>
+              <td className="text-xs text-left">{fecha.fechaFin}</td>
             </TableRow>
           ))}
         </tbody>

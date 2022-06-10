@@ -92,7 +92,6 @@ const Acumulado = () => {
         title={`Ventas Semana Santa del año ${getYearFromDate(
           paramAcumulado.fecha
         )}`}
-        description=" Este reporte muestra la venta del dia y la venta acumulada de la semana santa en la fecha especificada."
       />
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
@@ -172,119 +171,107 @@ const Acumulado = () => {
               <VentasTable className="last-row-bg">
                 <TableHead>
                   <tr>
-                    <td rowSpan={3} className="border border-white">
+                    <th rowSpan={3} className="border border-white">
                       Tienda
-                    </td>
-                    <td colSpan={10} className="border border-white">
+                    </th>
+                    <th colSpan={10} className="border border-white">
                       {getDayName(paramAcumulado.fecha)}
-                    </td>
-                    <td colSpan={4} className="border border-white">
+                    </th>
+                    <th colSpan={4} className="border border-white">
                       {dateRangeTitleSemanaSanta(
                         fechaInicioSemana,
                         paramAcumulado.fecha
                       )}
-                    </td>
+                    </th>
                   </tr>
                   <tr>
-                    <td colSpan={4} className="border border-white">
+                    <th colSpan={4} className="border border-white">
                       Venta
-                    </td>
-                    <td colSpan={3} className="border border-white">
+                    </th>
+                    <th colSpan={3} className="border border-white">
                       Promedio
-                    </td>
-                    <td colSpan={3} className="border border-white">
+                    </th>
+                    <th colSpan={3} className="border border-white">
                       Operaciones
-                    </td>
-                    <td colSpan={4} className="border border-white">
+                    </th>
+                    <th colSpan={4} className="border border-white">
                       Venta
-                    </td>
+                    </th>
                   </tr>
                   <tr>
-                    <td rowSpan={2} className="border border-white">
+                    <th rowSpan={2} className="border border-white">
                       {getYearFromDate(paramAcumulado.fecha)}
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       {paramAcumulado.versusAgno}
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       PPTO.
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       %
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       {getYearFromDate(paramAcumulado.fecha)}
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       {paramAcumulado.versusAgno}
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       %
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       {getYearFromDate(paramAcumulado.fecha)}
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       {paramAcumulado.versusAgno}
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       %
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       {getYearFromDate(paramAcumulado.fecha)}
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       {paramAcumulado.versusAgno}
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       PPTO.
-                    </td>
-                    <td rowSpan={3} className="border border-white">
+                    </th>
+                    <th rowSpan={3} className="border border-white">
                       %
-                    </td>
+                    </th>
                   </tr>
                 </TableHead>
-                <tbody className="bg-white text-center">
+                <tbody className="bg-white text-right text-xs">
                   {value?.map((venta) => (
                     <TableRow
                       key={venta.tienda}
                       rowId={venta.tienda}
                       className={rowColor(venta)}
                     >
-                      <td className="text-sm">{venta.tienda}</td>
+                      <td className="text-left">{venta.tienda}</td>
                       <td className="font-bold">
                         {numberWithCommas(venta.ventaActual)}
                       </td>
-                      <td className="text-sm">
-                        {numberWithCommas(venta.ventaAnterior)}
-                      </td>
-                      <td className="text-sm">
-                        {numberWithCommas(venta.presupuesto)}
-                      </td>
+                      <td>{numberWithCommas(venta.ventaAnterior)}</td>
+                      <td>{numberWithCommas(venta.presupuesto)}</td>
                       {formatNumber(venta.porcentaje)}
                       <td className="font-bold">
                         {numberWithCommas(venta.promedioActual)}
                       </td>
-                      <td className="text-sm">
-                        {numberWithCommas(venta.promedioAnterior)}
-                      </td>
+                      <td>{numberWithCommas(venta.promedioAnterior)}</td>
                       {formatNumber(venta.porcentajePromedios)}
                       <td className="font-bold">
                         {numberWithCommas(venta.operacionesActual)}
                       </td>
-                      <td className="text-sm">
-                        {numberWithCommas(venta.operacionesAnterior)}
-                      </td>
+                      <td>{numberWithCommas(venta.operacionesAnterior)}</td>
                       {formatNumber(venta.porcentajeOperaciones)}
                       <td className="font-bold">
                         {numberWithCommas(venta.ventaAcumuladaActual)}
                       </td>
-                      <td className="text-sm">
-                        {numberWithCommas(venta.ventaAcumuladaAnterior)}
-                      </td>
-                      <td className="text-sm">
-                        {numberWithCommas(venta.presupuestoAcumulado)}
-                      </td>
+                      <td>{numberWithCommas(venta.ventaAcumuladaAnterior)}</td>
+                      <td>{numberWithCommas(venta.presupuestoAcumulado)}</td>
                       {formatNumber(venta.porcentajeAcumulado)}
                     </TableRow>
                   ))}

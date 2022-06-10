@@ -78,9 +78,6 @@ const Plazas = () => {
         )} del año ${plazasParametros.delAgno} al año ${
           plazasParametros.alAgno
         }`}
-        description={`Esta gráfica muestra las ventas anuales por plaza seguna el rango de años especificado.
-        Recuerde que el rango de años debe ser capturado de el menor a el mayor, aunque en el reporte se mostrarara el orden descendiente.
-        `}
       />
 
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">

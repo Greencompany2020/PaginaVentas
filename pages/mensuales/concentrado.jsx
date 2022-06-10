@@ -57,10 +57,7 @@ const Concentrado = () => {
 
   return (
     <div className=" flex flex-col h-full">
-      <TitleReport
-        title="Ventas Mensuales de tiendas en el año 2022"
-        description="Este reporte muestra las ventas por tienda en el año especificado."
-      />
+      <TitleReport title="Ventas Mensuales de tiendas en el año 2022" />
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
@@ -151,33 +148,27 @@ const Concentrado = () => {
                 <TableRow
                   key={items.tienda}
                   rowId={items.tienda}
-                  className={`text-center ${
+                  className={`text-xs text-right ${
                     concentradoPlazas.includes(items.tienda) &&
                     "bg-gray-300 font-bold"
                   }`}
                 >
-                  <td className="bg-black-shape text-white font-bold">
+                  <td className="bg-black-shape text-white font-bold text-center">
                     {items.tienda}
                   </td>
-                  <td className="text-sm">{numberWithCommas(items.enero)}</td>
-                  <td className="text-sm">{numberWithCommas(items.febrero)}</td>
-                  <td className="text-sm">{numberWithCommas(items.marzo)}</td>
-                  <td className="text-sm">{numberWithCommas(items.abril)}</td>
-                  <td className="text-sm">{numberWithCommas(items.mayo)}</td>
-                  <td className="text-sm">{numberWithCommas(items.junio)}</td>
-                  <td className="text-sm">{numberWithCommas(items.julio)}</td>
-                  <td className="text-sm">{numberWithCommas(items.agosto)}</td>
-                  <td className="text-sm">
-                    {numberWithCommas(items.septiembre)}
-                  </td>
-                  <td className="text-sm">{numberWithCommas(items.octubre)}</td>
-                  <td className="text-sm">
-                    {numberWithCommas(items.noviembre)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(items.diciembre)}
-                  </td>
-                  <td className="text-sm">{numberWithCommas(items.total)}</td>
+                  <td>{numberWithCommas(items.enero)}</td>
+                  <td>{numberWithCommas(items.febrero)}</td>
+                  <td>{numberWithCommas(items.marzo)}</td>
+                  <td>{numberWithCommas(items.abril)}</td>
+                  <td>{numberWithCommas(items.mayo)}</td>
+                  <td>{numberWithCommas(items.junio)}</td>
+                  <td>{numberWithCommas(items.julio)}</td>
+                  <td>{numberWithCommas(items.agosto)}</td>
+                  <td>{numberWithCommas(items.septiembre)}</td>
+                  <td>{numberWithCommas(items.octubre)}</td>
+                  <td>{numberWithCommas(items.noviembre)}</td>
+                  <td>{numberWithCommas(items.diciembre)}</td>
+                  <td>{numberWithCommas(items.total)}</td>
                 </TableRow>
               ))}
             </tbody>

@@ -6,8 +6,6 @@ const InputYear = ({ value, onChange }) => {
       <label htmlFor="anio">Del Año: </label>
       <input
         type="number"
-        pattern="\d*"
-        inputMode="numeric"
         name="delAgno"
         id=""
         className="select ml-2"

@@ -33,29 +33,35 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="w-full h-[3rem] bg-black-shape flex items-center justify-between p-4">
+      <nav className="w-full h-[3rem] bg-black-shape flex items-center justify-between pl-4 pr-4">
         <Link href="/dashboard">
           <a href="">
             <Image src={Logo} alt="Logo Green Company" height={40} width={45} />
           </a>
         </Link>
-        <div className="flex flex-row space-x-4">
-          <Link href="/dashboard">
-            <a className="ml-3 md:mr-4">
-              <Image src={Menu} alt="menu" height={35} width={35} />
-            </a>
-          </Link>
-          <Image
-            src={User}
-            alt="Arrow"
-            className="rounded-full h-7 w-7"
-            height={30}
-            width={39}
-          />
-          <ChevronDownIcon
-            className="text-white h-7 w-7 my-auto mx-2 cursor-pointer"
-            onClick={handleToggle}
-          />
+        <div className="flex flex-row items-center space-x-2">
+          <figure>
+            <Link href="/dashboard">
+              <a>
+                <Image src={Menu} alt="menu" height={40} width={40} />
+              </a>
+            </Link>
+          </figure>
+          <figure>
+            <Image
+              src={User}
+              alt="Arrow"
+              className="rounded-full w-full"
+              height={40}
+              width={40}
+            />
+          </figure>
+          <figure>
+            <ChevronDownIcon
+              className="text-white h-7 w-7 my-auto cursor-pointer"
+              onClick={handleToggle}
+            />
+          </figure>
         </div>
       </nav>
 

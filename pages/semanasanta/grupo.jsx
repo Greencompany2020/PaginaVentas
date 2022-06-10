@@ -76,7 +76,6 @@ const Grupo = () => {
     <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas De Semana Santa del Año ${paramGrupo.delAgno}`}
-        description="ESTE REPORTE MUESTRA LAS VENTAS DE SEMANA SANTA DEL AÑO SELECCIONADO COMPARADAS CON EL AÑO ANTERIOR Y SU PORCENTAJE DE VARIACION."
       />
 
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">

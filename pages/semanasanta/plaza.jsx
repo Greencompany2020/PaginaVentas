@@ -60,7 +60,6 @@ const Plaza = () => {
     <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas De Semana Santa del Año ${paramPlaza.delAgno}`}
-        description="ESTA GRAFICA MUESTRA LAS VENTAS DE CADA DIA DE SEMANA SANTA Y PASCUA DE LA PLAZA SELECCIONADA EN EL AÑO ESPECIFICADO."
       />
 
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">

@@ -21,10 +21,7 @@ const porplaza = () => {
   const year = 2000;
   return (
     <div className=" flex flex-col h-full">
-      <TitleReport
-        title="Ventas Semana Santa"
-        description=" Esta tabla muestra las ventas del día por día del mes y año especificado."
-      />
+      <TitleReport title="Ventas Semana Santa" />
 
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>

@@ -64,10 +64,7 @@ const Grupo = (props) => {
 
   return (
     <div className=" flex flex-col h-full">
-      <TitleReport
-        title="Ventas Diarias Grupo Frogs"
-        description="Esta tabla muestra las ventas del día por día del mes y año especificado."
-      />
+      <TitleReport title="Ventas Diarias Grupo Frogs" />
 
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
@@ -145,46 +142,50 @@ const Grupo = (props) => {
               currentYear={parametrosConsulta.delAgno}
               month={parametrosConsulta.delMes}
             />
-            <tbody className="bg-white text-center">
+            <tbody className="bg-white text-center overflow-y-auto">
               {(() => {
                 if (Array.isArray(diariasGrupo)) {
                   const items = diariasGrupo?.map((diaria, index) => (
-                    <tr key={index}>
-                      <td className="text-center font-bold">{diaria.dia}</td>
-                      <td className="text-center text-sm">{diaria.dia}</td>
-                      <td className="font-bold">
+                    <TableRow key={diaria.dia} rowId={diaria.dia}>
+                      <td className=" text-right text-xs font-bold">
+                        {diaria.dia}
+                      </td>
+                      <td className="text-right text-xs">{diaria.dia}</td>
+                      <td className=" text-right text-xs font-bold">
                         {numberWithCommas(diaria.ventaActual)}
                       </td>
-                      <td className="text-sm">
+                      <td className="text-right text-xs">
                         {numberWithCommas(diaria.ventaAnterior)}
                       </td>
-                      <td className="text-sm">
+                      <td className="text-right text-xs">
                         {numberWithCommas(diaria.compromisoDiario)}
                       </td>
                       {formatNumber(diaria.crecimientoDiario)}
-                      <td className="font-bold">
+                      <td className="text-right text-xs font-bold">
                         {numberWithCommas(diaria.acumMensualActual)}
                       </td>
-                      <td className="text-sm">
+                      <td className="text-right text-xs">
                         {numberWithCommas(diaria.acumMensualAnterior)}
                       </td>
-                      <td className="text-sm">
+                      <td className="text-right text-xs">
                         {numberWithCommas(diaria.compromisoAcum)}
                       </td>
                       {formatNumber(diaria.diferencia)}
                       {formatNumber(diaria.crecimientoMensual)}
-                      <td className="font-bold">
+                      <td className="text-right text-xs font-bold">
                         {numberWithCommas(diaria.acumAnualActual)}
                       </td>
-                      <td className="text-sm">
+                      <td className="text-right  text-xs">
                         {numberWithCommas(diaria.acumAnualAnterior)}
                       </td>
-                      <td className="text-sm">
+                      <td className="text-right text-xs">
                         {numberWithCommas(diaria.compromisoAnual)}
                       </td>
                       {formatNumber(diaria.crecimientoAnual)}
-                      <td className="text-center font-bold">{diaria.dia}</td>
-                    </tr>
+                      <td className="text-right text-xs font-bold">
+                        {diaria.dia}
+                      </td>
+                    </TableRow>
                   ));
                   return items;
                 }

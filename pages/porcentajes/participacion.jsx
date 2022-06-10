@@ -62,7 +62,6 @@ const Participacion = () => {
     <div className=" flex flex-col h-full">
       <TitleReport
         title={`PARTICIPACION DE VENTAS DE TIENDAS EN EL AÑO ${parametrosParticipacion.alAgno}`}
-        description="Este reporte muestra la participación de ventas en el mes de cada una de las tiendas en razon de las vents generales en el año especificado."
       />
 
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
@@ -171,11 +170,11 @@ const Participacion = () => {
                 <TableRow
                   key={venta.tienda}
                   rowId={venta.tienda}
-                  className="text-center"
+                  className="text-right text-xs"
                 >
                   {index + 1 === participacionVentas.length ? (
                     <>
-                      <td>{venta.tienda}</td>
+                      <td className="text-left">{venta.tienda}</td>
                       <td colSpan={2}>{numberWithCommas(venta.enero)}</td>
                       <td colSpan={2}>{numberWithCommas(venta.febrero)}</td>
                       <td colSpan={2}>{numberWithCommas(venta.marzo)}</td>
@@ -192,7 +191,7 @@ const Participacion = () => {
                     </>
                   ) : (
                     <>
-                      <td>{venta.tienda}</td>
+                      <td className="text-left">{venta.tienda}</td>
                       <td>{numberWithCommas(venta.enero)}</td>
                       <td className="bg-gray-200">
                         {numberWithCommas(venta.porcentajeEnero)}

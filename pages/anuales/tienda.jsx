@@ -67,7 +67,6 @@ const Tienda = () => {
         title={`Ventas Acumuladas a ${getMonthByNumber(
           tiendasParametros.alMes
         )} del ${tiendasParametros.alAgno}`}
-        description="Esta gráfica muestra las ventas de cada una de las tiendas del grupo acumuladas del año especificado."
       />
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>

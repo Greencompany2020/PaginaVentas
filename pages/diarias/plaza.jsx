@@ -66,7 +66,6 @@ const Plaza = () => {
     <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas Diarias Plaza ${getPlazaName(plazaParametros.plaza)}`}
-        description=" Esta tabla muestra las ventas vs presupuesto del grupo en el periodo de mes y año especificado, este siempre será comparado contra el año anterior."
       />
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
@@ -147,40 +146,40 @@ const Plaza = () => {
             <tbody className="bg-white text-center">
               {diariasPlaza?.map((diaria) => (
                 <TableRow key={diaria.dia} rowId={diaria.dia}>
-                  <td className="text-center font-bold">{diaria.dia}</td>
-                  <td className="text-center text-sm">{diaria.dia}</td>
-                  <td className="font-bold">
+                  <td className="text-right text-xs font-bold">{diaria.dia}</td>
+                  <td className="text-right text-xs">{diaria.dia}</td>
+                  <td className="text-right text-xs font-bold">
                     {numberWithCommas(diaria.ventaActual)}
                   </td>
-                  <td className="text-sm">
+                  <td className="text-right text-xs">
                     {numberWithCommas(diaria.ventaAnterior)}
                   </td>
-                  <td className="text-sm">
+                  <td className="text-right text-xs">
                     {numberWithCommas(diaria.compromisoDiario)}
                   </td>
                   {formatNumber(diaria.crecimientoDiario)}
-                  <td className="font-bold">
+                  <td className="text-right text-xs font-bold">
                     {numberWithCommas(diaria.acumMensualActual)}
                   </td>
-                  <td className="text-sm">
+                  <td className="text-right text-xs">
                     {numberWithCommas(diaria.acumMensualAnterior)}
                   </td>
-                  <td className="text-sm">
+                  <td className="text-right text-xs">
                     {numberWithCommas(diaria.compromisoAcum)}
                   </td>
                   {formatNumber(diaria.diferencia)}
                   {formatNumber(diaria.crecimientoMensual)}
-                  <td className="font-bold">
+                  <td className="text-right text-xs font-bold">
                     {numberWithCommas(diaria.acumAnualActual)}
                   </td>
-                  <td className="text-sm">
+                  <td className="text-right text-xs">
                     {numberWithCommas(diaria.acumAnualAnterior)}
                   </td>
-                  <td className="text-sm">
+                  <td className="text-right text-xs">
                     {numberWithCommas(diaria.compromisoAnual)}
                   </td>
                   {formatNumber(diaria.crecimientoAnual)}
-                  <td className="text-center font-bold">{diaria.dia}</td>
+                  <td className="text-right text-xs font-bold">{diaria.dia}</td>
                 </TableRow>
               ))}
             </tbody>

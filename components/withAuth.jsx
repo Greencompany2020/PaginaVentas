@@ -97,9 +97,7 @@ const witAuth = (Component) => {
     };
 
     useEffect(() => {
-      (async () => {
-        await pathEvaluate();
-      })();
+      pathEvaluate();
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

@@ -70,7 +70,6 @@ const Tiendas = () => {
         title={`Ventas del mes de ${getMonthByNumber(
           tiendasParametros.delMes
         )} del año ${tiendasParametros.alAgno}`}
-        description="Esta grafica muestra las ventas de todas las tiendas del grupo del mes seleccionado en el año especificado."
       />
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>

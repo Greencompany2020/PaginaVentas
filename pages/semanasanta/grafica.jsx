@@ -38,10 +38,7 @@ const Grafica = ({ year1, year2 }) => {
 
   return (
     <div className=" flex flex-col h-full">
-      <TitleReport
-        title="Comparativo Semana Santa Grupo Frogs 2018 vs 2019 (mls.pesos) -iva no incluido"
-        description="Este reporte muestra las ventas de semana santa del año seleccionado comparadas con el año anterior y su porcentaje de variacion."
-      />
+      <TitleReport title="Comparativo Semana Santa Grupo Frogs 2018 vs 2019 (mls.pesos) -iva no incluido" />
 
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>

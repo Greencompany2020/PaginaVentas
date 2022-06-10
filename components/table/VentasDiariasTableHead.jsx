@@ -5,7 +5,7 @@ const VentasDiariasTableHead = ({ currentYear, month }) => {
   const lastYear = currentYear - 1;
 
   return (
-    <thead className=" text-white text-center  rounded-md">
+    <thead className=" text-white text-center text-xs  rounded-md">
       <tr>
         <th
           colSpan={2}

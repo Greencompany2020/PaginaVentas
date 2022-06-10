@@ -90,9 +90,6 @@ const Crecimiento = () => {
           ${paramCrecimiento.fecha.split("-")[2]} de 
           ${getMonthByNumber(paramCrecimiento.fecha.split("-")[1])} de 
           ${getYearFromDate(paramCrecimiento.fecha)} Acumulado y Anual`}
-        description={`Este reporte muestra el factor de crecimiento de las tiendas sobre la ventas del mes y acumuladas, 
-        con respecto a años anteriores segun la fecha especificada.
-        `}
       />
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
@@ -176,35 +173,29 @@ const Crecimiento = () => {
                 <TableRow
                   key={item.tiendas}
                   rowId={item.tiendas}
-                  className="text-center"
+                  className="text-right text-xs"
                 >
-                  <td className="text-sm">{item.tiendas}</td>
-                  <td className="text-sm">
-                    {numberWithCommas(item.ventaAcumuladaActual)}
-                  </td>
+                  <td className=" text-left">{item.tiendas}</td>
+                  <td>{numberWithCommas(item.ventaAcumuladaActual)}</td>
                   <td className="font-bold">
                     {item[`porcentajeAcumulado${dateRange[0]}`]}
                   </td>
                   <td
-                    className={`text-sm ${
+                    className={` ${
                       item.tiendas !== "TOTAL" ? "bg-gray-200" : ""
                     }`}
                   >
                     {item[`porcentajeAcumulado${dateRange[1]}`]}
                   </td>
-                  <td className="text-sm">
-                    {item[`porcentajeAcumulado${dateRange[2]}`]}
-                  </td>
+                  <td>{item[`porcentajeAcumulado${dateRange[2]}`]}</td>
                   <td
-                    className={`text-sm ${
+                    className={` ${
                       item.tiendas !== "TOTAL" ? "bg-gray-200" : ""
                     }`}
                   >
                     {item[`porcentajeAcumulado${dateRange[3]}`]}
                   </td>
-                  <td className="text-sm">
-                    {item[`porcentajeAcumulado${dateRange[4]}`]}
-                  </td>
+                  <td>{item[`porcentajeAcumulado${dateRange[4]}`]}</td>
                   <td
                     className={`text-sm ${
                       item.tiendas !== "TOTAL" ? "bg-gray-200" : ""
@@ -212,9 +203,7 @@ const Crecimiento = () => {
                   >
                     {item[`porcentajeAcumulado${dateRange[5]}`]}
                   </td>
-                  <td className="text-sm">
-                    {numberWithCommas(item.ventaMensualActual)}
-                  </td>
+                  <td>{numberWithCommas(item.ventaMensualActual)}</td>
                   <td
                     className={`${
                       item.tiendas !== "TOTAL" ? "bg-gray-200 font-bold" : ""
@@ -222,29 +211,23 @@ const Crecimiento = () => {
                   >
                     {item[`porcentajeMensual${dateRange[0]}`]}
                   </td>
-                  <td className="text-sm">
-                    {item[`porcentajeMensual${dateRange[1]}`]}
-                  </td>
+                  <td>{item[`porcentajeMensual${dateRange[1]}`]}</td>
                   <td
-                    className={`text-sm ${
+                    className={` ${
                       item.tiendas !== "TOTAL" ? "bg-gray-200" : ""
                     }`}
                   >
                     {item[`porcentajeMensual${dateRange[2]}`]}
                   </td>
-                  <td className="text-sm">
-                    {item[`porcentajeMensual${dateRange[3]}`]}
-                  </td>
+                  <td>{item[`porcentajeMensual${dateRange[3]}`]}</td>
                   <td
-                    className={`text-sm ${
+                    className={`${
                       item.tiendas !== "TOTAL" ? "bg-gray-200" : ""
                     }`}
                   >
                     {item[`porcentajeMensual${dateRange[4]}`]}
                   </td>
-                  <td className="text-sm">
-                    {item[`porcentajeMensual${dateRange[5]}`]}
-                  </td>
+                  <td>{item[`porcentajeMensual${dateRange[5]}`]}</td>
                 </TableRow>
               ))}
             </TableBody>

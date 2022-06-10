@@ -68,10 +68,6 @@ const Plazas = () => {
         } DE ${getMonthByNumber(
           parametrosPlazas.fecha.split("-")[1]
         ).toUpperCase()})`}
-        description={`Este reporte muestra un comparativo entre las ventas del año contra el año anterior. El comparativo se realiza por día, mes y año. 
-         Recuerde que la comparación se realiza lunes contra lunes, lo cual quiere decir que las ventas mensuales y anuales saldran con
-         un dia desface para respetar esto.
-        `}
       />
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
@@ -194,29 +190,21 @@ const Plazas = () => {
                     <TableRow
                       key={plaza.plaza}
                       rowId={plaza.plaza}
-                      className="bg-white text-black "
+                      className="bg-white text-black text-xs text-right"
                     >
-                      <td className="font-bold">{plaza.plaza}</td>
+                      <td className="font-bold text-left">{plaza.plaza}</td>
                       <td className="font-bold">
                         {numberWithCommas(plaza.ventasMensualesActual)}
                       </td>
-                      <td className="text-sm">
-                        {numberWithCommas(plaza.ventasMensualesAnterior)}
-                      </td>
-                      <td className="text-sm">
-                        {numberWithCommas(plaza.presupuestoMensual)}
-                      </td>
+                      <td>{numberWithCommas(plaza.ventasMensualesAnterior)}</td>
+                      <td>{numberWithCommas(plaza.presupuestoMensual)}</td>
                       {formatNumber(plaza.diferenciaMensual)}
                       {formatNumber(plaza.porcentajeMensual)}
                       <td className="font-bold">
                         {numberWithCommas(plaza.ventasAnualActual)}
                       </td>
-                      <td className="text-sm">
-                        {numberWithCommas(plaza.ventasAnualAnterior)}
-                      </td>
-                      <td className="text-sm">
-                        {numberWithCommas(plaza.presupuestoAnual)}
-                      </td>
+                      <td>{numberWithCommas(plaza.ventasAnualAnterior)}</td>
+                      <td>{numberWithCommas(plaza.presupuestoAnual)}</td>
                       {formatNumber(plaza.diferenciaAnual)}
                       {formatNumber(plaza.porcentajeAnual)}
                     </TableRow>

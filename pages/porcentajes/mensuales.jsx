@@ -103,9 +103,6 @@ const Mensuales = () => {
         title={`PROPORCION DE VENTAS MENSUALES VS. VENTA ANUAL - Ventas al ${formatLastDate(
           getPrevDate(0, parametrosMensuales.alAgno)
         )}`}
-        description={`ESTA GRAFICA MUESTRA EL PORCENTAJE DE VENTA DEL MES EN RAZON DE LA VENTA ANUAL LA TIENDA SELECCIONADA EN EL RANGO DE AÑOS ESPECIFICADO. 
-          RECUERDE QUE EL RANGO DE AÑOS DEBE SER CAPTURADO DE MENOR A EL MAYOR, AUNQUE EN EL REPORTE SE MOSTRARA EN ORDEN DESCENDENTE.
-        `}
       />
 
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
@@ -232,7 +229,7 @@ const Mensuales = () => {
                 <TableRow
                   key={item.agno}
                   rowId={item.agno}
-                  className="text-center"
+                  className=" text-right text-xs"
                 >
                   <td>{item.agno}</td>
                   <td>{numberWithCommas(item.enero)}</td>

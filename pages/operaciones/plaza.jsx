@@ -82,9 +82,6 @@ const Plaza = () => {
         title={`Operaciones realizadas Plaza ${getPlazaName(
           paramPlaza.plaza
         )} ${paramPlaza.delAgno}`}
-        description={` Esta grafica muestra un comparativo de las ventas vs presupuesto del grupo en el periodo de meses y 
-        el año especificado, este siempre será comparado contra el año anterior.
-        `}
       />
 
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">

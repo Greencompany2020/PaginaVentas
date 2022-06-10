@@ -62,9 +62,6 @@ const Fechas = () => {
         )} del ${formatLastDate(paramFechas.fechaInicio)} al ${formatLastDate(
           paramFechas.fechaFin
         )}`}
-        description={`ESTE REPORTE OBTIENE EL COMPROMISO DE VENTAS PARA CIERTO RANGO DE FECHAS, 
-          QUE PUEDE SER UN MES, UNA SEMANA, UN FIN DE SEMANA, BASADO EN LA FECHAS ESTABLECIDA...
-          `}
       />
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>

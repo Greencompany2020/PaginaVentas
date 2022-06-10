@@ -11,7 +11,7 @@ import { enlaces as enlacesMenuLateral } from "../utils/data";
 const SideMenu = () => {
   const menuRef = useRef(null);
   const auth = useAuth();
-  const [visible, toggleVisible] = useToggle(false);
+  const [visible, toggleVisible] = useToggle(true);
 
   useClickOutside(menuRef, () => {
     if (!visible) {
@@ -19,12 +19,19 @@ const SideMenu = () => {
     }
   });
 
+  const handleOnLeave = () => {
+    if (!visible) {
+      toggleVisible();
+    }
+  };
+
   return (
     <>
       <MenuIcon
         width={40}
         className=" text-sky-500 cursor-pointer hover:text-sky-400"
         onClick={toggleVisible}
+        onMouseEnter={toggleVisible}
       />
 
       <aside
@@ -32,6 +39,7 @@ const SideMenu = () => {
         className={`w-80 h-[calc(_100vh_-_3rem)] bg-black-light left-0 top-[3rem] z-40  transform fixed  ${
           visible && "-translate-x-full"
         } transition duration-200 ease-in-out`}
+        onMouseLeave={handleOnLeave}
       >
         <div className="flex flex-col h-full justify-between p-4">
           <div className="flex justify-end ">
@@ -50,6 +58,7 @@ const SideMenu = () => {
                 key={summaryText}
                 summaryText={summaryText}
                 links={links}
+                handleToggle={toggleVisible}
               />
             ))}
           </div>

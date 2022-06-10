@@ -133,9 +133,6 @@ const Tienda = () => {
         title={`Operaciones Realizadas Tienda ${getTiendaName(
           paramTienda.tienda
         )} ${paramTienda.alAgno} - ${paramTienda.delAgno}`}
-        description={` ESTA GRAFICA MUESTRA LAS OPERACIONES REALIZADAS POR LA TIENDA SELECCIONADA EN EL PERIODO DE MESES
-        Y EL AÑO ESPECIFICADO, ESTE SIEMPRE SERA COMPARADO CONTRA EL AÑO ANTERIOR. 
-        `}
       />
 
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">

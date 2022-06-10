@@ -117,9 +117,6 @@ const Compromiso = () => {
           compromisosParametros.fechaInicio,
           compromisosParametros.fechaFin
         )}`}
-        description={`Este informe muestra un compartivo de la semana o en rango de fecha seleccionado. Recuerde que la comparacion se realiza lunes contra lunes,
-            lo cual quiere decir que las ventas del año anterior no seran por fecha sino lo que corresponda a los dias de la semana.
-          `}
       />
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
@@ -169,27 +166,27 @@ const Compromiso = () => {
                 >
                   Tienda
                 </th>
-                <th colSpan={2} className="border border-white bg-black-shape">
+                <th colSpan={1} className="border border-white bg-black-shape">
                   Venta
                 </th>
-                <th colSpan={2} className="border border-white bg-black-shape">
+                <th colSpan={1} className="border border-white bg-black-shape">
                   Promedios
                 </th>
                 <th
-                  colSpan={2}
+                  colSpan={1}
                   className="border border-white bg-black-shape rounded-tr-xl"
                 >
                   Operaciones
                 </th>
               </tr>
               <tr>
-                <th colSpan={2} className="border border-white bg-black-shape">
+                <th colSpan={1} className="border border-white bg-black-shape">
                   Compromiso
                 </th>
-                <th colSpan={2} className="border border-white bg-black-shape">
+                <th colSpan={1} className="border border-white bg-black-shape">
                   Comp
                 </th>
-                <th colSpan={2} className="border border-white bg-black-shape">
+                <th colSpan={1} className="border border-white bg-black-shape">
                   Comp
                 </th>
               </tr>
@@ -201,14 +198,13 @@ const Compromiso = () => {
                   rowId={compromiso.NoTienda}
                   className="text-right"
                 >
-                  <td
-                    colSpan={2}
-                    className="text-center bg-black text-white font-bold p-2"
-                  >
+                  <td colSpan={1} className="text-left text-xs font-bold p-2">
                     {compromiso.Descrip}
                   </td>
-                  <td>{numberWithCommas(compromiso.PresupuestoSem)}</td>
-                  <td colSpan={2} className="pr-4">
+                  <td className="text-right text-xs">
+                    {numberWithCommas(compromiso.PresupuestoSem)}
+                  </td>
+                  <td colSpan={1} className="pr-4 text-right">
                     <input
                       type="text"
                       value={compromiso.Promedio}
@@ -221,7 +217,7 @@ const Compromiso = () => {
                       }
                     />
                   </td>
-                  <td colSpan={2} className="pr-4">
+                  <td colSpan={1} className="pr-4 text-right">
                     <input
                       type="text"
                       value={compromiso.OperacionesSem}

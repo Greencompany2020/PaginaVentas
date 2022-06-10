@@ -59,12 +59,7 @@ const Tienda = () => {
 
   return (
     <div className=" flex flex-col h-full">
-      <TitleReport
-        title="Rangos de ventas por Tienda"
-        description={` ESTE REPORTE OBTIENE LOS RANGOS DE VENTA, DE LAS FECHAS ESTABLECIDAS. EL RANGO ESTABLEZCALO 
-        DE LA FORMA 1,150,250,350,400 QUE INDICA P.E. DEL 1 AL 149.00 DEL 150 AL 249.99.
-        `}
-      />
+      <TitleReport title="Rangos de ventas por Tienda" />
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>

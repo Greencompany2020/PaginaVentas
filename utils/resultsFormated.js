@@ -11,14 +11,16 @@ export const formatNumber = (num) => {
     return (<td style={{
       color: "rgb(220 38 38)",
       fontWeight: 700,
-      textAlign: "center",
+      textAlign: "right",
+      fontSize: 12
     }}>{numberWithCommas(numberText)}</td>)
   } else {
     numberText = `${Math.abs(num)}`;
     return (<td style={{
       color: "rgb(5 150 105)",
       fontWeight: 700,
-      textAlign: "center"
+      textAlign: "right",
+      fontSize: 12
     }}>{numberWithCommas(numberText)}</td>)
   }
 }

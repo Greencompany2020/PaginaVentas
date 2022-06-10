@@ -127,9 +127,6 @@ const Tiendas = () => {
         )} del año ${parametrosTiendas.delAgno} al año ${
           parametrosTiendas.alAgno
         } (mls.dlls.)`}
-        description={`Esta grafica muestra las ventas de cada mes del año de la plaza seleccionada por cada uno de los años del rango especificado. 
-        Recuerde que el rango de años debe ser capturado de menor a el mayor, aunque en el reporte se mostrara en orden descendente.
-        `}
       />
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>

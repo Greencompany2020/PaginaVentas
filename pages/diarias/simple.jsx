@@ -70,7 +70,6 @@ const Simple = () => {
         )} ${getMonthByNumber(tiendaSimpleParametros.delMes)} ${
           tiendaSimpleParametros.delAgno
         }`}
-        description=" Esta tabla muestra las ventas vs presupuesto del grupo en el periodo de mes y año especificado, este siempre será comparado contra el año anterior."
       />
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
@@ -132,24 +131,24 @@ const Simple = () => {
                 <th className="border border-white bg-black-shape">Acum</th>
               </tr>
             </TableHead>
-            <tbody className="bg-white text-center">
+            <tbody className="bg-white text-right">
               {tiendaSimple?.map((ventas) => (
                 <TableRow key={ventas.dia} rowId={ventas.dia}>
-                  <td className="font-bold">{ventas.dia}</td>
-                  <td className="text-sm">{ventas.dia}</td>
-                  <td className="font-bold">
+                  <td className="text-xs font-bold">{ventas.dia}</td>
+                  <td className="text-xs">{ventas.dia}</td>
+                  <td className="text-xs font-bold">
                     {numberWithCommas(ventas.ventaActual)}
                   </td>
-                  <td className="text-sm">
+                  <td className="text-xs">
                     {numberWithCommas(ventas.ventaAnterior)}
                   </td>
-                  <td className="font-bold">
+                  <td className="text-xs font-bold">
                     {numberWithCommas(ventas.acumulado)}
                   </td>
                 </TableRow>
               ))}
             </tbody>
-            <tfoot className=" text-white text-center font-bold">
+            <tfoot className=" text-white text-center text-xs font-bold">
               <tr>
                 <th className="border border-white bg-black">
                   {getLastTwoNumbers(tiendaSimpleParametros.delAgno)}

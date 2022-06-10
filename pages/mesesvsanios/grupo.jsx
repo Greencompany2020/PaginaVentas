@@ -84,9 +84,6 @@ const Grupo = () => {
     <div className=" flex flex-col h-full">
       <TitleReport
         title={`Comparativo de ventas del año ${parametrosGrupo.delAgno} al año ${parametrosGrupo.alAgno} (mls.dlls)`}
-        description={`Esta gráfica muestra las ventas anuales del grupo para cada uno de los años del rango especificado. 
-          Recuerde que el rango de años debe ser capturado de el menor a el mayor aunque en el reporte se mostrará en orden descendente.
-          `}
       />
 
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">

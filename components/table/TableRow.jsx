@@ -15,7 +15,7 @@ const TableRow = ({ children, rowId, className }) => {
     <tr
       className={`p-1 hover:cursor-pointer ${
         active === rowId ? "bg-yellow-200" : ""
-      } ${className && ""}`}
+      } ${className ?? ""}`}
       onClick={() => toggleActive(rowId)}
     >
       {children}

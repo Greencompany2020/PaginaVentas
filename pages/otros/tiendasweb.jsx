@@ -17,10 +17,7 @@ import TitleReport from "../../components/TitleReport";
 const tiendasweb = () => {
   return (
     <div className=" flex flex-col h-full">
-      <TitleReport
-        title="TIENDAS WEB COMPARATIVO VENTAS DEL AÑO 2022 (AL 12 DE ENERO S/IVA M.N. )"
-        description="Este reporte muestra las ventas acumuladas semana-mes-año"
-      />
+      <TitleReport title="TIENDAS WEB COMPARATIVO VENTAS DEL AÑO 2022 (AL 12 DE ENERO S/IVA M.N. )" />
 
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>

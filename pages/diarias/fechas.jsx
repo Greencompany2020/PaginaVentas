@@ -54,8 +54,10 @@ const Fechas = () => {
             <tbody className="bg-white">
               {fechas?.map((fecha, index) => (
                 <TableRow key={index} rowId={index} className="text-center">
-                  <td className="">{fecha.tienda}</td>
-                  <td>{formatLastDate(fecha.fecha)}</td>
+                  <td className="text-xs text-left">{fecha.tienda}</td>
+                  <td className="text-xs text-left">
+                    {formatLastDate(fecha.fecha)}
+                  </td>
                 </TableRow>
               ))}
             </tbody>

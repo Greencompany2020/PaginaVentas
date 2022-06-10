@@ -73,12 +73,7 @@ const Plazas = () => {
 
   return (
     <div className=" flex flex-col h-full">
-      <TitleReport
-        title="Detalles de información / Semanales por plaza"
-        description={`Este reporte muestra un compartivo de la semana o en rango de fecha selecionado. Recuerde que la comparacion se realiza lunes contra lunes,
-          lo cual quiere decir que las ventas del año anterior no seran por fecha sino lo que corresponda a los dias de la semana.
-          `}
-      />
+      <TitleReport title="Detalles de información / Semanales por plaza" />
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
           <Parameters>
@@ -193,22 +188,18 @@ const Plazas = () => {
                 </td>
               </tr>
             </TableHead>
-            <tbody className="bg-white text-center">
+            <tbody className="bg-white text-right text-xs">
               {semanalesPlaza?.map((semPlaza) => (
                 <TableRow key={semPlaza.plaza} rowId={semPlaza.plaza}>
                   <td className="text-center bg-black-shape text-white font-bold ">
                     {semPlaza.plaza}
                   </td>
-                  <td className="text-sm">
-                    {numberWithCommas(semPlaza.compromiso)}
-                  </td>
+                  <td>{numberWithCommas(semPlaza.compromiso)}</td>
                   <td className="font-bold">
                     {numberWithCommas(semPlaza.ventasActuales)}
                   </td>
                   {formatNumber(semPlaza.porcentaje)}
-                  <td className="text-sm">
-                    {numberWithCommas(semPlaza.ventasAnterior)}
-                  </td>
+                  <td>{numberWithCommas(semPlaza.ventasAnterior)}</td>
                   <td className="font-bold">
                     {numberWithCommas(semPlaza.operacionesComp)}
                   </td>
@@ -216,9 +207,7 @@ const Plazas = () => {
                     {numberWithCommas(semPlaza.operacionesActual)}
                   </td>
                   {formatNumber(semPlaza.porcentajeOperaciones)}
-                  <td className="text-sm">
-                    {numberWithCommas(semPlaza.operacionesAnterior)}
-                  </td>
+                  <td>{numberWithCommas(semPlaza.operacionesAnterior)}</td>
                   <td className="font-bold">
                     {numberWithCommas(semPlaza.promedioComp)}
                   </td>

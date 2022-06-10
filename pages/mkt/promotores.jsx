@@ -130,10 +130,7 @@ const Promotores = () => {
 
   return (
     <div className=" flex flex-col h-full">
-      <TitleReport
-        title={`Ingresos Promotores ${paramPromotores.delAgno}`}
-        description=" Esta tabla le muestra los ingresgos generados por promotores asi como los canjes resultantes."
-      />
+      <TitleReport title={`Ingresos Promotores ${paramPromotores.delAgno}`} />
 
       <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
         <ParametersContainer>
