@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import Navbar from "../components/Navbar";
 import {
@@ -13,15 +14,23 @@ import { useUser } from "../context/UserContext";
 
 const DashboardItems = ({ data }) => {
   if (!data) return <></>;
-  const itemsEnabled = data.filter((item) => item.Enabled === "Y");
-  const Items = itemsEnabled.map((item, index) => (
+  const Items = data.map((item, index) => (
     <DashboardButton key={index} name={item.Nombre} link={item.Endpoint} />
   ));
   return Items;
 };
 
 const Dashboard = () => {
-  const { user, dashboard } = useUser();
+  const { user, getEnabledDashboards, getUserData } = useUser();
+  const [mostVisited, setMostVisited] = useState(undefined);
+
+  useEffect(() => {
+    (async () => {
+      const response = await getEnabledDashboards(user?.Id);
+      setMostVisited(response);
+    })();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   return (
     <div className="w-full h-screen bg-white overflow-x-hidden relative">
@@ -73,8 +82,8 @@ const Dashboard = () => {
           <p className="text-gray-500 font-bold text-xl text-center md:self-end lg:mr-14 md:mr-12">
             Dashboard
           </p>
-          <div className="grid grid-col-1 sm:grid-cols-2 gap-y-8 md:gap-x-8 md:gap-14 lg:gap-8 text-gray-800 font-bold mt-3 h-[380px] overflow-y-scroll">
-            <DashboardItems data={dashboard} />
+          <div className="grid grid-col-1 sm:grid-cols-2 gap-y-8 md:gap-x-8 md:gap-14 lg:gap-8 text-gray-800 font-bold mt-3 h-[380px] overflow-y-auto">
+            <DashboardItems data={mostVisited} />
           </div>
         </Flex>
       </section>

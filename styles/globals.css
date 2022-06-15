@@ -270,3 +270,25 @@ table.last-row-bg tr:last-child {
   overflow-y: auto;
 }
 
+.layout-base{
+  display: grid; 
+  grid-template-columns: 1fr; 
+  grid-template-rows: 2.8em 1fr;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden; 
+  gap: 0px 0px; 
+  grid-template-areas: 
+    "Navbar"
+    "Main";
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.layout-base-navbar{
+  grid-area: Navbar;
+  z-index: 10;
+}
+.layout-base-main{
+  grid-area:  Main;
+  height: 100%;
+}

@@ -1,17 +1,17 @@
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import DetailsSideBar from "./DetailsSideBar";
 import { MenuIcon, XIcon } from "@heroicons/react/solid";
 import { LogoutIcon } from "@heroicons/react/outline";
 import useToggle from "../hooks/useToggle";
 import useAuth from "../hooks/useAuth";
 import useClickOutside from "../hooks/useClickOutside";
-
 import { enlaces as enlacesMenuLateral } from "../utils/data";
 
 const SideMenu = () => {
   const menuRef = useRef(null);
   const auth = useAuth();
   const [visible, toggleVisible] = useToggle(true);
+  const [device, setDevice] = useState(undefined);
 
   useClickOutside(menuRef, () => {
     if (!visible) {
