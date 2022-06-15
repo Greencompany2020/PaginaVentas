@@ -13,6 +13,17 @@ import ConfigurationItems from "../../containers/profile/ConfigurationItems";
 const Perfil = () => {
   const { user,setPerfilImage } = useUser();
   const [visible, setVisible] = useToggle(false);
+  const alert = useAlert();
+
+  const handleUploadImage = async (files) =>{
+    const response = await setPerfilImage(files);
+    if(response){
+      setVisible();
+    }else{
+      alert.showAlert('No se puedo subir la imagen', 'WARNING');
+    }
+    return response;
+  }
 
   return (
     <>
@@ -122,7 +133,7 @@ const Perfil = () => {
       {/*Modals*/}
       <FormModal active={visible} handleToggle={setVisible} name="Subir imagenes">
         <div className=" p-4 h-[22rem] md:h-[22rem] md:w-[42rem]">
-          <Dropzone handleUpload={setPerfilImage}/>
+          <Dropzone handleUpload={handleUploadImage} label='Arrastra la imagen o presiona aqui'/>
         </div>
       </FormModal>
     </>

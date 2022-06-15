@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { mobileModel } from "react-device-detect";
+import { isIOS, isMacOs } from "react-device-detect";
 import Image from "next/image";
 import Link from "next/link";
 import Plus from "../public/icons/plus.svg";
@@ -15,7 +15,7 @@ const DetailsSideBar = ({ summaryText, links, handleToggle, device }) => {
   return (
     <details className="hover:block">
       <summary className="cursor-pointer flex items-center pb-2 text-white">
-        {mobileModel?.model !== "iPhone" && (
+        {(!isIOS || !isMacOs) && (
           <Image src={Plus} alt="Plus" height={16} width={16} />
         )}
         <span className="ml-1">{summaryText}</span>

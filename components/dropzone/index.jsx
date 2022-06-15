@@ -14,10 +14,10 @@ export default function Dropzone(props) {
   const handleOnUpload = async () =>{
     if(Array.isArray(files)){
      const response = await handleUpload(files);
-     if(response){ 
-      setFiles(undefined);
-      setPreview(undefined);
-    }
+      if(response){ 
+        setFiles(undefined);
+        setPreview(undefined);
+      }
     }
   }
 
@@ -31,6 +31,15 @@ export default function Dropzone(props) {
       )
     );
   }, []);
+
+  const deletePress = (item) => {
+    if(Array.isArray(files)){
+      const filtered = files.filter(prev => prev !== item);
+      console.log(filtered);
+      setFiles(filtered);
+      setPreview(filtered)
+    }
+  }
 
   const { 
     getRootProps, 
@@ -54,7 +63,12 @@ export default function Dropzone(props) {
 
   const selected_images = preview?.map((file, index) => (
       <figure key={index} style={contentFigure}>
-        <img src={file.preview} style={{ width: "110px", height:'110px' }} alt="image preview" />
+        <img 
+          src={file.preview} 
+          style={{ width: "110px", height:'110px' }} 
+          alt="image preview"
+          onClick={() => deletePress(file)} 
+        />
       </figure>
   ));
 
@@ -63,7 +77,7 @@ export default function Dropzone(props) {
       <div {...getRootProps({style})}>
         <input {...getInputProps()} />
         <div style={{display: 'flex', alignItems:'center'}}>
-          <Image src={uploadImage} width={90} height={100} alt='upload' layout="fixed"/>
+          <Image src={uploadImage} width={90} height={90} alt='upload' layout="fixed"/>
           <p style={{textAlign:'center', marginLeft:'0.5rem'}}>{label}</p>
         </div>
       </div>
@@ -96,7 +110,7 @@ const baseStyle = {
   padding: "5px",
   borderWidth: 2,
   borderRadius: 2,
-  borderColor: "#eeeeee",
+  borderColor: "#cacaca",
   borderStyle: "dashed",
   backgroundColor: "#fafafa",
   color: "#bdbdbd",

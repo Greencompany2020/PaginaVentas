@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef} from "react";
 import DetailsSideBar from "./DetailsSideBar";
 import { MenuIcon, XIcon } from "@heroicons/react/solid";
 import { LogoutIcon } from "@heroicons/react/outline";
@@ -11,7 +11,6 @@ const SideMenu = () => {
   const menuRef = useRef(null);
   const auth = useAuth();
   const [visible, toggleVisible] = useToggle(true);
-  const [device, setDevice] = useState(undefined);
 
   useClickOutside(menuRef, () => {
     if (!visible) {

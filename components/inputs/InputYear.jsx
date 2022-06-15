@@ -7,11 +7,12 @@ const InputYear = ({ value, onChange }) => {
       <input
         type="number"
         name="delAgno"
-        id=""
+        id="anio"
         className="select ml-2"
+        inputMode="numeric"
+        pattern="[0-9]*"
         value={value}
-        min={2000}
-        step={1}
+        min="2000"
         onChange={onChange}
       />
     </Flex>
