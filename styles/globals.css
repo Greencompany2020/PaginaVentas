@@ -19,12 +19,24 @@ input[type="date"]:in-range::-webkit-datetime-edit-text {
   color: transparent;
 }
 
-table thead > tr:first-child{
+table thead > tr{
   text-transform: uppercase;
 }
 
 table.tfooter tr:last-child {
-  @apply bg-black-shape text-white font-bold;
+  @apply  text-white font-bold;
+}
+
+table.tfooter tr:last-child td{
+  @apply bg-black-shape
+}
+
+table.tfooter tr:last-child td:first-child{
+  @apply bg-black-shape rounded-bl-md text-white
+}
+
+table.tfooter tr:last-child td:last-child{
+  @apply bg-black-shape rounded-br-md text-white
 }
 
 @media (max-width: 1024px) {
@@ -41,7 +53,7 @@ table.tfooter tr:last-child {
   @apply outline-none border border-gray-300 rounded-md w-32;
 }
 
-table.last-row-bg tr:last-child {
+table.last-row-bg tbody tr:last-child {
   @apply bg-black-shape font-bold text-white;
 }
 
@@ -251,7 +263,7 @@ table.last-row-bg tr:last-child {
 }
 .layout-ventas-toolbar{
   grid-area: Toolbar;
-  height: 100%;
+  height: 100vh;
 }
 .layout-ventas-main{
   grid-area: Main;
@@ -264,7 +276,7 @@ table.last-row-bg tr:last-child {
 }
 .layout-tools-toolbar{
   grid-area: Toolbar;
-  height: 100%;
+  height: 100vh;
 }
 .layout-tools-main{
   grid-area: Main;

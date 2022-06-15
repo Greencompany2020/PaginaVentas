@@ -78,7 +78,7 @@ const Grupo = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parametrosGrupo]);
+  }, [parametrosGrupo, parametrosGrupo.delAgno]);
 
   return (
     <div className=" flex flex-col h-full">

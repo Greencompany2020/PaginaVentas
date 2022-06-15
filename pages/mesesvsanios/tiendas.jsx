@@ -77,7 +77,7 @@ const Tiendas = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parametrosTiendas]);
+  }, [parametrosTiendas, parametrosTiendas.delAgno]);
 
   const createMesesAgnosTiendasDataset = (data, fromYear, toYear) => {
     const colors = ["#006400", "#daa520", "#6495ed", "#ff7f50", "#98fb98"];

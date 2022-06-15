@@ -150,7 +150,7 @@ const Plazas = () => {
           {Object.entries(comparativoPlazas)?.map(([key, value]) => (
             <Fragment key={key}>
               {getTableName(key)}
-              <VentasTable className="last-row-bg">
+              <VentasTable className=" tfooter">
                 <TableHead>
                   <tr>
                     <th rowSpan={2} className="bg-black-shape rounded-tl-xl">

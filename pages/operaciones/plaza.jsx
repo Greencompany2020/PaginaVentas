@@ -74,7 +74,7 @@ const Plaza = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramPlaza]);
+  }, [paramPlaza, paramPlaza.delAgno]);
 
   return (
     <div className=" flex flex-col h-full">

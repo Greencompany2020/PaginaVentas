@@ -4,7 +4,7 @@ import TableRow from "./TableRow";
 const PeriodosSemanaSantaTable = ({ dates }) => {
   return (
     <>
-      <VentasTable className="my-7 ">
+      <VentasTable className="my-7 tfooter">
         <thead className=" text-white text-center text-xs table-head table-head-rl table-head-rr">
           <tr>
             <th className="border border-white">Año</th>

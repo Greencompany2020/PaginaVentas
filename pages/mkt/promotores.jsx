@@ -68,7 +68,7 @@ const Promotores = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramPromotores]);
+  }, [paramPromotores, paramPromotores.delAgno]);
 
   const createPromotoresTableHead = () => {
     return meses

@@ -72,7 +72,7 @@ const Tienda = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramTienda]);
+  }, [paramTienda, paramTienda.delAgno]);
 
   const createOperacionesDatasets = (data) => {
     const colors = [

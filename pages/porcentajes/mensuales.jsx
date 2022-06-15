@@ -77,7 +77,7 @@ const Mensuales = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parametrosMensuales]);
+  }, [parametrosMensuales, parametrosMensuales.delAgno]);
 
   const handleVisibleTienda = () => {
     setToggleTienda(true);
@@ -179,7 +179,7 @@ const Mensuales = () => {
       </section>
       <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
         <VentasTableContainer>
-          <VentasTable className="last-row-bg">
+          <VentasTable className="tfooter">
             <TableHead>
               <tr>
                 <th rowSpan={2}>Año</th>

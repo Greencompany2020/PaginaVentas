@@ -83,7 +83,7 @@ const Plaza = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parametrosPlazas]);
+  }, [parametrosPlazas, parametrosPlazas.delAgno]);
 
   const createMesesAgnosPlazasDataset = (data, fromYear, toYear) => {
     const colors = ["#006400", "#daa520", "#6495ed", "#ff7f50", "#98fb98"];

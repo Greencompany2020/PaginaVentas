@@ -24,20 +24,16 @@ import { getDiariasGrupo } from "../../services/DiariasServices";
 import { formatNumber, numberWithCommas } from "../../utils/resultsFormated";
 import { inputNames } from "../../utils/data/checkboxLabels";
 import { handleChange } from "../../utils/handlers";
-import { isError } from "../../utils/functions";
 import WithAuth from "../../components/withAuth";
 import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
-import { currentDate } from "../../utils/dateFunctions";
 
 const Grupo = (props) => {
   const alert = useAlert();
 
-  const { year, month } = currentDate();
-
   const [parametrosConsulta, setParametrosConsulta] = useState({
-    delMes: month,
-    delAgno: year,
+    delMes: new Date(Date.now()).getMonth() + 1,
+    delAgno: new Date(Date.now()).getFullYear(),
     tiendas: 0,
     conIva: 0,
     semanaSanta: 1,
@@ -60,7 +56,7 @@ const Grupo = (props) => {
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parametrosConsulta]);
+  }, [parametrosConsulta, parametrosConsulta.delAgno]);
 
   return (
     <div className=" flex flex-col h-full">

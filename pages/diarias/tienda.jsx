@@ -59,7 +59,7 @@ const Tienda = () => {
       }
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tiendasParametros]);
+  }, [tiendasParametros, tiendasParametros.delAgno]);
 
   return (
     <div className=" flex flex-col h-full">

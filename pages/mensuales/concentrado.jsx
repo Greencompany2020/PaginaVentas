@@ -53,7 +53,7 @@ const Concentrado = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [concentradoParametros]);
+  }, [concentradoParametros, ParametersContainer.delAgno]);
 
   return (
     <div className=" flex flex-col h-full">

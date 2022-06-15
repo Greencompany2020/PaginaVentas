@@ -9,7 +9,7 @@ const SemanaSantaTable = ({ year1, year2, title, ventas = [] }) => {
       <h1 className="text-center font-bold ">
         {validateDate(title) ? getDayName(title) : title}
       </h1>
-      <VentasTable className="my-7 last-row-bg">
+      <VentasTable className="my-7 tfooter">
         <VentasSemanaSantaHead year1={year1} year2={year2} />
         <tbody className="bg-white text-center">
           {ventas?.map((venta) => (

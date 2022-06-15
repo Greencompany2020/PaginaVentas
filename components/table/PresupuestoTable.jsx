@@ -7,7 +7,7 @@ const PresupuestoTable = ({ title, presupuestos = [] }) => {
   return (
     <>
       <h1 className="text-center font-bold">{title}</h1>
-      <VentasTable className="my-7 last-row-bg table-head">
+      <VentasTable className="my-7 tfooter table-head">
         <PresupuestoFechaHead />
         <tbody className="bg-white text-right text-xs">
           {presupuestos?.map((item, index) => (

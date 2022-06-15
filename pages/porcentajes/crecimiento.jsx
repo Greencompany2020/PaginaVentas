@@ -149,7 +149,7 @@ const Crecimiento = () => {
           ${getMonthByNumber(paramCrecimiento.fecha.split("-")[1])} de 
           ${getYearFromDate(paramCrecimiento.fecha)} Acumulado y Anual`}
         >
-          <VentasTable className="last-row-bg">
+          <VentasTable className="tfooter">
             <TableHead>
               <tr>
                 <th rowSpan={2}>Tiendas</th>

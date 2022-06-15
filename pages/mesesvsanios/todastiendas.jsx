@@ -61,7 +61,7 @@ const TodasTiendas = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramTiendas]);
+  }, [paramTiendas, paramTiendas.delAgno]);
 
   const createMesesAgnosTiendasDataset = (data) => {
     const colors = [

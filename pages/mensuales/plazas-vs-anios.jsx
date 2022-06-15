@@ -76,7 +76,7 @@ const PlazasVS = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [plazasAgnosParametros]);
+  }, [plazasAgnosParametros, plazasAgnosParametros.delAgno]);
 
   return (
     <div className=" flex flex-col h-full">
