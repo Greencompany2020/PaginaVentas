@@ -30,21 +30,21 @@ const VentasDiariasTableHead = ({ currentYear, month }) => {
         <th className="border border-white">
           {getLastTwoNumbers(currentYear)}
         </th>
-        <th className="border border-white">{getLastTwoNumbers(lastYear)}</th>
-        <th className="border border-white">{currentYear}</th>
-        <th className="border border-white">{lastYear}</th>
-        <th className="border border-white">COMP.</th>
-        <th className="border border-white">%</th>
-        <th className="border border-white">{currentYear}</th>
-        <th className="border border-white">{lastYear}</th>
-        <th className="border border-white">COMP.</th>
-        <th className="border border-white">(-)</th>
-        <th className="border border-white">%</th>
-        <th className="border border-white">{currentYear}</th>
-        <th className="border border-white">{lastYear}</th>
-        <th className="border border-white">COMP.</th>
-        <th className="border border-white">%</th>
-        <th className="border border-white">
+        <th className="border border-white text-right">{getLastTwoNumbers(lastYear)}</th>
+        <th className="border border-white text-right">{currentYear}</th>
+        <th className="border border-white text-right">{lastYear}</th>
+        <th className="border border-white text-right">COMP.</th>
+        <th className="border border-white text-right">%</th>
+        <th className="border border-white text-right">{currentYear}</th>
+        <th className="border border-white text-right">{lastYear}</th>
+        <th className="border border-white text-right">COMP.</th>
+        <th className="border border-white text-right">(-)</th>
+        <th className="border border-white text-right">%</th>
+        <th className="border border-white text-right">{currentYear}</th>
+        <th className="border border-white text-right">{lastYear}</th>
+        <th className="border border-white text-right">COMP.</th>
+        <th className="border border-white text-right">%</th>
+        <th className="border border-white text-right">
           {getLastTwoNumbers(currentYear)}
         </th>
       </tr>

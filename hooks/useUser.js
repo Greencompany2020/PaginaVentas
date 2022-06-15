@@ -49,7 +49,6 @@ function useProvideUser() {
     }
 
     const setPerfilImage = async (file) => {
-        console.log(file[0]);
         let formData = new FormData();
         formData.append("image", file[0]);
         const response = await post_perfilImage(formData);

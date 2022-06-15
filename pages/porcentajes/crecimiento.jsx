@@ -159,7 +159,7 @@ const Crecimiento = () => {
                 <th colSpan={6}>Factor Crecimiento</th>
                 <th colSpan={7}>Factor Crecimiento</th>
               </tr>
-              <tr>
+              <tr className="text-right">
                 {createTableHeadForYears()}
                 <th>
                   {getMonthByNumber(paramCrecimiento.fecha.split("-")[1])}-

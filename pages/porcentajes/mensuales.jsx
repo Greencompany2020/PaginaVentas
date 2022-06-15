@@ -197,7 +197,7 @@ const Mensuales = () => {
                 <th colSpan={2}>DIC</th>
                 <th rowSpan={2}>TOTAL ANUAL</th>
               </tr>
-              <tr>
+              <tr className="text-right">
                 <th>$</th>
                 <th>%</th>
                 <th>$</th>

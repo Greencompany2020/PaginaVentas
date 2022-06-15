@@ -1,8 +1,6 @@
 
 .Toolbar{
     display: flex;
-    border-top-right-radius: 0.4rem;
-    border-top-left-radius: 0.4rem;
     flex-flow: column;
     height: 100%;
     width: 2.8rem;

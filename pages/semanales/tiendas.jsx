@@ -78,7 +78,7 @@ const Tiendas = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tiendasParametros]);
 
-  const renderRow = (item) => {
+  const renderRow = (item, isLast = false) => {
     if (plazas.findIndex((plaza) => plaza.text === item.plaza) !== -1) {
       return (
         <RegionesPlazaTableRow
@@ -86,6 +86,7 @@ const Tiendas = () => {
           type="plaza"
           key={item.plaza}
           rowId={item.plaza}
+          isLast = {isLast}
         />
       );
     }
@@ -96,11 +97,12 @@ const Tiendas = () => {
           type="region"
           key={item.plaza}
           rowId={item.plaza}
+          isLast = {isLast}
         />
       );
     }
     return (
-      <RegionesPlazaTableRow item={item} key={item.plaza} rowId={item.plaza} />
+      <RegionesPlazaTableRow item={item} key={item.plaza} rowId={item.plaza} isLast = {isLast}/>
     );
   };
 
@@ -186,7 +188,7 @@ const Tiendas = () => {
                   )}
                 </td>
               </tr>
-              <tr>
+              <tr className="text-right">
                 <td rowSpan={2} className="border border-white bg-black-shape">
                   Comp
                 </td>
@@ -209,7 +211,7 @@ const Tiendas = () => {
                   Articulos Prom.
                 </td>
               </tr>
-              <tr>
+              <tr className="text-right">
                 <td className="border border-white bg-black-shape">Comp</td>
                 <td className="border border-white bg-black-shape">
                   {getYearFromDate(tiendasParametros.fechaFin)}
@@ -236,7 +238,15 @@ const Tiendas = () => {
               </tr>
             </TableHead>
             <tbody className="bg-white text-xs text-right">
-              {semanalesTienda?.map((tienda) => renderRow(tienda))}
+              {
+                (() => {
+                  if(semanalesTienda.length > 0){
+                    const count = semanalesTienda.length - 1;
+                    const Items = semanalesTienda?.map((tienda, index) => renderRow(tienda, count == index))
+                    return Items;
+                  }
+                })()
+              }
             </tbody>
           </VentasTable>
         </VentasTableContainer>

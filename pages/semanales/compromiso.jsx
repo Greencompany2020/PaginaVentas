@@ -180,13 +180,13 @@ const Compromiso = () => {
                 </th>
               </tr>
               <tr>
-                <th colSpan={1} className="border border-white bg-black-shape">
+                <th colSpan={1} className="border border-white bg-black-shape text-right">
                   Compromiso
                 </th>
-                <th colSpan={1} className="border border-white bg-black-shape">
+                <th colSpan={1} className="border border-white bg-black-shape text-right">
                   Comp
                 </th>
-                <th colSpan={1} className="border border-white bg-black-shape">
+                <th colSpan={1} className="border border-white bg-black-shape text-right">
                   Comp
                 </th>
               </tr>
@@ -196,9 +196,9 @@ const Compromiso = () => {
                 <TableRow
                   key={compromiso.NoTienda}
                   rowId={compromiso.NoTienda}
-                  className="text-right"
+                  className="text-center"
                 >
-                  <td colSpan={1} className="text-left text-xs font-bold p-2">
+                  <td colSpan={1} className="bg-black-shape text-white text-xs font-bold p-2">
                     {compromiso.Descrip}
                   </td>
                   <td className="text-right text-xs">

@@ -6,7 +6,7 @@
 const VentasTable = ({ children, className }) => {
   return (
     <table
-      className={` w-[calc(100%_+_800px)] md:w-full  h-full  ${className}`}
+      className={`w-[calc(100%_+_1000px)] sm:w-[calc(100%_+_900px)] md:w-[calc(100%_+_800px)] xl:w-full  h-full  ${className}`}
     >
       {children}
     </table>

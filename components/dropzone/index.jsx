@@ -35,7 +35,6 @@ export default function Dropzone(props) {
   const deletePress = (item) => {
     if(Array.isArray(files)){
       const filtered = files.filter(prev => prev !== item);
-      console.log(filtered);
       setFiles(filtered);
       setPreview(filtered)
     }

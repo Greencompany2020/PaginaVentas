@@ -189,7 +189,7 @@ function Grupo() {
                       Tienda
                     </th>
                   </tr>
-                  <tr>
+                  <tr className="text-right">
                     <th className="bg-black-shape">
                       {getYearFromDate(parametrosGrupo.fecha)}
                     </th>
@@ -231,50 +231,58 @@ function Grupo() {
                   </tr>
                 </TableHead>
                 <tbody className="text-xs text-right bg-white text-black">
-                  {value?.map((tienda) => (
-                    <TableRow
-                      key={tienda.tienda}
-                      rowId={tienda.tienda}
-                      className={rowColor(tienda)}
-                    >
-                      <td className="text-left">{tienda.tienda}</td>
-                      <td className="font-bold">
-                        {numberWithCommas(tienda.ventasActuales)}
-                      </td>
-                      <td>{numberWithCommas(tienda.ventasAnterior)}</td>
-                      <td>{numberWithCommas(tienda.presupuesto)}</td>
-                      {formatNumber(tienda.porcentaje)}
-                      {acumuladoSemanal && (
-                        <>
-                          <td>
-                            {numberWithCommas(tienda.ventasSemanalesActual)}
-                          </td>
-                          <td c>
-                            {numberWithCommas(tienda.ventasSemanalesAnterior)}
-                          </td>
-                          <td>{numberWithCommas(tienda.presupuestoSemanal)}</td>
-                          {formatNumber(tienda.porcentajeSemanal)}
-                        </>
-                      )}
-                      <td className="font-bold">
-                        {numberWithCommas(tienda.ventasMensualesActual)}
-                      </td>
-                      <td>
-                        {numberWithCommas(tienda.ventasMensualesAnterior)}
-                      </td>
-                      <td>{numberWithCommas(tienda.presupuestoMensual)}</td>
-                      {formatNumber(tienda.diferenciaMensual)}
-                      {formatNumber(tienda.porcentajeMensual)}
-                      <td className="font-bold">
-                        {numberWithCommas(tienda.ventasAnualActual)}
-                      </td>
-                      <td>{numberWithCommas(tienda.ventasAnualAnterior)}</td>
-                      <td>{numberWithCommas(tienda.presupuestoAnual)}</td>
-                      {formatNumber(tienda.diferenciaAnual)}
-                      {formatNumber(tienda.porcentajeAnual)}
-                      <td className="text-left pl-3">{tienda.tienda}</td>
-                    </TableRow>
-                  ))}
+                  {
+                    (()=>{
+                      if(value){
+                        const count = value.length - 1;
+                        const Items = value?.map((tienda, index) => (
+                          <TableRow
+                            key={tienda.tienda}
+                            rowId={tienda.tienda}
+                            className={rowColor(tienda)}
+                          >
+                            <td className="text-left">{tienda.tienda}</td>
+                            <td className="font-bold">
+                              {numberWithCommas(tienda.ventasActuales)}
+                            </td>
+                            <td>{numberWithCommas(tienda.ventasAnterior)}</td>
+                            <td>{numberWithCommas(tienda.presupuesto)}</td>
+                            {formatNumber(tienda.porcentaje, count == index)}
+                            {acumuladoSemanal && (
+                              <>
+                                <td>
+                                  {numberWithCommas(tienda.ventasSemanalesActual)}
+                                </td>
+                                <td c>
+                                  {numberWithCommas(tienda.ventasSemanalesAnterior)}
+                                </td>
+                                <td>{numberWithCommas(tienda.presupuestoSemanal)}</td>
+                                {formatNumber(tienda.porcentajeSemanal, count == index)}
+                              </>
+                            )}
+                            <td className="font-bold">
+                              {numberWithCommas(tienda.ventasMensualesActual)}
+                            </td>
+                            <td>
+                              {numberWithCommas(tienda.ventasMensualesAnterior)}
+                            </td>
+                            <td>{numberWithCommas(tienda.presupuestoMensual)}</td>
+                            {formatNumber(tienda.diferenciaMensual, count == index)}
+                            {formatNumber(tienda.porcentajeMensual, count == index)}
+                            <td className="font-bold">
+                              {numberWithCommas(tienda.ventasAnualActual)}
+                            </td>
+                            <td>{numberWithCommas(tienda.ventasAnualAnterior)}</td>
+                            <td>{numberWithCommas(tienda.presupuestoAnual)}</td>
+                            {formatNumber(tienda.diferenciaAnual, count == index)}
+                            {formatNumber(tienda.porcentajeAnual, count == index)}
+                            <td className="text-left pl-3">{tienda.tienda}</td>
+                          </TableRow>
+                        ));
+                      return Items;
+                      }
+                    })()
+                  }
                 </tbody>
               </VentasTable>
             </Fragment>

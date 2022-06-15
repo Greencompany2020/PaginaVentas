@@ -1,12 +1,10 @@
 import { useRouter } from "next/router";
-import { isIOS, isMacOs } from "react-device-detect";
 import Image from "next/image";
 import Link from "next/link";
 import Plus from "../public/icons/plus.svg";
 
-const DetailsSideBar = ({ summaryText, links, handleToggle, device }) => {
+const DetailsSideBar = ({ summaryText, links, handleToggle, showChevron }) => {
   const router = useRouter();
-
   const activeLink = (link) => {
     if (router.pathname === link) return "bg-sky-500 text-white";
     return "hover:bg-sky-400 hover:text-white";
@@ -15,9 +13,7 @@ const DetailsSideBar = ({ summaryText, links, handleToggle, device }) => {
   return (
     <details className="hover:block">
       <summary className="cursor-pointer flex items-center pb-2 text-white">
-        {(!isIOS || !isMacOs) && (
-          <Image src={Plus} alt="Plus" height={16} width={16} />
-        )}
+        {showChevron && <Image src={Plus} alt="Plus" height={16} width={16} />} 
         <span className="ml-1">{summaryText}</span>
       </summary>
       <ul>

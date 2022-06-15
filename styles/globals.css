@@ -248,7 +248,6 @@ table.last-row-bg tr:last-child {
 .layout-ventas-toolbar{
   grid-area: Toolbar;
   height: 100%;
-  padding-top: 0.2rem;
 }
 .layout-ventas-main{
   grid-area: Main;
@@ -262,7 +261,6 @@ table.last-row-bg tr:last-child {
 .layout-tools-toolbar{
   grid-area: Toolbar;
   height: 100%;
-  padding-top: 0.2rem;
 }
 .layout-tools-main{
   grid-area: Main;

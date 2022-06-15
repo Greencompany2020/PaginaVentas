@@ -6,7 +6,6 @@
  */
 export const handleChange = (evt, updateState) => {
   let value = '';
-  console.log(evt.target.type);
   if (evt.target.hasOwnProperty('checked')) {
     value = evt.target.checked ? 1 : 0;
   } else if (evt.target.name === "tienda") {

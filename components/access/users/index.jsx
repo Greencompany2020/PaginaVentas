@@ -90,7 +90,6 @@ export default function Users(props) {
   };
 
   const handleAssignAccess = async (idDashboard, enabled) => {
-    console.log(itemDetails);
     if (Object.keys(itemDetails).length > 0) {
       const idUser = itemDetails.Id;
       const replacedEnabled = enabled == true ? "N" : "Y";

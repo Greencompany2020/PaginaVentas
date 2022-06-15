@@ -116,19 +116,19 @@ const Simple = () => {
                 </th>
               </tr>
               <tr>
-                <th className="border border-white bg-black-shape">
+                <th className="border border-white bg-black-shape text-right">
                   {getLastTwoNumbers(tiendaSimpleParametros.delAgno)}
                 </th>
-                <th className="border border-white bg-black-shape">
+                <th className="border border-white bg-black-shape text-right">
                   {getLastTwoNumbers(tiendaSimpleParametros.delAgno - 1)}
                 </th>
-                <th className="border border-white bg-black-shape">
+                <th className="border border-white bg-black-shape text-right">
                   {tiendaSimpleParametros.delAgno}
                 </th>
-                <th className="border border-white bg-black-shape">
+                <th className="border border-white bg-black-shape text-right">
                   {tiendaSimpleParametros.delAgno - 1}
                 </th>
-                <th className="border border-white bg-black-shape">Acum</th>
+                <th className="border border-white bg-black-shape text-right">Acum</th>
               </tr>
             </TableHead>
             <tbody className="bg-white text-right">
@@ -150,19 +150,19 @@ const Simple = () => {
             </tbody>
             <tfoot className=" text-white text-center text-xs font-bold">
               <tr>
-                <th className="border border-white bg-black">
+                <th className="border border-white bg-black text-right">
                   {getLastTwoNumbers(tiendaSimpleParametros.delAgno)}
                 </th>
-                <th className="border border-white bg-black">
+                <th className="border border-white bg-black text-right">
                   {getLastTwoNumbers(tiendaSimpleParametros.delAgno - 1)}
                 </th>
-                <th className="border border-white bg-black">
+                <th className="border border-white bg-black text-right">
                   {tiendaSimpleParametros.delAgno}
                 </th>
-                <th className="border border-white bg-black">
+                <th className="border border-white bg-black text-right">
                   {tiendaSimpleParametros.delAgno - 1}
                 </th>
-                <th className="border border-white bg-black">Acum</th>
+                <th className="border border-white bg-black text-right">Acum</th>
               </tr>
               <tr>
                 <th

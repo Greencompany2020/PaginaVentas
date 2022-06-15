@@ -18,7 +18,6 @@ const ParametersContainer = ({ children }) => {
     }
   };
   const handleLeave = (evt) => {
-    console.log(evt._targetInst.elementType);
     let target = true;
     if (
       evt._targetInst.elementType == "select" ||

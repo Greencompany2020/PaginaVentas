@@ -138,7 +138,7 @@ const Participacion = () => {
                 <th colSpan={2}>DIC</th>
                 <th rowSpan={2}>TOTAL AÑO</th>
               </tr>
-              <tr>
+              <tr className="text-right">
                 <th>$</th>
                 <th>%</th>
                 <th>$</th>

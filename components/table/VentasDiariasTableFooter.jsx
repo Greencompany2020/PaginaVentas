@@ -6,7 +6,7 @@ const VentasDiariasTableFooter = ({ currentYear, month }) => {
 
   return (
     <tfoot className=" text-white text-center text-xs font-bold">
-      <tr className=" bg-black-shape">
+      <tr className=" bg-black-shape text-right">
         <td className="border">{getLastTwoNumbers(currentYear)}</td>
         <td className="border">{getLastTwoNumbers(lastYear)}</td>
         <td className="border">{currentYear}</td>

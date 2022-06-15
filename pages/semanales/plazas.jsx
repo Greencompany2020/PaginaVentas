@@ -150,74 +150,82 @@ const Plazas = () => {
                 </td>
               </tr>
               <tr>
-                <td rowSpan={2} className="border border-white bg-black-shape">
+                <td rowSpan={2} className="border border-white bg-black-shape text-right">
                   Comp
                 </td>
-                <td rowSpan={2} className="border border-white bg-black-shape">
+                <td rowSpan={2} className="border border-white bg-black-shape text-right">
                   {getYearFromDate(plazasParametros.fechaFin)}
                 </td>
-                <td rowSpan={2} className="border border-white bg-black-shape">
+                <td rowSpan={2} className="border border-white bg-black-shape text-right">
                   %
                 </td>
-                <td rowSpan={2} className="border border-white bg-black-shape">
+                <td rowSpan={2} className="border border-white bg-black-shape text-right">
                   {getYearFromDate(plazasParametros.fechaFin) - 1}
                 </td>
-                <td colSpan={4} className="border border-white bg-black-shape">
+                <td colSpan={4} className="border border-white bg-black-shape text-right">
                   operaciones
                 </td>
-                <td colSpan={4} className="border border-white bg-black-shape">
+                <td colSpan={4} className="border border-white bg-black-shape text-right">
                   promedios
                 </td>
               </tr>
               <tr>
-                <td className="border border-white bg-black-shape">Comp</td>
-                <td className="border border-white bg-black-shape">
+                <td className="border border-white bg-black-shape text-right">Comp</td>
+                <td className="border border-white bg-black-shape text-right">
                   {getYearFromDate(plazasParametros.fechaFin)}
                 </td>
-                <td className="border border-white bg-black-shape">%</td>
-                <td className="border border-white bg-black-shape">
+                <td className="border border-white bg-black-shape text-right">%</td>
+                <td className="border border-white bg-black-shape text-right">
                   {getYearFromDate(plazasParametros.fechaFin) - 1}
                 </td>
-                <td className="border border-white bg-black-shape">comp</td>
-                <td className="border border-white bg-black-shape">
+                <td className="border border-white bg-black-shape text-right">comp</td>
+                <td className="border border-white bg-black-shape text-right">
                   {getYearFromDate(plazasParametros.fechaFin)}
                 </td>
-                <td className="border border-white bg-black-shape">%</td>
-                <td className="border border-white bg-black-shape">
+                <td className="border border-white bg-black-shape text-right">%</td>
+                <td className="border border-white bg-black-shape text-right">
                   {getYearFromDate(plazasParametros.fechaFin) - 1}
                 </td>
               </tr>
             </TableHead>
             <tbody className="bg-white text-right text-xs">
-              {semanalesPlaza?.map((semPlaza) => (
-                <TableRow key={semPlaza.plaza} rowId={semPlaza.plaza}>
-                  <td className="text-center bg-black-shape text-white font-bold ">
-                    {semPlaza.plaza}
-                  </td>
-                  <td>{numberWithCommas(semPlaza.compromiso)}</td>
-                  <td className="font-bold">
-                    {numberWithCommas(semPlaza.ventasActuales)}
-                  </td>
-                  {formatNumber(semPlaza.porcentaje)}
-                  <td>{numberWithCommas(semPlaza.ventasAnterior)}</td>
-                  <td className="font-bold">
-                    {numberWithCommas(semPlaza.operacionesComp)}
-                  </td>
-                  <td className="font-bold">
-                    {numberWithCommas(semPlaza.operacionesActual)}
-                  </td>
-                  {formatNumber(semPlaza.porcentajeOperaciones)}
-                  <td>{numberWithCommas(semPlaza.operacionesAnterior)}</td>
-                  <td className="font-bold">
-                    {numberWithCommas(semPlaza.promedioComp)}
-                  </td>
-                  <td className="font-bold">
-                    {numberWithCommas(semPlaza.promedioActual)}
-                  </td>
-                  {formatNumber(semPlaza.porcentajePromedios)}
-                  <td>{numberWithCommas(semPlaza.promedioAnterior)}</td>
-                </TableRow>
-              ))}
+              {
+                (()=>{
+                  if(semanalesPlaza.length > 0){
+                    const count = semanalesPlaza.length - 1;
+                    const Items = semanalesPlaza?.map((semPlaza, index) => (
+                      <TableRow key={semPlaza.plaza} rowId={semPlaza.plaza}>
+                        <td className="text-center bg-black-shape text-white font-bold ">
+                          {semPlaza.plaza}
+                        </td>
+                        <td>{numberWithCommas(semPlaza.compromiso)}</td>
+                        <td className="font-bold">
+                          {numberWithCommas(semPlaza.ventasActuales)}
+                        </td>
+                        {formatNumber(semPlaza.porcentaje, index == count)}
+                        <td>{numberWithCommas(semPlaza.ventasAnterior)}</td>
+                        <td className="font-bold">
+                          {numberWithCommas(semPlaza.operacionesComp)}
+                        </td>
+                        <td className="font-bold">
+                          {numberWithCommas(semPlaza.operacionesActual)}
+                        </td>
+                        {formatNumber(semPlaza.porcentajeOperaciones, index == count)}
+                        <td>{numberWithCommas(semPlaza.operacionesAnterior)}</td>
+                        <td className="font-bold">
+                          {numberWithCommas(semPlaza.promedioComp)}
+                        </td>
+                        <td className="font-bold">
+                          {numberWithCommas(semPlaza.promedioActual)}
+                        </td>
+                        {formatNumber(semPlaza.porcentajePromedios, index == count)}
+                        <td>{numberWithCommas(semPlaza.promedioAnterior)}</td>
+                      </TableRow>
+                    ))
+                    return Items
+                  }
+                })()
+              }
             </tbody>
           </VentasTable>
         </VentasTableContainer>

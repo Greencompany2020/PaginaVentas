@@ -186,29 +186,37 @@ const Plazas = () => {
                   </tr>
                 </TableHead>
                 <tbody className="text-center">
-                  {value.map((plaza) => (
-                    <TableRow
-                      key={plaza.plaza}
-                      rowId={plaza.plaza}
-                      className="bg-white text-black text-xs text-right"
-                    >
-                      <td className="font-bold text-left">{plaza.plaza}</td>
-                      <td className="font-bold">
-                        {numberWithCommas(plaza.ventasMensualesActual)}
-                      </td>
-                      <td>{numberWithCommas(plaza.ventasMensualesAnterior)}</td>
-                      <td>{numberWithCommas(plaza.presupuestoMensual)}</td>
-                      {formatNumber(plaza.diferenciaMensual)}
-                      {formatNumber(plaza.porcentajeMensual)}
-                      <td className="font-bold">
-                        {numberWithCommas(plaza.ventasAnualActual)}
-                      </td>
-                      <td>{numberWithCommas(plaza.ventasAnualAnterior)}</td>
-                      <td>{numberWithCommas(plaza.presupuestoAnual)}</td>
-                      {formatNumber(plaza.diferenciaAnual)}
-                      {formatNumber(plaza.porcentajeAnual)}
-                    </TableRow>
-                  ))}
+                  {
+                    (()=>{
+                      if(value){
+                        const count = value.length - 1;
+                        const Items = value.map((plaza, index) => (
+                          <TableRow
+                            key={plaza.plaza}
+                            rowId={plaza.plaza}
+                            className="bg-white text-black text-xs text-right"
+                          >
+                            <td className="font-bold text-left">{plaza.plaza}</td>
+                            <td className="font-bold">
+                              {numberWithCommas(plaza.ventasMensualesActual)}
+                            </td>
+                            <td>{numberWithCommas(plaza.ventasMensualesAnterior)}</td>
+                            <td>{numberWithCommas(plaza.presupuestoMensual)}</td>
+                            {formatNumber(plaza.diferenciaMensual, count == index)}
+                            {formatNumber(plaza.porcentajeMensual, count == index)}
+                            <td className="font-bold">
+                              {numberWithCommas(plaza.ventasAnualActual)}
+                            </td>
+                            <td>{numberWithCommas(plaza.ventasAnualAnterior)}</td>
+                            <td>{numberWithCommas(plaza.presupuestoAnual)}</td>
+                            {formatNumber(plaza.diferenciaAnual, count == index)}
+                            {formatNumber(plaza.porcentajeAnual, count == index)}
+                          </TableRow>
+                        ));
+                        return Items;
+                      }
+                    })()
+                  }
                 </tbody>
               </VentasTable>
             </Fragment>

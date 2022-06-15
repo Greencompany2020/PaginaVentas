@@ -1,4 +1,4 @@
-import { useRef} from "react";
+import { useEffect, useRef, useState} from "react";
 import DetailsSideBar from "./DetailsSideBar";
 import { MenuIcon, XIcon } from "@heroicons/react/solid";
 import { LogoutIcon } from "@heroicons/react/outline";
@@ -6,11 +6,13 @@ import useToggle from "../hooks/useToggle";
 import useAuth from "../hooks/useAuth";
 import useClickOutside from "../hooks/useClickOutside";
 import { enlaces as enlacesMenuLateral } from "../utils/data";
+import { isWindows, isAndroid } from "react-device-detect";
 
 const SideMenu = () => {
   const menuRef = useRef(null);
   const auth = useAuth();
   const [visible, toggleVisible] = useToggle(true);
+  const [showChevron, setShowChevron] = useState(false);
 
   useClickOutside(menuRef, () => {
     if (!visible) {
@@ -23,6 +25,12 @@ const SideMenu = () => {
       toggleVisible();
     }
   };
+
+  useEffect(()=>{
+    (()=>{
+      setShowChevron(isWindows || isAndroid)
+    })()
+  },[])
 
   return (
     <>
@@ -58,6 +66,7 @@ const SideMenu = () => {
                 summaryText={summaryText}
                 links={links}
                 handleToggle={toggleVisible}
+                showChevron={showChevron}
               />
             ))}
           </div>

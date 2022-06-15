@@ -184,7 +184,7 @@ const Acumulado = () => {
                       )}
                     </th>
                   </tr>
-                  <tr>
+                  <tr className="text-right">
                     <th colSpan={4} className="border border-white">
                       Venta
                     </th>
@@ -198,7 +198,7 @@ const Acumulado = () => {
                       Venta
                     </th>
                   </tr>
-                  <tr>
+                  <tr className="text-right">
                     <th rowSpan={2} className="border border-white">
                       {getYearFromDate(paramAcumulado.fecha)}
                     </th>
@@ -244,37 +244,45 @@ const Acumulado = () => {
                   </tr>
                 </TableHead>
                 <tbody className="bg-white text-right text-xs">
-                  {value?.map((venta) => (
-                    <TableRow
-                      key={venta.tienda}
-                      rowId={venta.tienda}
-                      className={rowColor(venta)}
-                    >
-                      <td className="text-left">{venta.tienda}</td>
-                      <td className="font-bold">
-                        {numberWithCommas(venta.ventaActual)}
-                      </td>
-                      <td>{numberWithCommas(venta.ventaAnterior)}</td>
-                      <td>{numberWithCommas(venta.presupuesto)}</td>
-                      {formatNumber(venta.porcentaje)}
-                      <td className="font-bold">
-                        {numberWithCommas(venta.promedioActual)}
-                      </td>
-                      <td>{numberWithCommas(venta.promedioAnterior)}</td>
-                      {formatNumber(venta.porcentajePromedios)}
-                      <td className="font-bold">
-                        {numberWithCommas(venta.operacionesActual)}
-                      </td>
-                      <td>{numberWithCommas(venta.operacionesAnterior)}</td>
-                      {formatNumber(venta.porcentajeOperaciones)}
-                      <td className="font-bold">
-                        {numberWithCommas(venta.ventaAcumuladaActual)}
-                      </td>
-                      <td>{numberWithCommas(venta.ventaAcumuladaAnterior)}</td>
-                      <td>{numberWithCommas(venta.presupuestoAcumulado)}</td>
-                      {formatNumber(venta.porcentajeAcumulado)}
-                    </TableRow>
-                  ))}
+                  {
+                    (()=>{
+                      if(value){
+                        const count = value.length - 1;
+                        const Items = value?.map((venta, index) => (
+                          <TableRow
+                            key={venta.tienda}
+                            rowId={venta.tienda}
+                            className={rowColor(venta)}
+                          >
+                            <td className="text-left">{venta.tienda}</td>
+                            <td className="font-bold">
+                              {numberWithCommas(venta.ventaActual)}
+                            </td>
+                            <td>{numberWithCommas(venta.ventaAnterior)}</td>
+                            <td>{numberWithCommas(venta.presupuesto)}</td>
+                            {formatNumber(venta.porcentaje, count == index)}
+                            <td className="font-bold">
+                              {numberWithCommas(venta.promedioActual)}
+                            </td>
+                            <td>{numberWithCommas(venta.promedioAnterior)}</td>
+                            {formatNumber(venta.porcentajePromedios, count == index)}
+                            <td className="font-bold">
+                              {numberWithCommas(venta.operacionesActual)}
+                            </td>
+                            <td>{numberWithCommas(venta.operacionesAnterior)}</td>
+                            {formatNumber(venta.porcentajeOperaciones, count == index)}
+                            <td className="font-bold">
+                              {numberWithCommas(venta.ventaAcumuladaActual)}
+                            </td>
+                            <td>{numberWithCommas(venta.ventaAcumuladaAnterior)}</td>
+                            <td>{numberWithCommas(venta.presupuestoAcumulado)}</td>
+                            {formatNumber(venta.porcentajeAcumulado, count == index)}
+                          </TableRow>
+                        ));
+                        return Items;
+                      }
+                    })()
+                  }
                 </tbody>
               </VentasTable>
             </Fragment>

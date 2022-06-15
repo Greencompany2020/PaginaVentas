@@ -4,12 +4,12 @@
  * @param {number} num El valor a formatear
  * @returns {JSX.Element} La etiqueta <td> con el valor formateado.
  */
-export const formatNumber = (num) => {
+export const formatNumber = (num, isLast=false) => {
   let numberText = "";
   if (num < 0) {
     numberText = `(${Math.abs(num)})`;
     return (<td style={{
-      color: "rgb(220 38 38)",
+      color: isLast ? "white" : "rgb(220 38 38)",
       fontWeight: 700,
       textAlign: "right",
       fontSize: 12
@@ -17,7 +17,7 @@ export const formatNumber = (num) => {
   } else {
     numberText = `${Math.abs(num)}`;
     return (<td style={{
-      color: "rgb(5 150 105)",
+      color: isLast ? "white" : "rgb(5 150 105)",
       fontWeight: 700,
       textAlign: "right",
       fontSize: 12
@@ -30,5 +30,5 @@ export const formatNumber = (num) => {
  * @returns {string} El valor formateado
  */
 export const numberWithCommas = (num) => {
-  return num.toLocaleString();
+  return num.toLocaleString('en-US');
 }
