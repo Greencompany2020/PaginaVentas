@@ -13,6 +13,6 @@ module.exports = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
   },
   images: {
-    domains: ['localhost', 'https://next.officialstore.net']
+    domains: ['localhost', 'next.officialstore.net']
   }
 }
