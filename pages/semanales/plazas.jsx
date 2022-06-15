@@ -195,7 +195,7 @@ const Plazas = () => {
                     const count = semanalesPlaza.length - 1;
                     const Items = semanalesPlaza?.map((semPlaza, index) => (
                       <TableRow key={semPlaza.plaza} rowId={semPlaza.plaza}>
-                        <td className="text-center bg-black-shape text-white font-bold ">
+                        <td className="text-left  text-black font-bold ">
                           {semPlaza.plaza}
                         </td>
                         <td>{numberWithCommas(semPlaza.compromiso)}</td>

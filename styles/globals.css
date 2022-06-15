@@ -19,6 +19,10 @@ input[type="date"]:in-range::-webkit-datetime-edit-text {
   color: transparent;
 }
 
+table thead > tr:first-child{
+  text-transform: uppercase;
+}
+
 table.tfooter tr:last-child {
   @apply bg-black-shape text-white font-bold;
 }

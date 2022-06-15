@@ -6,7 +6,7 @@ import useToggle from "../hooks/useToggle";
 import useAuth from "../hooks/useAuth";
 import useClickOutside from "../hooks/useClickOutside";
 import { enlaces as enlacesMenuLateral } from "../utils/data";
-import { isWindows, isAndroid } from "react-device-detect";
+import { isWindows, isAndroid, isChromium, } from "react-device-detect";
 
 const SideMenu = () => {
   const menuRef = useRef(null);
@@ -28,7 +28,7 @@ const SideMenu = () => {
 
   useEffect(()=>{
     (()=>{
-      setShowChevron(isWindows || isAndroid)
+      setShowChevron(isWindows || isAndroid || isChromium)
     })()
   },[])
 

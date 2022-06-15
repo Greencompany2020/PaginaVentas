@@ -10,7 +10,7 @@ const RegionesPlazaTableRow = ({ item, type, rowId , isLast}) => {
 
   return (
     <TableRow className={rowColor(type)} rowId={rowId}>
-      <td className="text-center bg-black-shape text-white font-bold">
+      <td className="text-left text-black font-bold">
         {item.plaza}
       </td>
       <td>{numberWithCommas(item.compromiso)}</td>

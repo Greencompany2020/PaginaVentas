@@ -153,7 +153,7 @@ const Concentrado = () => {
                     "bg-gray-300 font-bold"
                   }`}
                 >
-                  <td className="bg-black-shape text-white font-bold text-center">
+                  <td className="text-black font-bold text-left">
                     {items.tienda}
                   </td>
                   <td>{numberWithCommas(items.enero)}</td>

@@ -198,7 +198,7 @@ const Compromiso = () => {
                   rowId={compromiso.NoTienda}
                   className="text-center"
                 >
-                  <td colSpan={1} className="bg-black-shape text-white text-xs font-bold p-2">
+                  <td colSpan={1} className="text-black text-xs font-bold p-2 text-left">
                     {compromiso.Descrip}
                   </td>
                   <td className="text-right text-xs">

@@ -1,20 +1,23 @@
 import { Flex } from "../containers";
 
 const InputYear = ({ value, onChange }) => {
+  const currentYear = new Date().getFullYear();
   return (
     <Flex className="mb-3">
       <label htmlFor="anio">Del Año: </label>
-      <input
-        type="number"
-        name="delAgno"
-        id="anio"
-        className="select ml-2"
-        inputMode="numeric"
-        pattern="[0-9]*"
-        value={value}
-        min="2000"
-        onChange={onChange}
-      />
+      <select name="delAgno" id="anio" className='select ml-2' value={value} onChange={onChange}>
+        {
+          (()=>{
+            if(currentYear){
+              const Items = []
+              for(let dem = currentYear; dem >= 2000; dem--){
+                Items.push(<option value={dem} key={dem}>{dem}</option>)
+              }
+              return Items;
+            }
+          })()
+        }
+      </select>
     </Flex>
   );
 };
