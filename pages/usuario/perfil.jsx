@@ -20,7 +20,7 @@ const Perfil = () => {
     if(response){
       setVisible();
     }else{
-      alert.showAlert('No se puedo subir la imagen', 'WARNING');
+      alert.showAlert("Error al tratar de subir la imagen", "warning", 1000);
     }
     return response;
   }
@@ -31,7 +31,7 @@ const Perfil = () => {
           <section className="w-full h-[400px] md:w-[400px] md:h-full bg-gray-200">
             <div className="p-4">
               <div className="flex flex-col items-center md:justify-center space-y-2">
-                <Avatar urlImage={user?.ImgPerfil}/>
+                <Avatar image={user?.ImgPerfil} size={128}/>
                 <button className="text-blue-400 font-bold" onClick={setVisible}>Cambiar imagen</button>
               </div>
               <div className="mt-8">
@@ -133,7 +133,7 @@ const Perfil = () => {
       {/*Modals*/}
       <FormModal active={visible} handleToggle={setVisible} name="Subir imagenes">
         <div className=" p-4 h-[22rem] md:h-[22rem] md:w-[42rem]">
-          <Dropzone handleUpload={handleUploadImage} label='Arrastra la imagen o presiona aqui'/>
+          <Dropzone uploadFunction={handleUploadImage} label='Arrastra la imagen o presiona aqui'/>
         </div>
       </FormModal>
     </>

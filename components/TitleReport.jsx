@@ -15,9 +15,8 @@ export default function TitleReport(props) {
             width={32}
           />
         </div>
-        <h1 className="text-2xl font-semibold">{title}</h1>
+        <h1 className=" font-semibold uppercase md:text-xl ">{title}</h1>
       </div>
-      <p className="text-gray-400 text-md p-2">{description}</p>
     </section>
   );
 }

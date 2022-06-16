@@ -6,8 +6,8 @@ export default function FavoriteList(props) {
     if(items){
         const groups = groupBykey(items, "Clase");
         const Items = Object.keys(groups).map((group, index)=>(
-           <div key={index}>
-            <span className=" sticky">{group}</span>
+           <div key={index} className='mt-4 border-l-2 pl-2'>
+            <span className="sticky font-bold text md:text-xl">{group}</span>
             {groups[group].map((item, indexItem) => (
                 <FavoriteItem 
                     key={item.IdDashboardUsr}

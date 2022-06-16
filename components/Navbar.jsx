@@ -1,21 +1,20 @@
 import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Flex } from "../components/containers";
 import { ChevronDownIcon } from "@heroicons/react/solid";
 import Logo from "../public/images/green-company-logo.png";
 import Menu from "../public/images/dot-menu.png";
-import User from "../public/images/user-frogs.jpg";
-import Cancel from "../public/icons/cancel-18.png";
 import UserIcon from "../public/icons/icon_-users-4.png";
 import Config from "../public/icons/config-5.png";
-import Close from "../public/icons/close-37.png";
 import useClickOutside from "../hooks/useClickOutside";
 import useAuth from "../hooks/useAuth";
-import { MenuIcon, XIcon } from "@heroicons/react/solid";
+import { XIcon } from "@heroicons/react/solid";
 import { LogoutIcon } from "@heroicons/react/outline";
+import Avatar from "./commons/Avatar";
+import { useUser } from "../context/UserContext";
 
 const Navbar = () => {
+  const {user} = useUser();
   const userMenuRef = useRef(null);
   const [showDialog, setShowDialog] = useState(false);
   const auth = useAuth();
@@ -48,13 +47,7 @@ const Navbar = () => {
             </Link>
           </figure>
           <figure>
-            <Image
-              src={User}
-              alt="Arrow"
-              className="rounded-full w-full"
-              height={40}
-              width={40}
-            />
+            <Avatar image={user?.ImgPerfil} size={38}/>
           </figure>
           <figure>
             <ChevronDownIcon

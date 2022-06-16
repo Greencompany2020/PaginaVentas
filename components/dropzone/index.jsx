@@ -3,27 +3,20 @@ import PropTypes from "prop-types";
 import { useDropzone } from "react-dropzone";
 import uploadImage from '../../public/images/upload.png';
 import Image from "next/image";
-
+import Compressor from 'compressorjs';
 
 export default function Dropzone(props) {
 
-  const {label, allowFiles, handleUpload} = props;
-  const [preview, setPreview] = useState(undefined);
+  /**
+   * Esta funcion comprime los archivos
+   * obtiene los files y los comprime 
+   */
+  
+  const {label, allowFiles, uploadFunction} = props;
   const [files, setFiles] = useState(undefined);
 
-  const handleOnUpload = async () =>{
-    if(Array.isArray(files)){
-     const response = await handleUpload(files);
-      if(response){ 
-        setFiles(undefined);
-        setPreview(undefined);
-      }
-    }
-  }
-
   const onDrop = useCallback((acceptedFiles) => {
-    setFiles(acceptedFiles);
-    setPreview(
+    setFiles(
       acceptedFiles.map((file) =>
         Object.assign(file, {
           preview: URL.createObjectURL(file),
@@ -32,11 +25,45 @@ export default function Dropzone(props) {
     );
   }, []);
 
-  const deletePress = (item) => {
+  const compressImage = (file) => {
+    return new Promise((resolve, reject) => {
+      new Compressor(file,{
+        quality: 0.6,
+        mimeType:'jpg',
+        convertSize: 0,
+        convertTypes:['image/webp', 'image/png', 'image/jpg',],
+
+        success(result){
+          const formData = new FormData();
+          formData.append('image', result, result.name);
+          resolve(formData);
+        },
+        error(err){
+          reject(err);
+        }
+    });
+  });
+}
+
+  const handleUpload = async () =>{
+    if(Array.isArray(files) && files.length > 0){
+      for await (const file of files){
+        try {
+          const compress = await compressImage(file);
+          console.log(compress);
+          const response = await uploadFunction(compress);
+          if(response) setFiles([])
+        } catch (error) {
+          throw error;
+        }
+      }
+    }
+  }
+
+  const deleteOnPress = (item) => {
     if(Array.isArray(files)){
       const filtered = files.filter(prev => prev !== item);
       setFiles(filtered);
-      setPreview(filtered)
     }
   }
 
@@ -60,13 +87,13 @@ export default function Dropzone(props) {
   ]);
 
 
-  const selected_images = preview?.map((file, index) => (
+  const selected_images = files?.map((file, index) => (
       <figure key={index} style={contentFigure}>
         <img 
           src={file.preview} 
           style={{ width: "110px", height:'110px' }} 
           alt="image preview"
-          onClick={() => deletePress(file)} 
+          onClick={() => deleteOnPress(file)} 
         />
       </figure>
   ));
@@ -81,7 +108,7 @@ export default function Dropzone(props) {
         </div>
       </div>
       <div style={{display:'flex', justifyContent:'center'}}>
-        <button style={buttonStyle} onClick={ handleOnUpload}>Subir</button>
+        <button style={buttonStyle} onClick={handleUpload}>Subir</button>
       </div>
       <div style={previewContent}>
         {selected_images}
@@ -98,7 +125,7 @@ Dropzone.defaultProps = {
 Dropzone.propTypes = {
   allowFiles: PropTypes.number,
   label: PropTypes.string,
-  handleUpload: PropTypes.func,
+  uploadFunction: PropTypes.func,
 };
 
 const baseStyle = {

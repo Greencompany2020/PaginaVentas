@@ -48,10 +48,8 @@ function useProvideUser() {
         return newRecently;
     }
 
-    const setPerfilImage = async (file) => {
-        let formData = new FormData();
-        formData.append("image", file[0]);
-        const response = await post_perfilImage(formData);
+    const setPerfilImage = async (body) => {
+        const response = await post_perfilImage(body);
         if(response){
             await getUserData();
         }
