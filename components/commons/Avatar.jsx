@@ -8,7 +8,7 @@ export default function Avatar(props) {
     console.log(image);
     const url = (image !== '') ? image : rana
     return (
-        <figure className={`bg-slate-100 rounded-full w-[${size}rem] h-[[${size}rem] grid place-items-center overflow-hidden`}>
+        <figure className={`bg-slate-100 rounded-full w-[${size || 12}rem] h-[[${size || 12}rem] grid place-items-center overflow-hidden`}>
            <Image 
                 src={url} 
                 width={size} 
