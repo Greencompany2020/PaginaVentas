@@ -49,11 +49,13 @@ function useProvideUser() {
     }
 
     const setPerfilImage = async (body) => {
-        const response = await post_perfilImage(body);
-        if(response){
-            await getUserData();
+        try {
+            const response = await post_perfilImage(body);
+            getUserData();
+            return response;
+        } catch (error) {
+            throw error;   
         }
-        return response;
     }
 
     useEffect(() => {

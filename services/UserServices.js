@@ -79,10 +79,9 @@ export const put_setEnabled = async (idDashboard, body) => {
 
 export const post_perfilImage = async (body) => {
     try {
-        const { data, status } = await ApiProvider.post('user/perfil/image', body);
-        if (status !== 200) return false;
-        return data;
+        const response = await ApiProvider.post('user/perfil/image', body);
+        return response;
     } catch (error) {
-        return false
+       throw error;
     }
 }

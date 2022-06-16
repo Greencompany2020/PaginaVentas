@@ -25,9 +25,10 @@ const refreshToken = async () => {
     jsCookie.set('accessToken',  newToken);
     return newToken;
   }catch(err){
+    console.log(err);
      jsCookie.remove('accessToken');
      jsCookie.remove('jwt');
-     return false;
+     throw err;
   }
 }
 
@@ -42,6 +43,7 @@ ApiProvider.interceptors.response.use(
       prevRequest.headers['Authorization'] = `Bearer ${newToken}`;
       return ApiProvider(prevRequest);
     }
+    throw err.response.data;
   }
 )
 

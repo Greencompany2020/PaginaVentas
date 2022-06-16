@@ -30,7 +30,7 @@ export default function Dropzone(props) {
       new Compressor(file,{
         quality: 0.6,
         mimeType:'jpg',
-        convertSize: 0,
+        convertSize: 5000000,
         convertTypes:['image/webp', 'image/png', 'image/jpg',],
 
         success(result){

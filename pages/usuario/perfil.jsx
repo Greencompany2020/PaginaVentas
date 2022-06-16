@@ -16,13 +16,13 @@ const Perfil = () => {
   const alert = useAlert();
 
   const handleUploadImage = async (files) =>{
-    const response = await setPerfilImage(files);
-    if(response){
+    try {
+      const response = await setPerfilImage(files);
       setVisible();
-    }else{
-      alert.showAlert("Error al tratar de subir la imagen", "warning", 1000);
+      return response;
+    } catch (error) {
+      alert.showAlert(error.message, "warning", 1000);
     }
-    return response;
   }
 
   return (

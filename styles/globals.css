@@ -245,8 +245,8 @@ table.last-row-bg tbody tr:last-child {
 
 .layout-ventas{
   display: grid; 
-  grid-template-columns: 2.8em 1fr; 
-  grid-template-rows: 0.1fr 1.9fr;
+  grid-template-columns: 3rem 1fr; 
+  grid-template-rows: 3rem 1fr;
   width: 100vw;
   height: 100vh;
   overflow: hidden; 
@@ -257,28 +257,14 @@ table.last-row-bg tbody tr:last-child {
 }
 
 
-
 .layout-ventas-navbar{
   grid-area: Navbar;
 }
 .layout-ventas-toolbar{
   grid-area: Toolbar;
-  height: 100vh;
+  height: 100%;
 }
 .layout-ventas-main{
-  grid-area: Main;
-  height: 100%;
-  overflow-y: auto;
-}
-
-.layout-tools-navbar{
-  grid-area: Navbar;
-}
-.layout-tools-toolbar{
-  grid-area: Toolbar;
-  height: 100vh;
-}
-.layout-tools-main{
   grid-area: Main;
   height: 100%;
   overflow-y: auto;
@@ -287,7 +273,7 @@ table.last-row-bg tbody tr:last-child {
 .layout-base{
   display: grid; 
   grid-template-columns: 1fr; 
-  grid-template-rows: 2.8em 1fr;
+  grid-template-rows: 3rem 1fr;
   width: 100vw;
   height: 100vh;
   overflow: hidden; 
