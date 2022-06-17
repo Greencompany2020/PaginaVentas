@@ -31,7 +31,9 @@ const Perfil = () => {
       setProgress(0);
       setShow();
     } catch (error) {
-      alert.showAlert(error.message, "warning", 1000);
+      alert.showAlert(error.message, "warning", 3000);
+      setProgress(0);
+      setShow()
     }
     return true
   }
