@@ -69,7 +69,11 @@ export const get_userDashboards = async (idUser) => {
 
 export const put_setEnabled = async (idDashboard, body) => {
     try {
-        const { data, status } = await ApiProvider.put(`user/dashboards/selected/${idDashboard}`, {enabled:body});
+        const { data, status } = await ApiProvider.put(`user/dashboards/selected/${idDashboard}`, {enabled:body}, {
+          onUploadProgress:(progressEvent)=>{
+            let porcent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          }
+        });
         if (status !== 200) return false;
         return data;
     } catch (error) {
@@ -77,9 +81,11 @@ export const put_setEnabled = async (idDashboard, body) => {
     }
 }
 
-export const post_perfilImage = async (body) => {
+export const post_perfilImage = async (body, progressFunction) => {
     try {
-        const response = await ApiProvider.post('user/perfil/image', body);
+        const response = await ApiProvider.post('user/perfil/image', body , {
+          onUploadProgress: progressFunction
+        });
         return response;
     } catch (error) {
        throw error;

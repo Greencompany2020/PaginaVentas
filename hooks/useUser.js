@@ -48,9 +48,9 @@ function useProvideUser() {
         return newRecently;
     }
 
-    const setPerfilImage = async (body) => {
+    const setPerfilImage = async (body, cb) => {
         try {
-            const response = await post_perfilImage(body);
+            const response = await post_perfilImage(body,cb);
             getUserData();
             return response;
         } catch (error) {

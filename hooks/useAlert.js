@@ -1,4 +1,4 @@
-import { useReducer} from 'react'
+import { useReducer, useCallback} from 'react'
 
 const initialState = {
     show: false,
@@ -35,7 +35,6 @@ export default function useProvideAlert(){
             dispatch({type:'CLEAR_ALERT'})
         },duration + 1000);
     }
-
     
     return {
         state,

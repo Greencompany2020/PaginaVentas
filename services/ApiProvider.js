@@ -25,7 +25,6 @@ const refreshToken = async () => {
     jsCookie.set('accessToken',  newToken);
     return newToken;
   }catch(err){
-    console.log(err);
      jsCookie.remove('accessToken');
      jsCookie.remove('jwt');
      throw err;

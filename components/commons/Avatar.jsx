@@ -5,7 +5,6 @@ import rana from '../../public/images/rana10.png'
 
 export default function Avatar(props) {
     const {image, size} = props;
-    console.log(image);
     const url = (image !== '') ? image : rana
     return (
         <figure className={`bg-slate-100 rounded-full border border-gray-200 w-[${size || 12}rem] h-[[${size || 12}rem]  overflow-hidden`}>

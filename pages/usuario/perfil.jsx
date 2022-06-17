@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { getBaseLayout } from "../../components/layout/BaseLayout";
 import withAuth from "../../components/withAuth";
 import { useUser } from "../../context/UserContext";
@@ -9,20 +9,31 @@ import Avatar from "../../components/commons/Avatar";
 import { FormModal } from "../../components/modals";
 import VerifyHolder from "../../components/commons/VerifyHolder";
 import ConfigurationItems from "../../containers/profile/ConfigurationItems";
+import ProcessBar from '../../components/commons/ProcessBar';
 
 const Perfil = () => {
   const { user,setPerfilImage } = useUser();
   const [visible, setVisible] = useToggle(false);
+  const [show, setShow] = useToggle(false);
   const alert = useAlert();
+  const [progress, setProgress] = useState(0)
+
+  const progressUpload = progressEvent => {
+    let porcent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+    setProgress(porcent);
+  }
 
   const handleUploadImage = async (files) =>{
     try {
-      const response = await setPerfilImage(files);
       setVisible();
-      return response;
+      setShow();
+      const response = await setPerfilImage(files, progressUpload);
+      setProgress(0);
+      setShow();
     } catch (error) {
       alert.showAlert(error.message, "warning", 1000);
     }
+    return true
   }
 
   return (
@@ -136,6 +147,9 @@ const Perfil = () => {
           <Dropzone uploadFunction={handleUploadImage} label='Arrastra la imagen o presiona aqui'/>
         </div>
       </FormModal>
+
+      {/*ProcessBar*/}
+      <ProcessBar progress={progress} setProgress = {setProgress} show={show}/>
     </>
   );
 };

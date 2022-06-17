@@ -50,7 +50,6 @@ export default function Dropzone(props) {
       for await (const file of files){
         try {
           const compress = await compressImage(file);
-          console.log(compress);
           const response = await uploadFunction(compress);
           if(response) setFiles([])
         } catch (error) {

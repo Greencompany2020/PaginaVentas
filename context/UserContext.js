@@ -1,4 +1,4 @@
-import { useState, createContext, useContext, useCallback } from "react";
+import { createContext, useContext} from "react";
 import useProvideUser from "../hooks/useUser";
 
 const UserContext = createContext();
