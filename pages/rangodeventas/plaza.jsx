@@ -101,7 +101,7 @@ const Plaza = () => {
           </Parameters>
         </ParametersContainer>
       </section>
-      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 h-full pb-4 overflow-y-auto ">
         <ComparativoVentas title="Rangos de ventas por plaza">
           <PieChart
             text="Rangos de ventas por plaza"

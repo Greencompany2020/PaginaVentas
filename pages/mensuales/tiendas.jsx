@@ -10,9 +10,7 @@ import {
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
-import { VentasTableContainer } from "../../components/table";
 import BarChart from "../../components/BarChart";
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
 import {
@@ -33,6 +31,7 @@ import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
 import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import ComparativoVentas from "../../components/table/ComparativoVentas";
 
 const Tiendas = () => {
   const alert = useAlert();
@@ -119,9 +118,9 @@ const Tiendas = () => {
           </Parameters>
         </ParametersContainer>
       </section>
-      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
-        <VentasTableContainer>
-          <BarChart
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 h-full overflow-y-auto ">
+        <ComparativoVentas>
+        <BarChart
             text={`Ventas al ${formatLastDate(
               formatedDate(tiendasParametros.alAgno, tiendasParametros.delMes)
             )}`}
@@ -130,7 +129,7 @@ const Tiendas = () => {
               datasets: datasets,
             }}
           />
-        </VentasTableContainer>
+        </ComparativoVentas>
       </section>
     </div>
   );

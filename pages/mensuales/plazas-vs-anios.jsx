@@ -5,7 +5,6 @@ import {
   Parameters,
   SmallContainer,
 } from "../../components/containers";
-import { VentasTableContainer } from "../../components/table";
 import {
   InputContainer,
   Checkbox,
@@ -35,6 +34,7 @@ import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
 import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import ComparativoVentas from "../../components/table/ComparativoVentas";
 
 const PlazasVS = () => {
   const alert = useAlert();
@@ -141,9 +141,9 @@ const PlazasVS = () => {
         </ParametersContainer>
       </section>
 
-      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
-        <VentasTableContainer>
-          <BarChart
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 h-full overflow-y-auto ">
+       <ComparativoVentas>
+       <BarChart
             text={`Ventas al ${formatLastDate(
               formatedDate(
                 plazasAgnosParametros.alAgno,
@@ -155,7 +155,7 @@ const PlazasVS = () => {
               datasets: datasets,
             }}
           />
-        </VentasTableContainer>
+       </ComparativoVentas>
       </section>
     </div>
   );
