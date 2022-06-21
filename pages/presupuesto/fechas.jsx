@@ -23,13 +23,13 @@ import { formatLastDate, getBeginEndMonth } from "../../utils/dateFunctions";
 import { getPresupuestoFechas } from "../../services/PresupuestoService";
 import { MENSAJE_ERROR } from "../../utils/data";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
+import { useAuth } from "../../context/AuthContext";
 import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
 
 const Fechas = () => {
   const alert = useAlert();
-  const { plazas } = useUser();
+  const { plazas } = useAuth();
   const [prespuestos, setPrespuestos] = useState({});
   const [paramFechas, setParamFechas] = useState({
     plaza: getInitialPlaza(plazas),

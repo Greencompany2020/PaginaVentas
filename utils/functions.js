@@ -104,7 +104,10 @@ export const getInitialTienda = (tiendas) => {
  * @returns {number} El identificador de la plaza
  */
 export const getInitialPlaza = (plazas) => {
-  return plazas[0]?.NoEmpresa;
+  if(plazas){
+    return plazas[0]?.NoEmpresa;
+  }
+  return false;
 };
 /**
  * Crea los array de etiquetas y de dato para la gráfica de barras.

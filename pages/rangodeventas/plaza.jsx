@@ -26,13 +26,13 @@ import { getRangoVentasPlaza } from "../../services/RangoVentasService";
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
+import { useAuth } from "../../context/AuthContext";
 import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
 
 const Plaza = () => {
   const alert = useAlert();
-  const { plazas } = useUser();
+  const { plazas } = useAuth();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramPlaza, setParamPlaza] = useState({
     plaza: getInitialPlaza(plazas),

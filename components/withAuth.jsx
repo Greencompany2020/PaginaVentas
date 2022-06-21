@@ -1,38 +1,18 @@
-import { post_accessTo } from "../services/AuthServices";
 import { useRouter } from "next/router";
 import cookie from "js-cookie";
 import { useEffect, useState } from "react";
 import LoaderComponent from "./Loader";
+import {useAuth} from '../context/AuthContext';
+import authService from "../services/authService";
+import { urlExceptions } from "../utils/constants";
+
 const witAuth = (Component) => {
   const AuthorizationComponent = () => {
     const router = useRouter();
+    const service = authService();
+    const {auth, setAuth} = useAuth();
     const [loading, setLoading] = useState(true);
-    /**
-     * paginas con reglas expeciales
-     */
-    const exceptions = [
-      {
-        pathname: "/",
-        tokenRequired: false,
-      },
-      {
-        pathname: "/dashboard",
-        tokenRequired: true,
-      },
-      {
-        pathname: "/usuario/perfil",
-        tokenRequired: true,
-      },
-      {
-        pathname: "/ventas",
-        tokenRequired: true,
-      },
-      {
-        pathname: "/unauthorized",
-        tokenRequired: true,
-      },
-    ];
-
+   
     /**
      * callback que redirige la pagina
      * @param {*} page
@@ -59,8 +39,9 @@ const witAuth = (Component) => {
      */
     const userHastoken = () => {
       const token = cookie.get("accessToken");
-      const isTokenAvailable = token ? true : false;
-      return isTokenAvailable;
+      if(!token) return false;
+      if(!auth) setAuth(true);
+      return true;
     };
 
     /**
@@ -68,8 +49,12 @@ const witAuth = (Component) => {
      * @returns data
      */
     const getAuthToPath = async () => {
-      const data = post_accessTo(router.asPath);
-      return data;
+      try {
+        const data = service.getUserAuthorization(router.asPath);
+        return data; 
+      } catch (error) {
+        return false;
+      }
     };
     /**
      * si el usuario no esta autorizado remplaza la direccion
@@ -78,7 +63,7 @@ const witAuth = (Component) => {
      * @returns
      */
     const pathEvaluate = async () => {
-      const attemptException = exceptions.find(
+      const attemptException = urlExceptions.find(
         (paths) => paths.pathname == router.asPath
       );
       const userToken = userHastoken();
@@ -104,35 +89,35 @@ const witAuth = (Component) => {
     return loading ? <LoaderComponent /> : <Component />;
   };
 
-  /**
+   /**
    * Este procedimiento solo se ejecuta desde el servidor
    * @param {*} req
    * @param {*} res
    * @returns
    */
 
-  AuthorizationComponent.getInitialProps = async ({ req, res }) => {
-    if (req && res) {
-      const { url } = req;
-      const { accessToken } = req.cookies;
-
-      if (url !== "/" && !accessToken) {
-        res.writeHead(302, {
-          location: "/",
-        });
-        res.end();
-      } else if (url == "/" && accessToken) {
-        res.writeHead(302, {
-          location: "/dashboard",
-        });
-        res.end();
+    AuthorizationComponent.getInitialProps = async ({ req, res }) => {
+      if (req && res) {
+        const { url } = req;
+        const { accessToken } = req.cookies;
+  
+        if (url !== "/" && !accessToken) {
+          res.writeHead(302, {
+            location: "/",
+          });
+          res.end();
+        } else if (url == "/" && accessToken) {
+          res.writeHead(302, {
+            location: "/dashboard",
+          });
+          res.end();
+        }
       }
-    }
-    /**
-     * ¯\_(ツ)_/¯
-     */
-    return { nothingToseeHere: "yay" };
-  };
+      /**
+       * ¯\_(ツ)_/¯
+       */
+      return { nothingToseeHere: "yay" };
+    };
 
   return AuthorizationComponent;
 };

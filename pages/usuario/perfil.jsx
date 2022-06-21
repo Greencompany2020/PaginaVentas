@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import { getBaseLayout } from "../../components/layout/BaseLayout";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
+import { useAuth } from "../../context/AuthContext";
 import { useAlert } from "../../context/alertContext";
 import useToggle from "../../hooks/useToggle";
 import Dropzone from "../../components/dropzone";
@@ -10,31 +10,32 @@ import { FormModal } from "../../components/modals";
 import VerifyHolder from "../../components/commons/VerifyHolder";
 import ConfigurationItems from "../../containers/profile/ConfigurationItems";
 import ProcessBar from '../../components/commons/ProcessBar';
+import userService from '../../services/userServices';
 
 const Perfil = () => {
-  const { user,setPerfilImage } = useUser();
+  const { user, refreshUser } = useAuth();
   const [visible, setVisible] = useToggle(false);
   const [show, setShow] = useToggle(false);
   const alert = useAlert();
   const [progress, setProgress] = useState(0)
-
+  const service = userService();
   const progressUpload = progressEvent => {
     let porcent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
     setProgress(porcent);
   }
 
   const handleUploadImage = async (files) =>{
+    setVisible();
+    setShow();
     try {
-      setVisible();
-      setShow();
-      const response = await setPerfilImage(files, progressUpload);
-      setProgress(0);
-      setShow();
+      const response =  await service.setUserAvatar(files, progressUpload);
+      if(response) await refreshUser();
     } catch (error) {
       alert.showAlert(error.message, "warning", 3000);
-      setProgress(0);
-      setShow()
     }
+    console.log('pase');
+    setProgress(0);
+    setShow();
     return true
   }
 

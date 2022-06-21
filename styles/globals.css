@@ -244,6 +244,7 @@ table.last-row-bg tbody tr:last-child {
 
 
 .layout-ventas{
+  position: relative;
   display: grid; 
   grid-template-columns: 3rem 1fr; 
   grid-template-rows: 3rem 1fr;
@@ -262,12 +263,29 @@ table.last-row-bg tbody tr:last-child {
 }
 .layout-ventas-toolbar{
   grid-area: Toolbar;
-  height: 100%;
 }
 .layout-ventas-main{
   grid-area: Main;
   height: 100%;
   overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .layout-ventas{ 
+    grid-template-areas:
+      "Navbar Navbar"
+      "Main Main";
+  }
+  
+  .layout-ventas-toolbar{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    height: 3rem;
+    top: 3.2rem;
+    left: 0.1rem;
+  }
 }
 
 .layout-base{

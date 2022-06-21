@@ -1,5 +1,8 @@
 import axios from "axios";
 import jsCookie from "js-cookie";
+import jwtDecode from "jwt-decode";
+import fromUnixTime from 'date-fns/fromUnixTime';
+import differenceInMinutes from "date-fns/differenceInMinutes";
 
 const baseURL = `${process.env.NEXT_PUBLIC_API_URL}/api/v1` || null;
 const ApiProvider = axios.create({
@@ -11,9 +14,8 @@ const ApiProvider = axios.create({
   }
 });
 
-
 const refreshToken = async () => {
-  try{
+  try{  
     const {data} = await axios.get(`${baseURL}/auth/refresh`,{
       withCredentials: true,
       headers: { 
@@ -22,27 +24,39 @@ const refreshToken = async () => {
       }
     });
     const newToken = data.accessToken;
-    jsCookie.set('accessToken',  newToken);
     return newToken;
   }catch(err){
-     jsCookie.remove('accessToken');
-     jsCookie.remove('jwt');
-     throw err;
+    throw err;
   }
 }
 
-
-ApiProvider.interceptors.response.use(
-  response => response,
-  async (err) => {
-    const prevRequest = err?.config;
-    if(err?.response?.status === 401 && !prevRequest.__isRetryRequest){
-      prevRequest.__isRetryRequest = true;
-      const newToken = await refreshToken();
-      prevRequest.headers['Authorization'] = `Bearer ${newToken}`;
-      return ApiProvider(prevRequest);
+ApiProvider.interceptors.request.use(
+  async request  => {
+    const currentToken = jsCookie.get('accessToken');
+    if(currentToken){
+      const {exp}=  jwtDecode(currentToken);
+      const expirationDate = fromUnixTime(exp);
+      const timeLeft = differenceInMinutes(expirationDate, new Date());
+      const leftTimeToRefresh = process.env.LEFT_TIME_TO_REFRESH || 5;
+      let cookieSet = currentToken;
+      if(timeLeft <= leftTimeToRefresh){
+        try {
+          const newToken = await refreshToken();
+          jsCookie.set('accessToken', newToken);
+          cookieSet = newToken;
+        } catch (error) {
+          jsCookie.remove('accessToken');
+          jsCookie.remove('jwt');
+          alert('sesion expirada');
+          window.location.href = '/';
+        }
+      }
+      request.headers['Authorization'] = `Bearer ${cookieSet}`;
     }
-    throw err.response.data;
+    return request;
+  },
+  error => {
+    throw error;
   }
 )
 

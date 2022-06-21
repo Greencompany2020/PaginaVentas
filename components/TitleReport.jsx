@@ -4,7 +4,7 @@ import Trend from "../public/images/trend.png";
 export default function TitleReport(props) {
   const { title, description } = props;
   return (
-    <section className=" pl-8 pt-4 bg-slate-50">
+    <section className=" pl-14 md:pl-8 pt-4 bg-slate-50">
       <div className="flex flex-row items-center space-x-3">
         <div>
           <Image

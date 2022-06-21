@@ -29,13 +29,13 @@ import {
 } from "../../utils/functions";
 import { handleChange } from "../../utils/handlers";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
+import { useAuth } from "../../context/AuthContext";
 import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
 
 const Tienda = () => {
   const alert = useAlert();
-  const { tiendas } = useUser();
+  const { tiendas } = useAuth();
   const [diariasTienda, setDiariasTienda] = useState([]);
   const [tiendasParametros, setTiendaParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,

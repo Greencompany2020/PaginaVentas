@@ -26,13 +26,13 @@ import { getInitialPlaza, getPlazaName, isError } from "../../utils/functions";
 import { inputNames } from "../../utils/data/checkboxLabels";
 import { handleChange } from "../../utils/handlers";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
+import { useAuth } from "../../context/AuthContext";
 import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
 
 const Plaza = () => {
   const alert = useAlert();
-  const { plazas } = useUser();
+  const { plazas } =  useAuth();
   const [diariasPlaza, setDiariasPlaza] = useState([]);
   const [plazaParametros, setPlazaParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,

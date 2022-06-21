@@ -38,13 +38,13 @@ import { numberWithCommas } from "../../utils/resultsFormated";
 import { handleChange } from "../../utils/handlers";
 import { getPorcentajesMensuales } from "../../services/PorcentajesService";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
+import { useAuth } from "../../context/AuthContext";
 import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
 
 const Mensuales = () => {
   const alert = useAlert();
-  const { tiendas, plazas } = useUser();
+  const { tiendas, plazas } = useAuth();
   const [porcentajesMensuales, setPorcentajesMensuales] = useState([]);
   const [parametrosMensuales, setParametrosMensuales] = useState({
     queryTiendaPlaza: 0,

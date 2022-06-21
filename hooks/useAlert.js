@@ -22,7 +22,7 @@ export default function useProvideAlert(){
     }
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    const showAlert = (message = '', type = 'WARNING', duration = 3000) => {
+    const showAlert = (message = '', type = 'WARNING', duration = 6000) => {
         dispatch({type: 'SHOW_ALERT', payload:{message, type, duration}});
         closerHandle(duration);
     }

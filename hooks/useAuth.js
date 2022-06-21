@@ -1,27 +1,49 @@
-import jsCookie from 'js-cookie';
-import { post_login, get_logouth} from '../services/AuthServices';
+import {useState, useEffect} from 'react';
+import userService from '../services/userServices';
 
-function useAuth(){
+export default function useProviderAuth(){
+    const [auth, setAuth] = useState(false);
+    const [user, setUser] = useState();
+    const [tiendas, setTiendas] = useState();
+    const [plazas, setPlazas] = useState();
+    const service = userService();
 
-    const login = async (body) => {
-        const token = await post_login(body)
-        if(!token) return false;
-        jsCookie.set('accessToken', token);
-        return true;
+    const refreshUser = async () => {
+       try {
+            const response = await service.getUser();
+            if(response) setUser(response);
+       } catch (error) {
+            throw error;
+       }
     }
+    
 
-    const logOut = async () => {
-        await get_logouth();
-        jsCookie.remove('accessToken');
-        jsCookie.remove('jwt');
-        window.location.href = '/'
-        return true;
-    }
+    useEffect(()=>{
+        (async()=>{
+            if(auth){
+                try {
+                    //get all data
+                    const responseUser = await service.getUser();
+                    const responsePlazas = await service.getPlazas();
+                    const responseTiendas = await service.getTiendas();
+
+                    //set all data
+                    setUser(responseUser);
+                    setPlazas(responsePlazas);
+                    setTiendas(responseTiendas);
+                } catch (error) {
+                console.log(error);
+                }
+            }
+        })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[auth])
 
     return {
-        logOut,
-        login
+        plazas,
+        tiendas,
+        user,
+        setAuth,
+        refreshUser,
     }
 }
-
-export default useAuth;

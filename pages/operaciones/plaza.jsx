@@ -29,13 +29,13 @@ import { handleChange } from "../../utils/handlers";
 import { getOperacionesPlaza } from "../../services/OperacionesService";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
+import { useAuth } from "../../context/AuthContext";
 import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
 
 const Plaza = () => {
   const alert = useAlert();
-  const { plazas } = useUser();
+  const { plazas } = useAlert();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramPlaza, setParamPlaza] = useState({
     plaza: getInitialPlaza(plazas),

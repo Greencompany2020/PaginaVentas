@@ -6,14 +6,15 @@ import Link from "next/link";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import Logo from "../public/images/green-company.png";
-import { post_newPassword } from "../services/UserServices";
 import { MessageModal } from "../components/modals";
 import useMessageModal from "../hooks/useMessageModal";
 import useToggle from "../hooks/useToggle";
 import LoaderComponentBas from "../components/LoaderComponentBas";
+import userService from '../services/userServices';
 
 export default function RestorePassword() {
   const router = useRouter();
+  const service = userService();
   const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [isLoading, setLoading] = useToggle(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -39,7 +40,7 @@ export default function RestorePassword() {
     if (!router.query?.resetToken) return false;
     const { resetToken } = router.query;
     setLoading(false);
-    const response = await post_newPassword(body, resetToken);
+    const response = await service.resetPassword(body, resetToken);
     setLoading(false);
     const mesage = response
       ? "Su contraseña ha sido cambiada"

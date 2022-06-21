@@ -39,7 +39,6 @@ Drawer.defaultProps={
 }
 
 Drawer.propTypes={
-    children: PropTypes.func,
     expand: PropTypes.bool.isRequired,
     handleExpand: PropTypes.func.isRequired,
     keepScreen: PropTypes.bool

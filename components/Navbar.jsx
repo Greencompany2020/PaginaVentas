@@ -7,17 +7,21 @@ import Menu from "../public/images/dot-menu.png";
 import UserIcon from "../public/icons/icon_-users-4.png";
 import Config from "../public/icons/config-5.png";
 import useClickOutside from "../hooks/useClickOutside";
-import useAuth from "../hooks/useAuth";
 import { XIcon } from "@heroicons/react/solid";
 import { LogoutIcon } from "@heroicons/react/outline";
 import Avatar from "./commons/Avatar";
-import { useUser } from "../context/UserContext";
+import { useAuth } from "../context/AuthContext";
+import authService from "../services/authService";
+import jsCookie from "js-cookie";
+import { useRouter } from "next/router";
 
 const Navbar = () => {
-  const {user} = useUser();
+  const {user, setAuth} = useAuth();
+  const service = authService();
   const userMenuRef = useRef(null);
+  const router = useRouter();
+
   const [showDialog, setShowDialog] = useState(false);
-  const auth = useAuth();
   const handleToggle = () => setShowDialog(!showDialog);
 
   useClickOutside(userMenuRef, () => {
@@ -26,8 +30,16 @@ const Navbar = () => {
     }
   });
 
-  const handleLogout = () => {
-    auth.logOut();
+  const handleLogout = async() => {
+    try {
+      const response = await service.logout();
+      jsCookie.remove('accessToken');
+      jsCookie.remove('jwt');
+      setAuth(false);
+      router.push('/');
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -61,7 +73,7 @@ const Navbar = () => {
       {/* Menú Opciones Usuario */}
       <div
         ref={userMenuRef}
-        className={`fixed w-[280px] h-[250px] z-10 right-0 transform bg-black-light ${
+        className={`fixed w-[280px] h-[250px] z-50 right-0 transform bg-black-light ${
           !showDialog && "translate-x-full"
         }  transition duration-200 ease-in-out`}
       >

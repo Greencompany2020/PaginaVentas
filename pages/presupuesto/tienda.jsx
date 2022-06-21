@@ -29,13 +29,13 @@ import { getCurrentMonth, getCurrentYear } from "../../utils/dateFunctions";
 import { handleChange } from "../../utils/handlers";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
+import { useAuth } from "../../context/AuthContext";
 import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
 
 const Tienda = () => {
   const alert = useAlert();
-  const { tiendas } = useUser();
+  const { tiendas } = useAuth();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTienda, setParamTienda] = useState({
     tienda: getInitialTienda(tiendas),

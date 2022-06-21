@@ -20,13 +20,13 @@ import { getCurrentYear } from "../../utils/dateFunctions";
 import { handleChange } from "../../utils/handlers";
 import { getSemanaSantaPlazas } from "../../services/semanaSantaService";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
+import { useAuth } from "../../context/AuthContext";
 import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
 
 const Plaza = () => {
   const alert = useAlert();
-  const { plazas } = useUser();
+  const { plazas } = useAuth();
   const [semanaSantaPlazas, setSemanaSantaPlazas] = useState({});
   const [paramPlaza, setParamPlaza] = useState({
     plaza: getInitialPlaza(plazas),

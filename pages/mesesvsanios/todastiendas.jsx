@@ -30,13 +30,13 @@ import { handleChange } from "../../utils/handlers";
 import { getMesesAgnosTodasTiendas } from "../../services/MesesAgnosService";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
+import { useAuth } from "../../context/AuthContext";
 import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
 
 const TodasTiendas = () => {
   const alert = useAlert();
-  const { plazas } = useUser();
+  const { plazas } = useAuth();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTiendas, setParamTiendas] = useState({
     plaza: getInitialPlaza(plazas),
