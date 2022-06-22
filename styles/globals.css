@@ -289,12 +289,12 @@ table.last-row-bg tbody tr:last-child {
 }
 
 .layout-base{
-  display: grid; 
+  display: grid;
+  position: relative; 
   grid-template-columns: 1fr; 
   grid-template-rows: 3rem 1fr;
   width: 100vw;
   height: 100vh;
-  overflow: hidden; 
   gap: 0px 0px; 
   grid-template-areas: 
     "Navbar"

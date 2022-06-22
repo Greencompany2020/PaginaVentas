@@ -79,7 +79,7 @@ const Navbar = () => {
       {/* Menú Opciones Usuario */}
       <div
         ref={userMenuRef}
-        className={`fixed w-[280px] h-[250px] z-50 right-0 transform bg-black-light ${
+        className={`absolute w-[280px] h-[250px] z-50 right-0 transform bg-black-light ${
           !showDialog && "translate-x-full"
         }  transition duration-200 ease-in-out`}
       >
@@ -96,7 +96,10 @@ const Navbar = () => {
           </div>
           <div className="pl-10 space-y-1">
             <Link href="/usuario/perfil">
-              <a className="hover:bg-sky-400 m-1 flex p-2 rounded-sm transition ease-in-out duration-200">
+              <a 
+                className="hover:bg-sky-400 m-1 flex p-2 rounded-sm transition ease-in-out duration-200"
+                onClick={handleToggle}
+              >
                 <Image
                   src={UserIcon}
                   height={20}
@@ -109,7 +112,10 @@ const Navbar = () => {
             </Link>
 
             <Link href="/accesos">
-              <a className="hover:bg-sky-400 m-1 flex  p-2 rounded-sm transition ease-in-out duration-200">
+              <a 
+                className="hover:bg-sky-400 m-1 flex  p-2 rounded-sm transition ease-in-out duration-200"
+                onClick={handleToggle}
+              >
                 <Image
                   src={Config}
                   height={20}
