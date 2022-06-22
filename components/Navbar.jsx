@@ -33,13 +33,9 @@ const Navbar = () => {
 
   const handleLogout = async() => {
     try {
-      const response = await service.logout();
-      if(response){
+        const response = await service.logout();
         jsCookie.remove('accessToken');
-        jsCookie.remove('jwt');
-        setAuth(false);
         router.push('/');
-      }
     } catch (error) {
       sendNotification({
         type:'ERROR',

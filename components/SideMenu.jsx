@@ -3,16 +3,34 @@ import DetailsSideBar from "./DetailsSideBar";
 import { MenuIcon, XIcon } from "@heroicons/react/solid";
 import { LogoutIcon } from "@heroicons/react/outline";
 import useToggle from "../hooks/useToggle";
-import useAuth from "../hooks/useAuth";
 import useClickOutside from "../hooks/useClickOutside";
 import { enlaces as enlacesMenuLateral } from "../utils/data";
 import { isWindows, isAndroid, isChromium, } from "react-device-detect";
+import authService from "../services/authService";
+import { useNotification } from "./notifications/NotificationsProvider";
+import jsCookie from 'js-cookie';
+import { useRouter } from "next/router";
 
 const SideMenu = () => {
   const menuRef = useRef(null);
-  const auth = useAuth();
   const [visible, toggleVisible] = useToggle(true);
   const [showChevron, setShowChevron] = useState(false);
+  const service = authService();
+  const sendNotification = useNotification();
+  const router = useRouter();
+
+  const handleLogout = async() => {
+    try {
+        const response = await service.logout();
+        jsCookie.remove('accessToken');
+        router.push('/');
+    } catch (error) {
+      sendNotification({
+        type:'ERROR',
+        message:error.message,
+      });
+    }
+  };
 
   useClickOutside(menuRef, () => {
     if (!visible) {
@@ -70,15 +88,9 @@ const SideMenu = () => {
               />
             ))}
           </div>
-          <div className="p-3">
-            <a
-              href="#"
-              onClick={auth.logOut}
-              className="flex flex-row items-center  text-sky-500"
-            >
-              <LogoutIcon width={32} />
-              <p className="text-sky-500 pl-1">Cerrar Sesión</p>
-            </a>
+          <div className="p-3 flex flex-row">
+            <LogoutIcon width={32} className='text-sky-500'/>
+            <button className="text-sky-500 pl-1 font-semibold" onClick={ handleLogout}>Cerrar sesion</button>
           </div>
         </div>
       </aside>

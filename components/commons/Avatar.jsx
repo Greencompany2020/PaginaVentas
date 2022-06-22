@@ -5,7 +5,12 @@ import rana from '../../public/images/rana10.png'
 
 export default function Avatar(props) {
     const {image, size} = props;
-    const url = (image !== '') ? image : rana
+    let url = null;
+    if(!image){
+        url = rana
+    }else{
+        url = image
+    }
     return (
         <figure className={`bg-slate-100 rounded-full border border-gray-200 w-[${size || 12}rem] h-[[${size || 12}rem]  overflow-hidden`}>
            <div className=' overflow-hidden grid place-items-center'>
