@@ -4,15 +4,15 @@ import * as Yup from "yup";
 import authService from '../../services/authService';
 import jsCookie from "js-cookie";
 import { useRouter } from 'next/router';
-import { useAlert } from "../../context/alertContext";
 import {useAuth} from '../../context/AuthContext';
+import { useNotification } from '../../components/notifications/NotificationsProvider';
 
 export default function LoginContainer(props) {
     const {setLoading} =props
     const router = useRouter();
     const service = authService();
-    const notify = useAlert();
     const {setAuth} = useAuth();
+    const sendNotification = useNotification();
     const validationSchema = Yup.object().shape({
         UserCode: Yup.string().required("Requerido"),
         password: Yup.string().required("Requerido"),
@@ -32,7 +32,10 @@ export default function LoginContainer(props) {
           setAuth(true);
           router.push('/dashboard');
         } catch (error) {
-          notify.showAlert('Error al inicial sesion', 'warning');
+         sendNotification({
+          type: 'ERROR',
+          message: 'Usuario no valido'
+         });
         }
         setLoading();
     }

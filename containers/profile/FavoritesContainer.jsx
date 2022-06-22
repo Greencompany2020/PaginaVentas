@@ -1,11 +1,11 @@
 import { useState, useEffect} from 'react';
 import FavoriteList from '../../components/profile/FavoriteList';
 import userService from '../../services/userServices';
-import { useAuth } from '../../context/AuthContext';
+import { useNotification } from '../../components/notifications/NotificationsProvider';
 
 export default function FavoritesContainer(props) {
     const service = userService();
-    const {user} = useAuth();
+    const sendNotification = useNotification();
     const [favorites, setFavorites] = useState(undefined);
 
     useEffect(()=>{
@@ -13,9 +13,11 @@ export default function FavoritesContainer(props) {
            try {
             const response = await service.getUserAccess();
             setFavorites(response)
-            console.log(response);
            } catch (error) {
-            console.error(error);
+            sendNotification({
+                type:'ERROR',
+                message:error.message,
+            });
            }
         })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -30,7 +32,10 @@ export default function FavoritesContainer(props) {
                 setFavorites(refreshFavorites);
             }
         } catch (error) {
-            console.error(error);
+            sendNotification({
+                type:'ERROR',
+                message:error.message,
+            });
         }
     }
 

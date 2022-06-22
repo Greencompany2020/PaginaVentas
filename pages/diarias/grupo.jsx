@@ -25,12 +25,11 @@ import { formatNumber, numberWithCommas } from "../../utils/resultsFormated";
 import { inputNames } from "../../utils/data/checkboxLabels";
 import { handleChange } from "../../utils/handlers";
 import WithAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Grupo = (props) => {
-  const alert = useAlert();
-
+  const sendNotification = useNotification();
   const [parametrosConsulta, setParametrosConsulta] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
@@ -52,7 +51,10 @@ const Grupo = (props) => {
         const response = await getDiariasGrupo(parametrosConsulta);
         setDiariasGrupo(response);
       } catch (error) {
-        alert.showAlert(error.message, "warning", 1000);
+        sendNotification({
+          type:'ERROR',
+          message:error.message
+        })
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps

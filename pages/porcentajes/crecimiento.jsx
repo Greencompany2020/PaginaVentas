@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -33,11 +32,11 @@ import {
 import { getPorcentajeCrecimiento } from "../../services/PorcentajesService";
 import { numberWithCommas } from "../../utils/resultsFormated";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Crecimiento = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const [dateRange, setDateRange] = useState([]);
   const [crecimiento, setCrecimiento] = useState([]);
   const [paramCrecimiento, setParamCrecimiento] = useState({
@@ -63,11 +62,10 @@ const Crecimiento = () => {
     if (validateDate(paramCrecimiento.fecha)) {
       getPorcentajeCrecimiento(paramCrecimiento).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message: response?.response?.data ?? MENSAJE_ERROR
+          });
         } else {
           createDateRange();
           setCrecimiento(response);

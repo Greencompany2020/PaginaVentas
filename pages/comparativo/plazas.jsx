@@ -24,11 +24,11 @@ import { getComparativoPlazas } from "../../services/ComparativoService";
 import { Fragment } from "react/cjs/react.production.min";
 import { formatNumber, numberWithCommas } from "../../utils/resultsFormated";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Plazas = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const [comparativoPlazas, setComparativoPlazas] = useState({});
   const [semanaSanta, setSemanaSanta] = useState(true);
   const [parametrosPlazas, setParametrosPlazas] = useState({
@@ -46,11 +46,10 @@ const Plazas = () => {
     if (validateDate(parametrosPlazas.fecha)) {
       getComparativoPlazas(parametrosPlazas).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message: response?.response?.data ?? MENSAJE_ERROR,
+          })
         } else {
           setComparativoPlazas(response);
         }

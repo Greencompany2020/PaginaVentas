@@ -31,11 +31,11 @@ import {
 import { handleChange } from "../../utils/handlers";
 import { formatNumber, numberWithCommas } from "../../utils/resultsFormated";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Plazas = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesPlaza, setSemanalesPlaza] = useState([]);
   const [plazasParametros, setPlazasParametros] = useState({
@@ -58,11 +58,10 @@ const Plazas = () => {
     ) {
       getSemanalesPlazas(plazasParametros).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message: response?.response?.data ?? MENSAJE_ERROR
+          });
         } else {
           setSemanalesPlaza(response);
         }

@@ -24,11 +24,11 @@ import { getPresupuestoFechas } from "../../services/PresupuestoService";
 import { MENSAJE_ERROR } from "../../utils/data";
 import withAuth from "../../components/withAuth";
 import { useAuth } from "../../context/AuthContext";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Fechas = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const { plazas } = useAuth();
   const [prespuestos, setPrespuestos] = useState({});
   const [paramFechas, setParamFechas] = useState({
@@ -41,11 +41,10 @@ const Fechas = () => {
     if (validateInputDateRange(paramFechas.fechaInicio, paramFechas.fechaFin)) {
       getPresupuestoFechas(paramFechas).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message: response?.response?.data ?? MENSAJE_ERROR
+          });
         } else {
           setPrespuestos(response);
         }

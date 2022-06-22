@@ -23,11 +23,11 @@ import { numberWithCommas } from "../../utils/resultsFormated";
 import { handleChange } from "../../utils/handlers";
 import { isError } from "../../utils/functions";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Concentrado = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const [concentrado, setConcentrado] = useState([]);
   const [concentradoParametros, setConcentradoParametros] = useState({
     delAgno: new Date(Date.now()).getFullYear(),
@@ -42,11 +42,10 @@ const Concentrado = () => {
     if (concentradoParametros.delAgno.toString().length === 4) {
       getMensualesConcentrado(concentradoParametros).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message:response?.response?.data ?? MENSAJE_ERROR,
+          });
         } else {
           setConcentrado(response);
         }

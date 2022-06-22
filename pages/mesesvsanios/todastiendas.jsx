@@ -31,11 +31,11 @@ import { getMesesAgnosTodasTiendas } from "../../services/MesesAgnosService";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
 import { useAuth } from "../../context/AuthContext";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const TodasTiendas = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const { plazas } = useAuth();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTiendas, setParamTiendas] = useState({
@@ -50,11 +50,10 @@ const TodasTiendas = () => {
     if (validateYear(paramTiendas.delAgno)) {
       getMesesAgnosTodasTiendas(paramTiendas).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message:response?.response?.data ?? MENSAJE_ERROR
+          });
         } else {
           createMesesAgnosTiendasDataset(response);
         }

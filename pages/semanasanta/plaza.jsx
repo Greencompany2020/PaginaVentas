@@ -21,11 +21,11 @@ import { handleChange } from "../../utils/handlers";
 import { getSemanaSantaPlazas } from "../../services/semanaSantaService";
 import withAuth from "../../components/withAuth";
 import { useAuth } from "../../context/AuthContext";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Plaza = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const { plazas } = useAuth();
   const [semanaSantaPlazas, setSemanaSantaPlazas] = useState({});
   const [paramPlaza, setParamPlaza] = useState({
@@ -43,11 +43,10 @@ const Plaza = () => {
     if (validateYear(paramPlaza.delAgno)) {
       getSemanaSantaPlazas(paramPlaza).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message: response?.response?.data ?? MENSAJE_ERROR
+          });
         } else {
           setSemanaSantaPlazas(response);
         }

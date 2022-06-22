@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
   Flex,
 } from "../../components/containers";
 import {
@@ -39,11 +38,11 @@ import { handleChange } from "../../utils/handlers";
 import { getPorcentajesMensuales } from "../../services/PorcentajesService";
 import withAuth from "../../components/withAuth";
 import { useAuth } from "../../context/AuthContext";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Mensuales = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const { tiendas, plazas } = useAuth();
   const [porcentajesMensuales, setPorcentajesMensuales] = useState([]);
   const [parametrosMensuales, setParametrosMensuales] = useState({
@@ -66,11 +65,10 @@ const Mensuales = () => {
     ) {
       getPorcentajesMensuales(parametrosMensuales).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message: response?.response?.data ?? MENSAJE_ERROR
+          });
         } else {
           setPorcentajesMensuales(response);
         }

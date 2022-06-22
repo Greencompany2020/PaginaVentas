@@ -26,11 +26,11 @@ import useGraphData from "../../hooks/useGraphData";
 import { MENSAJE_ERROR } from "../../utils/data";
 import withAuth from "../../components/withAuth";
 import { useAuth } from "../../context/AuthContext";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Tienda = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const { tiendas } = useAuth();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTienda, setParamTienda] = useState({
@@ -44,11 +44,10 @@ const Tienda = () => {
     if (validateInputDateRange(paramTienda.fechaInicio, paramTienda.fechaFin)) {
       getRangoVentasTienda(paramTienda).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message: response?.response?.data ?? MENSAJE_ERROR
+          });
         } else {
           createRangoVentasDataset(response, setLabels, setDatasets);
         }

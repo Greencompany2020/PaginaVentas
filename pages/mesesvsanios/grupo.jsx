@@ -33,11 +33,11 @@ import {
   validateYearRange,
 } from "../../utils/functions";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Grupo = () => {
-  const alert = useAlert();
+  const sendNotification  = useNotification();
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
   const [parametrosGrupo, setParametrosGrupo] = useState({
     delAgno: getCurrentYear() - 5,
@@ -61,11 +61,10 @@ const Grupo = () => {
     ) {
       getMesesAgnosGrupo(parametrosGrupo).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message:response?.response?.data ?? MENSAJE_ERROR
+          });
         } else {
           createMesesAgnosGrupoDataset(
             response,

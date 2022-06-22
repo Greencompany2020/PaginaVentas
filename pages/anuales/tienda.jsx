@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -27,12 +26,12 @@ import { getAnualesTiendas } from "../../services/AnualesServices";
 import { createSimpleDatasets, isError } from "../../utils/functions";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
 import ComparativoVentas from "../../components/table/ComparativoVentas";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Tienda = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [tiendasParametros, setTiendasParametros] = useState({
     alAgno: getCurrentYear(),
@@ -48,11 +47,10 @@ const Tienda = () => {
     if (tiendasParametros.alAgno.toString().length === 4) {
       getAnualesTiendas(tiendasParametros).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            mesagge: response?.response?.data ?? MENSAJE_ERROR,
+          })
         } else {
           createSimpleDatasets(response, setLabels, setDatasets);
         }

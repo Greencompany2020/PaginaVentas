@@ -37,11 +37,11 @@ import {
 } from "../../utils/functions";
 import { getPromotores } from "../../services/MKTService";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Promotores = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const [promotores, setPromotores] = useState({});
   const [paramPromotores, setParamPromotores] = useState({
     delMes: 1,
@@ -57,11 +57,10 @@ const Promotores = () => {
     ) {
       getPromotores(paramPromotores).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message: response?.response?.data ?? MENSAJE_ERROR
+          });
         } else {
           setPromotores(response);
         }

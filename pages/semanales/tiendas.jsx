@@ -37,11 +37,11 @@ import { getSemanalesTiendas } from "../../services/SemanalesService";
 import { inputNames } from "../../utils/data/checkboxLabels";
 import { handleChange } from "../../utils/handlers";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Tiendas = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesTienda, setSemanalesTienda] = useState([]);
   const [tiendasParametros, setTiendasParametros] = useState({
@@ -65,11 +65,10 @@ const Tiendas = () => {
     ) {
       getSemanalesTiendas(tiendasParametros).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message: response?.response?.data ?? MENSAJE_ERROR
+          });
         } else {
           setSemanalesTienda(response);
         }

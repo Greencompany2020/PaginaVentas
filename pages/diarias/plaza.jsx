@@ -27,11 +27,11 @@ import { inputNames } from "../../utils/data/checkboxLabels";
 import { handleChange } from "../../utils/handlers";
 import withAuth from "../../components/withAuth";
 import { useAuth } from "../../context/AuthContext";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Plaza = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const { plazas } =  useAuth();
   const [diariasPlaza, setDiariasPlaza] = useState([]);
   const [plazaParametros, setPlazaParametros] = useState({
@@ -50,11 +50,10 @@ const Plaza = () => {
   useEffect(() => {
     getDiariasPlazas(plazaParametros).then((response) => {
       if (isError(response)) {
-        alert.showAlert(
-          response?.response?.data ?? MENSAJE_ERROR,
-          "warning",
-          1000
-        );
+        sendNotification({
+          type:'ERROR',
+          message: response?.response?.data ?? MENSAJE_ERROR,
+        })
       } else {
         setDiariasPlaza(response);
       }

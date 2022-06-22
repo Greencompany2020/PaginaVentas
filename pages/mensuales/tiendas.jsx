@@ -29,12 +29,12 @@ import {
 } from "../../utils/functions";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
 import ComparativoVentas from "../../components/table/ComparativoVentas";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Tiendas = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
   const [tiendasParametros, setTiendasParametros] = useState({
     delMes: getCurrentMonth(),
@@ -50,11 +50,10 @@ const Tiendas = () => {
     if (validateYear(tiendasParametros.alAgno)) {
       getMensualesTiendas(tiendasParametros).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message:response?.response?.data ?? MENSAJE_ERROR
+          })
         } else {
           createSimpleDatasets(response, setLabels, setDatasets);
         }

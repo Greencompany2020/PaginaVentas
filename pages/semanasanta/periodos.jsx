@@ -8,21 +8,20 @@ import { getSemanaSantaPeriodos } from "../../services/semanaSantaService";
 import { MENSAJE_ERROR } from "../../utils/data";
 import { isError } from "../../utils/functions";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Periodos = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const [periodos, setPeriodos] = useState([]);
 
   useEffect(() => {
     getSemanaSantaPeriodos().then((response) => {
       if (isError(response)) {
-        alert.showAlert(
-          response?.response?.data ?? MENSAJE_ERROR,
-          "warning",
-          1000
-        );
+        sendNotification({
+          type:'ERROR',
+          message:response?.response?.data ?? MENSAJE_ERROR
+        });
       } else {
         setPeriodos(response);
       }

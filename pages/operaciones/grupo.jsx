@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   Parameters,
   ParametersContainer,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -27,11 +26,11 @@ import {
 import { getOperacionesGrupo } from "../../services/OperacionesService";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Grupo = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramGrupo, setParamGrupo] = useState({
     delMes: 1,
@@ -52,11 +51,10 @@ const Grupo = () => {
     ) {
       getOperacionesGrupo(paramGrupo).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message: response?.response?.data ?? MENSAJE_ERROR
+          });
         } else {
           createOperacionesDatasets(
             response,

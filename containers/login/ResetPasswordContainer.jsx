@@ -2,12 +2,12 @@ import React from 'react';
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import userService from '../../services/userServices';
-import { useAlert } from "../../context/alertContext";
+import { useNotification } from '../../components/notifications/NotificationsProvider';
 
 export default function ResetPasswordContainer(props) {
     const { setLoading } = props;
     const service = userService();
-    const notify = useAlert();
+    const sendNotification = useNotification();
 
     const validationSchema = Yup.object().shape({
       email: Yup.string()
@@ -23,9 +23,17 @@ export default function ResetPasswordContainer(props) {
         setLoading();
         try {
           const response = await service.requestPasswordReset(values);
-          notify.showAlert('Se ha enviado un link a su correo', 'success');
+          if(response){
+            sendNotification({
+              type:'OK',
+              message:'Se ha enviado un link a su correo'
+            })
+          }
         } catch (error) {
-          notify.showAlert('su correo parece no ser valido', 'warning');
+          sendNotification({
+            type:'ERROR',
+            message:error.message
+          })
         }
         setLoading();
     }

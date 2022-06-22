@@ -25,11 +25,11 @@ import { numberWithCommas } from "../../utils/resultsFormated";
 import { getPorcenatajesParticipacion } from "../../services/PorcentajesService";
 import { isError, validateYear } from "../../utils/functions";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Participacion = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const [participacionVentas, setParticipacionVentas] = useState([]);
   const [parametrosParticipacion, setParametrosParticipacion] = useState({
     alAgno: getCurrentYear(),
@@ -45,11 +45,10 @@ const Participacion = () => {
     if (validateYear(parametrosParticipacion.alAgno)) {
       getPorcenatajesParticipacion(parametrosParticipacion).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message: response?.response?.data ?? MENSAJE_ERROR
+          })
         } else {
           setParticipacionVentas(response);
         }

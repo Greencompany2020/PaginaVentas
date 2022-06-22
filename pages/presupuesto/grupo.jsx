@@ -27,11 +27,11 @@ import {
 import useGraphData from "../../hooks/useGraphData";
 import { getPresupuestoGrupo } from "../../services/PresupuestoService";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Grupo = (props) => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramGrupo, setParamGrupo] = useState({
     delMes: 1,
@@ -54,11 +54,10 @@ const Grupo = (props) => {
     ) {
       getPresupuestoGrupo(paramGrupo).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message: response?.response?.data ?? MENSAJE_ERROR
+          });
         } else {
           createPresupuestoDatasets(
             response,

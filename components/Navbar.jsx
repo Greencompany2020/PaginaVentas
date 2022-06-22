@@ -14,13 +14,14 @@ import { useAuth } from "../context/AuthContext";
 import authService from "../services/authService";
 import jsCookie from "js-cookie";
 import { useRouter } from "next/router";
+import { useNotification } from "./notifications/NotificationsProvider";
 
 const Navbar = () => {
   const {user, setAuth} = useAuth();
   const service = authService();
   const userMenuRef = useRef(null);
   const router = useRouter();
-
+  const sendNotification = useNotification();
   const [showDialog, setShowDialog] = useState(false);
   const handleToggle = () => setShowDialog(!showDialog);
 
@@ -33,12 +34,17 @@ const Navbar = () => {
   const handleLogout = async() => {
     try {
       const response = await service.logout();
-      jsCookie.remove('accessToken');
-      jsCookie.remove('jwt');
-      setAuth(false);
-      router.push('/');
+      if(response){
+        jsCookie.remove('accessToken');
+        jsCookie.remove('jwt');
+        setAuth(false);
+        router.push('/');
+      }
     } catch (error) {
-      console.error(error);
+      sendNotification({
+        type:'ERROR',
+        message:error.message,
+      });
     }
   };
 

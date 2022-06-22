@@ -31,11 +31,11 @@ import {
   isError,
 } from "../../utils/functions";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import {useNotification} from '../../components/notifications/NotificationsProvider';
 
 function Grupo() {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const [comparativoGrupo, setComparativoGrupo] = useState({});
   const [acumuladoSemanal, setAcumuladoSemanal] = useState(false);
   const [parametrosGrupo, setParametrosGrupo] = useState({
@@ -56,11 +56,10 @@ function Grupo() {
     if (validateDate(parametrosGrupo.fecha)) {
       getComparativoGrupo(parametrosGrupo).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message:response?.response?.data ?? MENSAJE_ERROR,
+          })
         } else {
           setComparativoGrupo(response);
         }

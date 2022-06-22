@@ -23,11 +23,11 @@ import {
   getSemanaSantaGrupoConcentrado,
 } from "../../services/semanaSantaService";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Grupo = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification()
   const [concentrado, setConcentrado] = useState(false);
   const [semanaSantaGrupo, setSemanaSantaGrupo] = useState({});
   const [paramGrupo, setParamGrupo] = useState({
@@ -49,11 +49,10 @@ const Grupo = () => {
       if (concentrado) {
         getSemanaSantaGrupoConcentrado(paramGrupo).then((response) => {
           if (isError(response)) {
-            alert.showAlert(
-              response?.response?.data ?? MENSAJE_ERROR,
-              "warning",
-              1000
-            );
+            sendNotification({
+              type:'ERROR',
+              message: response?.response?.data ?? MENSAJE_ERROR
+            });
           } else {
             setSemanaSantaGrupo(response);
           }

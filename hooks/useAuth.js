@@ -1,5 +1,6 @@
 import {useState, useEffect} from 'react';
 import userService from '../services/userServices';
+import { useNotification } from '../components/notifications/NotificationsProvider';
 
 export default function useProviderAuth(){
     const [auth, setAuth] = useState(false);
@@ -7,6 +8,7 @@ export default function useProviderAuth(){
     const [tiendas, setTiendas] = useState();
     const [plazas, setPlazas] = useState();
     const service = userService();
+    const sendNotification = useNotification();
 
     const refreshUser = async () => {
        try {
@@ -32,7 +34,10 @@ export default function useProviderAuth(){
                     setPlazas(responsePlazas);
                     setTiendas(responseTiendas);
                 } catch (error) {
-                console.log(error);
+                   sendNotification({
+                    type:'ERROR',
+                    message:error.message,
+                   })
                 }
             }
         })()

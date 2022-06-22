@@ -2,7 +2,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import { InputContainer, InputDate, Checkbox } from "../../components/inputs";
 import {
@@ -12,8 +11,8 @@ import {
 } from "../../components/table";
 import { checkboxLabels } from "../../utils/data";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const acumulado = () => {
   return (

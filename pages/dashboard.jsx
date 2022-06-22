@@ -8,6 +8,7 @@ import withAuth from "../components/withAuth";
 import { useAuth } from "../context/AuthContext";
 import userService from "../services/userServices";
 import { getBaseLayout } from "../components/layout/BaseLayout";
+import { useNotification } from "../components/notifications/NotificationsProvider";
 
 const DashboardItems = ({ data }) => {
   if (!data) return <></>;
@@ -20,15 +21,21 @@ const DashboardItems = ({ data }) => {
 const Dashboard = () => {
   const {user} = useAuth();
   const [directAccess , setDirectAccess] = useState([]);
-
   const service = userService();
+  const sendNotification = useNotification();
+
   useEffect(()=> {
     (async()=>{
-      try {
-        const response = await service.getDirectAccess(user?.Id);
-        setDirectAccess(response);
-      } catch (error) {
-        console.log(error);
+      if(user){
+        try {
+          const response = await service.getDirectAccess(user?.Id);
+          setDirectAccess(response);
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message:error.message,
+          })
+        }
       }
     })()
   // eslint-disable-next-line react-hooks/exhaustive-deps

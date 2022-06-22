@@ -37,11 +37,11 @@ import { handleChange } from "../../utils/handlers";
 import { getSemanaSantaAcumulado } from "../../services/semanaSantaService";
 import { formatNumber, numberWithCommas } from "../../utils/resultsFormated";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Acumulado = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification;
   const [fechaInicioSemana, setFechaInicioSemana] = useState(
     semanaSanta(getCurrentYear())[0]
   );
@@ -67,11 +67,10 @@ const Acumulado = () => {
     ) {
       getSemanaSantaAcumulado(paramAcumulado).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message: response?.response?.data ?? MENSAJE_ERROR
+          });
         } else {
           setAcumulado(response);
         }

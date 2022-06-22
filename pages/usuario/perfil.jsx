@@ -2,40 +2,32 @@ import React, {useState} from 'react'
 import { getBaseLayout } from "../../components/layout/BaseLayout";
 import withAuth from "../../components/withAuth";
 import { useAuth } from "../../context/AuthContext";
-import { useAlert } from "../../context/alertContext";
 import useToggle from "../../hooks/useToggle";
 import Dropzone from "../../components/dropzone";
 import Avatar from "../../components/commons/Avatar";
 import { FormModal } from "../../components/modals";
 import VerifyHolder from "../../components/commons/VerifyHolder";
 import ConfigurationItems from "../../containers/profile/ConfigurationItems";
-import ProcessBar from '../../components/commons/ProcessBar';
 import userService from '../../services/userServices';
+import { useNotification } from '../../components/notifications/NotificationsProvider';
 
 const Perfil = () => {
   const { user, refreshUser } = useAuth();
   const [visible, setVisible] = useToggle(false);
-  const [show, setShow] = useToggle(false);
-  const alert = useAlert();
-  const [progress, setProgress] = useState(0)
+  const sendNotification = useNotification();
   const service = userService();
-  const progressUpload = progressEvent => {
-    let porcent = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-    setProgress(porcent);
-  }
 
   const handleUploadImage = async (files) =>{
     setVisible();
-    setShow();
     try {
-      const response =  await service.setUserAvatar(files, progressUpload);
+      const response =  await service.setUserAvatar(files);
       if(response) await refreshUser();
     } catch (error) {
-      alert.showAlert(error.message, "warning", 3000);
+      sendNotification({
+        type:'ERROR',
+        message:error.message
+      });
     }
-    console.log('pase');
-    setProgress(0);
-    setShow();
     return true
   }
 
@@ -150,9 +142,6 @@ const Perfil = () => {
           <Dropzone uploadFunction={handleUploadImage} label='Arrastra la imagen o presiona aqui'/>
         </div>
       </FormModal>
-
-      {/*ProcessBar*/}
-      <ProcessBar progress={progress} setProgress = {setProgress} show={show}/>
     </>
   );
 };

@@ -28,11 +28,11 @@ import {
 import { inputNames } from "../../utils/data/checkboxLabels";
 import { handleChange } from "../../utils/handlers";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Compromiso = () => {
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesCompromisos, setSemanalesCompromisos] = useState([]);
   const [compromisosParametros, setCompromisosParametros] = useState({
@@ -53,11 +53,10 @@ const Compromiso = () => {
     ) {
       getSemanalesCompromisos(compromisosParametros).then((response) => {
         if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
+          sendNotification({
+            type:'ERROR',
+            message: response?.response?.data ?? MENSAJE_ERROR
+          });
         } else {
           setSemanalesCompromisos(response);
         }
@@ -92,21 +91,24 @@ const Compromiso = () => {
     const result = await updateSemalesCompromisos(updatePromedios);
 
     if (result) {
-      alert.showAlert("Promedio Actualizado", "info", 1500);
-
+      sendNotification({
+        type:'OK',
+        message:'Promedio Actualizado'
+      });
       const compromisos = await getSemanalesCompromisos(compromisosParametros);
-
       if (isError(compromisos)) {
-        alert.showAlert(
-          compromisos?.response?.data ?? MENSAJE_ERROR,
-          "warning",
-          1000
-        );
+        sendNotification({
+          type:'ERROR',
+          message: compromisos?.response?.data ?? MENSAJE_ERROR
+        });
       } else {
         setSemanalesCompromisos(compromisos);
       }
     } else {
-      alert.showAlert("No se pudo actualizar", "warning", 1500);
+      sendNotification({
+        type:'ERROR',
+        message:'No se pudo actualizar'
+      });
     }
   };
 
