@@ -16,7 +16,7 @@ import {
 import ComparativoVentas from "../../components/table/ComparativoVentas";
 import BarChart from "../../components/BarChart";
 import { getPresupuestoTienda } from "../../services/PresupuestoService";
-import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
+import { checkboxLabels, inputNames, MENSAJE_ERROR, plazas } from "../../utils/data";
 import {
   getInitialTienda,
   validateMonthRange,
@@ -49,27 +49,31 @@ const Tienda = () => {
     resultadosPesos: 0,
   });
 
+  useEffect(()=>{
+    if(tiendas){
+      setParamTienda(prev => ({...prev, tienda:getInitialTienda(tiendas)}))
+    }
+  },[tiendas])
+
   useEffect(() => {
-    if (
-      validateMonthRange(paramTienda.delMes, paramTienda.alMes) &&
-      validateYear(paramTienda.delAgno)
-    ) {
-      getPresupuestoTienda(paramTienda).then((response) => {
-        if (isError(response)) {
-          sendNotification({
-            type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR
-          });
-        } else {
+    (async()=>{
+      if( validateMonthRange(paramTienda.delMes, paramTienda.alMes) &&  validateYear(paramTienda.delAgno) && tiendas){
+        try {
+          const response = await  getPresupuestoTienda(paramTienda);
           createPresupuestoDatasets(
             response,
             paramTienda.delAgno,
             setLabels,
             setDatasets
           );
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramTienda]);
 

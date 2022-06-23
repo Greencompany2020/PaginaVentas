@@ -57,23 +57,19 @@ const Tiendas = () => {
   });
 
   useEffect(() => {
-    if (
-      validateInputDateRange(
-        tiendasParametros.fechaInicio,
-        tiendasParametros.fechaFin
-      )
-    ) {
-      getSemanalesTiendas(tiendasParametros).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if (validateInputDateRange(tiendasParametros.fechaInicio,tiendasParametros.fechaFin)){
+        try {
+          const response = await getSemanalesTiendas(tiendasParametros);
+          setSemanalesTienda(response)
+        } catch (error) {
           sendNotification({
             type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR
+            message: MENSAJE_ERROR
           });
-        } else {
-          setSemanalesTienda(response);
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tiendasParametros]);
 

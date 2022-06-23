@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   Parameters,
   ParametersContainer,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -42,19 +41,26 @@ const Plaza = () => {
     conTiendasCerradas: 0,
   });
 
+  useEffect(()=>{
+    if(plazas){
+      setParamPlaza(prev => ({...prev, plaza:getInitialPlaza(plazas)}));
+    }
+  },[plazas])
+
   useEffect(() => {
-    if (validateInputDateRange(paramPlaza.fechaInicio, paramPlaza.fechaFin)) {
-      getRangoVentasPlaza(paramPlaza).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if(validateInputDateRange(paramPlaza.fechaInicio, paramPlaza.fechaFin) && plazas){
+        try {
+          const response = await getRangoVentasPlaza(paramPlaza);
+          createRangoVentasDataset(response, setLabels, setDatasets);
+        } catch (error) {
           sendNotification({
             type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR
+            message: MENSAJE_ERROR
           });
-        } else {
-          createRangoVentasDataset(response, setLabels, setDatasets);
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramPlaza]);
 

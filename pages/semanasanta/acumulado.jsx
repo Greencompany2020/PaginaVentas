@@ -61,21 +61,19 @@ const Acumulado = () => {
   );
 
   useEffect(() => {
-    if (
-      validateDate(paramAcumulado.fecha) &&
-      validateYear(paramAcumulado.versusAgno)
-    ) {
-      getSemanaSantaAcumulado(paramAcumulado).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if( validateDate(paramAcumulado.fecha) && validateYear(paramAcumulado.versusAgno)){
+        try {
+          const response = await getSemanaSantaAcumulado(paramAcumulado);
+          setAcumulado(response);
+        } catch (error) {
           sendNotification({
             type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR
+            message: MENSAJE_ERROR
           });
-        } else {
-          setAcumulado(response);
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramAcumulado]);
 

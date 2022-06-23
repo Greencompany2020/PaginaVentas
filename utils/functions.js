@@ -97,13 +97,17 @@ export const validateDate = (date) => {
  * @returns {object[]} El identificador de la tienda
  */
 export const getInitialTienda = (tiendas) => {
-  return `${tiendas[0]?.EmpresaWeb}${tiendas[0]?.NoTienda}`;
+  if(tiendas){
+    return `${tiendas[0]?.EmpresaWeb}${tiendas[0]?.NoTienda}`;
+  }
+  return false;
 }
 /**
  * Obtiene el valor de la plaza que estará por defecto.
  * @returns {number} El identificador de la plaza
  */
 export const getInitialPlaza = (plazas) => {
+  console.log(plazas);
   if(plazas){
     return plazas[0]?.NoEmpresa;
   }

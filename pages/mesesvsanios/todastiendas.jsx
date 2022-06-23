@@ -46,19 +46,26 @@ const TodasTiendas = () => {
     resultadosPesos: 1,
   });
 
+  useEffect(()=>{
+    if(plazas){
+      setParamTiendas(prev => ({...prev, plaza:getInitialPlaza(plazas)}))
+    }
+  },[plazas])
+
   useEffect(() => {
-    if (validateYear(paramTiendas.delAgno)) {
-      getMesesAgnosTodasTiendas(paramTiendas).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if(validateYear(paramTiendas.delAgno) && plazas){
+        try {
+          const response = await getMesesAgnosTodasTiendas(paramTiendas);
+          createMesesAgnosTiendasDataset(response);
+        } catch (error) {
           sendNotification({
             type:'ERROR',
             message:response?.response?.data ?? MENSAJE_ERROR
           });
-        } else {
-          createMesesAgnosTiendasDataset(response);
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramTiendas, paramTiendas.delAgno]);
 

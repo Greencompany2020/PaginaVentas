@@ -47,14 +47,10 @@ const Plazas = () => {
   });
 
   useEffect(() => {
-    if (validateYearRange(plazasParametros.delAgno, plazasParametros.alAgno)) {
-      getAnualesPlazas(plazasParametros).then((response) => {
-        if (isError(response)) {
-          sendNotification({
-            type: 'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR,
-          })
-        } else {
+    (async()=>{
+      if(validateYearRange(plazasParametros.delAgno, plazasParametros.alAgno)){
+        try {
+          const response = await getAnualesPlazas(plazasParametros);
           createDatasets(
             response,
             plazasParametros.delAgno,
@@ -62,9 +58,14 @@ const Plazas = () => {
             setLabels,
             setDatasets
           );
+        } catch (error) {
+          sendNotification({
+            type: 'ERROR',
+            message: MENSAJE_ERROR,
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plazasParametros]);
 

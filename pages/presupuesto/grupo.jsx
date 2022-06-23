@@ -48,26 +48,24 @@ const Grupo = (props) => {
   });
 
   useEffect(() => {
-    if (
-      validateYear(paramGrupo.delAgno) &&
-      validateMonthRange(paramGrupo.delMes, paramGrupo.alMes)
-    ) {
-      getPresupuestoGrupo(paramGrupo).then((response) => {
-        if (isError(response)) {
-          sendNotification({
-            type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR
-          });
-        } else {
+    (async()=>{
+      if(validateYear(paramGrupo.delAgno) && validateMonthRange(paramGrupo.delMes, paramGrupo.alMes)){
+        try {
+          const response = await getPresupuestoGrupo(paramGrupo);
           createPresupuestoDatasets(
             response,
             paramGrupo.delAgno,
             setLabels,
             setDatasets
           );
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramGrupo]);
 

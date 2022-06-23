@@ -37,19 +37,26 @@ const Fechas = () => {
     fechaFin: getBeginEndMonth()[1],
   });
 
+  useEffect(()=>{
+    if(plazas){
+      setParamFechas(prev => ({...prev, plaza:getInitialPlaza(plazas)}));
+    }
+  },[plazas])
+
   useEffect(() => {
-    if (validateInputDateRange(paramFechas.fechaInicio, paramFechas.fechaFin)) {
-      getPresupuestoFechas(paramFechas).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if(validateInputDateRange(paramFechas.fechaInicio, paramFechas.fechaFin) && plazas){
+        try {
+          const response = await getPresupuestoFechas(paramFechas);
+          setPrespuestos(response);
+        } catch (error) {
           sendNotification({
             type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR
+            message: MENSAJE_ERROR
           });
-        } else {
-          setPrespuestos(response);
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramFechas]);
 

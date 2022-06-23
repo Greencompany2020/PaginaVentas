@@ -45,19 +45,26 @@ const Simple = () => {
     conIva: 0,
   });
 
-  useEffect(() => {
-    if (tiendaSimpleParametros.tienda) {
-      getDiariasTiendaSimple(tiendaSimpleParametros).then((response) => {
-        if (isError(response)) {
-          sendNotification({
-            type:'ERROR',
-            message:response?.response?.data ?? MENSAJE_ERROR
-          });
-        } else {
-          setTiendaSimple(response);
-        }
-      });
+  useEffect(()=>{
+    if(tiendas){
+      setTiendaSimpleParametros(prev => ({...prev, tienda:getInitialTienda(tiendas)}));
     }
+  },[tiendas]);
+
+  useEffect(() => {
+      (async ()=>{
+        if(tiendas){
+          try {
+            const response = await getDiariasTiendaSimple(tiendaSimpleParametros);
+            setTiendaSimple(response);
+          } catch (error) {
+            sendNotification({
+              type:'ERROR',
+              message:response?.response?.data ?? MENSAJE_ERROR
+            });
+          }
+        }
+      })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tiendaSimpleParametros, tiendaSimpleParametros.delAgno]);
 
@@ -131,21 +138,29 @@ const Simple = () => {
               </tr>
             </TableHead>
             <tbody className="bg-white text-right">
-              {tiendaSimple?.map((ventas) => (
-                <TableRow key={ventas.dia} rowId={ventas.dia}>
-                  <td className="text-xs font-bold">{ventas.dia}</td>
-                  <td className="text-xs">{ventas.dia}</td>
-                  <td className="text-xs font-bold">
-                    {numberWithCommas(ventas.ventaActual)}
-                  </td>
-                  <td className="text-xs">
-                    {numberWithCommas(ventas.ventaAnterior)}
-                  </td>
-                  <td className="text-xs font-bold">
-                    {numberWithCommas(ventas.acumulado)}
-                  </td>
-                </TableRow>
-              ))}
+              {
+                (()=>{
+                  if(tiendaSimple.length > 0){
+                    const Items = tiendaSimple?.map((ventas) => (
+                      <TableRow key={ventas.dia} rowId={ventas.dia}>
+                        <td className="text-xs font-bold">{ventas.dia}</td>
+                        <td className="text-xs">{ventas.dia}</td>
+                        <td className="text-xs font-bold">
+                          {numberWithCommas(ventas.ventaActual)}
+                        </td>
+                        <td className="text-xs">
+                          {numberWithCommas(ventas.ventaAnterior)}
+                        </td>
+                        <td className="text-xs font-bold">
+                          {numberWithCommas(ventas.acumulado)}
+                        </td>
+                      </TableRow>
+                    ));
+                    return Items;
+                  }
+                  return <></>
+                })()
+              }
             </tbody>
             <tfoot className=" text-white text-center text-xs font-bold">
               <tr>

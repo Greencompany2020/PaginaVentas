@@ -45,26 +45,24 @@ const Grupo = () => {
   });
 
   useEffect(() => {
-    if (
-      validateMonthRange(paramGrupo.delMes, paramGrupo.alMes) &&
-      validateYear(paramGrupo.delAgno)
-    ) {
-      getOperacionesGrupo(paramGrupo).then((response) => {
-        if (isError(response)) {
-          sendNotification({
-            type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR
-          });
-        } else {
+    (async()=>{
+      if(validateMonthRange(paramGrupo.delMes, paramGrupo.alMes) &&  validateYear(paramGrupo.delAgno)){
+        try {
+          const response = await getOperacionesGrupo(paramGrupo);
           createOperacionesDatasets(
             response,
             paramGrupo.delAgno,
             setLabels,
             setDatasets
           );
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramGrupo, paramGrupo.delAgno]);
 

@@ -47,18 +47,19 @@ const Tiendas = () => {
   });
 
   useEffect(() => {
-    if (validateYear(tiendasParametros.alAgno)) {
-      getMensualesTiendas(tiendasParametros).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if(validateYear(tiendasParametros.alAgno)){
+        try {
+          const response = await getMensualesTiendas(tiendasParametros)
+          createSimpleDatasets(response, setLabels, setDatasets);
+        } catch (error) {
           sendNotification({
             type:'ERROR',
             message:response?.response?.data ?? MENSAJE_ERROR
-          })
-        } else {
-          createSimpleDatasets(response, setLabels, setDatasets);
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tiendasParametros, tiendasParametros.alAgno]);
 

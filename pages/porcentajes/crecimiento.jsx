@@ -59,19 +59,20 @@ const Crecimiento = () => {
   }, [paramCrecimiento.fecha]);
 
   useEffect(() => {
-    if (validateDate(paramCrecimiento.fecha)) {
-      getPorcentajeCrecimiento(paramCrecimiento).then((response) => {
-        if (isError(response)) {
-          sendNotification({
-            type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR
-          });
-        } else {
+    (async()=>{
+      if(validateDate(paramCrecimiento.fecha)){
+        try{
+          const response = await getPorcentajeCrecimiento(paramCrecimiento);
           createDateRange();
           setCrecimiento(response);
+        }catch(error){
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramCrecimiento, createDateRange]);
 

@@ -47,19 +47,28 @@ const Plaza = () => {
     resultadosPesos: 0,
   });
 
+  useEffect(()=>{
+    if(plazas){
+      setPlazaParametros(prev => ({...prev, plaza:getInitialPlaza(plazas)}));
+    }
+  },[plazas])
+
   useEffect(() => {
-    getDiariasPlazas(plazaParametros).then((response) => {
-      if (isError(response)) {
-        sendNotification({
-          type:'ERROR',
-          message: response?.response?.data ?? MENSAJE_ERROR,
-        })
-      } else {
-        setDiariasPlaza(response);
+    (async()=>{
+      if(plazas){
+        try {
+          const response = await getDiariasPlazas(plazaParametros);
+          setDiariasPlaza(response);
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR,
+          })
+        }
       }
-    });
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [plazaParametros, plazaParametros.delAgno]);
+  }, [plazaParametros, plazaParametros.delAgno,]);
 
   return (
     <div className=" flex flex-col h-full">
@@ -143,44 +152,50 @@ const Plaza = () => {
               month={plazaParametros.delMes}
             />
             <tbody className="bg-white text-center">
-              {diariasPlaza?.map((diaria) => (
-                <TableRow key={diaria.dia} rowId={diaria.dia}>
-                  <td className="text-right text-xs font-bold">{diaria.dia}</td>
-                  <td className="text-right text-xs">{diaria.dia}</td>
-                  <td className="text-right text-xs font-bold">
-                    {numberWithCommas(diaria.ventaActual)}
-                  </td>
-                  <td className="text-right text-xs">
-                    {numberWithCommas(diaria.ventaAnterior)}
-                  </td>
-                  <td className="text-right text-xs">
-                    {numberWithCommas(diaria.compromisoDiario)}
-                  </td>
-                  {formatNumber(diaria.crecimientoDiario)}
-                  <td className="text-right text-xs font-bold">
-                    {numberWithCommas(diaria.acumMensualActual)}
-                  </td>
-                  <td className="text-right text-xs">
-                    {numberWithCommas(diaria.acumMensualAnterior)}
-                  </td>
-                  <td className="text-right text-xs">
-                    {numberWithCommas(diaria.compromisoAcum)}
-                  </td>
-                  {formatNumber(diaria.diferencia)}
-                  {formatNumber(diaria.crecimientoMensual)}
-                  <td className="text-right text-xs font-bold">
-                    {numberWithCommas(diaria.acumAnualActual)}
-                  </td>
-                  <td className="text-right text-xs">
-                    {numberWithCommas(diaria.acumAnualAnterior)}
-                  </td>
-                  <td className="text-right text-xs">
-                    {numberWithCommas(diaria.compromisoAnual)}
-                  </td>
-                  {formatNumber(diaria.crecimientoAnual)}
-                  <td className="text-right text-xs font-bold">{diaria.dia}</td>
-                </TableRow>
-              ))}
+              {(()=>{
+                if(diariasPlaza.length > 0){
+                  const Items = diariasPlaza?.map((diaria) => (
+                    <TableRow key={diaria.dia} rowId={diaria.dia}>
+                      <td className="text-right text-xs font-bold">{diaria.dia}</td>
+                      <td className="text-right text-xs">{diaria.dia}</td>
+                      <td className="text-right text-xs font-bold">
+                        {numberWithCommas(diaria.ventaActual)}
+                      </td>
+                      <td className="text-right text-xs">
+                        {numberWithCommas(diaria.ventaAnterior)}
+                      </td>
+                      <td className="text-right text-xs">
+                        {numberWithCommas(diaria.compromisoDiario)}
+                      </td>
+                      {formatNumber(diaria.crecimientoDiario)}
+                      <td className="text-right text-xs font-bold">
+                        {numberWithCommas(diaria.acumMensualActual)}
+                      </td>
+                      <td className="text-right text-xs">
+                        {numberWithCommas(diaria.acumMensualAnterior)}
+                      </td>
+                      <td className="text-right text-xs">
+                        {numberWithCommas(diaria.compromisoAcum)}
+                      </td>
+                      {formatNumber(diaria.diferencia)}
+                      {formatNumber(diaria.crecimientoMensual)}
+                      <td className="text-right text-xs font-bold">
+                        {numberWithCommas(diaria.acumAnualActual)}
+                      </td>
+                      <td className="text-right text-xs">
+                        {numberWithCommas(diaria.acumAnualAnterior)}
+                      </td>
+                      <td className="text-right text-xs">
+                        {numberWithCommas(diaria.compromisoAnual)}
+                      </td>
+                      {formatNumber(diaria.crecimientoAnual)}
+                      <td className="text-right text-xs font-bold">{diaria.dia}</td>
+                    </TableRow>
+                  ));
+                return Items
+                }
+                return <></>
+              })()}
             </tbody>
             <VentasDiariasTableFooter
               currentYear={plazaParametros.delAgno}

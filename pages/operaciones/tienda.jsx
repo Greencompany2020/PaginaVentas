@@ -54,22 +54,26 @@ const Tienda = () => {
     resultadosPesos: 0,
   });
 
+  useEffect(()=>{
+    if(tiendas){
+      setParamTienda(prev => ({...prev, tienda:getInitialTienda(tiendas)}))
+    }
+  },[tiendas])
+
   useEffect(() => {
-    if (
-      validateYearRange(paramTienda.delAgno, paramTienda.alAgno) &&
-      validateMonthRange(paramTienda.delMes, paramTienda.alMes)
-    ) {
-      getOperacionesTienda(paramTienda).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if( validateYearRange(paramTienda.delAgno, paramTienda.alAgno) &&  validateMonthRange(paramTienda.delMes, paramTienda.alMes)  && tiendas ){
+        try {
+          const response = await getOperacionesTienda(paramTienda);
+          createOperacionesDatasets(response);
+        } catch (error) {
           sendNotification({
             type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR 
+            message: MENSAJE_ERROR 
           });
-        } else {
-          createOperacionesDatasets(response);
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramTienda, paramTienda.delAgno]);
 

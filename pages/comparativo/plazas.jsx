@@ -43,18 +43,19 @@ const Plazas = () => {
   });
 
   useEffect(() => {
-    if (validateDate(parametrosPlazas.fecha)) {
-      getComparativoPlazas(parametrosPlazas).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if(validateDate(parametrosPlazas.fecha)){
+        try {
+          const response = await getComparativoPlazas(parametrosPlazas);
+          setComparativoPlazas(response);
+        } catch (error) {
           sendNotification({
             type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR,
-          })
-        } else {
-          setComparativoPlazas(response);
+            message: MENSAJE_ERROR,
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parametrosPlazas]);
 

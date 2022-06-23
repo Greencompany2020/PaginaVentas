@@ -59,21 +59,26 @@ const Mensuales = () => {
   const [toggleTienda, setToggleTienda] = useState(true);
   const [togglePlaza, setTogglePlaza] = useState(false);
 
+  useEffect(()=>{
+    if(tiendas && plazas){
+      setParametrosMensuales(prev => ({...prev, tienda:getInitialTienda(tiendas), plaza:getInitialPlaza(plazas)}));
+    }
+  },[tiendas, plazas])
+
   useEffect(() => {
-    if (
-      validateYearRange(parametrosMensuales.delAgno, parametrosMensuales.alAgno)
-    ) {
-      getPorcentajesMensuales(parametrosMensuales).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if(validateYearRange(parametrosMensuales.delAgno, parametrosMensuales.alAgno) && (tiendas && plazas)){
+        try {
+          const response = await getPorcentajesMensuales(parametrosMensuales);
+          setPorcentajesMensuales(response);
+        } catch (error) {
           sendNotification({
             type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR
+            message: error.message ?? MENSAJE_ERROR
           });
-        } else {
-          setPorcentajesMensuales(response);
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parametrosMensuales, parametrosMensuales.delAgno]);
 
@@ -223,136 +228,144 @@ const Mensuales = () => {
               </tr>
             </TableHead>
             <TableBody>
-              {porcentajesMensuales?.map((item, index) => (
-                <TableRow
-                  key={item.agno}
-                  rowId={item.agno}
-                  className=" text-right text-xs"
-                >
-                  <td>{item.agno}</td>
-                  <td>{numberWithCommas(item.enero)}</td>
-                  <td
-                    className={
-                      index !== porcentajesMensuales.length - 1
-                        ? "bg-gray-200"
-                        : ""
-                    }
-                  >
-                    {item.porcentajeEnero}
-                  </td>
-                  <td>{numberWithCommas(item.febrero)}</td>
-                  <td
-                    className={
-                      index !== porcentajesMensuales.length - 1
-                        ? "bg-gray-200"
-                        : ""
-                    }
-                  >
-                    {item.porcentajeFebrero}
-                  </td>
-                  <td>{numberWithCommas(item.marzo)}</td>
-                  <td
-                    className={
-                      index !== porcentajesMensuales.length - 1
-                        ? "bg-gray-200"
-                        : ""
-                    }
-                  >
-                    {item.porcentajeMarzo}
-                  </td>
-                  <td>{numberWithCommas(item.abril)}</td>
-                  <td
-                    className={
-                      index !== porcentajesMensuales.length - 1
-                        ? "bg-gray-200"
-                        : ""
-                    }
-                  >
-                    {item.porcentajeAbril}
-                  </td>
-                  <td>{numberWithCommas(item.mayo)}</td>
-                  <td
-                    className={
-                      index !== porcentajesMensuales.length - 1
-                        ? "bg-gray-200"
-                        : ""
-                    }
-                  >
-                    {item.porcentajeMayo}
-                  </td>
-                  <td>{numberWithCommas(item.junio)}</td>
-                  <td
-                    className={
-                      index !== porcentajesMensuales.length - 1
-                        ? "bg-gray-200"
-                        : ""
-                    }
-                  >
-                    {item.porcentajeJunio}
-                  </td>
-                  <td>{numberWithCommas(item.julio)}</td>
-                  <td
-                    className={
-                      index !== porcentajesMensuales.length - 1
-                        ? "bg-gray-200"
-                        : ""
-                    }
-                  >
-                    {item.porcentajeJulio}
-                  </td>
-                  <td>{numberWithCommas(item.agosto)}</td>
-                  <td
-                    className={
-                      index !== porcentajesMensuales.length - 1
-                        ? "bg-gray-200"
-                        : ""
-                    }
-                  >
-                    {item.porcentajeAgosto}
-                  </td>
-                  <td>{numberWithCommas(item.septiembre)}</td>
-                  <td
-                    className={
-                      index !== porcentajesMensuales.length - 1
-                        ? "bg-gray-200"
-                        : ""
-                    }
-                  >
-                    {item.porcentajeSeptiembre}
-                  </td>
-                  <td>{numberWithCommas(item.octubre)}</td>
-                  <td
-                    className={
-                      index !== porcentajesMensuales.length - 1
-                        ? "bg-gray-200"
-                        : ""
-                    }
-                  >
-                    {item.porcentajeOctubre}
-                  </td>
-                  <td>{numberWithCommas(item.noviembre)}</td>
-                  <td
-                    className={
-                      index !== porcentajesMensuales.length - 1
-                        ? "bg-gray-200"
-                        : ""
-                    }
-                  >
-                    {item.porcentajeNoviembre}
-                  </td>
-                  <td>{numberWithCommas(item.diciembre)}</td>
-                  <td
-                    className={
-                      index !== porcentajesMensuales.length - 1
-                        ? "bg-gray-200"
-                        : ""
-                    }
-                  >
-                    {item.porcentajeDiciembre}
-                  </td>
-                  <td>{numberWithCommas(item.total)}</td>
-                </TableRow>
-              ))}
+              {
+                (()=>{
+                  if(Array.isArray(porcentajesMensuales)){
+                    const Items = porcentajesMensuales?.map((item, index) => (
+                      <TableRow
+                        key={item.agno}
+                        rowId={item.agno}
+                        className=" text-right text-xs"
+                      >
+                        <td>{item.agno}</td>
+                        <td>{numberWithCommas(item.enero)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeEnero}
+                        </td>
+                        <td>{numberWithCommas(item.febrero)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeFebrero}
+                        </td>
+                        <td>{numberWithCommas(item.marzo)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeMarzo}
+                        </td>
+                        <td>{numberWithCommas(item.abril)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeAbril}
+                        </td>
+                        <td>{numberWithCommas(item.mayo)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeMayo}
+                        </td>
+                        <td>{numberWithCommas(item.junio)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeJunio}
+                        </td>
+                        <td>{numberWithCommas(item.julio)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeJulio}
+                        </td>
+                        <td>{numberWithCommas(item.agosto)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeAgosto}
+                        </td>
+                        <td>{numberWithCommas(item.septiembre)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeSeptiembre}
+                        </td>
+                        <td>{numberWithCommas(item.octubre)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeOctubre}
+                        </td>
+                        <td>{numberWithCommas(item.noviembre)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeNoviembre}
+                        </td>
+                        <td>{numberWithCommas(item.diciembre)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeDiciembre}
+                        </td>
+                        <td>{numberWithCommas(item.total)}</td>
+                      </TableRow>
+                    ));
+                    return Items;
+                  }
+                  return <></>
+                })()
+              }
             </TableBody>
           </VentasTable>
         </VentasTableContainer>

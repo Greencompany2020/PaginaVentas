@@ -42,32 +42,31 @@ const Grupo = () => {
   });
 
   useEffect(() => {
-    if (
-      validateYear(paramGrupo.delAgno) &&
-      validateYear(paramGrupo.versusAgno)
-    ) {
-      if (concentrado) {
-        getSemanaSantaGrupoConcentrado(paramGrupo).then((response) => {
-          if (isError(response)) {
+    (async()=>{
+      if( validateYear(paramGrupo.delAgno) && validateYear(paramGrupo.versusAgno)){
+        if(concentrado){
+          try {
+            const response = await getSemanaSantaGrupoConcentrado(paramGrupo);
+            setSemanaSantaGrupo(response);
+          } catch (error) {
             sendNotification({
               type:'ERROR',
-              message: response?.response?.data ?? MENSAJE_ERROR
+              message: MENSAJE_ERROR
             });
-          } else {
-            setSemanaSantaGrupo(response);
           }
-        });
-      } else {
-        getSemanaSantaGrupo(paramGrupo).then((response) => {
-          if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
-          } else {
+        }else{
+          try {
+            const response = await getSemanaSantaGrupo(paramGrupo);
             setSemanaSantaGrupo(response);
+          } catch (error) {
+            sendNotification({
+              type:'ERROR',
+              message: MENSAJE_ERROR
+            });
           }
-        });
+        }
       }
-    }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramGrupo, concentrado]);
 

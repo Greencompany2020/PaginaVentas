@@ -45,23 +45,19 @@ const Compromiso = () => {
   });
 
   useEffect(() => {
-    if (
-      validateInputDateRange(
-        compromisosParametros.fechaInicio,
-        compromisosParametros.fechaFin
-      )
-    ) {
-      getSemanalesCompromisos(compromisosParametros).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if (validateInputDateRange(compromisosParametros.fechaInicio,compromisosParametros.fechaFin)){
+        try {
+          const response = await getSemanalesCompromisos(compromisosParametros);
+          setSemanalesCompromisos(response);
+        } catch (error) {
           sendNotification({
             type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR
+            message: MENSAJE_ERROR
           });
-        } else {
-          setSemanalesCompromisos(response);
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [compromisosParametros]);
 

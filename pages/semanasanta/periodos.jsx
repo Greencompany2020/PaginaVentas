@@ -16,16 +16,17 @@ const Periodos = () => {
   const [periodos, setPeriodos] = useState([]);
 
   useEffect(() => {
-    getSemanaSantaPeriodos().then((response) => {
-      if (isError(response)) {
+    (async()=>{
+      try {
+        const response = await  getSemanaSantaPeriodos();
+        setPeriodos(response);
+      } catch (error) {
         sendNotification({
           type:'ERROR',
           message:response?.response?.data ?? MENSAJE_ERROR
         });
-      } else {
-        setPeriodos(response);
       }
-    });
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

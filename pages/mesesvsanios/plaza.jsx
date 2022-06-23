@@ -61,26 +61,31 @@ const Plaza = () => {
     resultadosPesos: 0,
   });
 
-  useEffect(() => {
-    if (
-      validateYearRange(parametrosPlazas.delAgno, parametrosPlazas.alAgno) &&
-      validateMonthRange(parametrosPlazas.delMes, parametrosPlazas.alMes)
-    ) {
-      getMesesAgnosPlazas(parametrosPlazas).then((response) => {
-        if (isError(response)) {
-          sendNotification({
-            type:'ERROR',
-            message:response?.response?.data ?? MENSAJE_ERROR
-          });
-        } else {
-          createMesesAgnosPlazasDataset(
-            response,
-            parametrosPlazas.delAgno,
-            parametrosPlazas.alAgno
-          );
-        }
-      });
+  useEffect(()=>{
+    if(plazas){
+      setParametrosPlazas(prev => ({...prev, plaza:getInitialPlaza(plazas)}))
     }
+  },[plazas])
+
+  useEffect(() => {
+    (async()=>{
+      if(validateYearRange(parametrosPlazas.delAgno, parametrosPlazas.alAgno) &&
+        validateMonthRange(parametrosPlazas.delMes, parametrosPlazas.alMes) && plazas){
+          try {
+            const response = await getMesesAgnosPlazas(parametrosPlazas);
+            createMesesAgnosPlazasDataset(
+              response,
+              parametrosPlazas.delAgno,
+              parametrosPlazas.alAgno
+            );
+          } catch (error) {
+            sendNotification({
+              type:'ERROR',
+              message:error.message ?? MENSAJE_ERROR
+            });
+          }
+        }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parametrosPlazas, parametrosPlazas.delAgno]);
 

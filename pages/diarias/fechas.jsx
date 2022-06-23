@@ -21,16 +21,17 @@ const Fechas = () => {
   const [fechas, setFechas] = useState([]);
 
   useEffect(() => {
-    getDiariasFechas().then((response) => {
-      if (isError(response)) {
+    (async()=>{
+      try {
+        const response = await getDiariasFechas();
+        setFechas(response);
+      } catch (error) {
         sendNotification({
           type:'ERROR',
           message:response?.response?.data ?? MENSAJE_ERROR,
-        })
-      } else {
-        setFechas(response);
+        });
       }
-    });
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

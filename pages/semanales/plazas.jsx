@@ -50,23 +50,19 @@ const Plazas = () => {
   });
 
   useEffect(() => {
-    if (
-      validateInputDateRange(
-        plazasParametros.fechaInicio,
-        plazasParametros.fechaFin
-      )
-    ) {
-      getSemanalesPlazas(plazasParametros).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if(validateInputDateRange(plazasParametros.fechaInicio,plazasParametros.fechaFin)){
+        try {
+          const response = await getSemanalesPlazas(plazasParametros);
+          setSemanalesPlaza(response)
+        } catch (error) {
           sendNotification({
             type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR
+            message: MENSAJE_ERROR
           });
-        } else {
-          setSemanalesPlaza(response);
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plazasParametros]);
 

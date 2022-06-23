@@ -51,19 +51,10 @@ const PlazasVS = () => {
   });
 
   useEffect(() => {
-    if (
-      validateYearRange(
-        plazasAgnosParametros.delAgno,
-        plazasAgnosParametros.alAgno
-      )
-    ) {
-      getMensualesPlazasAgnos(plazasAgnosParametros).then((response) => {
-        if (isError(response)) {
-          sendNotification({
-            type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR,
-          });
-        } else {
+    (async()=>{
+      if (validateYearRange(plazasAgnosParametros.delAgno,plazasAgnosParametros.alAgno)){
+        try {
+          const response = await getMensualesPlazasAgnos(plazasAgnosParametros);
           createDatasets(
             response,
             plazasAgnosParametros.delAgno,
@@ -71,9 +62,14 @@ const PlazasVS = () => {
             setLabels,
             setDatasets
           );
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR,
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plazasAgnosParametros, plazasAgnosParametros.delAgno]);
 

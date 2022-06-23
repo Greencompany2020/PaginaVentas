@@ -53,18 +53,19 @@ function Grupo() {
   const { dateRangeText } = getBeginCurrentWeekDateRange(parametrosGrupo.fecha);
 
   useEffect(() => {
-    if (validateDate(parametrosGrupo.fecha)) {
-      getComparativoGrupo(parametrosGrupo).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if(validateDate(parametrosGrupo.fecha)){
+        try {
+          const response = await getComparativoGrupo(parametrosGrupo);
+          setComparativoGrupo(response);
+        } catch (error) {
           sendNotification({
             type:'ERROR',
             message:response?.response?.data ?? MENSAJE_ERROR,
-          })
-        } else {
-          setComparativoGrupo(response);
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parametrosGrupo]);
 

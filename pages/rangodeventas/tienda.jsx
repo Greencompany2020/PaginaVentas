@@ -40,19 +40,26 @@ const Tienda = () => {
     rangos: "100,200,300,400,500,600",
   });
 
+  useEffect(()=>{
+    if(tiendas){
+      setParamTienda(prev => ({...prev,tienda: getInitialTienda(tiendas)}));
+    }
+  },[tiendas])
+
   useEffect(() => {
-    if (validateInputDateRange(paramTienda.fechaInicio, paramTienda.fechaFin)) {
-      getRangoVentasTienda(paramTienda).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if(validateInputDateRange(paramTienda.fechaInicio, paramTienda.fechaFin) && tiendas){
+        try {
+          const response = await getRangoVentasTienda(paramTienda);
+          createRangoVentasDataset(response, setLabels, setDatasets);
+        } catch (error) {
           sendNotification({
             type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR
+            message: MENSAJE_ERROR
           });
-        } else {
-          createRangoVentasDataset(response, setLabels, setDatasets);
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramTienda]);
 

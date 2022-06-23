@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import {
   VentasTableContainer,
@@ -39,18 +38,19 @@ const Concentrado = () => {
   });
 
   useEffect(() => {
-    if (concentradoParametros.delAgno.toString().length === 4) {
-      getMensualesConcentrado(concentradoParametros).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if (concentradoParametros.delAgno.toString().length === 4) {
+        try {
+          const response = await getMensualesConcentrado(concentradoParametros);
+          setConcentrado(response);
+        } catch (error) {
           sendNotification({
             type:'ERROR',
             message:response?.response?.data ?? MENSAJE_ERROR,
           });
-        } else {
-          setConcentrado(response);
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [concentradoParametros, ParametersContainer.delAgno]);
 

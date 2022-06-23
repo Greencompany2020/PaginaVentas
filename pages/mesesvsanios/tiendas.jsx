@@ -14,7 +14,7 @@ import {
   InputYear,
   Checkbox,
 } from "../../components/inputs";
-import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
+import { checkboxLabels, inputNames, MENSAJE_ERROR, plazas } from "../../utils/data";
 import {
   calculateCrecimiento,
   getInitialTienda,
@@ -55,26 +55,31 @@ const Tiendas = () => {
     conIva: 0,
   });
 
-  useEffect(() => {
-    if (
-      validateMonthRange(parametrosTiendas.delMes, parametrosTiendas.alMes) &&
-      validateYearRange(parametrosTiendas.delAgno, parametrosTiendas.alAgno)
-    ) {
-      getMesesAgnosTiendas(parametrosTiendas).then((response) => {
-        if (isError(response)) {
-          sendNotification({
-            type:'ERROR',
-            message:response?.response?.data ?? MENSAJE_ERROR
-          });
-        } else {
-          createMesesAgnosTiendasDataset(
-            response,
-            parametrosTiendas.delAgno,
-            parametrosTiendas.alAgno
-          );
-        }
-      });
+  useEffect(()=>{
+    if(tiendas){
+      setParametrosTiendas(prev => ({...prev, tienda:getInitialTienda(tiendas)}))
     }
+  },[tiendas])
+
+  useEffect(() => {
+    (async()=>{
+      if(validateMonthRange(parametrosTiendas.delMes, parametrosTiendas.alMes) &&
+        validateYearRange(parametrosTiendas.delAgno, parametrosTiendas.alAgno) && tiendas){
+          try {
+            const response = await getMesesAgnosTiendas(parametrosTiendas);
+            createMesesAgnosTiendasDataset(
+              response,
+              parametrosTiendas.delAgno,
+              parametrosTiendas.alAgno
+            );
+          } catch (error) {
+            sendNotification({
+              type:'ERROR',
+              message:response?.response?.data ?? MENSAJE_ERROR
+            });
+          }
+        }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parametrosTiendas, parametrosTiendas.delAgno]);
 

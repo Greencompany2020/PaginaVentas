@@ -42,18 +42,19 @@ const Participacion = () => {
   });
 
   useEffect(() => {
-    if (validateYear(parametrosParticipacion.alAgno)) {
-      getPorcenatajesParticipacion(parametrosParticipacion).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if(validateYear(parametrosParticipacion.alAgno)){
+        try{
+          const response = await getPorcenatajesParticipacion(parametrosParticipacion);
+          setParticipacionVentas(response);
+        }catch(error){
           sendNotification({
             type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR
-          })
-        } else {
-          setParticipacionVentas(response);
+            message: MENSAJE_ERROR
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [parametrosParticipacion, parametrosParticipacion.alAgno]);
 

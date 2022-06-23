@@ -44,18 +44,19 @@ const Tienda = () => {
   });
 
   useEffect(() => {
-    if (tiendasParametros.alAgno.toString().length === 4) {
-      getAnualesTiendas(tiendasParametros).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if(tiendasParametros.alAgno.toString().length === 4){
+        try {
+          const response = await getAnualesTiendas(tiendasParametros);
+          createSimpleDatasets(response, setLabels, setDatasets);
+        } catch (error) {
           sendNotification({
             type:'ERROR',
             mesagge: response?.response?.data ?? MENSAJE_ERROR,
-          })
-        } else {
-          createSimpleDatasets(response, setLabels, setDatasets);
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tiendasParametros]);
 

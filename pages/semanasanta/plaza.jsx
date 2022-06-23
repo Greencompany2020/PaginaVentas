@@ -39,19 +39,26 @@ const Plaza = () => {
     resultadosPesos: 1,
   });
 
+  useEffect(()=>{
+    if(plazas){
+      setParamPlaza(prev => ({...prev, plaza:getInitialPlaza(plazas)}));
+    }
+  },[plazas])
+
   useEffect(() => {
-    if (validateYear(paramPlaza.delAgno)) {
-      getSemanaSantaPlazas(paramPlaza).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if(validateYear(paramPlaza.delAgno) && plazas){
+        try {
+          const response = await getSemanaSantaPlazas(paramPlaza);
+          setSemanaSantaPlazas(response);
+        } catch (error) {
           sendNotification({
             type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR
+            message: MENSAJE_ERROR
           });
-        } else {
-          setSemanaSantaPlazas(response);
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramPlaza]);
 

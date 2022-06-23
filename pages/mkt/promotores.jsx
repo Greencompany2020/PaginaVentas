@@ -51,21 +51,19 @@ const Promotores = () => {
   });
 
   useEffect(() => {
-    if (
-      validateMonthRange(paramPromotores.delMes, paramPromotores.alMes) &&
-      validateYear(paramPromotores.delAgno)
-    ) {
-      getPromotores(paramPromotores).then((response) => {
-        if (isError(response)) {
+    (async()=>{
+      if( validateMonthRange(paramPromotores.delMes, paramPromotores.alMes) &&  validateYear(paramPromotores.delAgno)){
+        try {
+          const response = await getPromotores(paramPromotores);
+          setPromotores(response);
+        } catch (error) {
           sendNotification({
             type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR
+            message: MENSAJE_ERROR
           });
-        } else {
-          setPromotores(response);
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramPromotores, paramPromotores.delAgno]);
 

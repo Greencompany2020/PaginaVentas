@@ -50,27 +50,31 @@ const Plaza = () => {
     resultadosPesos: 0,
   });
 
+  useEffect(()=>{
+    if(plazas){
+      setParamPlazas(prev => ({...prev, plaza:getInitialPlaza(plazas)}))
+    }
+  },[plazas])
+
   useEffect(() => {
-    if (
-      validateYear(paramPlazas.delAgno) &&
-      validateMonthRange(paramPlazas.delMes, paramPlazas.alMes)
-    ) {
-      getPresupuestoPlazas(paramPlazas).then((response) => {
-        if (isError(response)) {
-          sendNotification({
-            type:'ERROR',
-            message: response?.response?.data ?? MENSAJE_ERROR
-          });
-        } else {
+    (async()=>{
+      if( validateYear(paramPlazas.delAgno) &&  validateMonthRange(paramPlazas.delMes, paramPlazas.alMes) && plazas){
+        try {
+          const response = await getPresupuestoPlazas(paramPlazas);
           createPresupuestoDatasets(
             response,
             paramPlazas.delAgno,
             setLabels,
             setDatasets
           );
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramPlazas]);
 

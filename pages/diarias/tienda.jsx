@@ -46,17 +46,26 @@ const Tienda = () => {
     resultadosPesos: 0,
   });
 
+  useEffect(()=>{
+    if(tiendas){
+      setTiendaParametros(prev => ({...prev, tienda:getInitialTienda(tiendas)}))
+    }
+  },[tiendas])
+
   useEffect(() => {
-    getDiariasTienda(tiendasParametros).then((response) => {
-      if (isError(response)) {
-        sendNotification({
-          type:'ERROR',
-          message: response?.response?.data ?? MENSAJE_ERROR,
-        });
-      } else {
-        setDiariasTienda(response);
+    (async()=>{
+      if(tiendas){
+        try {
+          const response = await getDiariasTienda(tiendasParametros)
+          setDiariasTienda(response)
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR,
+          });
+        }
       }
-    });
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tiendasParametros, tiendasParametros.delAgno]);
 
