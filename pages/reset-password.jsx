@@ -6,19 +6,18 @@ import Link from "next/link";
 import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import Logo from "../public/images/green-company.png";
-import { MessageModal } from "../components/modals";
-import useMessageModal from "../hooks/useMessageModal";
 import useToggle from "../hooks/useToggle";
 import LoaderComponentBas from "../components/LoaderComponentBas";
 import userService from '../services/userServices';
+import {useNotification} from'../components/notifications/NotificationsProvider'
 
 export default function RestorePassword() {
   const router = useRouter();
   const service = userService();
-  const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
   const [isLoading, setLoading] = useToggle(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const sendNotification = useNotification();
 
   const validationSchema = Yup.object().shape({
     password: Yup.string()
@@ -36,19 +35,37 @@ export default function RestorePassword() {
   };
 
   const sendNewPassword = async (values) => {
-    const body = { password: values.password };
-    if (!router.query?.resetToken) return false;
-    const { resetToken } = router.query;
-    setLoading(false);
-    const response = await service.resetPassword(body, resetToken);
-    setLoading(false);
-    const mesage = response
-      ? "Su contraseña ha sido cambiada"
-      : "No se pudo restablecer su contraseña";
-    setMessage(mesage);
-    setModalOpen(true);
-    if (response) window.location.href = "/";
-  };
+    if(router.query?.resetToken){
+      setLoading();
+      const { resetToken } = router.query;
+      const body = { password: values.password };
+      try {
+        const response = await service.resetPassword(body, resetToken);
+        sendNotification({
+          type:'OK',
+          message:'Se ha restablecido su contraseña'
+        });
+        awaitToRedirect();
+      } catch (error) {
+        sendNotification({
+          type:'ERROR',
+          message:'upps no se ha podido restablecer su contraseña'
+        });
+      }
+      setLoading();
+    }else{
+      sendNotification({
+        type:'ERROR',
+        message: 'No puede restablecer su cantraseña sin token'
+      })
+    }
+  }
+
+  const awaitToRedirect = () =>{
+    setTimeout(() => {
+      router.push('/');
+    }, 2000);
+  }
 
   const handleSubmit = (values) => sendNewPassword(values);
   const handleShowPassword = () => setShowPassword(!showPassword);
@@ -56,7 +73,6 @@ export default function RestorePassword() {
 
   return (
     <>
-      <MessageModal />
       <div className="w-screen h-screen grid place-items-center p-3 bg-cyan-600">
         <div className="flex flex-col  p-4  rounded-md bg-gray-200">
           <div className=" w-2/3 m-auto mb-4">
@@ -101,7 +117,7 @@ export default function RestorePassword() {
                       ) : (
                         <EyeIcon
                           width={32}
-                          className="text-blue-500 hover:cursor-pointer"
+                          className="text-gray-400 hover:cursor-pointer"
                           onClick={handleShowPassword}
                         />
                       )}
@@ -137,7 +153,7 @@ export default function RestorePassword() {
                       ) : (
                         <EyeIcon
                           width={32}
-                          className="text-blue-500 hover:cursor-pointer"
+                          className="text-gray-400 hover:cursor-pointer"
                           onClick={handleShowConfirm}
                         />
                       )}
