@@ -5,7 +5,7 @@ import { getVentasLayout } from '../components/layout/VentasLayout';
 
 const  Unauthorized = () => {
     return(
-        <div className="w-full grid place-items-center  overflow-hidden">
+        <div className="w-full h-full grid place-items-center  overflow-hidden">
             <Image src={ unauthorizeImage} className=" object-contain"/>
         </div>
     )
