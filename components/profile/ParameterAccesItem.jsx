@@ -28,7 +28,20 @@ export default function ParameterAccesItem(props) {
         } 
     }
 
-    const handleSubmit = async evt =>{
+    const handleSubmit = async values =>{
+        try {
+
+            await service.setAccessParameter(idAccess, values);
+            sendNotification({
+                type: 'OK',
+                message: 'Preferencias guardadas'
+            })
+        } catch (error) {
+            sendNotification({
+                type: 'OK',
+                message: 'Error al guardar preferencias'
+            })
+        }
     }
 
     useEffect(()=>{
