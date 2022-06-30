@@ -38,7 +38,6 @@ export default function ParameterForm({submit, savedParameters, onlySelect = tru
 
     return(
             <form className='p-4' onSubmit={handleOnSubmit}>
-                {console.log(onlySelect && includedParameters?.[inputNames.CON_IVA] != 'Y')}
                 <div className='space-y-1'>
                     <Checkbox 
                         name={inputNames.CON_IVA}  

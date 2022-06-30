@@ -15,7 +15,6 @@ export default function ParameterContainers(props) {
                 const onlyEnables = response.filter(item => item.Enabled === 'Y');
                 setAccess(onlyEnables);
             } catch (error) {
-                console.log(error);
                 sendNotification({
                     type:'ERROR',
                     message:'Error al consultar sus accesos'

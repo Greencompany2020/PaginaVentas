@@ -106,8 +106,7 @@ export const getInitialTienda = (tiendas) => {
  * Obtiene el valor de la plaza que estará por defecto.
  * @returns {number} El identificador de la plaza
  */
-export const getInitialPlaza = (plazas) => {
-  console.log(plazas);
+export const getInitialPlaza = (plazas) => {;
   if(plazas){
     return plazas[0]?.NoEmpresa;
   }

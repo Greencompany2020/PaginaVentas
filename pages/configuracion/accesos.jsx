@@ -32,7 +32,6 @@ const Access = (props) => {
                 data: item,
                 parameters: response,
             })
-            console.log(selectedAccess.parameters);
         } catch (error) {
             
         }
@@ -40,7 +39,6 @@ const Access = (props) => {
 
     const handleAddButton = () =>{
         setSelectedAccess({data: undefined, parameters:undefined});
-        console.log(selectedAccess);
         setShowModal();
     }
 
