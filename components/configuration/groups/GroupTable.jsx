@@ -2,7 +2,7 @@ import React from "react";
 import { TrashIcon, PencilAltIcon } from "@heroicons/react/outline";
 
 export default function GroupTable(props) {
-  const { items, handleModalContent, handleDeleteGroup } = props;
+  const { items, handleSelect,handleShowModal, deleteGroup } = props;
 
   return (
     <div className="h-[500px] overflow-y-auto">
@@ -17,20 +17,18 @@ export default function GroupTable(props) {
         </thead>
         <tbody>
           {items.map((item, index) => (
-            <tr key={item.Id + index} className="cursor-pointer">
+            <tr key={item.Id} className="cursor-pointer" onClick={() => handleSelect(item)}>
               <td>{item.Nombre}</td>
               <td className="flex justify-end space-x-1">
                 <PencilAltIcon
                   width={32}
                   className="cursor-pointer hover:text-blue-500"
-                  onClick={() => {
-                    handleModalContent("updateGroup", "Editar Grupo", item);
-                  }}
+                  onClick={handleShowModal}
                 />
                 <TrashIcon
                   width={32}
                   className="cursor-pointer hover:text-blue-500"
-                  onClick={() => handleDeleteGroup(item.Id)}
+                  onClick={() => deleteGroup(item.Id)}
                 />
               </td>
             </tr>

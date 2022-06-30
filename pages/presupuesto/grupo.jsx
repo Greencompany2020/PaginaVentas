@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   Parameters,
   ParametersContainer,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -22,7 +21,6 @@ import {
   validateMonthRange,
   validateYear,
   createPresupuestoDatasets,
-  isError,
 } from "../../utils/functions";
 import useGraphData from "../../hooks/useGraphData";
 import { getPresupuestoGrupo } from "../../services/PresupuestoService";
@@ -31,6 +29,7 @@ import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Grupo = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramGrupo, setParamGrupo] = useState({
@@ -46,6 +45,19 @@ const Grupo = (props) => {
     conTiendasCerradas: 0,
     resultadosPesos: 0,
   });
+
+  useEffect(()=>{
+    setParamGrupo(prev => ({
+      ...prev,
+      acumulado: config?.acumulado || 0,
+      total: config?.total || 0,
+      conIva: config?.conIva || 0,
+      porcentajeVentasCompromiso: config?.porcentajeVentasCompromiso || 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradas || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }))
+  },[config])
 
   useEffect(() => {
     (async()=>{
@@ -96,14 +108,14 @@ const Grupo = (props) => {
                   handleChange(e, setParamGrupo);
                 }}
               />
-            </InputContainer>
-            <InputContainer>
-              <SelectTiendasGeneral
+               <SelectTiendasGeneral
                 value={paramGrupo.tiendas}
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
               />
+            </InputContainer>
+            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.ACUMULATIVA}
@@ -111,6 +123,7 @@ const Grupo = (props) => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.acumulado}
               />
               <Checkbox
                 className="mb-3"
@@ -119,6 +132,7 @@ const Grupo = (props) => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.total}
               />
               <Checkbox
                 className="mb-3"
@@ -127,9 +141,8 @@ const Grupo = (props) => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.conIva}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.PORCENTAJE_VENTAS_VS_COMPROMISO}
@@ -137,6 +150,7 @@ const Grupo = (props) => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.porcentajeVentasCompromiso}
               />
               <Checkbox
                 className="mb-3"
@@ -145,6 +159,7 @@ const Grupo = (props) => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.conVentasEventos}
               />
               <Checkbox
                 className="mb-3"
@@ -153,6 +168,7 @@ const Grupo = (props) => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.conTiendasCerradas}
               />
               <Checkbox
                 className="mb-3"
@@ -161,6 +177,7 @@ const Grupo = (props) => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.resultadosPesos}
               />
             </InputContainer>
           </Parameters>

@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   Parameters,
   ParametersContainer,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -22,7 +21,6 @@ import {
   getPlazaName,
   validateMonthRange,
   validateYear,
-  isError,
 } from "../../utils/functions";
 import { getCurrentMonth, getCurrentYear } from "../../utils/dateFunctions";
 import { handleChange } from "../../utils/handlers";
@@ -33,7 +31,8 @@ import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Plaza = () => {
+const Plaza = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const { plazas } = useAuth();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
@@ -53,9 +52,19 @@ const Plaza = () => {
 
   useEffect(()=>{
     if(plazas){
-      setParamPlaza(prev => ({...prev, plaza:getInitialPlaza(plazas)}))
+      setParamPlaza(prev => ({
+        ...prev, 
+        plaza:getInitialPlaza(plazas),
+        promedio: config?.promedio || 0,
+        acumulado: config?.acumulado || 0,
+        conIva: config?.conIva || 0,
+        ventasMilesDlls: config?.ventasMilesDlls || 0,
+        conVentasEventos: config?.conVentasEventos || 0,
+        conTiendasCerradas: config?.conTiendasCerradas || 0,
+        resultadosPesos: config?.resultadosPesos || 0,
+      }))
     }
-  },[plazas])
+  },[plazas, config])
 
   useEffect(() => {
     (async()=>{
@@ -124,6 +133,7 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
                 }}
+                checked={paramPlaza.promedio}
               />
               <Checkbox
                 className="mb-3"
@@ -132,6 +142,7 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
                 }}
+                checked={paramPlaza.acumulado}
               />
               <Checkbox
                 className="mb-3"
@@ -140,16 +151,16 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
                 }}
+                checked={paramPlaza.conIva}
               />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
+               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.OPERACIONES_EN_MILES}
                 name={inputNames.VENTAS_MILES_DLLS}
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
                 }}
+                checked={paramPlaza.ventasMilesDlls}
               />
               <Checkbox
                 className="mb-3"
@@ -158,6 +169,7 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
                 }}
+                checked={paramPlaza.conVentasEventos}
               />
               <Checkbox
                 className="mb-3"
@@ -166,13 +178,7 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
                 }}
-              />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
-                className="mb-3"
-                labelText={checkboxLabels.DETALLADO_POR_TIENDA}
-                onChange={(e) => {}}
+                checked={paramPlaza.conTiendasCerradas}
               />
               <Checkbox
                 className="mb-3"
@@ -181,6 +187,7 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
                 }}
+                checked={paramPlaza.resultadosPesos}
               />
             </InputContainer>
           </Parameters>

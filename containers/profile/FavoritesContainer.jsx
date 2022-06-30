@@ -16,7 +16,7 @@ export default function FavoritesContainer(props) {
            } catch (error) {
             sendNotification({
                 type:'ERROR',
-                message:error.message,
+                message:'Error al consultar sus accesos',
             });
            }
         })()
@@ -40,11 +40,9 @@ export default function FavoritesContainer(props) {
     }
 
     return (
-        <div className=''>
-            <FavoriteList 
-                items={favorites}
-                setFavorite={setFavorite}
-            /> 
-        </div>
+        <FavoriteList 
+            items={favorites}
+            setFavorite={setFavorite}
+        /> 
     )
 }

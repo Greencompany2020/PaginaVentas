@@ -24,7 +24,8 @@ import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Plaza = () => {
+const Plaza = (props) => {
+  const {config}  = props;
   const sendNotification = useNotification();
   const { plazas } = useAuth();
   const [semanaSantaPlazas, setSemanaSantaPlazas] = useState({});
@@ -41,9 +42,16 @@ const Plaza = () => {
 
   useEffect(()=>{
     if(plazas){
-      setParamPlaza(prev => ({...prev, plaza:getInitialPlaza(plazas)}));
+      setParamPlaza(prev => ({
+        ...prev, plaza:getInitialPlaza(plazas),
+        conIva: config?.conIva || 0,
+        conVentasEventos: config?.conVentasEventos || 0,
+        conTiendasCerradas: config?.conTiendasCerradas || 0,
+        incluirFinSemanaAnterior: config?.incluirFinSemanaAnterior || 0,
+        resultadosPesos: config?.resultadosPesosa || 0,
+      }));
     }
-  },[plazas])
+  },[plazas, config])
 
   useEffect(() => {
     (async()=>{
@@ -95,6 +103,7 @@ const Plaza = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={paramPlaza.conIva}
                 name={inputNames.CON_IVA}
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
@@ -103,6 +112,7 @@ const Plaza = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={paramPlaza.conVentasEventos}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
@@ -111,13 +121,12 @@ const Plaza = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={paramPlaza.conTiendasCerradas}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
                 }}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_FIN_DE_SEMANA_ANTERIOR}

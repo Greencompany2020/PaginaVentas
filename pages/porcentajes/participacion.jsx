@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -23,12 +22,13 @@ import { getCurrentYear } from "../../utils/dateFunctions";
 import { handleChange } from "../../utils/handlers";
 import { numberWithCommas } from "../../utils/resultsFormated";
 import { getPorcenatajesParticipacion } from "../../services/PorcentajesService";
-import { isError, validateYear } from "../../utils/functions";
+import { validateYear } from "../../utils/functions";
 import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Participacion = () => {
+const Participacion = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const [participacionVentas, setParticipacionVentas] = useState([]);
   const [parametrosParticipacion, setParametrosParticipacion] = useState({
@@ -40,6 +40,18 @@ const Participacion = () => {
     sinTiendasSuspendidas: 1,
     resultadosPesos: 0,
   });
+
+  useEffect(()=>{
+    setParametrosParticipacion(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradas|| 0,
+      sinTiendasSuspendidas: config?.sinTiendasSuspendidas || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }));
+    
+  },[config])
 
   useEffect(() => {
     (async()=>{
@@ -81,35 +93,35 @@ const Participacion = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={parametrosParticipacion.conIva ? true : false}
                 name={inputNames.CON_IVA}
                 onChange={(e) => handleChange(e, setParametrosParticipacion)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={parametrosParticipacion.conVentasEventos ? true : false}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setParametrosParticipacion)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={parametrosParticipacion.conTiendasCerradas ? true : false}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 onChange={(e) => handleChange(e, setParametrosParticipacion)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
                 name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
-                checked={
-                  parametrosParticipacion.sinTiendasSuspendidas ? true : false
-                }
+                checked={parametrosParticipacion.sinTiendasSuspendidas ? true : false}
                 onChange={(e) => handleChange(e, setParametrosParticipacion)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.RESULTADO_PESOS}
+                checked={parametrosParticipacion.resultadosPesos ? true : false}
                 name={inputNames.RESULTADOS_PESOS}
                 onChange={(e) => handleChange(e, setParametrosParticipacion)}
               />

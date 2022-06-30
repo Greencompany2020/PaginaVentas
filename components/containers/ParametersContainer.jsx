@@ -44,7 +44,7 @@ const ParametersContainer = ({ children }) => {
         </div>
 
         <div
-          className={`absolute w-[20rem] h-[30rem] left-0 top-11 bg-slate-200 rounded-md ${
+          className={`absolute w-[24rem] h-min[24rem] h-[28rem] left-0 top-11 bg-slate-200 rounded-md ${
             !toggle && "hidden"
           }`}
           ref={container}

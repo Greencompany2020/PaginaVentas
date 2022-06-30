@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import {
   VentasTableContainer,
@@ -24,7 +23,6 @@ import {
   getInitialTienda,
   getLastTwoNumbers,
   getTiendaName,
-  isError,
 } from "../../utils/functions";
 import { numberWithCommas } from "../../utils/resultsFormated";
 import { getMonthByNumber } from "../../utils/dateFunctions";
@@ -34,7 +32,8 @@ import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import {useNotification} from '../../components/notifications/NotificationsProvider';
 
-const Simple = () => {
+const Simple = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const { tiendas } = useAuth();
   const [tiendaSimple, setTiendaSimple] = useState([]);
@@ -47,9 +46,12 @@ const Simple = () => {
 
   useEffect(()=>{
     if(tiendas){
-      setTiendaSimpleParametros(prev => ({...prev, tienda:getInitialTienda(tiendas)}));
+      setTiendaSimpleParametros(prev => ({...prev, 
+        tienda:getInitialTienda(tiendas),
+        conIva: config.conIva || 0,
+      }));
     }
-  },[tiendas]);
+  },[tiendas, config]);
 
   useEffect(() => {
       (async ()=>{
@@ -96,6 +98,7 @@ const Simple = () => {
               <Checkbox
                 className="mb-2"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={tiendaSimpleParametros.conIva ? true : false}
                 name="conIva"
                 onChange={(e) => handleChange(e, setTiendaSimpleParametros)}
               />

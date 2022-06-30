@@ -1,6 +1,5 @@
 import { useState, useEffect, Fragment } from "react";
 import {
-  SmallContainer,
   ParametersContainer,
   Parameters,
 } from "../../components/containers";
@@ -31,7 +30,6 @@ import {
   validateYear,
   getTableName,
   dateRangeTitleSemanaSanta,
-  isError,
 } from "../../utils/functions";
 import { handleChange } from "../../utils/handlers";
 import { getSemanaSantaAcumulado } from "../../services/semanaSantaService";
@@ -40,7 +38,8 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Acumulado = () => {
+const Acumulado = (props) => {
+  const {config} = props;
   const sendNotification = useNotification;
   const [fechaInicioSemana, setFechaInicioSemana] = useState(
     semanaSanta(getCurrentYear())[0]
@@ -59,6 +58,18 @@ const Acumulado = () => {
   const [finSemana, setFinSemana] = useState(
     paramAcumulado.incluirFinSemanaAnterior ? true : false
   );
+
+  useEffect(()=>{
+    setParamAcumulado(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      porcentajeVentasCompromiso: config?.porcentajeVentasCompromiso || 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradas || 0,
+      incluirFinSemanaAnterior: config?.incluirFinSemanaAnterior || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }))
+  },[config])
 
   useEffect(() => {
     (async()=>{
@@ -111,14 +122,15 @@ const Acumulado = () => {
                 value={paramAcumulado.versusAgno}
                 onChange={(e) => handleChange(e, setParamAcumulado)}
               />
+            </InputContainer>
+            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
                 name={inputNames.CON_IVA}
+                checked={paramAcumulado.conIva ? true : false}
                 onChange={(e) => handleChange(e, setParamAcumulado)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.PORCENTAJE_VENTAS_VS_LOGRO}
@@ -130,16 +142,16 @@ const Acumulado = () => {
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
                 name={inputNames.CON_VENTAS_EVENTOS}
+                checked={paramAcumulado.conVentasEventos ? true : false}
                 onChange={(e) => handleChange(e, setParamAcumulado)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
                 name={inputNames.CON_TIENDAS_CERRADAS}
+                checked={paramAcumulado.conTiendasCerradas ? true : false}
                 onChange={(e) => handleChange(e, setParamAcumulado)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_FIN_DE_SEMANA_ANTERIOR}

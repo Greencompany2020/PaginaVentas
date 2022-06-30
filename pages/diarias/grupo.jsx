@@ -29,13 +29,14 @@ import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Grupo = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const [parametrosConsulta, setParametrosConsulta] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
     tiendas: 0,
     conIva: 0,
-    semanaSanta: 1,
+    semanaSanta: 0,
     conVentasEventos: 0,
     conTiendasCerradas: 0,
     sinAgnoVenta: 0,
@@ -44,6 +45,19 @@ const Grupo = (props) => {
   });
 
   const [diariasGrupo, setDiariasGrupo] = useState([]);
+
+  useEffect(()=>{
+    setParametrosConsulta(prev => ({
+      ...prev,
+      conIva:config?.conIva || 0,
+      semanaSanta: config?.semanaSanta|| 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradas || 0,
+      sinAgnoVenta: config?.sinAgnoVenta || 0,
+      sinTiendasSuspendidas:config?.sinTiendasSuspendidas || 0,
+      resultadosPesos:config?.resultadosPesos || 0,
+    }))
+  },[config])
 
   useEffect(() => {
     (async () => {
@@ -86,6 +100,7 @@ const Grupo = (props) => {
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
                 name={inputNames.CON_IVA}
+                checked={parametrosConsulta.conIva ? true : false}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
               <Checkbox
@@ -99,33 +114,34 @@ const Grupo = (props) => {
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
                 name={inputNames.CON_VENTAS_EVENTOS}
+                checked={parametrosConsulta.conVentasEventos ? true : false}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
+               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
                 name={inputNames.CON_TIENDAS_CERRADAS}
+                checked={parametrosConsulta.conTiendasCerradas ? true : false}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
                 name={inputNames.SIN_AGNO_VENTA}
+                checked={parametrosConsulta.sinAgnoVenta ? true : false}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
                 name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
+                checked={parametrosConsulta.sinTiendasSuspendidas ? true : false}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
               <Checkbox
                 labelText={checkboxLabels.RESULTADO_PESOS}
                 name={inputNames.RESULTADOS_PESOS}
+                checked={parametrosConsulta.resultadosPesos ? true : false}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
             </InputContainer>

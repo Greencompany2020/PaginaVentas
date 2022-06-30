@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -27,7 +26,6 @@ import { inputNames } from "../../utils/data/checkboxLabels";
 import { getMensualesPlazasAgnos } from "../../services/MensualesServices";
 import {
   createDatasets,
-  isError,
   validateYearRange,
 } from "../../utils/functions";
 import useGraphData from "../../hooks/useGraphData";
@@ -36,7 +34,8 @@ import TitleReport from "../../components/TitleReport";
 import ComparativoVentas from "../../components/table/ComparativoVentas";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const PlazasVS = () => {
+const PlazasVS = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
   const [plazasAgnosParametros, setPlazasAgnosParametros] = useState({
@@ -49,6 +48,16 @@ const PlazasVS = () => {
     conTiendasCerradas: 0,
     resultadosPesos: 1,
   });
+
+  useEffect(()=>{
+    setPlazasAgnosParametros(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      conVentasEventos:config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradas || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }))
+  },[config])
 
   useEffect(() => {
     (async()=>{
@@ -108,20 +117,21 @@ const PlazasVS = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={plazasAgnosParametros.conIva ? true : false}
                 name={inputNames.CON_IVA}
                 onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={plazasAgnosParametros.conVentasEventos ? true : false}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
               />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
+               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={plazasAgnosParametros.conTiendasCerradas ? true : false}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
               />

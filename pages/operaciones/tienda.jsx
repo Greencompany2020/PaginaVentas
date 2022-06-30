@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Parameters,
   ParametersContainer,
-  SmallContainer,
 } from "../../components/containers";
 import {
   Checkbox,
@@ -27,7 +26,6 @@ import { getCurrentMonth, getCurrentYear } from "../../utils/dateFunctions";
 import {
   getInitialTienda,
   getTiendaName,
-  isError,
   validateMonthRange,
   validateYearRange,
 } from "../../utils/functions";
@@ -38,7 +36,8 @@ import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Tienda = () => {
+const Tienda = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const { tiendas } = useAuth();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
@@ -56,9 +55,16 @@ const Tienda = () => {
 
   useEffect(()=>{
     if(tiendas){
-      setParamTienda(prev => ({...prev, tienda:getInitialTienda(tiendas)}))
+      setParamTienda(prev => ({
+        ...prev, 
+        tienda:getInitialTienda(tiendas),
+        promedio: config?.promedio || 0,
+        acumulado: config?.acumulado || 0,
+        conIva: config?.conIva || 0,
+        resultadosPesos: config?.resultadosPesos || 0,
+      }))
     }
-  },[tiendas])
+  },[tiendas, config])
 
   useEffect(() => {
     (async()=>{
@@ -174,6 +180,8 @@ const Tienda = () => {
                   handleChange(e, setParamTienda);
                 }}
               />
+            </InputContainer>
+            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.PROMEDIO}
@@ -181,9 +189,8 @@ const Tienda = () => {
                 onChange={(e) => {
                   handleChange(e, setParamTienda);
                 }}
+                checked={paramTienda.promedio}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_ACUMULADO}
@@ -191,6 +198,7 @@ const Tienda = () => {
                 onChange={(e) => {
                   handleChange(e, setParamTienda);
                 }}
+                checked={paramTienda.acumulado}
               />
               <Checkbox
                 className="mb-3"
@@ -199,6 +207,7 @@ const Tienda = () => {
                 onChange={(e) => {
                   handleChange(e, setParamTienda);
                 }}
+                checked={paramTienda.conIva}
               />
               <Checkbox
                 className="mb-3"
@@ -207,6 +216,7 @@ const Tienda = () => {
                 onChange={(e) => {
                   handleChange(e, setParamTienda);
                 }}
+                checked={paramTienda.resultadosPesos}
               />
             </InputContainer>
           </Parameters>

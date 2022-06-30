@@ -21,7 +21,6 @@ import {
   validateMonthRange,
   validateYear,
   createPresupuestoDatasets,
-  isError,
 } from "../../utils/functions";
 import { getCurrentMonth, getCurrentYear } from "../../utils/dateFunctions";
 import { handleChange } from "../../utils/handlers";
@@ -32,7 +31,8 @@ import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Plaza = () => {
+const Plaza = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const { plazas } = useAuth();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
@@ -52,9 +52,19 @@ const Plaza = () => {
 
   useEffect(()=>{
     if(plazas){
-      setParamPlazas(prev => ({...prev, plaza:getInitialPlaza(plazas)}))
+      setParamPlazas(prev => ({
+        ...prev, 
+        plaza:getInitialPlaza(plazas),
+        acumulado: config?.acumulado || 0,
+        total: config?.total || 0,
+        conIva: config?.conIva || 0,
+        porcentajeVentasCompromiso: config?.porcentajeVentasCompromiso || 0,
+        conVentasEventos: config?.conVentasEventos || 0,
+        conTiendasCerradas: config?.conTiendasCerradas || 0,
+        resultadosPesos: config?.resultadosPesos || 0,
+      }))
     }
-  },[plazas])
+  },[plazas, config])
 
   useEffect(() => {
     (async()=>{
@@ -107,14 +117,14 @@ const Plaza = () => {
                   handleChange(e, setParamPlazas);
                 }}
               />
-            </InputContainer>
-            <InputContainer>
-              <SelectPlazas
+               <SelectPlazas
                 value={paramPlazas.plaza}
                 onChange={(e) => {
                   handleChange(e, setParamPlazas);
                 }}
               />
+            </InputContainer>
+            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.ACUMULATIVA}
@@ -122,6 +132,7 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlazas);
                 }}
+                checked={paramPlazas.acumulado}
               />
               <Checkbox
                 className="mb-3"
@@ -130,6 +141,7 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlazas);
                 }}
+                checked={paramPlazas.conIva}
               />
               <Checkbox
                 className="mb-3"
@@ -138,16 +150,16 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlazas);
                 }}
+                checked={paramPlazas.total}
               />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
+               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.PORCENTAJE_VENTAS_VS_COMPROMISO}
                 name={inputNames.PORCENTAJE_COMPROMISO}
                 onChange={(e) => {
                   handleChange(e, setParamPlazas);
                 }}
+                checked={paramPlazas.porcentajeVentasCompromiso}
               />
               <Checkbox
                 className="mb-3"
@@ -156,6 +168,7 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlazas);
                 }}
+                checked={paramPlazas.conVentasEventos}
               />
               <Checkbox
                 className="mb-3"
@@ -164,6 +177,7 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlazas);
                 }}
+                checked={paramPlazas.conTiendasCerradas}
               />
               <Checkbox
                 className="mb-3"
@@ -172,6 +186,7 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlazas);
                 }}
+                checked={paramPlazas.resultadosPesos}
               />
             </InputContainer>
           </Parameters>

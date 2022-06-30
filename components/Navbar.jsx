@@ -107,7 +107,7 @@ const Navbar = () => {
               </a>
             </Link>
 
-            <Link href="/accesos">
+            <Link href="/configuracion/usuarios">
               <a 
                 className="hover:bg-sky-400 m-1 flex  p-2 rounded-sm transition ease-in-out duration-200"
                 onClick={handleToggle}

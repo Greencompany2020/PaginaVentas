@@ -4,7 +4,6 @@ import BarChart from "../../components/BarChart";
 import {
   Parameters,
   ParametersContainer,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -28,7 +27,6 @@ import { getMesesAgnosGrupo } from "../../services/MesesAgnosService";
 import useGraphData from "../../hooks/useGraphData";
 import {
   createMesesAgnosGrupoDataset,
-  isError,
   validateMonthRange,
   validateYearRange,
 } from "../../utils/functions";
@@ -36,7 +34,8 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Grupo = () => {
+const Grupo = (props) => {
+  const {config} = props;
   const sendNotification  = useNotification();
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
   const [parametrosGrupo, setParametrosGrupo] = useState({
@@ -53,6 +52,19 @@ const Grupo = () => {
     conTiendasCerradas: 0,
     sinTiendasSuspendidas: 0,
   });
+
+  useEffect(()=>{
+    setParametrosGrupo(prev => ({
+      ...prev,
+      incluirTotal: config?.incluirTotal || 0,
+      ventasDiaMesActual: config?.ventasDiaMesActual || 0,
+      conIva: config?.conIva || 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      sinAgnoVenta: config?.sinAgnoVenta || 0,
+      conTiendasCerradas: config?.conTiendasCerradas || 0,
+      sinTiendasSuspendidas: config?.sinTiendasSuspendidas || 0,
+    }));
+  },[config])
 
   useEffect(() => {
     (async()=>{
@@ -106,72 +118,63 @@ const Grupo = () => {
                   handleChange(e, setParametrosGrupo);
                 }}
               />
-            </InputContainer>
-            <InputContainer>
-              <SelectToMonth
+               <SelectToMonth
                 value={parametrosGrupo.alMes}
                 onChange={(e) => {
                   handleChange(e, setParametrosGrupo);
                 }}
               />
               <SelectTiendasGeneral />
-              <Checkbox
-                className="mb-3"
-                labelText={checkboxLabels.INCLUIR_TOTAL}
-                name={inputNames.INCLUIR_TOTAL}
-                onChange={(e) => {
-                  handleChange(e, setParametrosGrupo);
-                }}
-              />
             </InputContainer>
             <InputContainer>
               <Checkbox
                 className="mb-3"
+                labelText={checkboxLabels.INCLUIR_TOTAL}
+                name={inputNames.INCLUIR_TOTAL}
+                checked={parametrosGrupo.incluirTotal ? true : false}
+                onChange={(e) => {handleChange(e, setParametrosGrupo)}}
+              />
+              <Checkbox
+                className="mb-3"
                 labelText={checkboxLabels.VENTAS_AL_DIA_MES_ACTUAL}
+                checked={parametrosGrupo.ventasDiaMesActual ? true : false}
                 name={inputNames.VENTAS_DIA_MES_ACTUAL}
                 onChange={(e) => handleChange(e, setParametrosGrupo)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={parametrosGrupo.conIva ? true : false}
                 name={inputNames.CON_IVA}
-                onChange={(e) => {
-                  handleChange(e, setParametrosGrupo);
-                }}
+                onChange={(e) => {handleChange(e, setParametrosGrupo)}}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={parametrosGrupo.conVentasEventos ? true : false}
                 name={inputNames.CON_VENTAS_EVENTOS}
-                onChange={(e) => {
-                  handleChange(e, setParametrosGrupo);
-                }}
+                onChange={(e) => {handleChange(e, setParametrosGrupo)}}
               />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
+               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
+                checked={parametrosGrupo.sinAgnoVenta ? true : false}
                 name={inputNames.SIN_AGNO_VENTA}
-                onChange={(e) => {
-                  handleChange(e, setParametrosGrupo);
-                }}
+                onChange={(e) => {handleChange(e, setParametrosGrupo)}}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={parametrosGrupo.conTiendasCerradas ? true : false}
                 name={inputNames.CON_TIENDAS_CERRADAS}
-                onChange={(e) => {
-                  handleChange(e, setParametrosGrupo);
-                }}
+                onChange={(e) => {handleChange(e, setParametrosGrupo)}}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
+                checked={parametrosGrupo.sinTiendasSuspendidas ? true : false}
                 name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
-                onChange={(e) => {
-                  handleChange(e, setParametrosGrupo);
-                }}
+                onChange={(e) => {handleChange(e, setParametrosGrupo)}}
               />
             </InputContainer>
           </Parameters>

@@ -6,13 +6,7 @@ import {
 } from "@heroicons/react/outline";
 
 export default function UserTable(props) {
-  const {
-    items,
-    handleOnSelect,
-    handleModalContent,
-    handleDeleteUser,
-    toggleAccess,
-  } = props;
+  const {items,handleSelect,handleShowModal, handleShowAccess, deleteUser} = props;
   return (
     <div className="h-[400px] md:h-[400px] overflow-y-auto">
       <table className="min-w-full">
@@ -35,7 +29,7 @@ export default function UserTable(props) {
             <tr
               key={item.Id + index}
               className="cursor-pointer"
-              onClick={() => handleOnSelect(item)}
+              onClick={() => handleSelect(item)}
             >
               <td>{item.NoEmpleado}</td>
               <td>{item.Nombre}</td>
@@ -46,19 +40,17 @@ export default function UserTable(props) {
                 <LockOpenIcon
                   width={32}
                   className="cursor-pointer hover:text-blue-500"
-                  onClick={toggleAccess}
+                  onClick={handleShowAccess}
                 />
                 <PencilAltIcon
                   width={32}
                   className="cursor-pointer hover:text-blue-500"
-                  onClick={() => {
-                    handleModalContent("editUser", "Editar usuario");
-                  }}
+                  onClick={handleShowModal}
                 />
                 <TrashIcon
                   width={32}
                   className="cursor-pointer hover:text-blue-500"
-                  onClick={() => handleDeleteUser(item.Id)}
+                  onClick={() => deleteUser(item.Id)}
                 />
               </td>
             </tr>

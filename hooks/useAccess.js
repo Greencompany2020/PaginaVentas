@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import * as service from "../services/AccessService";
+import * as service from "../services/configuratorService";
 import { useNotification } from "../components/notifications/NotificationsProvider";
 
 
@@ -177,6 +177,29 @@ export default function useAccess() {
     }
   };
 
+  const getParameters = async (idDashboard) => {
+    try {
+      const response = await service.getParameters(idDashboard);
+      return response;
+    } catch (error) {
+      sendNotification({
+        type:'ERROR',
+        message:'Error al consultar los parametros'
+      })
+    }
+  }
+
+  const configureParameters = async (idDashboard, body) => {
+    try {
+      const response = await service.configureParameters(idDashboard, body);
+    } catch (error) {
+      sendNotification({
+        type: 'ERROR',
+        message: 'Errror al configurar los parametros'
+      })
+    }
+  }
+
   const replaceAccess = (current, next) => {
     const modified = current.map((item) => {
       let modify = {};
@@ -205,7 +228,9 @@ export default function useAccess() {
     deleteAccess,
     createGroup,
     updateGroup,
-    deleteGroup
+    deleteGroup,
+    getParameters,
+    configureParameters
   };
 }
 

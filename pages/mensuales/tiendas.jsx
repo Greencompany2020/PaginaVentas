@@ -24,7 +24,6 @@ import { handleChange } from "../../utils/handlers";
 import { getMensualesTiendas } from "../../services/MensualesServices";
 import {
   createSimpleDatasets,
-  isError,
   validateYear,
 } from "../../utils/functions";
 import useGraphData from "../../hooks/useGraphData";
@@ -33,7 +32,8 @@ import TitleReport from "../../components/TitleReport";
 import ComparativoVentas from "../../components/table/ComparativoVentas";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Tiendas = () => {
+const Tiendas = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
   const [tiendasParametros, setTiendasParametros] = useState({
@@ -45,6 +45,16 @@ const Tiendas = () => {
     conTiendasCerradas: 0,
     resultadosPesos: 1,
   });
+
+  useEffect(()=>{
+    setTiendasParametros(prev => ({
+      ...prev,
+      conIva: config.conIva || 0,
+      conVentasEventos:  config.conVentasEventos || 0,
+      conTiendasCerradas:  config.conTiendasCerradas || 0,
+      resultadosPesos:  config.resultadosPesos || 0,
+    }))
+  },[config])
 
   useEffect(() => {
     (async()=>{
@@ -91,20 +101,21 @@ const Tiendas = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={tiendasParametros.conIva ? true : false}
                 name={inputNames.CON_IVA}
                 onChange={(e) => handleChange(e, setTiendasParametros)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={tiendasParametros.conVentasEventos ? true : false}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setTiendasParametros)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={tiendasParametros.conTiendasCerradas ? true : false}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 onChange={(e) => handleChange(e, setTiendasParametros)}
               />

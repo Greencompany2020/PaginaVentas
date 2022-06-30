@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import { InputContainer, Checkbox, InputDate } from "../../components/inputs";
 import {
@@ -28,13 +27,13 @@ import {
   validateDate,
   getTableName,
   rowColor,
-  isError,
 } from "../../utils/functions";
 import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import {useNotification} from '../../components/notifications/NotificationsProvider';
 
-function Grupo() {
+function Grupo(props) {
+  const {config} = props;
   const sendNotification = useNotification();
   const [comparativoGrupo, setComparativoGrupo] = useState({});
   const [acumuladoSemanal, setAcumuladoSemanal] = useState(false);
@@ -50,7 +49,25 @@ function Grupo() {
     resultadosPesos: 1,
     tipoCambioTiendas: 0,
   });
+
   const { dateRangeText } = getBeginCurrentWeekDateRange(parametrosGrupo.fecha);
+
+  useEffect(()=>{
+    setParametrosGrupo(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      porcentajeVentasCompromiso: config?.porcentajeVentasCompromiso || 0,
+      noHorasVentasParciales: config?.noHorasVentasParciales || 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      sinAgnoVenta: config?.sinAgnoVenta || 0,
+      conTiendasCerradas: config?.conTiendasCerradas || 0,
+      sinTiendasSuspendidas: config?.sinTiendasSuspendidas || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+      tipoCambioTiendas: config?.tipoCambioTiendas || 0,
+    }));
+
+    setAcumuladoSemanal(config?.acumuladoSemanal ? true : false);
+  },[config])
 
   useEffect(() => {
     (async()=>{
@@ -88,9 +105,12 @@ function Grupo() {
                 value={parametrosGrupo.fecha}
                 onChange={(e) => handleChange(e, setParametrosGrupo)}
               />
-              <Checkbox
+            </InputContainer>
+            <InputContainer>
+            <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={parametrosGrupo.conIva ? true : false}
                 name={inputNames.CON_IVA}
                 onChange={(e) => handleChange(e, setParametrosGrupo)}
               />
@@ -98,44 +118,44 @@ function Grupo() {
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_VS_COMPROMISO}
                 name={inputNames.PORCENTAJE_COMPROMISO}
-                checked={
-                  parametrosGrupo.porcentajeVentasCompromiso ? true : false
-                }
+                checked={parametrosGrupo.porcentajeVentasCompromiso ? true : false}
                 onChange={(e) => handleChange(e, setParametrosGrupo)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.NO_HORAS_VENTAS_PARCIALES}
+                checked={parametrosGrupo.noHorasVentasParciales ? true : false}
                 name={inputNames.NO_HORAS_VENTAS_PARCIALES}
                 onChange={(e) => handleChange(e, setParametrosGrupo)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={parametrosGrupo.conVentasEventos ? true : false}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setParametrosGrupo)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
+                checked={parametrosGrupo.sinAgnoVenta ? true : false}
                 name={inputNames.SIN_AGNO_VENTA}
                 onChange={(e) => handleChange(e, setParametrosGrupo)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.ACUMULADO_SEMANAL}
+                checked={acumuladoSemanal ? true : false}
+                name={inputNames.ACUMULADO_SEMANAL}
                 onChange={() => setAcumuladoSemanal((prev) => !prev)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
                 name={inputNames.CON_TIENDAS_CERRADAS}
+                checked={parametrosGrupo.conTiendasCerradas ? true : false}
                 onChange={(e) => handleChange(e, setParametrosGrupo)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
@@ -153,6 +173,7 @@ function Grupo() {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.TIPO_CAMBIO_TIENDAS}
+                checked={parametrosGrupo.tipoCambioTiendas ? true : false}
                 name={inputNames.TIPO_CAMBIO_TIENDAS}
                 onChange={(e) => handleChange(e, setParametrosGrupo)}
               />

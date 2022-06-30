@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import {
-  SmallContainer,
   ParametersContainer,
   Parameters,
 } from "../../components/containers";
@@ -16,7 +15,6 @@ import {
   Checkbox,
   SelectTiendasGeneral,
 } from "../../components/inputs";
-import { MessageModal } from "../../components/modals";
 import RegionesPlazaTableRow from "../../components/table/RegionesPlazaTableRow";
 import {
   regiones,
@@ -30,7 +28,6 @@ import {
 } from "../../utils/dateFunctions";
 import {
   dateRangeTitle,
-  isError,
   validateInputDateRange,
 } from "../../utils/functions";
 import { getSemanalesTiendas } from "../../services/SemanalesService";
@@ -40,7 +37,8 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Tiendas = () => {
+const Tiendas = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesTienda, setSemanalesTienda] = useState([]);
@@ -55,6 +53,18 @@ const Tiendas = () => {
     sinTiendasSuspendidas: 0,
     resultadosPesos: 0,
   });
+
+  useEffect(()=>{
+    setTiendasParametros(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      conVentasEventos:  config?.conVentasEventos || 0,
+      conTiendasCerradas:  config?.conTiendasCerradas || 0,
+      sinAgnoVenta:  config?.sinAgnoVenta || 0,
+      sinTiendasSuspendidas:  config?.sinTiendasSuspendidas || 0,
+      resultadosPesos:  config?.resultadosPesos|| 0,
+    }))
+  },[config])
 
   useEffect(() => {
     (async()=>{
@@ -122,39 +132,41 @@ const Tiendas = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={tiendasParametros.conIva ? true : false}
                 name={inputNames.CON_IVA}
                 onChange={(e) => handleChange(e, setTiendasParametros)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={tiendasParametros.conVentasEventos ? true : false}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setTiendasParametros)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={tiendasParametros.conTiendasCerradas ? true : false}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 onChange={(e) => handleChange(e, setTiendasParametros)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
+                checked={tiendasParametros.sinAgnoVenta ? true : false}
                 name={inputNames.SIN_AGNO_VENTA}
                 onChange={(e) => handleChange(e, setTiendasParametros)}
               />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
+               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
+                checked={tiendasParametros.sinTiendasSuspendidas ? true : false}
                 name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
                 onChange={(e) => handleChange(e, setTiendasParametros)}
               />
               <Checkbox
                 labelText={checkboxLabels.RESULTADO_PESOS}
+                checked={tiendasParametros.resultadosPesos ? true : false}
                 name={inputNames.RESULTADOS_PESOS}
                 onChange={(e) => handleChange(e, setTiendasParametros)}
               />

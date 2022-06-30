@@ -16,7 +16,6 @@ import PieChart from "../../components/Pie";
 import {
   createRangoVentasDataset,
   getInitialPlaza,
-  isError,
   validateInputDateRange,
 } from "../../utils/functions";
 import { getBeginEndMonth } from "../../utils/dateFunctions";
@@ -29,7 +28,8 @@ import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Plaza = () => {
+const Plaza = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const { plazas } = useAuth();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
@@ -43,9 +43,13 @@ const Plaza = () => {
 
   useEffect(()=>{
     if(plazas){
-      setParamPlaza(prev => ({...prev, plaza:getInitialPlaza(plazas)}));
+      setParamPlaza(prev => ({
+        ...prev, 
+        plaza:getInitialPlaza(plazas),
+        conTiendasCerradas: config?.conTiendasCerradas || 0,
+      }));
     }
-  },[plazas])
+  },[plazas, config])
 
   useEffect(() => {
     (async()=>{
@@ -101,6 +105,7 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
                 }}
+                checked={paramPlaza.conTiendasCerradas}
               />
             </InputContainer>
           </Parameters>

@@ -31,7 +31,8 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Compromiso = () => {
+const Compromiso = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesCompromisos, setSemanalesCompromisos] = useState([]);
@@ -43,6 +44,15 @@ const Compromiso = () => {
     sinAgnoVenta: 0,
     conTiendasCerradas: 0,
   });
+
+  useEffect(()=>{
+    setCompromisosParametros(prev => ({
+      ...prev,
+      conIva:config.conIva || 0,
+      sinAgnoVenta:config.sinAgnoVenta || 0,
+      conTiendasCerradas:config.conTiendasCerradas || 0,
+    }))
+  },[config])
 
   useEffect(() => {
     (async()=>{
@@ -141,9 +151,7 @@ const Compromiso = () => {
                 labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
                 name={inputNames.SIN_AGNO_VENTA}
               />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
+               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
                 name={inputNames.CON_TIENDAS_CERRADAS}

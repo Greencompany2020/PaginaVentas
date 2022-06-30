@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   Parameters,
   ParametersContainer,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -19,7 +18,6 @@ import {
   calculateCrecimiento,
   getInitialTienda,
   getTiendaName,
-  isError,
   validateMonthRange,
   validateYearRange,
 } from "../../utils/functions";
@@ -40,7 +38,8 @@ import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Tiendas = () => {
+const Tiendas = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const { tiendas } = useAuth();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
@@ -57,9 +56,15 @@ const Tiendas = () => {
 
   useEffect(()=>{
     if(tiendas){
-      setParametrosTiendas(prev => ({...prev, tienda:getInitialTienda(tiendas)}))
+      setParametrosTiendas(prev => ({
+        ...prev, 
+        tienda:getInitialTienda(tiendas),
+        incluirTotal: config?.incluirTotal || 0,
+        ventasDiaMesActual: config?.ventasDiaMesActual || 0,
+        conIva: config?.conIva || 0,
+      }))
     }
-  },[tiendas])
+  },[tiendas, config])
 
   useEffect(() => {
     (async()=>{
@@ -174,6 +179,7 @@ const Tiendas = () => {
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TOTAL}
                 name={inputNames.INCLUIR_TOTAL}
+                checked = {parametrosTiendas.incluirTotal ? true : false}
                 onChange={(e) => {
                   handleChange(e, setParametrosTiendas);
                 }}
@@ -182,6 +188,7 @@ const Tiendas = () => {
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_AL_DIA_MES_ACTUAL}
                 name={inputNames.VENTAS_DIA_MES_ACTUAL}
+                checked = {parametrosTiendas.ventasDiaMesActual ? true : false}
                 onChange={(e) => {
                   handleChange(e, setParametrosTiendas);
                 }}
@@ -190,6 +197,7 @@ const Tiendas = () => {
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
                 name={inputNames.CON_IVA}
+                checked = {parametrosTiendas.conIva ? true : false}
                 onChange={(e) => {
                   handleChange(e, setParametrosTiendas);
                 }}

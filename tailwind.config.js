@@ -8,7 +8,7 @@ module.exports = {
   theme: {
     extend: {
       transitionProperty:{
-        'height': 'height',
+        height: 'height',
       },
 
       backgroundColor: theme => ({

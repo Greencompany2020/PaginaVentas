@@ -25,7 +25,8 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Concentrado = () => {
+const Concentrado = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const [concentrado, setConcentrado] = useState([]);
   const [concentradoParametros, setConcentradoParametros] = useState({
@@ -36,6 +37,17 @@ const Concentrado = () => {
     conTiendasCerradas: 0,
     resultadosPesos: 0,
   });
+
+  useEffect(()=>{
+    setConcentradoParametros(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      ventasMilesDlls:config?.ventasMilesDlls || 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradas || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }))
+  },[config])
 
   useEffect(() => {
     (async()=>{
@@ -68,11 +80,10 @@ const Concentrado = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={concentradoParametros.conIva ? true : false}
                 name={inputNames.CON_IVA}
                 onChange={(e) => handleChange(e, setConcentradoParametros)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_EN_DLLS}
@@ -83,20 +94,21 @@ const Concentrado = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={concentradoParametros.conVentasEventos ? true : false}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setConcentradoParametros)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={concentradoParametros.conTiendasCerradas ? true : false}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 onChange={(e) => handleChange(e, setConcentradoParametros)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.RESULTADO_PESOS}
+                checked={concentradoParametros.resultadosPesos ? true : false}
                 name={inputNames.RESULTADOS_PESOS}
                 onChange={(e) => handleChange(e, setConcentradoParametros)}
               />

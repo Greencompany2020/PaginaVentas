@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import {
   VentasTableContainer,
@@ -27,7 +26,8 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Plazas = () => {
+const Plazas = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const [comparativoPlazas, setComparativoPlazas] = useState({});
   const [semanaSanta, setSemanaSanta] = useState(true);
@@ -41,6 +41,21 @@ const Plazas = () => {
     resultadosPesos: 1,
     tipoCambioTiendas: 0,
   });
+
+  useEffect(()=>{
+    setParametrosPlazas(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      porcentajeVentasCompromiso: config?.porcentajeVentasCompromiso || 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradas || 0,
+      sinTiendasSuspendidas: config?.sinTiendasSuspendidas || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+      tipoCambioTiendas: config?.tipoCambioTiendas || 0,
+    }));
+
+    setSemanaSanta(config?.semanaSanta ? true : false);
+  },[config])
 
   useEffect(() => {
     (async()=>{
@@ -80,6 +95,7 @@ const Plazas = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={parametrosPlazas.conIva ? true : false}
                 name={inputNames.CON_IVA}
                 onChange={(e) => handleChange(e, setParametrosPlazas)}
               />
@@ -92,9 +108,7 @@ const Plazas = () => {
                 }
                 onChange={(e) => handleChange(e, setParametrosPlazas)}
               />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
+               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.SEMANA_SANTA}
                 name={inputNames.SEMANA_SANTA}
@@ -104,24 +118,18 @@ const Plazas = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={parametrosPlazas.conTiendasCerradas ? true : false}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setParametrosPlazas)}
               />
               <Checkbox
                 className="mb-3"
-                labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
-                name={inputNames.SIN_AGNO_VENTA}
-                onChange={() => {}}
-              />
-              <Checkbox
-                className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={parametrosPlazas.conTiendasCerradas ? true : false}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 onChange={(e) => handleChange(e, setParametrosPlazas)}
               />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
+               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
                 name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
@@ -138,6 +146,7 @@ const Plazas = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.TIPO_CAMBIO_TIENDAS}
+                checked={parametrosPlazas.tipoCambioTiendas ? true : false}
                 name={inputNames.TIPO_CAMBIO_TIENDAS}
                 onChange={(e) => handleChange(e, setParametrosPlazas)}
               />

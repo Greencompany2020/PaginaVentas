@@ -12,6 +12,7 @@ const witAuth = (Component) => {
     const service = authService();
     const {auth, setAuth} = useAuth();
     const [loading, setLoading] = useState(true);
+    const [config, setConfig] = useState({});
    
     /**
      * callback que redirige la pagina
@@ -56,6 +57,17 @@ const witAuth = (Component) => {
         return false;
       }
     };
+
+    const getConfiguration = (userParams) =>{
+      const configuration = {}
+      if(userParams){
+        for(const item in userParams){
+          let value = (userParams[item] == 'Y') ? 1 : 0;
+          Object.assign(configuration, {[item]:value});
+        }
+      }
+      return configuration;
+    }
     /**
      * si el usuario no esta autorizado remplaza la direccion
      * si el usuario no tiene token lo redirecciona al login
@@ -78,6 +90,7 @@ const witAuth = (Component) => {
         const userAccess = await getAuthToPath();
         if (!userAccess.access) return redirecTo("/unauthorized", "replace");
         setLoading(false);
+        setConfig(getConfiguration(userAccess.config));
       }
     };
 
@@ -86,7 +99,7 @@ const witAuth = (Component) => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    return loading ? <LoaderComponent /> : <Component />;
+    return loading ? <LoaderComponent /> : <Component config={config}/>;
   };
 
    /**

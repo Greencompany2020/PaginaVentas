@@ -6,9 +6,9 @@ const BaseLayout = ({ children }) => {
     <section className='layout-base-navbar'>
       <Navbar/>
     </section>
-    <section className='layout-base-main'>
+    <main className='layout-base-main'>
       {children}
-    </section>
+    </main>
    </div>
   )
 }

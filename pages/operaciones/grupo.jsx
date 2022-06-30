@@ -19,7 +19,6 @@ import { getCurrentMonth, getCurrentYear } from "../../utils/dateFunctions";
 import { handleChange } from "../../utils/handlers";
 import {
   createOperacionesDatasets,
-  isError,
   validateMonthRange,
   validateYear,
 } from "../../utils/functions";
@@ -29,7 +28,8 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Grupo = () => {
+const Grupo = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramGrupo, setParamGrupo] = useState({
@@ -43,6 +43,18 @@ const Grupo = () => {
     conEventos: 0,
     resultadosPesos: 0,
   });
+
+  useEffect(()=>{
+    setParamGrupo(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      tiendas: config?.tiendas || 0,
+      promedio: config?.promedio || 0,
+      acumulado: config?.acumulado || 0,
+      conEventos: config?.conEventos || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }))
+  },[config])
 
   useEffect(() => {
     (async()=>{
@@ -108,6 +120,7 @@ const Grupo = () => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.promedio}
               />
               <Checkbox
                 className="mb-3"
@@ -116,6 +129,7 @@ const Grupo = () => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.acumulado}
               />
               <Checkbox
                 className="mb-3"
@@ -124,6 +138,7 @@ const Grupo = () => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.conEventos}
               />
               <Checkbox
                 className="mb-3"
@@ -132,6 +147,7 @@ const Grupo = () => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.conIva}
               />
               <Checkbox
                 className="mb-3"
@@ -140,6 +156,7 @@ const Grupo = () => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.resultadosPesos}
               />
             </InputContainer>
           </Parameters>

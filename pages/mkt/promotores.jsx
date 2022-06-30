@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -40,7 +39,8 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Promotores = () => {
+const Promotores = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const [promotores, setPromotores] = useState({});
   const [paramPromotores, setParamPromotores] = useState({
@@ -49,6 +49,13 @@ const Promotores = () => {
     delAgno: getCurrentYear(),
     conIva: 0,
   });
+
+  useEffect(()=>{
+    setParamPromotores(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0
+    }))
+  },[config])
 
   useEffect(() => {
     (async()=>{
@@ -158,6 +165,7 @@ const Promotores = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPromotores);
                 }}
+                checked={paramPromotores.conIva}
               />
             </InputContainer>
           </Parameters>

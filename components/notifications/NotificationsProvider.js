@@ -19,7 +19,7 @@ export default function NotificationProvide(props){
 
     return(
         <NotificationContext.Provider value={dispatch}>
-            <div className="fixed bottom-8 right-8 w-[16rem] md:w-[20rem] space-y-4 z-20">
+            <div className="fixed bottom-8 right-8 w-[16rem] md:w-[20rem] space-y-4 z-30">
                 {state.map(note => {
                     return <Notification key={note.id} {...note} dispatch={dispatch}/>
                 })}

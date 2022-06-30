@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import {
   VentasTableContainer,
@@ -25,7 +24,6 @@ import { formatNumber, numberWithCommas } from "../../utils/resultsFormated";
 import {
   getInitialTienda,
   getTiendaName,
-  isError,
 } from "../../utils/functions";
 import { handleChange } from "../../utils/handlers";
 import withAuth from "../../components/withAuth";
@@ -33,7 +31,8 @@ import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Tienda = () => {
+const Tienda = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const { tiendas } = useAuth();
   const [diariasTienda, setDiariasTienda] = useState([]);
@@ -42,15 +41,20 @@ const Tienda = () => {
     delAgno: new Date(Date.now()).getFullYear(),
     tienda: getInitialTienda(tiendas),
     conIva: 0,
-    semanaSanta: 1,
+    semanaSanta: 0,
     resultadosPesos: 0,
   });
 
   useEffect(()=>{
     if(tiendas){
-      setTiendaParametros(prev => ({...prev, tienda:getInitialTienda(tiendas)}))
+      setTiendaParametros(prev => ({
+        ...prev, tienda:getInitialTienda(tiendas),
+        conIva: config.conIva || 0,
+        semanaSanta: config.semanaSanta || 0,
+        resultadosPesos: config.resultadosPesos || 0,
+      }))
     }
-  },[tiendas])
+  },[tiendas, config])
 
   useEffect(() => {
     (async()=>{
@@ -98,17 +102,20 @@ const Tienda = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={tiendasParametros.conIva ? true : false}
                 name="conIva"
                 onChange={(e) => handleChange(e, setTiendaParametros)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.SEMANA_SANTA}
+                checked={tiendasParametros.semanaSanta ? true : false}
                 name="semanaSanta"
                 onChange={(e) => handleChange(e, setTiendaParametros)}
               />
               <Checkbox
                 labelText={checkboxLabels.RESULTADO_PESOS}
+                checked={tiendasParametros.resultadosPesos ? true : false}
                 name="resultadosPesos"
                 onChange={(e) => handleChange(e, setTiendaParametros)}
               />

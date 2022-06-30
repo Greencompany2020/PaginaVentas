@@ -5,16 +5,18 @@ import AccessForm from "./AccessForm";
 import useToggle from "../../../hooks/useToggle";
 import { ConfirmModal } from "../../modals";
 import { FormModal } from "../../modals";
+import ParameterForm from "../../ParameterForm";
 
 export default function Access(props) {
   const confirmModalRef = useRef(null);
-  const { data, createAccess, updateAccess, deleteAccess } = props;
+  const { data, createAccess, updateAccess, deleteAccess,getParameters } = props;
   const [visible, toggleVisible] = useToggle();
   const [modalContent, setmodalContent] = useState({
     target: "",
     item: {},
     title: "",
   });
+  const [accessParameters, setAccessParameters] = useState({})
 
   const ModalContent = () => {
     const { target, item } = modalContent;
@@ -35,6 +37,14 @@ export default function Access(props) {
           handleSubmit={handleUpdateAccess}
         />
       );
+    }
+
+    if(target == "updateParameters"){
+
+      (async(item)=>{
+        const response = await getParameters(item.IdDashboard);
+        console.log(response);
+      })(item)
     }
     return <></>;
   };

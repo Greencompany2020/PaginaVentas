@@ -24,7 +24,6 @@ import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
 import {
   getInitialPlaza,
   getInitialTienda,
-  isError,
   validateYearRange,
 } from "../../utils/functions";
 import {
@@ -41,7 +40,8 @@ import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Mensuales = () => {
+const Mensuales = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const { tiendas, plazas } = useAuth();
   const [porcentajesMensuales, setPorcentajesMensuales] = useState([]);
@@ -61,9 +61,17 @@ const Mensuales = () => {
 
   useEffect(()=>{
     if(tiendas && plazas){
-      setParametrosMensuales(prev => ({...prev, tienda:getInitialTienda(tiendas), plaza:getInitialPlaza(plazas)}));
+      setParametrosMensuales(prev => ({
+        ...prev, 
+        tienda:getInitialTienda(tiendas), 
+        plaza:getInitialPlaza(plazas),
+        conIva: config?.conIva || 0,
+        conVentasEventos: config?.conVentasEventos || 0,
+        conTiendasCerradas: config?.conTiendasCerradas || 0,
+        resultadosPesos: config?.resultadosPesos || 0,
+      }));
     }
-  },[tiendas, plazas])
+  },[tiendas, plazas, config])
 
   useEffect(() => {
     (async()=>{
@@ -153,26 +161,28 @@ const Mensuales = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={parametrosMensuales.conIva ? true : false}
                 name={inputNames.CON_IVA}
                 onChange={(e) => handleChange(e, setParametrosMensuales)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={parametrosMensuales.conVentasEventos ? true : false}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setParametrosMensuales)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={parametrosMensuales.conTiendasCerradas ? true : false}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 onChange={(e) => handleChange(e, setParametrosMensuales)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.RESULTADO_PESOS}
+                checked={parametrosMensuales.resultadosPesos ? true : false}
                 name={inputNames.RESULTADOS_PESOS}
                 onChange={(e) => handleChange(e, setParametrosMensuales)}
               />

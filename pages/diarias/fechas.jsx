@@ -1,24 +1,22 @@
 import { useEffect, useState } from "react";
 import { getVentasLayout } from "../../components/layout/VentasLayout";
-import { MessageModal } from "../../components/modals";
 import {
   VentasTableContainer,
   VentasTable,
   TableHead,
   TableRow,
 } from "../../components/table";
-import useMessageModal from "../../hooks/useMessageModal";
 import { getDiariasFechas } from "../../services/DiariasServices";
 import { MENSAJE_ERROR } from "../../utils/data";
 import { formatLastDate } from "../../utils/dateFunctions";
-import { isError } from "../../utils/functions";
 import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Fechas = () => {
+const Fechas = (props) => {
   const sendNotification = useNotification();
   const [fechas, setFechas] = useState([]);
+
 
   useEffect(() => {
     (async()=>{

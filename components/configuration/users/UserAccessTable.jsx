@@ -1,10 +1,10 @@
-import { TrashIcon, PencilAltIcon } from "@heroicons/react/outline";
-import { generateLivKey } from "../../../utils/functions";
+import TooggleSwitch from "../../inputs/TooggleSwitch";
+import generateKey from "../../paginate/generateKey";
 
-export default function TableAccess(props) {
-  const { items, handleModalContent, handleDeleteAccess } = props;
+export default function UserAccessTable(props) {
+  const { items, assignAccessToUser } = props;
   return (
-    <div className="h-[500px] overflow-y-auto">
+    <div className="h-[330px] md:h-[420px] overflow-y-auto">
       <table className="w-full">
         <thead className="text-left">
           <tr>
@@ -20,22 +20,16 @@ export default function TableAccess(props) {
         </thead>
         <tbody>
           {items.map((item, index) => (
-            <tr key={generateLivKey(index)} className="cursor-pointer">
+            <tr key={generateKey(index)} className="cursor-pointer">
               <td className=" hidden lg:table-cell">{item.menu}</td>
               <td className=" hidden lg:table-cell">{item.reporte}</td>
               <td>{item.nombreReporte}</td>
               <td className="flex justify-center space-x-1">
-                <PencilAltIcon
-                  width={32}
-                  className="cursor-pointer hover:text-blue-500"
-                  onClick={() => {
-                    handleModalContent("updateAccess", "Editar acceso", item);
-                  }}
-                />
-                <TrashIcon
-                  width={32}
-                  className="cursor-pointer hover:text-blue-500"
-                  onClick={() => handleDeleteAccess(item.idDashboard)}
+                <TooggleSwitch
+                  key={index}
+                  id={item.idDashboard}
+                  value={item.acceso}
+                  onChange={() => assignAccessToUser(item)}
                 />
               </td>
             </tr>

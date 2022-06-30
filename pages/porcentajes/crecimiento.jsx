@@ -26,7 +26,6 @@ import {
 import { handleChange } from "../../utils/handlers";
 import {
   getLastTwoNumbers,
-  isError,
   validateDate,
 } from "../../utils/functions";
 import { getPorcentajeCrecimiento } from "../../services/PorcentajesService";
@@ -35,7 +34,8 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Crecimiento = () => {
+const Crecimiento = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const [dateRange, setDateRange] = useState([]);
   const [crecimiento, setCrecimiento] = useState([]);
@@ -57,6 +57,17 @@ const Crecimiento = () => {
     }
     setDateRange(dateRange);
   }, [paramCrecimiento.fecha]);
+
+  useEffect(()=>{
+    setParamCrecimiento(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradas || 0,
+      sinTiendasSuspendidas: config?.sinTiendasSuspendidas|| 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }))
+  },[config])
 
   useEffect(() => {
     (async()=>{
@@ -107,23 +118,24 @@ const Crecimiento = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={paramCrecimiento.conIva ? true : false}
                 name={inputNames.CON_IVA}
                 onChange={(e) => handleChange(e, setParamCrecimiento)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={paramCrecimiento.conVentasEventos ? true : false}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setParamCrecimiento)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={paramCrecimiento.conTiendasCerradas ? true : false}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 onChange={(e) => handleChange(e, setParamCrecimiento)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
@@ -134,6 +146,7 @@ const Crecimiento = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.RESULTADO_PESOS}
+                checked={paramCrecimiento.resultadosPesos ? true : false}
                 name={inputNames.RESULTADOS_PESOS}
                 onChange={(e) => handleChange(e, setParamCrecimiento)}
               />

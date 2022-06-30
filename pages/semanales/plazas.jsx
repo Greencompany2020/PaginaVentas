@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import {
-  SmallContainer,
   ParametersContainer,
   Parameters,
 } from "../../components/containers";
@@ -25,7 +24,6 @@ import {
 } from "../../utils/dateFunctions";
 import {
   dateRangeTitle,
-  isError,
   validateInputDateRange,
 } from "../../utils/functions";
 import { handleChange } from "../../utils/handlers";
@@ -34,7 +32,8 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Plazas = () => {
+const Plazas = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesPlaza, setSemanalesPlaza] = useState([]);
@@ -48,6 +47,18 @@ const Plazas = () => {
     sinTiendasSuspendidas: 0,
     resultadosPesos: 1,
   });
+
+  useEffect(()=>{
+    setPlazasParametros(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      sinAgnoVenta: config?.sinAgnoVenta || 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradas || 0,
+      sinTiendasSuspendidas: config?.sinTiendasSuspendidas || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }))
+  },[config])
 
   useEffect(() => {
     (async()=>{
@@ -81,34 +92,35 @@ const Plazas = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={plazasParametros.conIva ? 1 : 0}
                 name={inputNames.CON_IVA}
                 onChange={(e) => handleChange(e, setPlazasParametros)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={plazasParametros.conVentasEventos ? 1 : 0}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setPlazasParametros)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={plazasParametros.conTiendasCerradas ? 1 : 0}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 onChange={(e) => handleChange(e, setPlazasParametros)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
+                checked={plazasParametros.sinAgnoVenta ? 1 : 0}
                 name={inputNames.SIN_AGNO_VENTA}
                 onChange={(e) => handleChange(e, setPlazasParametros)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
+                checked={plazasParametros.sinTiendasSuspendidas ? 1 : 0}
                 name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
                 onChange={(e) => handleChange(e, setPlazasParametros)}
               />

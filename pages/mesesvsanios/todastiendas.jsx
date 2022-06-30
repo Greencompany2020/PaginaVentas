@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   Parameters,
   ParametersContainer,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -17,7 +16,6 @@ import ComparativoVentas from "../../components/table/ComparativoVentas";
 import {
   getInitialPlaza,
   getPlazaName,
-  isError,
   validateYear,
 } from "../../utils/functions";
 import {
@@ -34,7 +32,8 @@ import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const TodasTiendas = () => {
+const TodasTiendas = (props) => {
+  const {config} = props;
   const sendNotification = useNotification();
   const { plazas } = useAuth();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
@@ -48,9 +47,15 @@ const TodasTiendas = () => {
 
   useEffect(()=>{
     if(plazas){
-      setParamTiendas(prev => ({...prev, plaza:getInitialPlaza(plazas)}))
+      setParamTiendas(prev => ({
+        ...prev, 
+        plaza:getInitialPlaza(plazas),
+        conIva: config?.conIva || 0,
+        conTiendasCerradas: config?.conTiendasCerradas || 0,
+        resultadosPesos: config?.resultadosPesos || 0,
+      }))
     }
-  },[plazas])
+  },[plazas, config])
 
   useEffect(() => {
     (async()=>{
@@ -149,6 +154,7 @@ const TodasTiendas = () => {
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
                 name={inputNames.CON_IVA}
+                checked={paramTiendas.conIva ? true : false}
                 onChange={(e) => {
                   handleChange(e, setParamTiendas);
                 }}
@@ -156,6 +162,7 @@ const TodasTiendas = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={paramTiendas.conTiendasCerradas ? true : false}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 onChange={(e) => {
                   handleChange(e, setParamTiendas);
@@ -165,7 +172,7 @@ const TodasTiendas = () => {
                 className="mb-3"
                 labelText={checkboxLabels.RESULTADO_PESOS}
                 name={inputNames.RESULTADOS_PESOS}
-                checked={paramTiendas.resultadosPesos}
+                checked={paramTiendas.resultadosPesos ? true : false}
                 onChange={(e) => {
                   handleChange(e, setParamTiendas);
                 }}

@@ -1,35 +1,35 @@
-import React from 'react';
+import React,{useState} from 'react'
+import ParameterAccesItem from './ParameterAccesItem';
 import { groupBykey } from '../../utils/functions';
-import FavoriteItem from './FavoriteItem';
 import { v4 } from 'uuid';
 
-export default function FavoriteList(props) {
-    const {items, setFavorite} = props;
+export default function AccessParameterList(props) {
+    const {items} = props;
+    const [selected, setSelected] = useState(undefined);
+
     if(items){
         const groups = groupBykey(items, "Clase");
-        const Items = Object.keys(groups).map((group, index)=>(
+        const Items = Object.keys(groups).map((group)=>(
             <li key={v4()} className='list-none'>
-                <div className='mb-6 border-l-2 pl-2'>
+                <div key={v4()} className='mb-6 border-l-2 pl-2'>
                     <span className="font-semibold text-xl">{group}</span>
                     <ul className='list-none space-y-2 mt-2'>
                         {groups[group].map((item) => (
-                            <FavoriteItem 
+                            <ParameterAccesItem
                                 key={item.IdDashboardUsr}
                                 id={item.IdDashboardUsr}
                                 name={item.Nombre}
-                                isFavorite={item.Selected}
-                                hasAccess={item.Enabled}
                                 linkTo={item.Endpoint}
-                                setFavorite={setFavorite}
+                                setSelected = {setSelected}
+                                isSelected= {selected == item.IdDashboardUsr}
+                                idAccess = {item.IdProyectAcceso}
                             />
                         ))}
                     </ul>
-            </div>
-           </li>
+                </div>
+            </li>
         ));
         return <ul>{Items}</ul>
-        
     }
-    return null;
-   
+    return null
 }

@@ -264,7 +264,7 @@ Paginate.defaultProps = {
 
 //Props obligatiores del componente
 Paginate.propTypes = {
-  data: PropTypes.array.isRequired,
+  data: PropTypes.array,
   showItems: PropTypes.number,
   options: PropTypes.exact({
     labelSelector: PropTypes.string,
