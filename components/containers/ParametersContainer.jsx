@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
-import { XIcon, AdjustmentsIcon } from "@heroicons/react/solid";
+import Image from "next/image";
+import { XIcon} from "@heroicons/react/solid";
 import useClickOutside from "../../hooks/useClickOutside";
+import filter from '../../public/icons/filter.svg';
 
 const ParametersContainer = ({ children }) => {
   const container = useRef(null);
@@ -31,15 +33,17 @@ const ParametersContainer = ({ children }) => {
   };
   return (
     <>
-      <div className="relative p-2">
+      <div className="relative">
         <div className="flex items-center space-x-2">
           <p className=" font-semibold">Filtros</p>
           <button
-            className=" bg-slate-200 hover:bg-slate-300 rounded-md h-8 w-12 flex items-center justify-center"
+            className=" bg-slate-200 hover:bg-blue-400 rounded-md h-8 w-12 flex items-center justify-center"
             onClick={handleToggle}
             onMouseOver={handleHover}
           >
-            <AdjustmentsIcon width={26} className=" text-slate-600" />
+            <figure>
+              <Image src={filter}  width={24} alt={'icon'}/>
+            </figure>
           </button>
         </div>
 

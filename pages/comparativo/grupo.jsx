@@ -97,7 +97,7 @@ function Grupo(props) {
   }, [parametrosGrupo]);
 
   return (
-    <div className=" flex flex-col h-full">
+    <div className=" flex flex-col h-full ">
       <TitleReport
         title={`COMPARATIVO VENTAS DEL AÑO 
           ${parametrosGrupo.fecha.split("-")[0]} (AL ${
@@ -107,7 +107,7 @@ function Grupo(props) {
         ).toUpperCase()})`}
       />
 
-      <section className="pt-4 pl-2 pr-2 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 flex flex-row justify-between items-center">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -192,7 +192,9 @@ function Grupo(props) {
         </ParametersContainer>
         <ViewFilter viewOption={displayType} handleView={setDisplayType} selectOption={selectRegion} handleSelect = {setRegion}/>
       </section>
-      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
+
+
+      <section className="p-4 overflow-y-auto ">
         {
           (()=>{
             switch(displayType){
