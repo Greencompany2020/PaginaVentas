@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import { v4 } from 'uuid';
 
 export default function Stats(props) {
+    const {columnNum = 3} = props;
     return (
         <article className=' border rounded-md p-2 w-full space-y-1'>
             <h4 className='text-sm font-semibold'>{props.title}</h4>
