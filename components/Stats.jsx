@@ -6,7 +6,7 @@ export default function Stats(props) {
     return (
         <article className=' border rounded-md p-2 w-full space-y-1'>
             <h4 className='text-sm font-semibold'>{props.title}</h4>
-                <section className={`grid grid-cols-${props.columnNum} gap-x-4 gap-y-8 place-items-center xl:place-items-stretch items-start`}>
+                <section className={`grid ${props.expand ? 'grid-cols-2' : 'grid-cols-3'} gap-x-4 gap-y-8 place-items-center xl:place-items-stretch items-start`}>
                 {
                     (()=>{
                         if(props.columns){
@@ -45,12 +45,12 @@ const Column = ({item}) => (
 )
 
 Stats.defaultProps = {
-    columnNum: 3,
+    expand: false,
 }
 
 Stats.proptypes = {
     title: PropTypes.string,
-    columnNum: PropTypes.number,
+    expand: PropTypes.bool,
     columns: PropTypes.arrayOf(PropTypes.exact({
         columnTitle: PropTypes.string,
         values: PropTypes.arrayOf(PropTypes.exact({

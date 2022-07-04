@@ -324,7 +324,7 @@ const Stat = ({data, parameters, acumuladoSemanal}) => {
               <Stats
               key={index}
               title={tienda.tienda}
-              columnNum={acumuladoSemanal ? 2 : 3}
+              expand={acumuladoSemanal ? true : false}
               columns={[
                 acumDia,
                 acumuladoSemanal && acumSem,
@@ -345,7 +345,7 @@ const Stat = ({data, parameters, acumuladoSemanal}) => {
 const StatGroup = ({data, parameters, selectRegion, acumuladoSemanal}) => {
   const { dateRangeText } = getBeginCurrentWeekDateRange(parameters.fecha);
   return(
-    <div className={`grid grid-cols-1 xl:grid-cols-${acumuladoSemanal ? 4 : 3} gap-4`} key={12}>
+    <div className={`grid grid-cols-1 ${acumuladoSemanal ? 'xl:grid-cols-4' : 'xl:grid-cols-3'} gap-4`} key={12}>
       {
         (()=>{
           if(data){
@@ -454,20 +454,24 @@ const StatGroup = ({data, parameters, selectRegion, acumuladoSemanal}) => {
                 <Stats
                   title= {getNameDay(parameters.fecha) +' '+ getDayWeekName(parameters.fecha)}
                   columns={[...acumDia]}
+                  expand={false}
                 />
                 { acumuladoSemanal &&
                   <Stats
                     title= {'Acumulado ' + dateRangeText}
-                    columns={[...acumMes]}
+                    columns={[...acumSem]}
+                    expand={false}
                   />
                 }
                 <Stats
                   title= {'Acumulado' +' '+ getMonthByNumber(parameters.fecha.split("-")[1])}
                   columns={[...acumMes]}
+                  expand={false}
                 />
                   <Stats
                   title= {'Acumulado anual'}
                   columns={[...acumAnual]}
+                  expand={false}
                 />
               </Fragment>
             )
