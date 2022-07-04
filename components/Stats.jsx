@@ -3,11 +3,10 @@ import PropTypes from "prop-types";
 import { v4 } from 'uuid';
 
 export default function Stats(props) {
-    const {columnNum = 3} = props;
     return (
         <article className=' border rounded-md p-2 w-full space-y-1'>
             <h4 className='text-sm font-semibold'>{props.title}</h4>
-                <section className={`grid grid-cols-${props.columnNum} gap-x-4 gap-y-8 place-items-center xl:place-items-stretch items-start`}>
+                <section className={`grid grid-cols-3 gap-x-4 gap-y-8 place-items-center xl:place-items-stretch items-start`}>
                 {
                     (()=>{
                         if(props.columns){
