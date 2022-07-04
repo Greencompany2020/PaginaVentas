@@ -1,15 +1,10 @@
 import React, {useEffect} from "react";
-import Dropzone from "../components/dropzone";
-import { useNotification } from "../components/notifications/NotificationsProvider";
+import Stats from "../components/Stats";
 export default function Developer() {
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const sendNotification = useNotification()
-  useEffect(()=>{
-    sendNotification({
-      type:'',
-      message:'hola'
-    })
-  },[])
-  return <Dropzone />;
+  return(
+    <div className="p-4  w-full">
+      <Stats />
+    </div>
+  );
 }
 

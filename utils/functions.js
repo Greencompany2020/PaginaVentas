@@ -203,13 +203,13 @@ export const createSimpleDatasets = (data, updateLabels, updateDataset) => {
  */
 export const getTableName = (name) => {
   if (name?.toLowerCase().includes("frogs") && !name?.toLowerCase().includes("proyectos")) {
-    return (<h2 className='text-center text-2xl p-3'>Tiendas Frogs</h2>);
+    return (<h2 className='text-center text-xl'>Tiendas Frogs</h2>);
   } else if (name?.toLowerCase().includes("web")) {
-    return (<h2 className='text-center text-2xl p-3'>Tienda En Línea</h2>);
+    return (<h2 className='text-center text-xl'>Tienda En Línea</h2>);
   } else if (name?.toLowerCase().includes("proyectos")) {
-    return (<h2 className='text-center text-2xl p-3'>Tiendas Frogs - Proyectos</h2>);
+    return (<h2 className='text-center text-xl'>Tiendas Frogs - Proyectos</h2>);
   } else if (name?.toLowerCase().includes("skoro")) {
-    return (<h2 className='text-center text-2xl p-3'>Tiendas Skoro</h2>);
+    return (<h2 className='text-center text-xl'>Tiendas Skoro</h2>);
   }
 }
 /**
@@ -333,6 +333,32 @@ export const rowColor = (item) => {
     return "bg-gray-300 font-bold";
   }
   return ""
+}
+/**
+ * Regresa si la linea actual es de una plaza
+ * @param {*} item 
+ * @returns 
+ */
+export const isPlaza = (item) => {
+  if (concentradoPlazas.findIndex(plaza => plaza === item.tienda) !== -1) {
+    return true;
+  }
+  return false;
+}
+export const spliceByRegion = (data) => {
+  const replaced = {};
+  Object.entries(data ?? {})?.map(([key,value]) => {
+    let initial = 0;
+    regiones.forEach (region => {
+      const final = value.findIndex(el => el.tienda == region);
+      if(final != -1){
+        const temp = value.slice(initial, final + 1);
+        if(temp.length > 0) Object.assign(replaced, {[region]: temp});
+        initial = final + 1;
+      }
+    });
+  });
+  return replaced;
 }
 /**
  * Crear un texto de título a partir del rango de fechas ingresado. Ej.

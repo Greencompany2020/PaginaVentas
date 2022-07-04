@@ -24,6 +24,48 @@ export const formatNumber = (num, isLast=false) => {
     }}>{numberText}</td>)
   }
 }
+
+export const stringFormatNumber = (num, isLast=false) => {
+  let numberText = '';
+  if (num < 0) {
+    numberText = Math.abs(num).toLocaleString('en-US');
+    return (<span style={{
+      color: isLast ? "black" : "rgb(220 38 38)",
+      fontWeight: 700,
+      textAlign: "right",
+      fontSize: 12
+    }}>{`(${numberText})`}</span>)
+  } else {
+    numberText = Math.abs(num).toLocaleString('en-US');
+    return (<span style={{
+      color: isLast ? "black" : "rgb(5 150 105)",
+      fontWeight: 700,
+      textAlign: "right",
+      fontSize: 12
+    }}>{numberText}</span>)
+  }
+}
+
+export const tdFormatNumber = (num, isLast=false) => {
+  let numberText = '';
+  if (num < 0) {
+    numberText = Math.abs(num).toLocaleString('en-US');
+    return (<td style={{
+      color: isLast ? "black" : "rgb(220 38 38)",
+      fontWeight: 700,
+      textAlign: "right",
+      fontSize: 12
+    }}>{`(${numberText})`}</td>)
+  } else {
+    numberText = Math.abs(num).toLocaleString('en-US');
+    return (<td style={{
+      color: isLast ? "black" : "rgb(5 150 105)",
+      fontWeight: 700,
+      textAlign: "right",
+      fontSize: 12
+    }}>{numberText}</td>)
+  }
+}
 /**
  * Formatea el número separando las unidades por comas.
  * @param {number} num El valor a formatear

@@ -4,8 +4,6 @@ import Checkbox from './inputs/Checkbox';
 
 export default function ParameterForm({submit, savedParameters, onlySelect = true, includedParameters}) {
     const [values, setValues] = useState({});
-    const [hasValues, setHasValues] = useState(true);
-
     const handleChange = evt =>{
         const {name, checked} = evt.target;
         setValues(prev => ({

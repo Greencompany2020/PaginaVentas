@@ -33,7 +33,7 @@ const ParametersContainer = ({ children }) => {
     <>
       <div className="relative p-2">
         <div className="flex items-center space-x-2">
-          <p className=" text-lg font-semibold">Filtros</p>
+          <p className=" font-semibold">Filtros</p>
           <button
             className=" bg-slate-200 hover:bg-slate-300 rounded-md h-8 w-12 flex items-center justify-center"
             onClick={handleToggle}

@@ -45,6 +45,25 @@ table.tfooter tr:last-child td:last-child{
   }
 }
 
+.mobile-table{
+  @apply w-full text-xs;
+}
+.mobile-table thead tr th, .mobile-table tbody tr:last-child td{
+  @apply bg-[#EFEDED];
+}
+.mobile-table thead tr th:first-child{
+  @apply rounded-tl-md;
+}
+.mobile-table thead tr th:last-child{
+  @apply rounded-tr-md;
+}
+.mobile-table tbody tr:last-child td:first-child{
+  @apply rounded-bl-md
+}
+.mobile-table tbody tr:last-child td:last-child{
+  @apply rounded-br-md
+}
+
 .blue-button {
   @apply bg-sky-500 w-40 rounded-lg h-10 flex justify-center items-center m-auto hover:bg-sky-400 transition-all ease-in-out duration-200;
 }
