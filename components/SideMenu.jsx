@@ -13,7 +13,7 @@ import { useRouter } from "next/router";
 
 const SideMenu = () => {
   const menuRef = useRef(null);
-  const [visible, toggleVisible] = useToggle(true);
+  const [visible, toggleVisible] = useToggle(false);
   const [showChevron, setShowChevron] = useState(false);
   const service = authService();
   const sendNotification = useNotification();
