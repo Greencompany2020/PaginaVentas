@@ -35,6 +35,19 @@
 
 @media (max-width: 768px) {
     .Toolbar{
-        background: none;
+        position: relative;
+        bottom: 4px;
+        right: 2px;
+        height: 46px;
+        justify-content: center;
+    }
+
+    .Body{
+        display: none;
+    }
+    
+    .Footer{
+        flex: 0.1;
+        display: none;
     }
 }

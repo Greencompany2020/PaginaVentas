@@ -22,7 +22,7 @@ export default function ViewFilter(props) {
 
 
     return (
-        <div className='flex flex-col space-y-1 items-stretch mb-1'>
+        <div className='flex flex-col space-y-1 items-stretch'>
             <section className='space-x-1 flex items-center'>
                 <button 
                     className={`bg-slate-200 hover:bg-blue-400 rounded-md h-8 w-12 ${selectButton == 1  && 'bg-blue-400'}`} 
@@ -57,18 +57,15 @@ export default function ViewFilter(props) {
                     </figure>
                 </button>
             </section>
-            <section className=''>
-                <div className="space-x-2 flex items-center">
-                    <label htmlFor="region" className='space-x-1 w-full'>
-                    <span className='text-sm font-bold w[10%]'>Secciòn</span>
-                    <select name="region" id="region" className='h-8 w-[73%] rounded-md bg-slate-200 ' onChange={handleSplice} value={selectOption}>
+            <section className={`space-x-2 flex items-center ${selectButton !== 3 && 'hidden'}`}>
+                <label htmlFor="region" className='space-x-1 w-full'>
+                    <select name="region" id="region" className='h-8 w-full rounded-md bg-slate-200 ' onChange={handleSplice} value={selectOption}>
                         <option value="REGION I">Region I</option>
                         <option value="REGION II">Region II</option>
                         <option value="REGION III">Region III</option>
                         <option value="WEB">WEB</option>
                     </select>
-                    </label>
-                </div>
+                </label>
             </section>
         </div>
     )

@@ -37,7 +37,7 @@ const ParametersContainer = ({ children }) => {
         <div className="flex items-center space-x-2">
           <p className=" font-semibold">Filtros</p>
           <button
-            className=" bg-slate-200 hover:bg-blue-400 rounded-md h-8 w-12 flex items-center justify-center"
+            className={` bg-slate-200 hover:bg-blue-400 rounded-md h-8 w-12 flex items-center justify-center ${toggle && 'bg-blue-400'}`}
             onClick={handleToggle}
             onMouseOver={handleHover}
           >
@@ -48,7 +48,7 @@ const ParametersContainer = ({ children }) => {
         </div>
 
         <div
-          className={`absolute w-[24rem] h-min[24rem] h-[28rem] left-0 top-11 bg-slate-200 rounded-md ${
+          className={`absolute w-[24rem] h-min[24rem] h-[28rem] left-0 top-9 bg-slate-200 rounded-md ${
             !toggle && "hidden"
           }`}
           ref={container}
