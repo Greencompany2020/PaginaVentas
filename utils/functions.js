@@ -345,6 +345,11 @@ export const isPlaza = (item) => {
   }
   return false;
 }
+/**
+ * Hace un splice de la data por regiones
+ * @param {*} data 
+ * @returns 
+ */
 export const spliceByRegion = (data) => {
   const replaced = {};
   Object.entries(data ?? {})?.map(([key,value]) => {
@@ -359,6 +364,25 @@ export const spliceByRegion = (data) => {
     });
   });
   return replaced;
+}
+/**
+ * Obtiene el nombre de la tienda segun la region
+ * @param {*} region 
+ * @returns 
+ */
+export const getShopNameByRegion = region => {
+  switch (region){
+    case "REGION I":
+      return "Tiendas frogs";
+    case "REGION II":
+      return "Tiendas frogs";
+    case "REGION III":
+      return "Tiendas frogs";
+    case "WEB":
+      return "Web";
+    default:
+      return "Tiendas Frogs"
+  }
 }
 /**
  * Crear un texto de título a partir del rango de fechas ingresado. Ej.

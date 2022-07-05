@@ -5,7 +5,7 @@
     height: 100%;
     width: 2.8rem;
     overflow: hidden;
-    background: #333333;
+    background-color: #333333;
     align-content: space-around;
     justify-content: space-between;
 }
@@ -35,6 +35,7 @@
 
 @media (max-width: 768px) {
     .Toolbar{
+        background: none;
         position: relative;
         bottom: 4px;
         right: 2px;
