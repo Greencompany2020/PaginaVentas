@@ -5,7 +5,7 @@ import { LogoutIcon } from "@heroicons/react/outline";
 import useToggle from "../hooks/useToggle";
 import useClickOutside from "../hooks/useClickOutside";
 import { enlaces as enlacesMenuLateral } from "../utils/data";
-import { isWindows, isAndroid, isChromium, } from "react-device-detect";
+import { isWindows, isAndroid, isChrome} from "react-device-detect";
 import authService from "../services/authService";
 import { useNotification } from "./notifications/NotificationsProvider";
 import jsCookie from 'js-cookie';
@@ -46,7 +46,7 @@ const SideMenu = () => {
 
   useEffect(()=>{
     (()=>{
-      setShowChevron(isWindows || isAndroid || isChromium)
+      setShowChevron(isWindows || isAndroid || isChrome)
     })()
   },[])
 
