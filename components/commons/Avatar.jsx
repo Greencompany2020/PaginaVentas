@@ -13,7 +13,7 @@ export default function Avatar(props) {
     }
 
     return (
-       <figure className={`relative rounded-full border-2 border-gray-200 bg-white overflow-hidden w-[${size}rem] h-[${size}rem]`}>
+       <figure className={`relative rounded-full border-2 border-gray-200 bg-white overflow-hidden w-[${size || 3}rem] h-[${size || 3}rem]`}>
         <Image src={url} layout='fill' alt='Avatar' objectFit="contain" objectPosition="center" />
        </figure>
     )
