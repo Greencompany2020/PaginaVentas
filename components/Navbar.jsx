@@ -62,7 +62,9 @@ const Navbar = () => {
                   </figure>
                 </a>
               </Link>
-              <Avatar image={user?.ImgPerfil} size={3}/>
+              <figure className=" w-[3rem] h-[3rem] p-1">
+                <Avatar image={user?.ImgPerfil}/>
+              </figure>
               <figure>
                 <ChevronDownIcon
                   className="text-white h-7 w-7 my-auto cursor-pointer"

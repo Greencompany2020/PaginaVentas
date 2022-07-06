@@ -13,9 +13,9 @@ export default function VerifyHolder(props) {
             disabled
             placeholder={placeholder}
             />
-            <span className=" absolute top-1 right-0">
+            <figure  className=" absolute top-1 right-1">
                 <Image src={Verify} height={30} width={30} alt="OK" />
-            </span>
+            </figure>
         </figure>
     )
 }

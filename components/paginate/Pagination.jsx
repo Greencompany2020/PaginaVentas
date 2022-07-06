@@ -36,7 +36,7 @@ export default function Pagination(props) {
             <button
               key={generateKey(index + 132323442)}
               onClick={() => handleSelect(index)}
-              className={`${styles.PaginationPage} ${
+              className={`${styles.PaginationButtomStep} ${
                 current == index && styles.PaginationActive
               }`}
             >

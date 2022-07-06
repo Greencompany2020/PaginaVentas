@@ -46,7 +46,7 @@ export const stringFormatNumber = (num, isLast=false) => {
   }
 }
 
-export const tdFormatNumber = (num, isLast=false) => {
+export const tdFormatNumber = (num, isLast=false, font=12) => {
   let numberText = '';
   if (num < 0) {
     numberText = Math.abs(num).toLocaleString('en-US');
@@ -54,7 +54,7 @@ export const tdFormatNumber = (num, isLast=false) => {
       color: isLast ? "black" : "rgb(220 38 38)",
       fontWeight: 700,
       textAlign: "right",
-      fontSize: 12
+      fontSize: font
     }}>{`(${numberText})`}</td>)
   } else {
     numberText = Math.abs(num).toLocaleString('en-US');

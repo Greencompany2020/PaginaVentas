@@ -121,7 +121,7 @@ const Access = (props) => {
             <div className='p-4'>
                 <TabButton/>
             </div>
-            <section>
+            <section className=' overflow-hidden'>
                 <div className='p-4 md:p-8 space-y-4'>
                     <div className="flex justify-start">
                         <button className="primary-btn w-20" onClick={handleAddButton}>Agregar</button>

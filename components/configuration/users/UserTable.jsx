@@ -17,7 +17,7 @@ export default function UserTable(props) {
             <th className="bg-slate-300 p-1 hidden  lg:table-cell">
               Apellidos
             </th>
-            <th className="bg-slate-300 p-1">Usuario</th>
+            <th className="bg-slate-300 p-1  hidden  lg:table-cell">Usuario</th>
             <th className="bg-slate-300 p-1 hidden  lg:table-cell">Grupo</th>
             <th className="bg-slate-300 text-center rounded-r-md p-1">
               Acciones
@@ -34,7 +34,7 @@ export default function UserTable(props) {
               <td>{item.NoEmpleado}</td>
               <td>{item.Nombre}</td>
               <td className="hidden lg:table-cell">{item.Apellidos}</td>
-              <td>{item.UserCode}</td>
+              <td className="hidden lg:table-cell">{item.UserCode}</td>
               <td className="hidden lg:table-cell">{item.NombreGrupo}</td>
               <td className="flex justify-center space-x-1">
                 <LockOpenIcon

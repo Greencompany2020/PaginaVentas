@@ -4,15 +4,15 @@ import { generateLivKey } from "../../../utils/functions";
 export default function TableAccess(props) {
   const { items, handleSelect, handleShowModal, deleteAccess, handleShowRetrive} = props;
   return (
-    <div className="h-[500px] overflow-y-auto">
-      <table className="w-full">
+    <div className="h-[500px] w-full overflow-auto">
+      <table className="w-full overflow-auto">
         <thead className="text-left">
           <tr>
             <th className="bg-slate-300 rounded-l-md hidden  lg:table-cell">
               Menu
             </th>
             <th className="bg-slate-300 p-1 hidden  lg:table-cell">Reporte</th>
-            <th className="bg-slate-300 p-1">Nombre</th>
+            <th className="bg-slate-300 p-1 rounded-l-md lg:rounded-none">Nombre</th>
             <th className="bg-slate-300 text-center rounded-r-md p-1">
               Acciones
             </th>

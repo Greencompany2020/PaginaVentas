@@ -12,12 +12,13 @@ import jsCookie from 'js-cookie';
 import { useRouter } from "next/router";
 
 const SideMenu = () => {
+  const router = useRouter();
   const menuRef = useRef(null);
-  const [visible, toggleVisible] = useToggle(false);
+  const isFirst = router.pathname !== '/ventas'
+  const [visible, toggleVisible] = useToggle(isFirst);
   const [showChevron, setShowChevron] = useState(false);
   const service = authService();
   const sendNotification = useNotification();
-  const router = useRouter();
 
   const handleLogout = async() => {
     try {

@@ -10,7 +10,7 @@ export default function SubMenuItem(props) {
             onClick={action}
         >
            <div className='flex flex-col justify-start w-full h-full'>
-                <h5 className='text-lg font-semibold'>{title}</h5>
+                <h5 className='font-semibold'>{title}</h5>
                 <p className='text-sm text-gray-500 '>{description}</p>
            </div>
            <figure>

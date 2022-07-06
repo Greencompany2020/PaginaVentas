@@ -6,7 +6,7 @@ import jsCookie from "js-cookie";
 import { useRouter } from 'next/router';
 import {useAuth} from '../../context/AuthContext';
 import { useNotification } from '../../components/notifications/NotificationsProvider';
-import {TextInput} from '../../components/FormInputs'
+import {LoginInput} from '../../components/FormInputs'
 
 export default function LoginContainer(props) {
     const {setLoading} =props
@@ -45,8 +45,8 @@ export default function LoginContainer(props) {
     <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleLogin}>
       <Form>
         <fieldset className='space-y-4'>
-          <TextInput type='text' name='UserCode' placeholder='Usuario'/>
-          <TextInput type='password' name='password' placeholder='Contraseña'/>
+          <LoginInput type='text' name='UserCode' placeholder='Usuario'/>
+          <LoginInput type='password' name='password' placeholder='Contraseña'/>
         </fieldset>
         <input type='submit' value='Ingresar' className="primary-btn  w-full mt-4"/>
       </Form>

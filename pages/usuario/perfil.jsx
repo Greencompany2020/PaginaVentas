@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React from 'react'
 import { getBaseLayout } from "../../components/layout/BaseLayout";
 import withAuth from "../../components/withAuth";
 import { useAuth } from "../../context/AuthContext";
@@ -10,11 +10,13 @@ import VerifyHolder from "../../components/commons/VerifyHolder";
 import ConfigurationItems from "../../containers/profile/ConfigurationItems";
 import userService from '../../services/userServices';
 import { useNotification } from '../../components/notifications/NotificationsProvider';
+import LoaderComponentBas from '../../components/LoaderComponentBas';
 
 const Perfil = () => {
   const { user, refreshUser } = useAuth();
   const [visible, setVisible] = useToggle(false);
   const sendNotification = useNotification();
+  const [isLoading, setLoading] = useToggle(false);
   const service = userService();
 
   const handleUploadImage = async (files) =>{
@@ -31,13 +33,32 @@ const Perfil = () => {
     return true
   }
 
+  const handleRequestNewPassword = async () => {
+    setLoading();
+    try {
+      await service.requestPasswordReset({email:user?.Email});
+      sendNotification({
+        type:'OK',
+        message:'Se ha enviado un link a su correo'
+      })
+    } catch (error) {
+      sendNotification({
+        type:'OK',
+        message:'Error al enviar correo'
+      })
+    }
+    setLoading();
+  }
+
   return (
     <>
       <div className="flex flex-col md:flex-row h-full">
-          <section className="w-full h-[400px] md:w-[400px] md:h-full bg-gray-200">
+          <section className="w-full h-[500px] md:w-[400px] md:h-full bg-gray-200">
             <div className="p-4">
               <div className="flex flex-col items-center md:justify-center space-y-2">
-                <Avatar image={user?.ImgPerfil} size={10}/>
+                <figure className='w-[12rem] h-[12rem]'>
+                  <Avatar image={user?.ImgPerfil}/>
+                </figure>
                 <button className="text-blue-400 font-bold" onClick={setVisible}>Cambiar imagen</button>
               </div>
               <div className="mt-8">
@@ -45,7 +66,8 @@ const Perfil = () => {
                 <div className="mt-3 space-y-2">
                   <p className="font-semibold">Email y contraseña</p>
                   <VerifyHolder placeholder={user?.Email}/>
-                  <button className="text-blue-400 font-bold">Cambiar Contraseña</button>
+                  <button className="text-blue-400 font-bold" onClick={handleRequestNewPassword}>Cambiar Contraseña</button>
+                  <LoaderComponentBas isLoading={isLoading}/>
                 </div>
               </div>
             </div>
@@ -53,10 +75,10 @@ const Perfil = () => {
 
           <section className="w-full md:h-full">
            <div className="p-4">
-              <h4 className=" hidden md:block md:text-right md:text-3xl md:font-bold">{user?.Nombre} {user?.Apellidos}</h4>
+              <h4 className=" hidden md:block md:text-right md:text-2xl md:font-bold">{user?.Nombre} {user?.Apellidos}</h4>
               {/*Informacion*/}
               <section>
-                <h3 className="text-xl font-semibold mb-2">Informaciòn general</h3>
+                <h3 className="text-xl font-semibold mb-2">Informacion general</h3>
                 <div className="grid gap-4 md:grid-cols-6 pl-2">
 
                   <div className="flex flex-col space-y-2">

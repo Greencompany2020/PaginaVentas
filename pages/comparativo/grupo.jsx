@@ -721,7 +721,7 @@ const TableMobil  =  ({data, parameters, acumuladoSemanal}) =>{
                 <th>%</th>
               </tr>
             </thead>
-            <tbody className="text-xs">
+            <tbody className="text-[11px]">
             {
               (()=>{
                 if(value){
@@ -771,11 +771,11 @@ const TableMobil  =  ({data, parameters, acumuladoSemanal}) =>{
                       className={rowColor(tienda)}
                     >
                       <td className="text-left">{tienda.tienda}</td>
-                      <td className="font-bold text-right" >{numberWithCommas(tienda.ventasAnualActual)}</td>
-                      <td className="text-right">{numberWithCommas(tienda.ventasAnualAnterior)}</td>
-                      <td className="text-right">{numberWithCommas(tienda.presupuestoAnual)}</td>
-                      {tdFormatNumber(tienda.diferenciaAnual, count == index)}
-                      {tdFormatNumber(tienda.porcentajeAnual, count == index)}
+                      <td className="font-bold text-right text-[10px]" >{numberWithCommas(tienda.ventasAnualActual)}</td>
+                      <td className="text-right text-[10px]">{numberWithCommas(tienda.ventasAnualAnterior)}</td>
+                      <td className="text-right text-[10px]">{numberWithCommas(tienda.presupuestoAnual)}</td>
+                      {tdFormatNumber(tienda.diferenciaAnual, count == index, 10)}
+                      {tdFormatNumber(tienda.porcentajeAnual, count == index, 10)}
                     </TableRow>
                   ));
                 return Items;
