@@ -40,7 +40,7 @@ const Grafica = ({ year1, year2 }) => {
     <div className=" flex flex-col h-full">
       <TitleReport title="Comparativo Semana Santa Grupo Frogs 2018 vs 2019 (mls.pesos) -iva no incluido" />
 
-      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -94,7 +94,7 @@ const Grafica = ({ year1, year2 }) => {
           </Parameters>
         </ParametersContainer>
       </section>
-      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
+      <section className="p-4 overflow-y-auto ">
         <VentasTableContainer>
           <BarChart
             text="Años"

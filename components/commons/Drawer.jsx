@@ -25,7 +25,7 @@ export default function Drawer(props) {
                 </section>
             </aside>
             {/*Overlay*/}
-            <div className={`${!expand && 'hidden'} absolute top-0 right-0 w-screen h-screen bg-gray-500 z-10 opacity-80`}></div>
+            <div className={`${!expand && 'hidden'}  absolute top-0 right-0 w-screen h-screen bg-gray-500 z-10 opacity-80`}></div>
         </>
     )
 }

@@ -89,7 +89,7 @@ const Plazas = (props) => {
         }`}
       />
 
-      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -101,8 +101,6 @@ const Plazas = (props) => {
                 value={plazasParametros.alAgno}
                 onChange={(e) => handleChange(e, setPlazasParametros)}
               />
-            </InputContainer>
-            <InputContainer>
               <SelectToMonth
                 value={plazasParametros.alMes}
                 onChange={(e) => handleChange(e, setPlazasParametros)}
@@ -144,7 +142,7 @@ const Plazas = (props) => {
           </Parameters>
         </ParametersContainer>
       </section>
-      <section className=" pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 h-full overflow-y-auto ">
+      <section className=" p-4 overflow-y-auto ">
         <ComparativoVentas>
         <BarChart
             data={{

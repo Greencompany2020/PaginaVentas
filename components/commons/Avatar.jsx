@@ -6,30 +6,22 @@ import rana from '../../public/images/rana10.png'
 export default function Avatar(props) {
     const {image, size} = props;
     let url = null;
-    if(!image){
-        url = rana
+    if(!image || image.includes('null')){
+        url = rana;
     }else{
         url = image
     }
+
     return (
-        <figure className={`bg-slate-100 rounded-full border border-gray-200 w-[${size || 12}rem] h-[[${size || 12}rem]  overflow-hidden`}>
-           <div className=' overflow-hidden grid place-items-center'>
-            <Image 
-                    src={url} 
-                    width={size} 
-                    height={size} 
-                    layout="fixed"
-                    alt='user avatar' 
-                    objectFit='fill' 
-                />
-           </div>
-        </figure>
+       <figure className={`relative rounded-full border-2 border-gray-200 bg-white overflow-hidden w-[${size}rem] h-[${size}rem]`}>
+        <Image src={url} layout='fill' alt='Avatar' objectFit="contain" objectPosition="center" />
+       </figure>
     )
 }
 
 Avatar.defaultProps = {
     image: '',
-    size: 12
+    size: 3
 }
 
 Avatar.propTypes = {

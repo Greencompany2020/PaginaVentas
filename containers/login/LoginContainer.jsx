@@ -6,6 +6,7 @@ import jsCookie from "js-cookie";
 import { useRouter } from 'next/router';
 import {useAuth} from '../../context/AuthContext';
 import { useNotification } from '../../components/notifications/NotificationsProvider';
+import {TextInput} from '../../components/FormInputs'
 
 export default function LoginContainer(props) {
     const {setLoading} =props
@@ -40,60 +41,16 @@ export default function LoginContainer(props) {
         setLoading();
     }
 
-    return (
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={(values) => handleLogin(values)}
-      >
-        {({ errors, touched }) => (
-          <Form>
-            <div className="space-y-4">
-              <div className="flex flex-col justify-start">
-                <Field
-                  type="text"
-                  placeholder="Usuario"
-                  name="UserCode"
-                  id="UserCode"
-                  className={`rounded-md p-3 outline-none  ${
-                    errors?.UserCode && touched?.UserCode
-                      ? "border-[3px] border-red-500"
-                      : null
-                  }`}
-                />
-                {errors?.UserCode && touched?.UserCode ? (
-                  <span className="font-semibold text-red-500">
-                    {errors?.UserCode}
-                  </span>
-                ) : null}
-              </div>
-
-              <div className="flex flex-col justify-start">
-                <Field
-                  type="password"
-                  placeholder="Contraseña"
-                  name="password"
-                  id="password"
-                  className={`rounded-md p-3 outline-none  ${
-                    errors?.password && touched?.password
-                      ? "border-[3px] border-red-500"
-                      : null
-                  }`}
-                />
-                {errors?.password && touched?.password ? (
-                  <span className="font-semibold text-red-500">
-                    {errors?.password}
-                  </span>
-                ) : null}
-              </div>
-            </div>
-
-            <button type="submit" className="primary-btn w-full mt-4">
-              Iniciar sesion
-            </button>
-          </Form>
-        )}
-      </Formik>
-    );
+   return(
+    <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleLogin}>
+      <Form>
+        <fieldset className='space-y-4'>
+          <TextInput type='text' name='UserCode' placeholder='Usuario'/>
+          <TextInput type='password' name='password' placeholder='Contraseña'/>
+        </fieldset>
+        <input type='submit' value='Ingresar' className="primary-btn  w-full mt-4"/>
+      </Form>
+    </Formik>
+   )
 }
 

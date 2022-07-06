@@ -80,7 +80,7 @@ const Tiendas = (props) => {
           tiendasParametros.delMes
         )} del año ${tiendasParametros.alAgno}`}
       />
-      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>

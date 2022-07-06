@@ -36,7 +36,7 @@ const Fechas = (props) => {
   return (
     <div className=" flex flex-col h-full">
       <TitleReport title="Reporte de la ultima fecha de venta registrada por tienda" />
-      <section className=" p-4 md:p-8 xl:p-16 overflow-y-auto ">
+      <section className=" p-4 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable>
             <TableHead>

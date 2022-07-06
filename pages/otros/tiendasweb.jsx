@@ -19,7 +19,7 @@ const tiendasweb = () => {
     <div className=" flex flex-col h-full">
       <TitleReport title="TIENDAS WEB COMPARATIVO VENTAS DEL AÑO 2022 (AL 12 DE ENERO S/IVA M.N. )" />
 
-      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -28,7 +28,7 @@ const tiendasweb = () => {
           </Parameters>
         </ParametersContainer>
       </section>
-      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
+      <section className="p-4 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable className="last-row-bg">
             <TableHead>

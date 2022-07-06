@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Image from "next/image";
-import Logo from "../public/images/green-company.png";
+import logo from "../public/images/brand.svg";
 import { useState } from "react";
 import witAuth from "../components/withAuth";
 import LoaderComponentBas from "../components/LoaderComponentBas";
@@ -13,28 +13,23 @@ export const Home = () => {
   const [isLoading, setLoading] = useToggle(false);
 
   return (
-    <>
-      <Head>Ventas</Head>
-      <section className="h-screen bg-cyan-600 grid place-items-center p-3">
-        <div className="bg-gray-200  rounded-md p-3">
-          <div className="flex flex-col justify-center p-4">
-            <div className=" w-2/3 m-auto mb-1">
-              <Image
-                src={Logo}
-                alt="Green Company"
-                className=" object-fill h-40"
-              />
-            </div>
-            {attemptLogin ? <LoginContainer setLoading = {setLoading}/> : <ResetPasswordContainer setLoading = {setLoading}/>}
-            <LoaderComponentBas isLoading={isLoading} />
-            <button 
-              className="text-lg cursor-pointer text-sky-500 text-center mt-8 font-semibold"
-              onClick={() => setAttemp(prev => !prev)}
-            >{attemptLogin ? 'Olvide mi contraseña' : 'Regresar'}</button>
-          </div>
+   <section className=" h-screen grid place-items-center bg-cyan-600 p-4">
+      <div className="w-full md:w-[30%] xl:w-[20%] min-h-[30rem] h-fit p-4 bg-gray-50 rounded-md shadow-xl">
+        <figure className="relative w-full h-44">
+          <Image src={logo} layout='fill' alt="logo"/>
+        </figure>
+        <div>
+          {attemptLogin ? <LoginContainer setLoading = {setLoading}/> : <ResetPasswordContainer setLoading = {setLoading}/>}
+          <LoaderComponentBas isLoading={isLoading} />
         </div>
-      </section>
-    </>
+        <button 
+          className=" w-full text-sm font-bold text-sky-500 mt-8"  
+          onClick={() => setAttemp(prev => !prev)}
+        >
+         {attemptLogin ? 'Olvide mi contraseña' : 'Regresar'}
+        </button>
+      </div>
+   </section>
   );
 };
 

@@ -36,6 +36,7 @@ import {useNotification} from '../../components/notifications/NotificationsProvi
 import Stats from "../../components/Stats";
 import { v4 } from "uuid";
 import ViewFilter from "../../components/ViewFilter";
+import { isMobile } from "react-device-detect";
 
 function Grupo(props) {
   const {config} = props;
@@ -75,7 +76,9 @@ function Grupo(props) {
       tipoCambioTiendas: config?.tipoCambioTiendas || 0,
     }));
 
+
     setAcumuladoSemanal(config?.acumuladoSemanal ? true : false);
+    setDisplayType((isMobile ? config?.mobileReportView : config?.desktopReportView));
   },[config])
 
   useEffect(() => {
@@ -354,7 +357,7 @@ const StatGroup = ({data, parameters, selectRegion, acumuladoSemanal}) => {
     <div className={`grid grid-cols-1 ${acumuladoSemanal ? 'xl:grid-cols-4' : 'xl:grid-cols-3'} gap-4`} key={12}>
       {
         (()=>{
-          if(data){
+          if(Array(data).length > 0){
             const acumDia = data[selectRegion]?.map(tienda => (
               {
                 columnTitle: tienda.tienda,
@@ -455,28 +458,31 @@ const StatGroup = ({data, parameters, selectRegion, acumuladoSemanal}) => {
                 ]
               }
             ))
+
             return (
+              
               <Fragment key={v4()}>
+                
                 <Stats
                   title= {getNameDay(parameters.fecha) +' '+ getDayWeekName(parameters.fecha)}
-                  columns={[...acumDia]}
+                  columns={(acumDia && [...acumDia])}
                   expand={false}
                 />
                 { acumuladoSemanal &&
                   <Stats
                     title= {'Acumulado ' + dateRangeText}
-                    columns={[...acumSem]}
+                    columns={(acumSem && [...acumSem])}
                     expand={false}
                   />
                 }
                 <Stats
                   title= {'Acumulado' +' '+ getMonthByNumber(parameters.fecha.split("-")[1])}
-                  columns={[...acumMes]}
+                  columns={(acumMes && [...acumMes])}
                   expand={false}
                 />
                   <Stats
                   title= {'Acumulado anual'}
-                  columns={[...acumAnual]}
+                  columns={(acumAnual && [...acumAnual])}
                   expand={false}
                 />
               </Fragment>

@@ -37,7 +37,7 @@ const Perfil = () => {
           <section className="w-full h-[400px] md:w-[400px] md:h-full bg-gray-200">
             <div className="p-4">
               <div className="flex flex-col items-center md:justify-center space-y-2">
-                <Avatar image={user?.ImgPerfil} size={128}/>
+                <Avatar image={user?.ImgPerfil} size={10}/>
                 <button className="text-blue-400 font-bold" onClick={setVisible}>Cambiar imagen</button>
               </div>
               <div className="mt-8">

@@ -21,8 +21,9 @@ const SideMenu = () => {
 
   const handleLogout = async() => {
     try {
-        const response = await service.logout();
+        service.logout();
         jsCookie.remove('accessToken');
+        jsCookie.remove('jwt');
         router.push('/');
     } catch (error) {
       sendNotification({

@@ -62,7 +62,12 @@ const witAuth = (Component) => {
       const configuration = {}
       if(userParams){
         for(const item in userParams){
-          let value = (userParams[item] == 'Y') ? 1 : 0;
+          let value = null;
+          if(isNaN(userParams[item])){
+            value = (userParams[item] == 'Y') ? 1 : 0;
+          }else{
+            value = userParams[item] || 0;
+          }
           Object.assign(configuration, {[item]:value});
         }
       }

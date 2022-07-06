@@ -5,6 +5,8 @@ import Drawer from '../../components/commons/Drawer';
 import useToggle from '../../hooks/useToggle';
 import FavoritesContainer from './FavoritesContainer';
 import ParameterContainers from './ParameterContainers';
+import heart from '../../public/icons/heart.svg';
+import cong from '../../public/icons/configurations.svg'
 
 export default function ConfigurationItems() {
     const [expand, setExpand] = useToggle();
@@ -28,18 +30,20 @@ export default function ConfigurationItems() {
 
     return (
         <>
-            <div className='grid xs:grid-cols-1 grid-cols-2 xl:grid-cols-4 2xl:grid-cols-6 gap-4'>
+            <div className='grid grid-cols-1 xl:grid-cols-4 gap-4'>
                 <SubMenuItem
                     key={v4()}
                     title="Favoritos"
                     description="Selecciona tus accesos favoritos"
                     action={()=> handleSelectOption('Favoritos')}
+                    icon={heart}
                 />
                 <SubMenuItem
                     key={v4()}
                     title="Parametrizaciones"
                     description="Parametriza las opciones de reporte"
                     action={()=> handleSelectOption('Parametros')}
+                    icon={cong}
                 />
             </div>
             {/*Drawer*/}

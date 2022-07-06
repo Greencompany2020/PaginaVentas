@@ -4,10 +4,13 @@ import { useField } from 'formik'
 export const TextInput = ({label, ...props}) => {
     const [field, meta] = useField(props);
     return(
-        <label className={`flex flex-col font-semibold  text-gray-600 ${props.width}`} htmlFor={props?.id || props?.name}>
-            {label}
-            <input className={`h-8 border rounded-sm border-slate-400 pl-2 ${props.elementwidth}`} {...field} {...props} />
-            {(meta.touched && meta.error) &&  <span className='font-semibold text-red-500'>{meta.error}</span>}
+        <label className='flex flex-col font-semibold  text-gray-600 ' htmlFor={props?.id || props?.name}>
+            <span className='mb-1'>{label}</span>
+            <input 
+                className={`h-10 border-2 rounded-md pl-2 ${(meta.touched && meta.error) ? 'border-red-400' : 'border-slate-400' }`}  
+                {...field} {...props} 
+            />
+            {(meta.touched && meta.error) &&  <span className='font-semibold text-red-500 text-right'>{meta.error}</span>}
         </label>
     )
 }
@@ -15,10 +18,13 @@ export const TextInput = ({label, ...props}) => {
 export const SelectInput = ({label, ...props}) => {
     const [field, meta] = useField(props);
     return(
-        <label className={`flex flex-col font-semibold  text-gray-600 ${props.width}`} htmlFor={props?.id || props?.name}>
-            {label}
-            <select className={`h-8 border rounded-sm border-slate-400 pl-2 ${props.elementwidth}`} {...field} {...props}/>
-            {(meta.touched && meta.error) &&  <span className='font-semibold text-red-500'>{meta.error}</span>}
+        <label className='flex flex-col font-semibold  text-gray-600' htmlFor={props?.id || props?.name}>
+            <span className='mb-1'>{label}</span>
+            <select 
+                className={`h-10 border-2 rounded-md pl-2 ${(meta.touched && meta.error) ? 'border-red-400' : 'border-slate-400' }`}  
+                {...field} {...props}
+            />
+            {(meta.touched && meta.error) &&  <span className='font-semibold text-red-500 text-right'>{meta.error}</span>}
         </label>
     )
 }

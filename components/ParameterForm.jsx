@@ -1,22 +1,48 @@
 import React,{useState, useEffect} from 'react';
 import { checkboxLabels, inputNames  } from '../utils/data';
 import Checkbox from './inputs/Checkbox';
+import ViewOptions from './profile/ViewOptions';
 
 export default function ParameterForm({submit, savedParameters, onlySelect = true, includedParameters}) {
     const [values, setValues] = useState({});
-    const handleChange = evt =>{
+
+    const handleChange = evt => {
         const {name, checked} = evt.target;
+            if(name !== inputNames.VISTA_MOBILE){
+                setValues(prev => ({
+                    ...prev,
+                    [name]:checked
+                }))
+            }else{
+                setValues(prev => ({
+                    ...prev,
+                    [inputNames.VISTA_MOBILE]:checked,
+                    [inputNames.VISTA_DESKTOP]:checked,
+                }))
+            }
+    }
+
+    const handleChangeView = (viewOption, device) => {
+        const name = device === 'mobile' ? 'mobileReportView' : 'desktopReportView';
         setValues(prev => ({
             ...prev,
-            [name]:checked
-        }))
+            [name]: viewOption,
+        }));
     }
     
     const handleOnSubmit = async evt => {
         evt.preventDefault(); 
         const formatedValues = {}
         for(const item in values){
-            let value = values[item] == true ? 'Y' : 'N';
+            let value = null
+            if (item == inputNames.VISTA_MOBILE || item == inputNames.VISTA_DESKTOP){
+                if(!onlySelect) {
+                    value = values[item] == true ? 1 : 0;
+                }
+                else  value = values[item];
+            }else{ 
+                value = values[item] == true ? 'Y' : 'N';
+            }
             Object.assign(formatedValues, {[item]:value});
         }
         await submit(formatedValues);
@@ -27,16 +53,26 @@ export default function ParameterForm({submit, savedParameters, onlySelect = tru
             const initialValues = {}
             for(const item in inputNames){
                 let key = inputNames[item];
-                let value = savedParameters?.[key] == 'Y' ? true : false;
+                let value = null;
+                if(key == inputNames.VISTA_DESKTOP || key == inputNames.VISTA_MOBILE){
+                    if(!onlySelect) {
+                        value = savedParameters?.[key] == 1 ? true :false;
+                    }
+                    else  value = savedParameters?.[key];
+                }else{
+                    value = savedParameters?.[key] == 'Y' ? true : false;
+                }
                 Object.assign(initialValues, {[key]: value });
             }
             setValues(initialValues);
         })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[savedParameters, includedParameters])
 
     return(
             <form className='p-4' onSubmit={handleOnSubmit}>
-                <div className='space-y-1'>
+                <fieldset className='space-y-1'>
+                    <legend className='font-bold text-sm'>Parametros</legend>
                     <Checkbox 
                         name={inputNames.CON_IVA}  
                         labelText={checkboxLabels.VENTAS_IVA} 
@@ -196,7 +232,30 @@ export default function ParameterForm({submit, savedParameters, onlySelect = tru
                         onChange={handleChange}
                         disabled={onlySelect && includedParameters?.[inputNames.PROMEDIO] != 'Y'}
                     />
-                </div>
+
+                    {
+                        !onlySelect &&
+                        <Checkbox 
+                            name={inputNames.VISTA_MOBILE} 
+                            labelText={'Permitir tipos de visualizacion'} 
+                            checked={values[inputNames.VISTA_MOBILE] || ''}
+                            onChange={handleChange}
+                            disabled={onlySelect && includedParameters?.[inputNames.PROMEDIO] != 'Y'}
+                        />
+                    }
+
+                </fieldset>
+                {
+                    ((onlySelect) && includedParameters?.[inputNames.VISTA_MOBILE]) &&
+                    <fieldset className='mt-4 flex justify-start space-y-1'>
+                        <legend className='font-bold text-sm'>Visualizacion</legend>
+                        <ViewOptions 
+                            handleChangeView = {handleChangeView}
+                            mobileOption = {values[inputNames.VISTA_MOBILE] || ''}
+                            desktopOption = {values[inputNames.VISTA_DESKTOP] || ''}
+                        />
+                    </fieldset>
+                }
                 <div className='flex flex-row justify-end mt-4'>
                     <input type="submit" value="Guardar" className='primary-btn w-20'/>
                 </div>

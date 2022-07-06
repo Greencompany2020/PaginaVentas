@@ -136,7 +136,7 @@ const Promotores = (props) => {
     <div className=" flex flex-col h-full">
       <TitleReport title={`Ingresos Promotores ${paramPromotores.delAgno}`} />
 
-      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -171,7 +171,7 @@ const Promotores = (props) => {
           </Parameters>
         </ParametersContainer>
       </section>
-      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
+      <section className="p-4 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable>
             <TableHead>

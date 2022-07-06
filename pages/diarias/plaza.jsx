@@ -85,7 +85,7 @@ const Plaza = (props) => {
       <TitleReport
         title={`Ventas Diarias Plaza ${getPlazaName(plazaParametros.plaza)}`}
       />
-      <section className="pt-4 pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -156,7 +156,7 @@ const Plaza = (props) => {
         </ParametersContainer>
       </section>
 
-      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 overflow-y-auto ">
+      <section className="p-4 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable>
             <VentasDiariasTableHead

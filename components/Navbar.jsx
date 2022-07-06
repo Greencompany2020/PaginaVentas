@@ -2,8 +2,8 @@ import { useState, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ChevronDownIcon } from "@heroicons/react/solid";
-import Logo from "../public/images/green-company-logo.png";
-import Menu from "../public/images/dot-menu.png";
+import logo from "../public/images/logo.svg";
+import home from "../public/images/dot-menu.png";
 import UserIcon from "../public/icons/icon_-users-4.png";
 import Config from "../public/icons/config-5.png";
 import useClickOutside from "../hooks/useClickOutside";
@@ -13,14 +13,12 @@ import Avatar from "./commons/Avatar";
 import { useAuth } from "../context/AuthContext";
 import authService from "../services/authService";
 import jsCookie from "js-cookie";
-import { useRouter } from "next/router";
 import { useNotification } from "./notifications/NotificationsProvider";
 
 const Navbar = () => {
-  const {user, setAuth} = useAuth();
+  const {user} = useAuth();
   const service = authService();
   const userMenuRef = useRef(null);
-  const router = useRouter();
   const sendNotification = useNotification();
   const [showDialog, setShowDialog] = useState(false);
   const handleToggle = () => setShowDialog(!showDialog);
@@ -33,9 +31,10 @@ const Navbar = () => {
 
   const handleLogout = async() => {
     try {
-        const response = await service.logout();
+        await service.logout();
         jsCookie.remove('accessToken');
-        router.push('/');
+        jsCookie.remove('jwt');
+        window.location.href = '/';
     } catch (error) {
       sendNotification({
         type:'ERROR',
@@ -46,29 +45,31 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className="w-full h-[3rem] bg-black-shape flex items-center justify-between pl-4 pr-4">
-        <Link href="/dashboard">
-          <a href="">
-            <Image src={Logo} alt="Logo Green Company" height={40} width={45} />
-          </a>
-        </Link>
-        <div className="flex flex-row items-center space-x-2">
-          <figure>
-            <Link href="/dashboard">
+      <nav className="w-full h-[3rem] bg-black-shape">
+        <div className="flex pl-4 pr-4  h-full justify-between">
+            <Link href={'/dashboard'}>
               <a>
-                <Image src={Menu} alt="menu" height={40} width={40} />
+                <figure className="relative w-[3rem] h-[3rem]">
+                  <Image src={logo} layout='fill'  alt="logo" objectFit="cover" objectPosition="center"/>
+                </figure>
               </a>
             </Link>
-          </figure>
-          <figure>
-            <Avatar image={user?.ImgPerfil} size={38}/>
-          </figure>
-          <figure>
-            <ChevronDownIcon
-              className="text-white h-7 w-7 my-auto cursor-pointer"
-              onClick={handleToggle}
-            />
-          </figure>
+            <section className=" h-full flex items-center space-x-2 ">
+              <Link href={'/dashboard'}>
+                <a>
+                  <figure className="relative w-[3rem] h-[3rem]">
+                    <Image src={home} layout='fill' alt="home" objectFit="cover" objectPosition="center"/>
+                  </figure>
+                </a>
+              </Link>
+              <Avatar image={user?.ImgPerfil} size={3}/>
+              <figure>
+                <ChevronDownIcon
+                  className="text-white h-7 w-7 my-auto cursor-pointer"
+                  onClick={handleToggle}
+                />
+              </figure>
+            </section>
         </div>
       </nav>
 
