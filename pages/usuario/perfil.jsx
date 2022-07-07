@@ -149,7 +149,7 @@ const Perfil = () => {
               </section>
               
               {/*Configuraciones*/}
-              <section className="mt-8">
+              <section className="mt-8 mb-24 md:mb-0">
                 <h3 className="text-xl font-semibold mb-2">Configuraciones</h3>
                 <ConfigurationItems/>
               </section>
