@@ -6,7 +6,7 @@ import jsCookie from "js-cookie";
 import { useRouter } from 'next/router';
 import {useAuth} from '../../context/AuthContext';
 import { useNotification } from '../../components/notifications/NotificationsProvider';
-import {LoginInput} from '../../components/FormInputs'
+import {LoginInput, ResetViewInput} from '../../components/FormInputs'
 
 export default function LoginContainer(props) {
     const {setLoading} =props
@@ -46,7 +46,7 @@ export default function LoginContainer(props) {
       <Form>
         <fieldset className='space-y-4'>
           <LoginInput type='text' name='UserCode' placeholder='Usuario'/>
-          <LoginInput type='password' name='password' placeholder='Contraseña'/>
+          <ResetViewInput type='password' name='password' placeholder='Contraseña'/>
         </fieldset>
         <input type='submit' value='Ingresar' className="primary-btn  w-full mt-4"/>
       </Form>
