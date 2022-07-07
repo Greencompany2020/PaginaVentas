@@ -320,7 +320,8 @@ table.last-row-bg tbody tr:last-child {
   grid-template-areas: 
     "Navbar"
     "Main";
-  overflow: auto;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 .layout-base-navbar{
   grid-area: Navbar;

@@ -47,7 +47,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 p-2 md:p-4 xl:p-8">
           <section>
             <div className="mb-8">
-              <h2 className="text-2xl font-bold">{`Bienvenido ${user?.Nombre} ${user?.Apellidos}`}</h2>
+              <h2 className="text-2xl font-bold">{`Bienvenido ${user?.Nombre || ''} ${user?.Apellidos || ''}`}</h2>
             </div>
             <div className="grid grid-cols-1 place-items-center md:grid-cols-[repeat(_2,_250px)] gap-6">
               <DashboardButtonContainer link="/ventas">
