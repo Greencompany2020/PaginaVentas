@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import {CogIcon} from '@heroicons/react/solid';
+import {CogIcon, HeartIcon} from '@heroicons/react/solid';
 import userService from '../../services/userServices';
 import {useNotification} from '../notifications/NotificationsProvider';
 import ParameterForm from '../ParameterForm';
 import configuratorService from '../../services/configuratorService';
+import { useAuth } from "../../context/AuthContext";
 
 export default function ParameterAccesItem(props) {
     const service = userService();
     const configService = configuratorService();
     const sendNotification = useNotification();
     const {id, name, linkTo, isSelected, setSelected, idAccess} = props;
+    const {globalParameters, refreshGlobalParameters} = useAuth();
     const [parameters, setParameters] = useState({
         userParameters: undefined,
         accessParameters: undefined,
@@ -38,11 +40,28 @@ export default function ParameterAccesItem(props) {
             })
         } catch (error) {
             sendNotification({
-                type: 'OK',
+                type: 'ERROR',
                 message: 'Error al guardar preferencias'
             })
         }
     }
+
+    const handleSetFavorite = async () => {
+        try {
+            await service.setGlobalParameters(idAccess);
+            await refreshGlobalParameters();
+            sendNotification({
+                type: 'OK',
+                message: 'Establecido como favorito'
+            })
+        } catch (error) {
+            sendNotification({
+                type: 'OK',
+                message: 'Error al guardar favorito'
+            })
+        }
+    }
+    const isFavorite = () => (idAccess == globalParameters?.idAcceso ? true : false);
 
     useEffect(()=>{
         (async()=>{
@@ -73,13 +92,20 @@ export default function ParameterAccesItem(props) {
                         <Link href={linkTo}>
                             <a className='text-lg truncate text-blue-500'>{name}</a>
                         </Link>
-                        <div className='space-y-2'>
-                            <CogIcon width={26} className='text-gray-500 hover:text-blue-500' onClick={hadleSelectedClose}/>
+                        <div className='flex items-center space-x-2'>
+                            <HeartIcon width={24} className={`text-gray-500 hover:text-red-500 ${isFavorite() && 'text-red-500'}`} onClick={handleSetFavorite} />
+                            <CogIcon width={24} className='text-gray-500 hover:text-blue-500' onClick={hadleSelectedClose}/>
                         </div>
                     </div>
                 </section>
                 <section className={`transition-height  transform duration-100  overflow-hidden ${isSelected ? 'h-fit' : 'h-0'}`}>
-                    {isSelected && <ParameterForm submit={handleSubmit} savedParameters={parameters.userParameters} includedParameters={parameters.accessParameters} onlySelect={true}/>}
+                    {isSelected && 
+                        <ParameterForm 
+                            submit={handleSubmit} 
+                            savedParameters={parameters.userParameters} 
+                            includedParameters={parameters.accessParameters} 
+                            onlySelect={true}
+                        />}
                 </section>
             </div>
         </li>

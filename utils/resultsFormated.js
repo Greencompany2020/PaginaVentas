@@ -62,7 +62,7 @@ export const tdFormatNumber = (num, isLast=false, font=12) => {
       color: isLast ? "black" : "rgb(5 150 105)",
       fontWeight: 700,
       textAlign: "right",
-      fontSize: 12
+      fontSize: font
     }}>{numberText}</td>)
   }
 }

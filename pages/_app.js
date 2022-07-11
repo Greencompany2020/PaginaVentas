@@ -6,11 +6,11 @@ function MyApp({ Component, pageProps }) {
   const getLayout = Component.getLayout || (page => page);
   
   return(
-    <ProviderAuth>
-      <NotificationProvide>
-          { getLayout(<Component {...pageProps} />)}
-      </NotificationProvide>
-    </ProviderAuth>
+    <NotificationProvide>
+      <ProviderAuth>    
+        { getLayout(<Component {...pageProps} />)}
+      </ProviderAuth>
+    </NotificationProvide>
   )
 }
 export default MyApp

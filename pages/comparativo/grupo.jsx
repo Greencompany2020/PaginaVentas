@@ -38,6 +38,7 @@ import { v4 } from "uuid";
 import ViewFilter from "../../components/ViewFilter";
 import { isMobile } from "react-device-detect";
 
+
 function Grupo(props) {
   const {config} = props;
   const sendNotification = useNotification();
@@ -65,6 +66,7 @@ function Grupo(props) {
   useEffect(()=>{
     setParametrosGrupo(prev => ({
       ...prev,
+      fecha: getPrevDate(1),
       conIva: config?.conIva || 0,
       porcentajeVentasCompromiso: config?.porcentajeVentasCompromiso || 0,
       noHorasVentasParciales: config?.noHorasVentasParciales || 0,
@@ -195,9 +197,15 @@ function Grupo(props) {
               </InputContainer>
             </Parameters>
           </ParametersContainer>
-          <p className={`text-sm font-bold ${displayType != 3 && 'hidden'}`}>{getShopNameByRegion(selectRegion)}</p>
+          <p className={`text-sm font-bold ${(displayType != 3 || selectRegion == 'TOTAL') && 'hidden'}`}>{getShopNameByRegion(selectRegion)}</p>
         </div>
-        <ViewFilter viewOption={displayType} handleView={setDisplayType} selectOption={selectRegion} handleSelect = {setRegion}/>
+        <ViewFilter 
+          viewOption={displayType} 
+          handleView={setDisplayType} 
+          selectOption={selectRegion} 
+          handleSelect = {setRegion}
+          options={["REGION I", "REGION II", "REGION III", "WEB", "TOTAL"]}
+        />
       </section>
 
 
@@ -230,7 +238,6 @@ const Stat = ({data, parameters, acumuladoSemanal}) => {
     {Object.entries(data ?? {})?.map(([key, value])=>(
       (()=>{
         if(value){
-          const count = value.length - 1;
           const Item = value.map((tienda, index) => {
             const acumDia =  {
               columnTitle: getNameDay(parameters.fecha) +' '+ getDayWeekName(parameters.fecha),
@@ -249,7 +256,7 @@ const Stat = ({data, parameters, acumuladoSemanal}) => {
                 },
                 {
                   caption:'%',
-                  value:stringFormatNumber(tienda.porcentaje, count == index)
+                  value:stringFormatNumber(tienda.porcentaje, false)
                 }
               ]
             }
@@ -271,7 +278,7 @@ const Stat = ({data, parameters, acumuladoSemanal}) => {
                 },
                 {
                   caption: '%',
-                  value:stringFormatNumber(tienda?.porcentajeSemanal, count == index)
+                  value:stringFormatNumber(tienda?.porcentajeSemanal, false)
                 }
               ]
             }
@@ -293,11 +300,11 @@ const Stat = ({data, parameters, acumuladoSemanal}) => {
                 },
                 {
                   caption:'(-)',
-                  value:stringFormatNumber(tienda.diferenciaMensual, count == index)
+                  value:stringFormatNumber(tienda.diferenciaMensual, false)
                 },
                 {
                   caption:'%',
-                  value:stringFormatNumber(tienda.porcentajeMensual, count == index)
+                  value:stringFormatNumber(tienda.porcentajeMensual, false)
                 }
               ]
             }
@@ -319,11 +326,11 @@ const Stat = ({data, parameters, acumuladoSemanal}) => {
                 },
                 {
                   caption:'(-)',
-                  value:stringFormatNumber(tienda.diferenciaAnual, count == index)
+                  value:stringFormatNumber(tienda.diferenciaAnual, false)
                 },
                 {
                   caption:'%',
-                  value:stringFormatNumber(tienda.porcentajeAnual, count == index)
+                  value:stringFormatNumber(tienda.porcentajeAnual, false)
                 }
               ]
             }
@@ -354,139 +361,272 @@ const Stat = ({data, parameters, acumuladoSemanal}) => {
 const StatGroup = ({data, parameters, selectRegion, acumuladoSemanal}) => {
   const { dateRangeText } = getBeginCurrentWeekDateRange(parameters.fecha);
   return(
-    <div className={`grid grid-cols-1 ${acumuladoSemanal ? 'xl:grid-cols-4' : 'xl:grid-cols-3'} gap-4`} key={12}>
+    <div key={12}>
       {
         (()=>{
-          if(Array(data).length > 0){
-            const acumDia = data[selectRegion]?.map(tienda => (
-              {
-                columnTitle: tienda.tienda,
-                values:[
-                  {
-                    caption:getYearFromDate(parameters.fecha),
-                    value:numberWithCommas(tienda.ventasActuales)
-                  },
-                  {
-                    caption:Number(getYearFromDate(parameters.fecha)) - 1,
-                    value:numberWithCommas(tienda.ventasAnterior)
-                  },
-                  {
-                    caption:'PPTO.',
-                    value:numberWithCommas(tienda.presupuesto)
-                  },
-                  {
-                    caption:'%',
-                    value:stringFormatNumber(tienda.porcentaje)
-                  }
-                ]
-              }
-            ));
-            const acumSem = data[selectRegion]?.map(tienda =>(
-              {
-                columnTitle: tienda.tienda,
-                values:[
-                  {
-                    caption:getYearFromDate(parameters.fecha),
-                    value:numberWithCommas(tienda.ventasSemanalesActual)
-                  },
-                  {
-                    caption:Number(getYearFromDate(parameters.fecha)) - 1,
-                    value:numberWithCommas(tienda.ventasSemanalesAnterior)
-                  },
-                  {
-                    caption:'PPTO.',
-                    value:numberWithCommas(tienda.presupuestoSemanal)
-                  },
-                  {
-                    caption: '%',
-                    value:stringFormatNumber(tienda.porcentajeSemanal)
-                  }
-                ]
-              }
-            ))
-            const acumMes = data[selectRegion]?.map(tienda => (
-              {
-                columnTitle: tienda.tienda,
-                values:[
-                  {
-                    caption:getYearFromDate(parameters.fecha),
-                    value:numberWithCommas(tienda.ventasMensualesActual)
-                  },
-                  {
-                    caption:Number(getYearFromDate(parameters.fecha)) - 1,
-                    value:numberWithCommas(tienda.ventasMensualesAnterior)
-                  },
-                  {
-                    caption:'PPTO.',
-                    value:numberWithCommas(tienda.presupuestoMensual)
-                  },
-                  {
-                    caption:'(-)',
-                    value:stringFormatNumber(tienda.diferenciaMensual)
-                  },
-                  {
-                    caption:'%',
-                    value:stringFormatNumber(tienda.porcentajeMensual)
-                  }
-                ]
-              }
-            ));
-            const acumAnual = data[selectRegion]?.map(tienda => (
-              {
-                columnTitle: tienda.tienda,
-                values:[
-                  {
-                    caption:getYearFromDate(parameters.fecha),
-                    value:numberWithCommas(tienda.ventasAnualActual)
-                  },
-                  {
-                    caption:Number(getYearFromDate(parameters.fecha)) - 1,
-                    value:numberWithCommas(tienda.ventasAnualAnterior)
-                  },
-                  {
-                    caption:'PPTO.',
-                    value:numberWithCommas(tienda.presupuestoAnual)
-                  },
-                  {
-                    caption:'(-)',
-                    value:stringFormatNumber(tienda.diferenciaAnual)
-                  },
-                  {
-                    caption:'%',
-                    value:stringFormatNumber(tienda.porcentajeAnual)
-                  }
-                ]
-              }
-            ))
-
-            return (
-              
-              <Fragment key={v4()}>
-                
-                <Stats
-                  title= {getNameDay(parameters.fecha) +' '+ getDayWeekName(parameters.fecha)}
-                  columns={(acumDia && [...acumDia])}
-                  expand={false}
-                />
-                { acumuladoSemanal &&
-                  <Stats
-                    title= {'Acumulado ' + dateRangeText}
-                    columns={(acumSem && [...acumSem])}
-                    expand={false}
-                  />
+          if(Object.keys(data).length > 0 && data.hasOwnProperty(selectRegion)){
+            if(selectRegion !== 'TOTAL'){
+              const acumDia = data[selectRegion]?.map(tienda => (
+                {
+                  columnTitle: tienda.tienda,
+                  values:[
+                    {
+                      caption:getYearFromDate(parameters.fecha),
+                      value:numberWithCommas(tienda.ventasActuales)
+                    },
+                    {
+                      caption:Number(getYearFromDate(parameters.fecha)) - 1,
+                      value:numberWithCommas(tienda.ventasAnterior)
+                    },
+                    {
+                      caption:'PPTO.',
+                      value:numberWithCommas(tienda.presupuesto)
+                    },
+                    {
+                      caption:'%',
+                      value:stringFormatNumber(tienda.porcentaje)
+                    }
+                  ]
                 }
-                <Stats
-                  title= {'Acumulado' +' '+ getMonthByNumber(parameters.fecha.split("-")[1])}
-                  columns={(acumMes && [...acumMes])}
-                  expand={false}
-                />
-                  <Stats
-                  title= {'Acumulado anual'}
-                  columns={(acumAnual && [...acumAnual])}
-                  expand={false}
-                />
-              </Fragment>
-            )
+              ));
+              const acumSem = data[selectRegion]?.map(tienda =>(
+                {
+                  columnTitle: tienda.tienda,
+                  values:[
+                    {
+                      caption:getYearFromDate(parameters.fecha),
+                      value:numberWithCommas(tienda.ventasSemanalesActual)
+                    },
+                    {
+                      caption:Number(getYearFromDate(parameters.fecha)) - 1,
+                      value:numberWithCommas(tienda.ventasSemanalesAnterior)
+                    },
+                    {
+                      caption:'PPTO.',
+                      value:numberWithCommas(tienda.presupuestoSemanal)
+                    },
+                    {
+                      caption: '%',
+                      value:stringFormatNumber(tienda.porcentajeSemanal)
+                    }
+                  ]
+                }
+              ))
+              const acumMes = data[selectRegion]?.map(tienda => (
+                {
+                  columnTitle: tienda.tienda,
+                  values:[
+                    {
+                      caption:getYearFromDate(parameters.fecha),
+                      value:numberWithCommas(tienda.ventasMensualesActual)
+                    },
+                    {
+                      caption:Number(getYearFromDate(parameters.fecha)) - 1,
+                      value:numberWithCommas(tienda.ventasMensualesAnterior)
+                    },
+                    {
+                      caption:'PPTO.',
+                      value:numberWithCommas(tienda.presupuestoMensual)
+                    },
+                    {
+                      caption:'(-)',
+                      value:stringFormatNumber(tienda.diferenciaMensual)
+                    },
+                    {
+                      caption:'%',
+                      value:stringFormatNumber(tienda.porcentajeMensual)
+                    }
+                  ]
+                }
+              ));
+              const acumAnual = data[selectRegion]?.map(tienda => (
+                {
+                  columnTitle: tienda.tienda,
+                  values:[
+                    {
+                      caption:getYearFromDate(parameters.fecha),
+                      value:numberWithCommas(tienda.ventasAnualActual)
+                    },
+                    {
+                      caption:Number(getYearFromDate(parameters.fecha)) - 1,
+                      value:numberWithCommas(tienda.ventasAnualAnterior)
+                    },
+                    {
+                      caption:'PPTO.',
+                      value:numberWithCommas(tienda.presupuestoAnual)
+                    },
+                    {
+                      caption:'(-)',
+                      value:stringFormatNumber(tienda.diferenciaAnual)
+                    },
+                    {
+                      caption:'%',
+                      value:stringFormatNumber(tienda.porcentajeAnual)
+                    }
+                  ]
+                }
+              ))
+
+              return (       
+                <Fragment key={v4()}>
+                  <div className={`grid grid-cols-1 ${acumuladoSemanal ? 'xl:grid-cols-4' : 'xl:grid-cols-3'} gap-4`}>
+                    <Stats
+                      title= {getNameDay(parameters.fecha) +' '+ getDayWeekName(parameters.fecha)}
+                      columns={(acumDia && [...acumDia])}
+                      expand={false}
+                    />
+                    { acumuladoSemanal &&
+                      <Stats
+                        title= {'Acumulado ' + dateRangeText}
+                        columns={(acumSem && [...acumSem])}
+                        expand={false}
+                      />
+                    }
+                    <Stats
+                      title= {'Acumulado' +' '+ getMonthByNumber(parameters.fecha.split("-")[1])}
+                      columns={(acumMes && [...acumMes])}
+                      expand={false}
+                    />
+                      <Stats
+                      title= {'Acumulado anual'}
+                      columns={(acumAnual && [...acumAnual])}
+                      expand={false}
+                    />
+                  </div>
+                </Fragment>
+                
+              )
+            }else{
+              return Object.entries(data?.TOTAL ?? {})?.map(([key, value])=> (
+                (()=>{
+                  if(!value) return null;
+                  const acumDia = [{
+                    columnTitle: value.tienda,
+                    values:[
+                      {
+                        caption:getYearFromDate(parameters.fecha),
+                        value:numberWithCommas(value.ventasActuales)
+                      },
+                      {
+                        caption:Number(getYearFromDate(parameters.fecha)) - 1,
+                        value:numberWithCommas(value.ventasAnterior)
+                      },
+                      {
+                        caption:'PPTO.',
+                        value:numberWithCommas(value.presupuesto)
+                      },
+                      {
+                        caption:'%',
+                        value:stringFormatNumber(value.porcentaje)
+                      }
+                    ]
+                  }]
+
+                  const acumSem = [{
+                    columnTitle: value.tienda,
+                    values:[
+                      {
+                        caption:getYearFromDate(parameters.fecha),
+                        value:numberWithCommas(value.ventasSemanalesActual)
+                      },
+                      {
+                        caption:Number(getYearFromDate(parameters.fecha)) - 1,
+                        value:numberWithCommas(value.ventasSemanalesAnterior)
+                      },
+                      {
+                        caption:'PPTO.',
+                        value:numberWithCommas(value.presupuestoSemanal)
+                      },
+                      {
+                        caption: '%',
+                        value:stringFormatNumber(value.porcentajeSemanal)
+                      }
+                    ]
+                  }]
+                  const acumMes = [{
+                    columnTitle: value.tienda,
+                    values:[
+                      {
+                        caption:getYearFromDate(parameters.fecha),
+                        value:numberWithCommas(value.ventasMensualesActual)
+                      },
+                      {
+                        caption:Number(getYearFromDate(parameters.fecha)) - 1,
+                        value:numberWithCommas(value.ventasMensualesAnterior)
+                      },
+                      {
+                        caption:'PPTO.',
+                        value:numberWithCommas(value.presupuestoMensual)
+                      },
+                      {
+                        caption:'(-)',
+                        value:stringFormatNumber(value.diferenciaMensual)
+                      },
+                      {
+                        caption:'%',
+                        value:stringFormatNumber(value.porcentajeMensual)
+                      }
+                    ]
+                  }]
+                  const acumAnual = [{
+                    columnTitle: value.tienda,
+                    values:[
+                      {
+                        caption:getYearFromDate(parameters.fecha),
+                        value:numberWithCommas(value.ventasAnualActual)
+                      },
+                      {
+                        caption:Number(getYearFromDate(parameters.fecha)) - 1,
+                        value:numberWithCommas(value.ventasAnualAnterior)
+                      },
+                      {
+                        caption:'PPTO.',
+                        value:numberWithCommas(value.presupuestoAnual)
+                      },
+                      {
+                        caption:'(-)',
+                        value:stringFormatNumber(value.diferenciaAnual)
+                      },
+                      {
+                        caption:'%',
+                        value:stringFormatNumber(value.porcentajeAnual)
+                      }
+                    ]
+                  }]
+                  return (       
+                    <Fragment key={v4()}>
+                      <div className="mb-8">
+                        {getTableName(key)}
+                        <div className={`grid grid-cols-1 ${acumuladoSemanal ? 'xl:grid-cols-4' : 'xl:grid-cols-3'} gap-4`}>
+                          <Stats
+                            title= {getNameDay(parameters.fecha) +' '+ getDayWeekName(parameters.fecha)}
+                            columns={(acumDia && [...acumDia])}
+                            expand={false}
+                          />
+                          { acumuladoSemanal &&
+                            <Stats
+                              title= {'Acumulado ' + dateRangeText}
+                              columns={(acumSem && [...acumSem])}
+                              expand={false}
+                            />
+                          }
+                          <Stats
+                            title= {'Acumulado' +' '+ getMonthByNumber(parameters.fecha.split("-")[1])}
+                            columns={(acumMes && [...acumMes])}
+                            expand={false}
+                          />
+                            <Stats
+                            title= {'Acumulado anual'}
+                            columns={(acumAnual && [...acumAnual])}
+                            expand={false}
+                          />
+                        </div>
+                      </div>
+                    </Fragment>
+                  )
+                })()
+              ))
+            }
           }
         })()
       }
@@ -645,7 +785,7 @@ const TableMobil  =  ({data, parameters, acumuladoSemanal}) =>{
                 <th colSpan={2}>%</th>
               </tr>
             </thead>
-            <tbody className="text-xs">
+            <tbody className="text-[10px]">
             {
               (()=>{
                 if(value){
@@ -660,7 +800,7 @@ const TableMobil  =  ({data, parameters, acumuladoSemanal}) =>{
                       <td className="font-bold text-right" >{numberWithCommas(tienda.ventasActuales)}</td>
                       <td className="text-right">{numberWithCommas(tienda.ventasAnterior)}</td>
                       <td className="text-right">{numberWithCommas(tienda.presupuesto)}</td>
-                      {tdFormatNumber(tienda.porcentaje, count == index)}
+                      {tdFormatNumber(tienda.porcentaje, count == index, 10)}
                     </TableRow>
                   ));
                 return Items;
@@ -683,7 +823,7 @@ const TableMobil  =  ({data, parameters, acumuladoSemanal}) =>{
                   <th colSpan={2}>%</th>
                 </tr>
               </thead>
-              <tbody className="text-xs">
+              <tbody className="text-[10px]">
                 {
                   (()=>{
                     if(value){
@@ -698,7 +838,7 @@ const TableMobil  =  ({data, parameters, acumuladoSemanal}) =>{
                           <td className="font-bold text-right" >{numberWithCommas(tienda.ventasSemanalesActual)}</td>
                           <td className="text-right">{numberWithCommas(tienda.ventasSemanalesAnterior)}</td>
                           <td className="text-right">{numberWithCommas(tienda.presupuestoSemanal)}</td>
-                          {tdFormatNumber(tienda.porcentajeSemanal, count == index)}
+                          {tdFormatNumber(tienda.porcentajeSemanal, count == index, 10)}
                         </TableRow>
                       ));
                     return Items;
@@ -721,7 +861,7 @@ const TableMobil  =  ({data, parameters, acumuladoSemanal}) =>{
                 <th>%</th>
               </tr>
             </thead>
-            <tbody className="text-[11px]">
+            <tbody className="text-[10px]">
             {
               (()=>{
                 if(value){
@@ -736,8 +876,8 @@ const TableMobil  =  ({data, parameters, acumuladoSemanal}) =>{
                       <td className="font-bold text-right" >{numberWithCommas(tienda.ventasMensualesActual)}</td>
                       <td className="text-right">{numberWithCommas(tienda.ventasMensualesAnterior)}</td>
                       <td className="text-right">{numberWithCommas(tienda.presupuestoMensual)}</td>
-                        {tdFormatNumber(tienda.diferenciaMensual, count == index)}
-                        {tdFormatNumber(tienda.porcentajeMensual, count == index)}
+                      {tdFormatNumber(tienda.diferenciaMensual, count == index, 10)}
+                      {tdFormatNumber(tienda.porcentajeMensual, count == index, 10)}
                     </TableRow>
                   ));
                 return Items;
@@ -759,7 +899,7 @@ const TableMobil  =  ({data, parameters, acumuladoSemanal}) =>{
                 <th>%</th>
               </tr>
             </thead>
-            <tbody className="text-xs">
+            <tbody className="text-[10px]">
             {
               (()=>{
                 if(value){
@@ -771,9 +911,9 @@ const TableMobil  =  ({data, parameters, acumuladoSemanal}) =>{
                       className={rowColor(tienda)}
                     >
                       <td className="text-left">{tienda.tienda}</td>
-                      <td className="font-bold text-right text-[10px]" >{numberWithCommas(tienda.ventasAnualActual)}</td>
-                      <td className="text-right text-[10px]">{numberWithCommas(tienda.ventasAnualAnterior)}</td>
-                      <td className="text-right text-[10px]">{numberWithCommas(tienda.presupuestoAnual)}</td>
+                      <td className="font-bold text-right " >{numberWithCommas(tienda.ventasAnualActual)}</td>
+                      <td className="text-right">{numberWithCommas(tienda.ventasAnualAnterior)}</td>
+                      <td className="text-right">{numberWithCommas(tienda.presupuestoAnual)}</td>
                       {tdFormatNumber(tienda.diferenciaAnual, count == index, 10)}
                       {tdFormatNumber(tienda.porcentajeAnual, count == index, 10)}
                     </TableRow>

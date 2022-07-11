@@ -6,7 +6,7 @@ import { v4 } from 'uuid';
 export default function AccessParameterList(props) {
     const {items} = props;
     const [selected, setSelected] = useState(undefined);
-
+    
     if(items){
         const groups = groupBykey(items, "Clase");
         const Items = Object.keys(groups).map((group)=>(

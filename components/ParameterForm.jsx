@@ -36,10 +36,11 @@ export default function ParameterForm({submit, savedParameters, onlySelect = tru
         for(const item in values){
             let value = null
             if (item == inputNames.VISTA_MOBILE || item == inputNames.VISTA_DESKTOP){
+                console.log(onlySelect);
                 if(!onlySelect) {
                     value = values[item] == true ? 1 : 0;
                 }
-                else  value = values[item];
+                else  value = values[item] == null ? 1 : values[item] ;
             }else{ 
                 value = values[item] == true ? 'Y' : 'N';
             }
@@ -251,8 +252,8 @@ export default function ParameterForm({submit, savedParameters, onlySelect = tru
                         <legend className='font-bold text-sm'>Visualizacion</legend>
                         <ViewOptions 
                             handleChangeView = {handleChangeView}
-                            mobileOption = {values[inputNames.VISTA_MOBILE] || ''}
-                            desktopOption = {values[inputNames.VISTA_DESKTOP] || ''}
+                            mobileOption = {values[inputNames.VISTA_MOBILE] || 1}
+                            desktopOption = {values[inputNames.VISTA_DESKTOP] || 1}
                         />
                     </fieldset>
                 }

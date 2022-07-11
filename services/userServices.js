@@ -103,6 +103,27 @@ export default function userService(){
         }
     }
 
+    const getGlobalParameters = async() =>{
+        try {
+            const {data} = await ApiProvider.get(`user/dashboards/parameters/globals/1`);
+            return data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    const setGlobalParameters = async(idAccess) => {
+        try {
+            const body = {
+                idProyect:1,
+                favoriteAccess: idAccess,
+            }
+            const response = await ApiProvider.post(`user/dashboards/parameters/globals/${idAccess}`,body);
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
     return{
         getUser,
         getPlazas,
@@ -115,6 +136,8 @@ export default function userService(){
         getUserAccess,
         setAccessParameter,
         getAccessParameters,
+        getGlobalParameters,
+        setGlobalParameters,
     }
 
 }

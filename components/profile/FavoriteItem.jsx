@@ -18,13 +18,13 @@ export default function FavoriteItem(props) {
                     <div className='space-y-2'>
                         {
                             hasAccess == 'Y' ? 
-                            <LockOpenIcon width={26} className='text-gray-500'/> : 
-                            <LockClosedIcon width={26}/>
+                            <LockOpenIcon width={24} className='text-gray-500'/> : 
+                            <LockClosedIcon width={24}/>
                         }
                         {
                             isFavorite == 'Y' ? 
-                            <EyeIcon width={26} onClick={handleSetFavorite} className='text-blue-500 cursor-pointer'/> : 
-                            <EyeOffIcon width={26} onClick={handleSetFavorite} className={`text-gray-500 cursor-pointer ${hasAccess=='Y' && 'hover:text-blue-500'}`}/> 
+                            <EyeIcon width={24} onClick={handleSetFavorite} className='text-blue-500 cursor-pointer'/> : 
+                            <EyeOffIcon width={24} onClick={handleSetFavorite} className={`text-gray-500 cursor-pointer ${hasAccess=='Y' && 'hover:text-blue-500'}`}/> 
                         }
                     </div>
                 </div>

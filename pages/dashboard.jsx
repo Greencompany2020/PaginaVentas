@@ -19,7 +19,7 @@ const DashboardItems = ({ data }) => {
 };
 
 const Dashboard = () => {
-  const {user} = useAuth();
+  const {user, globalParameters} = useAuth();
   const [directAccess , setDirectAccess] = useState([]);
   const service = userService();
   const sendNotification = useNotification();
@@ -50,7 +50,7 @@ const Dashboard = () => {
               <h2 className="text-2xl font-bold">{`Bienvenido ${user?.Nombre || ''} ${user?.Apellidos || ''}`}</h2>
             </div>
             <div className="grid grid-cols-1 place-items-center md:grid-cols-[repeat(_2,_250px)] gap-6">
-              <DashboardButtonContainer link="/ventas">
+              <DashboardButtonContainer link={globalParameters?.point || '/ventas'}>
                 <Image
                   src={SalesForecast}
                   alt="ventas"

@@ -5,6 +5,7 @@ import { useNotification } from '../components/notifications/NotificationsProvid
 export default function useProviderAuth(){
     const [auth, setAuth] = useState(false);
     const [user, setUser] = useState();
+    const [globalParameters, setGlobalParameters] = useState({});
     const [tiendas, setTiendas] = useState();
     const [plazas, setPlazas] = useState();
     const service = userService();
@@ -15,8 +16,23 @@ export default function useProviderAuth(){
             const response = await service.getUser();
             if(response) setUser(response);
        } catch (error) {
-            throw error;
+        sendNotification({
+            type:'ERROR',
+            message:error.message,
+           })
        }
+    }
+
+    const refreshGlobalParameters = async  () =>{
+        try {
+            const response = await service.getGlobalParameters();
+            setGlobalParameters(response);
+        } catch (error) {
+            sendNotification({
+                type:'ERROR',
+                message:error.message,
+               })
+        }
     }
     
 
@@ -28,11 +44,13 @@ export default function useProviderAuth(){
                     const responseUser = await service.getUser();
                     const responsePlazas = await service.getPlazas();
                     const responseTiendas = await service.getTiendas();
+                    const responseGlobalParameters = await service.getGlobalParameters();
 
                     //set all data
                     setUser(responseUser);
                     setPlazas(responsePlazas);
                     setTiendas(responseTiendas);
+                    setGlobalParameters(responseGlobalParameters);
                 } catch (error) {
                    sendNotification({
                     type:'ERROR',
@@ -50,5 +68,7 @@ export default function useProviderAuth(){
         user,
         setAuth,
         refreshUser,
+        globalParameters,
+        refreshGlobalParameters,
     }
 }
