@@ -1,202 +1,169 @@
-import Image from "next/image";
-import { Flex } from "../../components/containers";
+import React from 'react'
 import { getBaseLayout } from "../../components/layout/BaseLayout";
-import Frogs from "../../public/images/rana10.png";
-import Verify from "../../public/icons/ok-08.png";
-import { DashboardList } from "../../components/profile";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
-import { useAlert } from "../../context/alertContext";
+import { useAuth } from "../../context/AuthContext";
 import useToggle from "../../hooks/useToggle";
-import LoaderComponentBas from "../../components/LoaderComponentBas";
+import Dropzone from "../../components/dropzone";
+import Avatar from "../../components/commons/Avatar";
+import { FormModal } from "../../components/modals";
+import VerifyHolder from "../../components/commons/VerifyHolder";
+import ConfigurationItems from "../../containers/profile/ConfigurationItems";
+import userService from '../../services/userServices';
+import { useNotification } from '../../components/notifications/NotificationsProvider';
+import LoaderComponentBas from '../../components/LoaderComponentBas';
 
 const Perfil = () => {
-  const alert = useAlert();
-  const { user, dashboard, changePassword } = useUser();
+  const { user, refreshUser } = useAuth();
+  const [visible, setVisible] = useToggle(false);
+  const sendNotification = useNotification();
   const [isLoading, setLoading] = useToggle(false);
+  const service = userService();
 
-  const handleChangePassword = async () => {
-    const body = { email: user.Email };
-    setLoading(true);
-    const response = await changePassword(body);
-    setLoading(false);
-    const message =
-      response == true
-        ? "Se ha enviado un mensaje a su correo"
-        : "tenemos problemas con su correo";
-    const type = response == true ? "info" : "warning";
-    alert.showAlert(message, type, 1000);
-  };
+  const handleUploadImage = async (files) =>{
+    setVisible();
+    try {
+      const response =  await service.setUserAvatar(files);
+      if(response) await refreshUser();
+    } catch (error) {
+      sendNotification({
+        type:'ERROR',
+        message:error.message
+      });
+    }
+    return true
+  }
+
+  const handleRequestNewPassword = async () => {
+    setLoading();
+    try {
+      await service.requestPasswordReset({email:user?.Email});
+      sendNotification({
+        type:'OK',
+        message:'Se ha enviado un link a su correo'
+      })
+    } catch (error) {
+      sendNotification({
+        type:'OK',
+        message:'Error al enviar correo'
+      })
+    }
+    setLoading();
+  }
 
   return (
     <>
-      <div className="flex flex-col h-screen md:flex-row">
-        {/* Sección Editar Perfil */}
-        <aside className=" bg-gray-200 h-full p-8 ">
-          <Flex className="flex-col">
-            <p className="font-semibold text-xl mb-5">Edita perfil</p>
-            {/* Input Imagen Perfil */}
-            <div className="w-full">
-              <label className="flex justify-center w-full h-48 px-4 transition bg-white border-2 border-gray-700 border-dashed appearance-none focus:outline-none">
-                <span className="flex flex-col items-center justify-center space-x-2">
-                  <div className="bg-gray-200 rounded-full p-2">
-                    <Image
-                      src={Frogs}
-                      height={100}
-                      width={100}
-                      alt="Señor Frogs"
+      <div className="flex flex-col md:flex-row h-full">
+          <section className="w-full h-[500px] md:w-[400px] md:h-full bg-gray-200">
+            <div className="p-4">
+              <div className="flex flex-col items-center md:justify-center space-y-2">
+                <figure className='w-[12rem] h-[12rem]'>
+                  <Avatar image={user?.ImgPerfil}/>
+                </figure>
+                <button className="text-blue-400 font-bold" onClick={setVisible}>Cambiar imagen</button>
+              </div>
+              <div className="mt-8">
+              <h4 className="text-xl font-bold">Inicio de sesion</h4>
+                <div className="mt-3 space-y-2">
+                  <p className="font-semibold">Email y contraseña</p>
+                  <VerifyHolder placeholder={user?.Email}/>
+                  <button className="text-blue-400 font-bold" onClick={handleRequestNewPassword}>Cambiar Contraseña</button>
+                  <LoaderComponentBas isLoading={isLoading}/>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section className="w-full md:h-full">
+           <div className="p-4">
+              <h4 className=" hidden md:block md:text-right md:text-2xl md:font-bold">{user?.Nombre} {user?.Apellidos}</h4>
+              {/*Informacion*/}
+              <section>
+                <h3 className="text-xl font-semibold mb-2">Informacion general</h3>
+                <div className="grid gap-4 md:grid-cols-6 pl-2">
+
+                  <div className="flex flex-col space-y-2">
+                      <label>Empleado</label>
+                      <VerifyHolder placeholder={user?.NoEmpleado}/>
+                  </div>
+
+                  <div className="flex flex-col space-y-2 md:col-span-3">
+                    <label htmlFor="">Nombre</label>
+                    <input
+                      type="text"
+                      placeholder={`${user?.Nombre} ${user?.Apellidos}`}
+                      className="outline-none border-2 h-10 rounded-md pl-3 placeholder:text-md  placeholder:font-semibold"
+                      disabled
                     />
                   </div>
-                  <span className="text-gray-400">
-                    Arrastra aquí tu imagen de perfil o{" "}
-                    <span className="text-blue-600 underline">
-                      sube una foto
-                    </span>
-                  </span>
-                </span>
-                <input type="file" className="hidden" />
-              </label>
-            </div>
-            {/* Email y Contraseña */}
-            <p className="font-semibold  text-md  my-5">Inicio de sesión</p>
-            <Flex className="flex-col">
-              <label htmlFor="email" className="font-semibold text-md mb-2">
-                Email
-              </label>
-              <Flex className="relative">
-                <span className="absolute right-0 inset-y-1">
-                  <Image src={Verify} height={30} width={30} alt="OK" />
-                </span>
-                <input
-                  disabled
-                  type="text"
-                  placeholder={user?.Email}
-                  className="outline-none flex-grow h-10 rounded-md pl-3 bg-white placeholder:text-sm"
-                />
-              </Flex>
-              <p
-                className="text-blue-500 text-md font-semibold mt-5 cursor-pointer hover:text-blue-400 transition duration-200"
-                onClick={handleChangePassword}
-              >
-                Cambiar contraseña
-              </p>
-            </Flex>
-          </Flex>
-          <div className="w-20 h-[30px]">
-            <LoaderComponentBas isLoading={isLoading} />
-          </div>
-        </aside>
 
-        <section className="flex flex-col md:flex-[2] p-8 space-y-10">
-          <div>
-            <div className="flex flex-col mb-4">
-              <span className="text-right text-2xl font-bold">
-                {user?.Nombre} {user?.Apellidos}
-              </span>
-              <span className="text-xl font-semibold">Infomación General</span>
-            </div>
+                  <div className="flex flex-col space-y-2">
+                    <label htmlFor="">Level</label>
+                    <input
+                      type="text"
+                      placeholder={user?.Level}
+                      className="outline-none border-2 h-10 rounded-md pl-3 placeholder:text-md  placeholder:font-semibold"
+                      disabled
+                    />
+                  </div>
 
-            <div className="grid gap-4 md:grid-cols-6">
-              <div className="flex flex-col space-y-2 relative">
-                <label htmlFor="" className="text-md font-bold text-gray-600">
-                  Empleado
-                </label>
-                <figure className="relative">
-                  <input
-                    type="text"
-                    className="outline-none border-2 h-10 rounded-md pl-3 placeholder:text-md  placeholder:font-semibold w-[150px] md:w-full "
-                    disabled
-                    placeholder={user?.NoEmpleado}
-                  />
-                  <span className=" absolute top-1 right-0">
-                    <Image src={Verify} height={30} width={30} alt="OK" />
-                  </span>
-                </figure>
-              </div>
+                  <div className="flex flex-col space-y-2">
+                    <label htmlFor="">Clase</label>
+                    <input
+                      type="text"
+                      placeholder={user?.Clase}
+                      className="outline-none border-2 h-10 rounded-md pl-3 placeholder:text-md  placeholder:font-semibold"
+                      disabled
+                    />
+                  </div>
 
-              <div className="flex flex-col space-y-2 md:col-span-3">
-                <label htmlFor="" className="text-md font-bold text-gray-600">
-                  Nombre
-                </label>
-                <input
-                  type="text"
-                  className="outline-none border-2 h-10 rounded-md pl-3 placeholder:text-md  placeholder:font-semibold"
-                  disabled
-                  placeholder={`${user?.Nombre} ${user?.Apellidos}`}
-                />
-              </div>
+                  <div className="flex flex-col space-y-2">
+                    <label htmlFor=""> F.ingreso</label>
+                    <input
+                      type="text"
+                      className="outline-none border-2 h-10 rounded-md pl-3 placeholder:text-md  placeholder:font-semibold"
+                      disabled
+                    />
+                  </div>
 
-              <div className="flex flex-col space-y-2">
-                <label htmlFor="" className="text-md font-bold text-gray-600">
-                  User Level
-                </label>
-                <input
-                  type="text"
-                  className="outline-none border-2 h-10 rounded-md pl-3  placeholder:font-semibold"
-                  disabled
-                  placeholder={user?.Level}
-                />
-              </div>
+                  <div className="flex flex-col space-y-2 md:col-span-3">
+                    <label htmlFor="">Usuario</label>
+                    <input
+                      type="text"
+                      placeholder={user?.UserCode}
+                      className="outline-none border-2 h-10 rounded-md pl-3 placeholder:text-md  placeholder:font-semibold"
+                      disabled
+                    />
+                  </div>
 
-              <div className="flex flex-col space-y-2">
-                <label htmlFor="" className="text-md font-bold text-gray-600">
-                  Clase
-                </label>
-                <input
-                  type="text"
-                  className="outline-none border-2 h-10 rounded-md pl-3 placeholder:text-md  placeholder:font-semibold"
-                  disabled
-                  placeholder={user?.Clase}
-                />
-              </div>
+                  <div className="flex flex-col space-y-2 md:col-span-2">
+                    <label htmlFor="">Grupo</label>
+                    <input
+                      type="text"
+                      placeholder={user?.NombreGrupo}
+                      className="outline-none border-2 h-10 rounded-md pl-3 placeholder:text-md  placeholder:font-semibold"
+                      disabled
+                    />
+                  </div>
 
-              <div className="flex flex-col space-y-2">
-                <label htmlFor="" className="text-md font-bold text-gray-600">
-                  F.ingreso
-                </label>
-                <input
-                  type="text"
-                  className="outline-none border-2 h-10 rounded-md pl-3 placeholder:text-md  placeholder:font-semibold w-[150px] md:w-full"
-                  disabled
-                />
-              </div>
+                </div>
+              </section>
+              
+              {/*Configuraciones*/}
+              <section className="mt-8 mb-24 md:mb-0">
+                <h3 className="text-xl font-semibold mb-2">Configuraciones</h3>
+                <ConfigurationItems/>
+              </section>
 
-              <div className="flex flex-col space-y-2 md:col-span-3">
-                <label htmlFor="" className="text-md font-bold text-gray-600">
-                  Usuario
-                </label>
-                <input
-                  type="text"
-                  className="outline-none border-2 h-10 rounded-md pl-3 placeholder:text-md  placeholder:font-semibold"
-                  disabled
-                  placeholder={user?.UserCode}
-                />
-              </div>
-
-              <div className="flex flex-col space-y-2 md:col-span-2">
-                <label htmlFor="" className="text-md font-bold text-gray-600">
-                  Grupo
-                </label>
-                <input
-                  type="text"
-                  className="outline-none border-2 h-10 rounded-md pl-3 placeholder:text-md  placeholder:font-semibold"
-                  disabled
-                />
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <div className="flex flex-col md:flex-row  md:justify-between">
-              <span className="text-xl font-semibold mb-3 md:mb-0">
-                Definicón de Dashboard
-              </span>
-              <span className=" font-semibold">Página de ventas</span>
-            </div>
-            <DashboardList dashboards={dashboard} />
-          </div>
-        </section>
+           </div>
+          </section>
       </div>
+
+      {/*Modals*/}
+      <FormModal active={visible} handleToggle={setVisible} name="Subir imagenes">
+        <div className=" p-4 h-[22rem] md:h-[22rem] md:w-[42rem]">
+          <Dropzone uploadFunction={handleUploadImage} label='Arrastra la imagen o presiona aqui'/>
+        </div>
+      </FormModal>
     </>
   );
 };

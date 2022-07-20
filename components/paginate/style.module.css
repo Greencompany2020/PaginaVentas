@@ -23,7 +23,7 @@
     margin-top:0.5rem;
 }
 
-.PaginationButtom{
+.PaginationButtom ,.PaginationButtomStep{
     border: none;
     color: #7e7e7e;
     background-color: #eeeeee;
@@ -33,8 +33,12 @@
     font-weight: 500;
     margin-right: 0.4rem;
 }
+.PaginationButtomStep{
+    min-width: 2rem;
+}
 
-.PaginationButtom:hover{
+
+.PaginationButtom:hover, .PaginationButtomStep:hover{
     background-color: #cccccc;
 }
 
@@ -66,4 +70,13 @@
     flex-flow: row nowrap;
     align-items: center;
     margin-bottom: 0.4rem;
+}
+
+@media (max-width: 768px) {
+    .Search{
+        width: 13rem;
+    }
+    .PaginationButtomStep{
+        display: none;
+    }
 }

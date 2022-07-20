@@ -24,23 +24,19 @@ import { getDiariasGrupo } from "../../services/DiariasServices";
 import { formatNumber, numberWithCommas } from "../../utils/resultsFormated";
 import { inputNames } from "../../utils/data/checkboxLabels";
 import { handleChange } from "../../utils/handlers";
-import { isError } from "../../utils/functions";
 import WithAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
-import { currentDate } from "../../utils/dateFunctions";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Grupo = (props) => {
-  const alert = useAlert();
-
-  const { year, month } = currentDate();
-
+  const {config} = props;
+  const sendNotification = useNotification();
   const [parametrosConsulta, setParametrosConsulta] = useState({
-    delMes: month,
-    delAgno: year,
+    delMes: new Date(Date.now()).getMonth() + 1,
+    delAgno: new Date(Date.now()).getFullYear(),
     tiendas: 0,
     conIva: 0,
-    semanaSanta: 1,
+    semanaSanta: 0,
     conVentasEventos: 0,
     conTiendasCerradas: 0,
     sinAgnoVenta: 0,
@@ -50,31 +46,39 @@ const Grupo = (props) => {
 
   const [diariasGrupo, setDiariasGrupo] = useState([]);
 
+  useEffect(()=>{
+    setParametrosConsulta(prev => ({
+      ...prev,
+      conIva:config?.conIva || 0,
+      semanaSanta: config?.semanaSanta|| 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradas || 0,
+      sinAgnoVenta: config?.sinAgnoVenta || 0,
+      sinTiendasSuspendidas:config?.sinTiendasSuspendidas || 0,
+      resultadosPesos:config?.resultadosPesos || 0,
+    }))
+  },[config])
+
   useEffect(() => {
-    if (parametrosConsulta.delAgno.toString().length === 4) {
-      getDiariasGrupo(parametrosConsulta).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
-          setDiariasGrupo(response);
-        }
-      });
-    }
+    (async () => {
+      try {
+        const response = await getDiariasGrupo(parametrosConsulta);
+        setDiariasGrupo(response);
+      } catch (error) {
+        sendNotification({
+          type:'ERROR',
+          message:error.message
+        })
+      }
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parametrosConsulta]);
+  }, [parametrosConsulta, parametrosConsulta.delAgno]);
 
   return (
-    <>
-      <TitleReport
-        title="Ventas Diarias Grupo Frogs"
-        description="Esta tabla muestra las ventas del día por día del mes y año especificado."
-      />
+    <div className=" flex flex-col h-full">
+      <TitleReport title="Ventas Diarias Grupo Frogs" />
 
-      <main className="w-full h-full  p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -96,6 +100,7 @@ const Grupo = (props) => {
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
                 name={inputNames.CON_IVA}
+                checked={parametrosConsulta.conIva ? true : false}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
               <Checkbox
@@ -109,84 +114,96 @@ const Grupo = (props) => {
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
                 name={inputNames.CON_VENTAS_EVENTOS}
+                checked={parametrosConsulta.conVentasEventos ? true : false}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
+               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
                 name={inputNames.CON_TIENDAS_CERRADAS}
+                checked={parametrosConsulta.conTiendasCerradas ? true : false}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
                 name={inputNames.SIN_AGNO_VENTA}
+                checked={parametrosConsulta.sinAgnoVenta ? true : false}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
                 name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
+                checked={parametrosConsulta.sinTiendasSuspendidas ? true : false}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
               <Checkbox
                 labelText={checkboxLabels.RESULTADO_PESOS}
                 name={inputNames.RESULTADOS_PESOS}
+                checked={parametrosConsulta.resultadosPesos ? true : false}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
             </InputContainer>
           </Parameters>
         </ParametersContainer>
+      </section>
 
+      <section className="p-4 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable>
             <VentasDiariasTableHead
               currentYear={parametrosConsulta.delAgno}
               month={parametrosConsulta.delMes}
             />
-            <tbody className="bg-white text-center">
-              {diariasGrupo?.map((diaria) => (
-                <TableRow key={diaria.dia} rowId={diaria.dia}>
-                  <td className="text-center font-bold">{diaria.dia}</td>
-                  <td className="text-center text-sm">{diaria.dia}</td>
-                  <td className="font-bold">
-                    {numberWithCommas(diaria.ventaActual)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.ventaAnterior)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.compromisoDiario)}
-                  </td>
-                  {formatNumber(diaria.crecimientoDiario)}
-                  <td className="font-bold">
-                    {numberWithCommas(diaria.acumMensualActual)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.acumMensualAnterior)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.compromisoAcum)}
-                  </td>
-                  {formatNumber(diaria.diferencia)}
-                  {formatNumber(diaria.crecimientoMensual)}
-                  <td className="font-bold">
-                    {numberWithCommas(diaria.acumAnualActual)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.acumAnualAnterior)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.compromisoAnual)}
-                  </td>
-                  {formatNumber(diaria.crecimientoAnual)}
-                  <td className="text-center font-bold">{diaria.dia}</td>
-                </TableRow>
-              ))}
+            <tbody className="bg-white text-center overflow-y-auto">
+              {(() => {
+                if (Array.isArray(diariasGrupo)) {
+                  const items = diariasGrupo?.map((diaria, index) => (
+                    <TableRow key={diaria.dia} rowId={diaria.dia}>
+                      <td className=" text-right text-xs font-bold">
+                        {diaria.dia}
+                      </td>
+                      <td className="text-right text-xs">{diaria.dia}</td>
+                      <td className=" text-right text-xs font-bold">
+                        {numberWithCommas(diaria.ventaActual)}
+                      </td>
+                      <td className="text-right text-xs">
+                        {numberWithCommas(diaria.ventaAnterior)}
+                      </td>
+                      <td className="text-right text-xs">
+                        {numberWithCommas(diaria.compromisoDiario)}
+                      </td>
+                      {formatNumber(diaria.crecimientoDiario)}
+                      <td className="text-right text-xs font-bold">
+                        {numberWithCommas(diaria.acumMensualActual)}
+                      </td>
+                      <td className="text-right text-xs">
+                        {numberWithCommas(diaria.acumMensualAnterior)}
+                      </td>
+                      <td className="text-right text-xs">
+                        {numberWithCommas(diaria.compromisoAcum)}
+                      </td>
+                      {formatNumber(diaria.diferencia)}
+                      {formatNumber(diaria.crecimientoMensual)}
+                      <td className="text-right text-xs font-bold">
+                        {numberWithCommas(diaria.acumAnualActual)}
+                      </td>
+                      <td className="text-right  text-xs">
+                        {numberWithCommas(diaria.acumAnualAnterior)}
+                      </td>
+                      <td className="text-right text-xs">
+                        {numberWithCommas(diaria.compromisoAnual)}
+                      </td>
+                      {formatNumber(diaria.crecimientoAnual)}
+                      <td className="text-right text-xs font-bold">
+                        {diaria.dia}
+                      </td>
+                    </TableRow>
+                  ));
+                  return items;
+                }
+              })()}
             </tbody>
             <VentasDiariasTableFooter
               currentYear={parametrosConsulta.delAgno}
@@ -194,8 +211,8 @@ const Grupo = (props) => {
             />
           </VentasTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

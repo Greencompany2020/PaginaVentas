@@ -23,6 +23,6 @@ export async function getPorcentajesMensuales(body) {
     const { data } = await ApiProvider.post("/porcentajes/mensuales", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }

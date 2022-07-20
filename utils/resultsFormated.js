@@ -4,22 +4,66 @@
  * @param {number} num El valor a formatear
  * @returns {JSX.Element} La etiqueta <td> con el valor formateado.
  */
-export const formatNumber = (num) => {
-  let numberText = "";
+export const formatNumber = (num, isLast=false) => {
+  let numberText = '';
   if (num < 0) {
-    numberText = `(${Math.abs(num)})`;
+    numberText = Math.abs(num).toLocaleString('en-US');
     return (<td style={{
-      color: "rgb(220 38 38)",
+      color: isLast ? "white" : "rgb(220 38 38)",
       fontWeight: 700,
-      textAlign: "center",
-    }}>{numberWithCommas(numberText)}</td>)
+      textAlign: "right",
+      fontSize: 12
+    }}>{`(${numberText})`}</td>)
   } else {
-    numberText = `${Math.abs(num)}`;
+    numberText = Math.abs(num).toLocaleString('en-US');
     return (<td style={{
-      color: "rgb(5 150 105)",
+      color: isLast ? "white" : "rgb(5 150 105)",
       fontWeight: 700,
-      textAlign: "center"
-    }}>{numberWithCommas(numberText)}</td>)
+      textAlign: "right",
+      fontSize: 12
+    }}>{numberText}</td>)
+  }
+}
+
+export const stringFormatNumber = (num, isLast=false) => {
+  let numberText = '';
+  if (num < 0) {
+    numberText = Math.abs(num).toLocaleString('en-US');
+    return (<span style={{
+      color: isLast ? "black" : "rgb(220 38 38)",
+      fontWeight: 700,
+      textAlign: "right",
+      fontSize: 12
+    }}>{`(${numberText})`}</span>)
+  } else {
+    numberText = Math.abs(num).toLocaleString('en-US');
+    return (<span style={{
+      color: isLast ? "black" : "rgb(5 150 105)",
+      fontWeight: 700,
+      textAlign: "right",
+      fontSize: 12
+    }}>{numberText}</span>)
+  }
+}
+
+export const tdFormatNumber = (num, isLast=false, font=12) => {
+  let numberText = '';
+  if (num < 0) {
+    numberText = Math.abs(num).toLocaleString('en-US');
+    return (<td style={{
+      color: isLast ? "black" : "rgb(220 38 38)",
+      fontWeight: 700,
+      textAlign: "right",
+      fontSize: font
+    }}>{`(${numberText})`}</td>)
+  } else {
+    numberText = Math.abs(num).toLocaleString('en-US');
+    return (<td style={{
+      color: isLast ? "black" : "rgb(5 150 105)",
+      fontWeight: 700,
+      textAlign: "right",
+      fontSize: font
+    }}>{numberText}</td>)
   }
 }
 /**
@@ -28,5 +72,5 @@ export const formatNumber = (num) => {
  * @returns {string} El valor formateado
  */
 export const numberWithCommas = (num) => {
-  return num?.toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",");
+  return num.toLocaleString('en-US');
 }

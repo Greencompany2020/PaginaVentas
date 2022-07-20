@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import {
-  SmallContainer,
   ParametersContainer,
   Parameters,
 } from "../../components/containers";
@@ -25,19 +24,27 @@ import {
 } from "../../utils/dateFunctions";
 import {
   dateRangeTitle,
-  isError,
   validateInputDateRange,
 } from "../../utils/functions";
 import { handleChange } from "../../utils/handlers";
-import { formatNumber, numberWithCommas } from "../../utils/resultsFormated";
+import { formatNumber, numberWithCommas, stringFormatNumber, tdFormatNumber } from "../../utils/resultsFormated";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
+import Stats from "../../components/Stats";
+import ViewFilter from "../../components/ViewFilter";
+import { isMobile } from "react-device-detect";
+import {spliceData} from '../../utils/functions';
+import { v4 } from "uuid";
 
-const Plazas = () => {
-  const alert = useAlert();
+const Plazas = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesPlaza, setSemanalesPlaza] = useState([]);
+  const [displayType, setDisplayType] = useState(1);
+  const [selectRegion, setRegion] = useState("");
+  const [comparativoPlaza, setComparativoPlaza] = useState([]);
   const [plazasParametros, setPlazasParametros] = useState({
     fechaInicio: beginDate,
     fechaFin: endDate,
@@ -49,186 +56,528 @@ const Plazas = () => {
     resultadosPesos: 1,
   });
 
+  useEffect(()=>{
+    setPlazasParametros(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      sinAgnoVenta: config?.sinAgnoVenta || 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradas || 0,
+      sinTiendasSuspendidas: config?.sinTiendasSuspendidas || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }));
+    setDisplayType((isMobile ? config?.mobileReportView : config?.desktopReportView));
+  },[config])
+
   useEffect(() => {
-    if (
-      validateInputDateRange(
-        plazasParametros.fechaInicio,
-        plazasParametros.fechaFin
-      )
-    ) {
-      getSemanalesPlazas(plazasParametros).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
+    (async()=>{
+      if(validateInputDateRange(plazasParametros.fechaInicio,plazasParametros.fechaFin)){
+        try {
+          const response = await getSemanalesPlazas(plazasParametros);
           setSemanalesPlaza(response);
+          const replaced = spliceData(response, response.map(item => item.plaza));
+          setComparativoPlaza(replaced);
+          setRegion(response[0].plaza)
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plazasParametros]);
 
   return (
-    <>
-      <TitleReport
-        title="Detalles de información / Semanales por plaza"
-        description={`Este reporte muestra un compartivo de la semana o en rango de fecha selecionado. Recuerde que la comparacion se realiza lunes contra lunes,
-          lo cual quiere decir que las ventas del año anterior no seran por fecha sino lo que corresponda a los dias de la semana.
-          `}
-      />
-      <main className="w-full h-full p-4 md:p-8">
-        <ParametersContainer>
-          <Parameters>
-            <InputDateRange
-              onChange={(e) => handleChange(e, setPlazasParametros)}
-              beginDate={plazasParametros.fechaInicio}
-              endDate={plazasParametros.fechaFin}
-            />
-            <InputContainer>
-              <Checkbox
-                className="mb-3"
-                labelText={checkboxLabels.VENTAS_IVA}
-                name={inputNames.CON_IVA}
-                onChange={(e) => handleChange(e, setPlazasParametros)}
-              />
-              <Checkbox
-                className="mb-3"
-                labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
-                name={inputNames.CON_VENTAS_EVENTOS}
-                onChange={(e) => handleChange(e, setPlazasParametros)}
-              />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
-                className="mb-3"
-                labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
-                name={inputNames.CON_TIENDAS_CERRADAS}
-                onChange={(e) => handleChange(e, setPlazasParametros)}
-              />
-              <Checkbox
-                className="mb-3"
-                labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
-                name={inputNames.SIN_AGNO_VENTA}
-                onChange={(e) => handleChange(e, setPlazasParametros)}
-              />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
-                className="mb-3"
-                labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
-                name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
-                onChange={(e) => handleChange(e, setPlazasParametros)}
-              />
-              <Checkbox
-                labelText={checkboxLabels.RESULTADO_PESOS}
-                name={inputNames.RESULTADOS_PESOS}
-                checked={plazasParametros.resultadosPesos ? 1 : 0}
-                onChange={(e) => handleChange(e, setPlazasParametros)}
-              />
-            </InputContainer>
-          </Parameters>
-        </ParametersContainer>
+    <div className=" flex flex-col h-full">
+      <TitleReport title="Detalles de información / Semanales por plaza" />
 
-        {/* Table */}
-        <VentasTableContainer>
-          <VentasTable className="tfooter">
-            <TableHead>
-              <tr>
-                <td rowSpan={3} className="border border-white">
-                  Plaza
-                </td>
-                <td colSpan={12} className="border border-white">
-                  {dateRangeTitle(
-                    plazasParametros.fechaInicio,
-                    plazasParametros.fechaFin
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td rowSpan={2} className="border border-white">
-                  Comp
-                </td>
-                <td rowSpan={2} className="border border-white">
-                  {getYearFromDate(plazasParametros.fechaFin)}
-                </td>
-                <td rowSpan={2} className="border border-white">
-                  %
-                </td>
-                <td rowSpan={2} className="border border-white">
-                  {getYearFromDate(plazasParametros.fechaFin) - 1}
-                </td>
-                <td colSpan={4} className="border border-white">
-                  operaciones
-                </td>
-                <td colSpan={4} className="border border-white">
-                  promedios
-                </td>
-              </tr>
-              <tr>
-                <td className="border border-white">Comp</td>
-                <td className="border border-white">
-                  {getYearFromDate(plazasParametros.fechaFin)}
-                </td>
-                <td className="border border-white">%</td>
-                <td className="border border-white">
-                  {getYearFromDate(plazasParametros.fechaFin) - 1}
-                </td>
-                <td className="border border-white">comp</td>
-                <td className="border border-white">
-                  {getYearFromDate(plazasParametros.fechaFin)}
-                </td>
-                <td className="border border-white">%</td>
-                <td className="border border-white">
-                  {getYearFromDate(plazasParametros.fechaFin) - 1}
-                </td>
-              </tr>
-            </TableHead>
-            <tbody className="bg-white text-center">
-              {semanalesPlaza?.map((semPlaza) => (
-                <TableRow key={semPlaza.plaza} rowId={semPlaza.plaza}>
-                  <td className="text-center bg-black text-white font-bold ">
-                    {semPlaza.plaza}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(semPlaza.compromiso)}
-                  </td>
-                  <td className="font-bold">
-                    {numberWithCommas(semPlaza.ventasActuales)}
-                  </td>
-                  {formatNumber(semPlaza.porcentaje)}
-                  <td className="text-sm">
-                    {numberWithCommas(semPlaza.ventasAnterior)}
-                  </td>
-                  <td className="font-bold">
-                    {numberWithCommas(semPlaza.operacionesComp)}
-                  </td>
-                  <td className="font-bold">
-                    {numberWithCommas(semPlaza.operacionesActual)}
-                  </td>
-                  {formatNumber(semPlaza.porcentajeOperaciones)}
-                  <td className="text-sm">
-                    {numberWithCommas(semPlaza.operacionesAnterior)}
-                  </td>
-                  <td className="font-bold">
-                    {numberWithCommas(semPlaza.promedioComp)}
-                  </td>
-                  <td className="font-bold">
-                    {numberWithCommas(semPlaza.promedioActual)}
-                  </td>
-                  {formatNumber(semPlaza.porcentajePromedios)}
-                  <td>{numberWithCommas(semPlaza.promedioAnterior)}</td>
-                </TableRow>
-              ))}
-            </tbody>
-          </VentasTable>
-        </VentasTableContainer>
-      </main>
-    </>
+      <section className="p-4 flex flex-row justify-between items-baseline">
+        <div className="flex flex-col justify-between h-full">
+          <ParametersContainer>
+            <Parameters>
+              <InputDateRange
+                onChange={(e) => handleChange(e, setPlazasParametros)}
+                beginDate={plazasParametros.fechaInicio}
+                endDate={plazasParametros.fechaFin}
+              />
+              <InputContainer>
+                <Checkbox
+                  className="mb-3"
+                  labelText={checkboxLabels.VENTAS_IVA}
+                  checked={plazasParametros.conIva ? 1 : 0}
+                  name={inputNames.CON_IVA}
+                  onChange={(e) => handleChange(e, setPlazasParametros)}
+                />
+                <Checkbox
+                  className="mb-3"
+                  labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                  checked={plazasParametros.conVentasEventos ? 1 : 0}
+                  name={inputNames.CON_VENTAS_EVENTOS}
+                  onChange={(e) => handleChange(e, setPlazasParametros)}
+                />
+                <Checkbox
+                  className="mb-3"
+                  labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                  checked={plazasParametros.conTiendasCerradas ? 1 : 0}
+                  name={inputNames.CON_TIENDAS_CERRADAS}
+                  onChange={(e) => handleChange(e, setPlazasParametros)}
+                />
+                <Checkbox
+                  className="mb-3"
+                  labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
+                  checked={plazasParametros.sinAgnoVenta ? 1 : 0}
+                  name={inputNames.SIN_AGNO_VENTA}
+                  onChange={(e) => handleChange(e, setPlazasParametros)}
+                />
+                <Checkbox
+                  className="mb-3"
+                  labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
+                  checked={plazasParametros.sinTiendasSuspendidas ? 1 : 0}
+                  name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
+                  onChange={(e) => handleChange(e, setPlazasParametros)}
+                />
+                <Checkbox
+                  labelText={checkboxLabels.RESULTADO_PESOS}
+                  name={inputNames.RESULTADOS_PESOS}
+                  checked={plazasParametros.resultadosPesos ? 1 : 0}
+                  onChange={(e) => handleChange(e, setPlazasParametros)}
+                />
+              </InputContainer>
+            </Parameters>
+          </ParametersContainer>
+          <p className={`text-sm font-bold ${displayType != 3 && 'hidden'}`}>{selectRegion}</p>
+        </div>
+        <ViewFilter 
+          viewOption={displayType} 
+          handleView={setDisplayType} 
+          selectOption={selectRegion} 
+          handleSelect = {setRegion}
+          options={semanalesPlaza && semanalesPlaza.map(item => item.plaza)}
+        />
+      </section>
+
+      <section className="p-4 overflow-y-auto ">
+        {
+          (()=>{
+            switch(displayType){
+              case 1:
+                return <Table plazasParametros={plazasParametros} semanalesPlaza={semanalesPlaza}/>
+              case 2:
+                return <Stat plazasParametros={plazasParametros} semanalesPlaza={semanalesPlaza}/>
+              case 3:
+                return  <StatsGroup plazasParametros={plazasParametros} selectRegion={selectRegion} comparativoPlaza={comparativoPlaza} />
+              case 4:
+                return <TableMobil plazasParametros={plazasParametros} semanalesPlaza={semanalesPlaza}/>
+              default:
+                return <Table plazasParametros={plazasParametros} semanalesPlaza={semanalesPlaza}/>
+            }
+          })()
+        }
+      </section>
+    </div>
   );
 };
+
+const Table = ({ plazasParametros,semanalesPlaza}) => {
+  return(
+    <VentasTableContainer>
+      <VentasTable className="tfooter">
+        <TableHead>
+          <tr>
+            <td
+              rowSpan={3}
+              className="border border-white bg-black-shape rounded-tl-xl"
+            >
+              Plaza
+            </td>
+            <td
+              colSpan={12}
+              className="border border-white bg-black-shape rounded-tr-xl"
+            >
+              {dateRangeTitle(
+                plazasParametros.fechaInicio,
+                plazasParametros.fechaFin
+              )}
+            </td>
+          </tr>
+          <tr>
+            <td rowSpan={2} className="border border-white bg-black-shape text-right">
+              Comp
+            </td>
+            <td rowSpan={2} className="border border-white bg-black-shape text-right">
+              {getYearFromDate(plazasParametros.fechaFin)}
+            </td>
+            <td rowSpan={2} className="border border-white bg-black-shape text-right">
+              %
+            </td>
+            <td rowSpan={2} className="border border-white bg-black-shape text-right">
+              {getYearFromDate(plazasParametros.fechaFin) - 1}
+            </td>
+            <td colSpan={4} className="border border-white bg-black-shape text-right">
+              operaciones
+            </td>
+            <td colSpan={4} className="border border-white bg-black-shape text-right">
+              promedios
+            </td>
+          </tr>
+          <tr>
+            <td className="border border-white bg-black-shape text-right">Comp</td>
+            <td className="border border-white bg-black-shape text-right">
+              {getYearFromDate(plazasParametros.fechaFin)}
+            </td>
+            <td className="border border-white bg-black-shape text-right">%</td>
+            <td className="border border-white bg-black-shape text-right">
+              {getYearFromDate(plazasParametros.fechaFin) - 1}
+            </td>
+            <td className="border border-white bg-black-shape text-right">comp</td>
+            <td className="border border-white bg-black-shape text-right">
+              {getYearFromDate(plazasParametros.fechaFin)}
+            </td>
+            <td className="border border-white bg-black-shape text-right">%</td>
+            <td className="border border-white bg-black-shape text-right">
+              {getYearFromDate(plazasParametros.fechaFin) - 1}
+            </td>
+          </tr>
+        </TableHead>
+        <tbody className="bg-white text-right text-xs">
+          {
+            (()=>{
+              if(semanalesPlaza.length > 0){
+                const count = semanalesPlaza.length - 1;
+                const Items = semanalesPlaza?.map((semPlaza, index) => (
+                  <TableRow key={semPlaza.plaza} rowId={semPlaza.plaza}>
+                    <td className="text-left  text-black font-bold ">
+                      {semPlaza.plaza}
+                    </td>
+                    <td>{numberWithCommas(semPlaza.compromiso)}</td>
+                    <td className="font-bold">
+                      {numberWithCommas(semPlaza.ventasActuales)}
+                    </td>
+                    {formatNumber(semPlaza.porcentaje, index == count)}
+                    <td>{numberWithCommas(semPlaza.ventasAnterior)}</td>
+                    <td className="font-bold">
+                      {numberWithCommas(semPlaza.operacionesComp)}
+                    </td>
+                    <td className="font-bold">
+                      {numberWithCommas(semPlaza.operacionesActual)}
+                    </td>
+                    {formatNumber(semPlaza.porcentajeOperaciones, index == count)}
+                    <td>{numberWithCommas(semPlaza.operacionesAnterior)}</td>
+                    <td className="font-bold">
+                      {numberWithCommas(semPlaza.promedioComp)}
+                    </td>
+                    <td className="font-bold">
+                      {numberWithCommas(semPlaza.promedioActual)}
+                    </td>
+                    {formatNumber(semPlaza.porcentajePromedios, index == count)}
+                    <td>{numberWithCommas(semPlaza.promedioAnterior)}</td>
+                  </TableRow>
+                ))
+                return Items
+              }
+            })()
+          }
+        </tbody>
+      </VentasTable>
+    </VentasTableContainer>
+  )
+}
+
+const Stat = ({ plazasParametros,semanalesPlaza}) => {
+  return(
+    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+      {
+       (()=>{
+          if(Array.isArray(semanalesPlaza)){
+            const Item = semanalesPlaza.map((plaza, index) => {
+              const comp = {
+                columnTitle: 'COMPROMISO',
+                values:[
+                  {
+                    caption:'COMP',
+                    value:numberWithCommas(plaza.compromiso)
+                  },
+                  {
+                    caption:getYearFromDate(plazasParametros.fechaFin),
+                    value:numberWithCommas(plaza.ventasActuales)
+                  },
+                  {
+                    caption:'%',
+                    value:stringFormatNumber(plaza.porcentaje, false)
+                  },
+                  {
+                    caption:getYearFromDate(plazasParametros.fechaFin) - 1,
+                    value:numberWithCommas(plaza.ventasAnterior)
+                  }
+                ]
+              }
+
+              const operaciones = {
+                columnTitle: 'OPERACIONES',
+                values:[
+                  {
+                    caption:'COMP',
+                    value:numberWithCommas(plaza.operacionesComp)
+                  },
+                  {
+                    caption:getYearFromDate(plazasParametros.fechaFin),
+                    value:numberWithCommas(plaza.operacionesActual)
+                  },
+                  {
+                    caption:'%',
+                    value:stringFormatNumber(plaza.porcentajeOperaciones, false)
+                  },
+                  {
+                    caption:getYearFromDate(plazasParametros.fechaFin) - 1,
+                    value:numberWithCommas(plaza.operacionesAnterior)
+                  }
+                ]
+              }
+
+              const promedios = {
+                columnTitle: 'PROMEDIOS',
+                values:[
+                  {
+                    caption:'COMP',
+                    value:numberWithCommas(plaza.promedioComp)
+                  },
+                  {
+                    caption:getYearFromDate(plazasParametros.fechaFin),
+                    value:numberWithCommas(plaza.promedioActual)
+                  },
+                  {
+                    caption:'%',
+                    value:stringFormatNumber(plaza.porcentajePromedios, false)
+                  },
+                  {
+                    caption:getYearFromDate(plazasParametros.fechaFin) - 1,
+                    value:numberWithCommas(plaza.promedioAnterior)
+                  }
+                ]
+              }
+
+              return(
+                <Stats
+                  key={index}
+                  title={plaza.plaza}
+                  columns={[
+                    comp,
+                    operaciones,
+                    promedios
+                  ]}
+                />
+              )
+            });
+            return Item
+          }
+       })()
+      }
+    </div>
+  )
+}
+
+const TableMobil = ({plazasParametros,semanalesPlaza}) => {
+  return(
+    <section>
+      {
+        (()=>{
+          if(Array.isArray(semanalesPlaza)){
+            const count = semanalesPlaza.length - 1;
+            return(
+              <Fragment>
+                <table className="mobile-table mb-8">
+                  <caption className="text-blue-500 font-bold mb-1 uppercase">compromiso</caption>
+                  <thead className="text-right text-xs">
+                    <tr>
+                      <th className="text-center">Plaza</th>
+                      <th>COMP</th>
+                      <th>{getYearFromDate(plazasParametros.fechaFin)}</th>
+                      <th>%</th>
+                      <th>{getYearFromDate(plazasParametros.fechaFin) - 1}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-[10px]">
+                    {
+                     semanalesPlaza.map((plaza, index) => (
+                        <TableRow key={plaza.plaza} rowId={plaza.plaza}>
+                          <td className="text-left">{plaza.plaza}</td>
+                          <td className="text-right">{numberWithCommas(plaza.compromiso)}</td>
+                          <td className="font-bold text-right" >{numberWithCommas(plaza.ventasActuales)}</td>
+                          {tdFormatNumber(plaza.porcentaje, count == index, 10)}
+                          <td className="text-right">{numberWithCommas(plaza.ventasAnterior)}</td>
+                        </TableRow>
+                      ))
+                    }
+                  </tbody>
+                </table>
+
+                <table className="mobile-table mb-8">
+                  <caption className="text-blue-500 font-bold mb-1 uppercase">Operaciones</caption>
+                  <thead className="text-right text-xs">
+                    <tr>
+                      <th className="text-center">Plaza</th>
+                      <th>COMP</th>
+                      <th>{getYearFromDate(plazasParametros.fechaFin)}</th>
+                      <th>%</th>
+                      <th>{getYearFromDate(plazasParametros.fechaFin) - 1}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-[10px]">
+                    {  
+                     semanalesPlaza.map((plaza, index) => (
+                        <TableRow key={plaza.plaza} rowId={plaza.plaza}>
+                          <td className="text-left">{plaza.plaza}</td>
+                          <td className="text-right">{numberWithCommas(plaza.operacionesComp)}</td>
+                          <td className="font-bold text-right" >{numberWithCommas(plaza.operacionesActual)}</td>
+                          {tdFormatNumber(plaza.porcentajeOperaciones, count == index, 10)}
+                          <td className="text-right">{numberWithCommas(plaza.operacionesAnterior)}</td>
+                        </TableRow>
+                      ))
+                    }
+                  </tbody>
+                </table>
+
+                <table className="mobile-table">
+                  <caption className="text-blue-500 font-bold mb-1 uppercase">Promedios</caption>
+                  <thead className="text-right text-xs">
+                    <tr>
+                      <th className="text-center">Plaza</th>
+                      <th>COMP</th>
+                      <th>{getYearFromDate(plazasParametros.fechaFin)}</th>
+                      <th>%</th>
+                      <th>{getYearFromDate(plazasParametros.fechaFin) - 1}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="text-[10px]">
+                    {
+                     semanalesPlaza.map((plaza, index) => (
+                        <TableRow key={plaza.plaza} rowId={plaza.plaza}>
+                          <td className="text-left">{plaza.plaza}</td>
+                          <td className="text-right">{numberWithCommas(plaza.promedioComp)}</td>
+                          <td className="font-bold text-right" >{numberWithCommas(plaza.promedioActual)}</td>
+                          {tdFormatNumber(plaza.porcentajePromedios, count == index, 10)}
+                          <td className="text-right">{numberWithCommas(plaza.promedioAnterior)}</td>
+                        </TableRow>
+                      ))
+                    }
+                  </tbody>
+                </table>
+              </Fragment>
+            )
+          }
+        })()
+      }
+    </section>
+  )
+}
+
+const StatsGroup = ({plazasParametros, selectRegion, comparativoPlaza}) => {
+  return(
+    <div>
+      {
+        (()=>{
+          if(Object.keys(comparativoPlaza).length > 0 && comparativoPlaza.hasOwnProperty(selectRegion)){
+            const compromiso = comparativoPlaza[selectRegion].map(plaza => (
+              {
+                columnTitle: plaza.plaza,
+                values:[
+                  {
+                    caption:'COMP',
+                    value:numberWithCommas(plaza.compromiso)
+                  },
+                  {
+                    caption:getYearFromDate(plazasParametros.fechaFin),
+                    value:numberWithCommas(plaza.ventasActuales)
+                  },
+                  {
+                    caption:'%',
+                    value:stringFormatNumber(plaza.porcentaje)
+                  },
+                  {
+                    caption:getYearFromDate(plazasParametros.fechaFin) - 1,
+                    value:numberWithCommas(plaza.ventasAnterior)
+                  }
+                ]
+              }
+            ));
+
+            const operaciones = comparativoPlaza[selectRegion].map(plaza => (
+              {
+                columnTitle: plaza.plaza,
+                values:[
+                  {
+                    caption: 'COMP',
+                    value:numberWithCommas(plaza.operacionesComp)
+                  },
+                  {
+                    caption:getYearFromDate(plazasParametros.fechaFin),
+                    value:numberWithCommas(plaza.operacionesActual)
+                  },
+                  {
+                    caption:'%',
+                    value:stringFormatNumber(plaza.porcentajeOperaciones)
+                  },
+                  {
+                    caption:getYearFromDate(plazasParametros.fechaFin) - 1,
+                    value:numberWithCommas(plaza.operacionesAnterior)
+                  }
+                ]
+              }
+            ));
+
+            const promedios = comparativoPlaza[selectRegion].map(plaza => (
+              {
+                columnTitle: plaza.plaza,
+                values:[
+                  {
+                    caption:'COMP',
+                    value:numberWithCommas(plaza.promedioComp)
+                  },
+                  {
+                    caption:getYearFromDate(plazasParametros.fechaFin),
+                    value:numberWithCommas(plaza.promedioActual)
+                  },
+                  {
+                    caption:'%',
+                    value:stringFormatNumber(plaza.porcentajePromedios)
+                  },
+                  {
+                    caption:getYearFromDate(plazasParametros.fechaFin) - 1,
+                    value:numberWithCommas(plaza.promedioAnterior)
+                  }
+                ]
+              }
+            ));
+
+            return(
+              <Fragment key={v4()}>
+                <div className={`grid grid-cols-1 xl:grid-cols-3 gap-4`}>
+                 <Stats
+                      title= {'COMPROMISO'}
+                      columns={(compromiso && [...compromiso])}
+                      expand={false}
+                    />
+                    <Stats
+                      title= {'OPERACIONES'}
+                      columns={(operaciones && [...operaciones])}
+                      expand={false}
+                    />
+                      <Stats
+                      title= {'PROMEDIOS'}
+                      columns={(promedios && [...promedios])}
+                      expand={false}
+                    />
+                </div>
+              </Fragment>
+            )
+          }
+        })()
+      }
+    </div>
+  )
+}
 
 const PlazasWithAuth = withAuth(Plazas);
 PlazasWithAuth.getLayout = getVentasLayout;

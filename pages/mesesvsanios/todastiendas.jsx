@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   Parameters,
   ParametersContainer,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -17,7 +16,6 @@ import ComparativoVentas from "../../components/table/ComparativoVentas";
 import {
   getInitialPlaza,
   getPlazaName,
-  isError,
   validateYear,
 } from "../../utils/functions";
 import {
@@ -30,13 +28,14 @@ import { handleChange } from "../../utils/handlers";
 import { getMesesAgnosTodasTiendas } from "../../services/MesesAgnosService";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
-import { useAlert } from "../../context/alertContext";
+import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const TodasTiendas = () => {
-  const alert = useAlert();
-  const { plazas } = useUser();
+const TodasTiendas = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
+  const { plazas } = useAuth();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTiendas, setParamTiendas] = useState({
     plaza: getInitialPlaza(plazas),
@@ -46,22 +45,34 @@ const TodasTiendas = () => {
     resultadosPesos: 1,
   });
 
-  useEffect(() => {
-    if (validateYear(paramTiendas.delAgno)) {
-      getMesesAgnosTodasTiendas(paramTiendas).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
-          createMesesAgnosTiendasDataset(response);
-        }
-      });
+  useEffect(()=>{
+    if(plazas){
+      setParamTiendas(prev => ({
+        ...prev, 
+        plaza:getInitialPlaza(plazas),
+        conIva: config?.conIva || 0,
+        conTiendasCerradas: config?.conTiendasCerradas || 0,
+        resultadosPesos: config?.resultadosPesos || 0,
+      }))
     }
+  },[plazas, config])
+
+  useEffect(() => {
+    (async()=>{
+      if(validateYear(paramTiendas.delAgno) && plazas){
+        try {
+          const response = await getMesesAgnosTodasTiendas(paramTiendas);
+          createMesesAgnosTiendasDataset(response);
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message:response?.response?.data ?? MENSAJE_ERROR
+          });
+        }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramTiendas]);
+  }, [paramTiendas, paramTiendas.delAgno]);
 
   const createMesesAgnosTiendasDataset = (data) => {
     const colors = [
@@ -112,19 +123,16 @@ const TodasTiendas = () => {
   };
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas por Mes Tiendas Plaza ${getPlazaName(
           paramTiendas.plaza
         )} año ${paramTiendas.delAgno} (mls.${
           paramTiendas.resultadosPesos ? "pesos" : "dlls"
         })`}
-        description={`Esta grafica muestra un comparativo de las ventas por mes de todas las tiendas de la plaza seleccionada en el año que fue especificado. 
-        Recuerde que el rango de años debe ser capturado de menor a el mayor, aunque en el reporte se mostrara en orden descendente.
-        `}
       />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -146,6 +154,7 @@ const TodasTiendas = () => {
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
                 name={inputNames.CON_IVA}
+                checked={paramTiendas.conIva ? true : false}
                 onChange={(e) => {
                   handleChange(e, setParamTiendas);
                 }}
@@ -153,6 +162,7 @@ const TodasTiendas = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={paramTiendas.conTiendasCerradas ? true : false}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 onChange={(e) => {
                   handleChange(e, setParamTiendas);
@@ -162,7 +172,7 @@ const TodasTiendas = () => {
                 className="mb-3"
                 labelText={checkboxLabels.RESULTADO_PESOS}
                 name={inputNames.RESULTADOS_PESOS}
-                checked={paramTiendas.resultadosPesos}
+                checked={paramTiendas.resultadosPesos ? true : false}
                 onChange={(e) => {
                   handleChange(e, setParamTiendas);
                 }}
@@ -170,7 +180,8 @@ const TodasTiendas = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 h-full overflow-y-auto ">
         <ComparativoVentas>
           <BarChart
             text={`Ventas al ${formatLastDate(
@@ -182,8 +193,8 @@ const TodasTiendas = () => {
             }}
           />
         </ComparativoVentas>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

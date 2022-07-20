@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import {
   VentasTableContainer,
@@ -26,20 +25,21 @@ import { getInitialPlaza, getPlazaName, isError } from "../../utils/functions";
 import { inputNames } from "../../utils/data/checkboxLabels";
 import { handleChange } from "../../utils/handlers";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
-import { useAlert } from "../../context/alertContext";
+import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Plaza = () => {
-  const alert = useAlert();
-  const { plazas } = useUser();
+const Plaza = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
+  const { plazas } =  useAuth();
   const [diariasPlaza, setDiariasPlaza] = useState([]);
   const [plazaParametros, setPlazaParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
     plaza: getInitialPlaza(plazas),
     conIva: 0,
-    semanaSanta: 1,
+    semanaSanta: 0,
     conVentasEventos: 0,
     conTiendasCerradas: 0,
     sinAgnoVenta: 0,
@@ -47,28 +47,45 @@ const Plaza = () => {
     resultadosPesos: 0,
   });
 
+  useEffect(()=>{
+    if(plazas){
+      setPlazaParametros(prev => ({
+        ...prev, 
+        plaza:getInitialPlaza(plazas),
+        conIva: config?.conIva || 0,
+        semanaSanta: config?.semanaSanta || 0,
+        conVentasEventos: config?.conVentasEventos || 0,
+        conTiendasCerradas: config?.conTiendasCerradas || 0,
+        sinAgnoVenta: config?.sinAgnoVenta || 0,
+        sinTiendasSuspendidas: config?.sinTiendasSuspendidas || 0,
+        resultadosPesos: config?.resultadosPesos || 0,
+      }));
+    }
+  },[plazas, config])
+
   useEffect(() => {
-    getDiariasPlazas(plazaParametros).then((response) => {
-      if (isError(response)) {
-        alert.showAlert(
-          response?.response?.data ?? MENSAJE_ERROR,
-          "warning",
-          1000
-        );
-      } else {
-        setDiariasPlaza(response);
+    (async()=>{
+      if(plazas){
+        try {
+          const response = await getDiariasPlazas(plazaParametros);
+          setDiariasPlaza(response);
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR,
+          })
+        }
       }
-    });
+    })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [plazaParametros]);
+  }, [plazaParametros, plazaParametros.delAgno,]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas Diarias Plaza ${getPlazaName(plazaParametros.plaza)}`}
-        description=" Esta tabla muestra las ventas vs presupuesto del grupo en el periodo de mes y año especificado, este siempre será comparado contra el año anterior."
       />
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -89,6 +106,7 @@ const Plaza = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={plazaParametros.conIva ? true : false}
                 name={inputNames.CON_IVA}
                 onChange={(e) => handleChange(e, setPlazaParametros)}
               />
@@ -102,40 +120,43 @@ const Plaza = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={plazaParametros.conVentasEventos ? true : false}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setPlazaParametros)}
               />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
+               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
                 name={inputNames.CON_TIENDAS_CERRADAS}
+                checked={plazaParametros.conTiendasCerradas ? true : false}
                 onChange={(e) => handleChange(e, setPlazaParametros)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
+                checked={plazaParametros.sinAgnoVenta ? true : false}
                 name={inputNames.SIN_AGNO_VENTA}
                 onChange={(e) => handleChange(e, setPlazaParametros)}
               />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
+               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
+                checked={plazaParametros.sinTiendasSuspendidas ? true : false}
                 name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
                 onChange={(e) => handleChange(e, setPlazaParametros)}
               />
               <Checkbox
                 labelText={checkboxLabels.RESULTADO_PESOS}
+                checked={plazaParametros.resultadosPesos ? true : false}
                 name={inputNames.RESULTADOS_PESOS}
                 onChange={(e) => handleChange(e, setPlazaParametros)}
               />
             </InputContainer>
           </Parameters>
         </ParametersContainer>
+      </section>
 
+      <section className="p-4 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable>
             <VentasDiariasTableHead
@@ -143,44 +164,50 @@ const Plaza = () => {
               month={plazaParametros.delMes}
             />
             <tbody className="bg-white text-center">
-              {diariasPlaza?.map((diaria) => (
-                <TableRow key={diaria.dia} rowId={diaria.dia}>
-                  <td className="text-center font-bold">{diaria.dia}</td>
-                  <td className="text-center text-sm">{diaria.dia}</td>
-                  <td className="font-bold">
-                    {numberWithCommas(diaria.ventaActual)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.ventaAnterior)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.compromisoDiario)}
-                  </td>
-                  {formatNumber(diaria.crecimientoDiario)}
-                  <td className="font-bold">
-                    {numberWithCommas(diaria.acumMensualActual)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.acumMensualAnterior)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.compromisoAcum)}
-                  </td>
-                  {formatNumber(diaria.diferencia)}
-                  {formatNumber(diaria.crecimientoMensual)}
-                  <td className="font-bold">
-                    {numberWithCommas(diaria.acumAnualActual)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.acumAnualAnterior)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(diaria.compromisoAnual)}
-                  </td>
-                  {formatNumber(diaria.crecimientoAnual)}
-                  <td className="text-center font-bold">{diaria.dia}</td>
-                </TableRow>
-              ))}
+              {(()=>{
+                if(diariasPlaza.length > 0){
+                  const Items = diariasPlaza?.map((diaria) => (
+                    <TableRow key={diaria.dia} rowId={diaria.dia}>
+                      <td className="text-right text-xs font-bold">{diaria.dia}</td>
+                      <td className="text-right text-xs">{diaria.dia}</td>
+                      <td className="text-right text-xs font-bold">
+                        {numberWithCommas(diaria.ventaActual)}
+                      </td>
+                      <td className="text-right text-xs">
+                        {numberWithCommas(diaria.ventaAnterior)}
+                      </td>
+                      <td className="text-right text-xs">
+                        {numberWithCommas(diaria.compromisoDiario)}
+                      </td>
+                      {formatNumber(diaria.crecimientoDiario)}
+                      <td className="text-right text-xs font-bold">
+                        {numberWithCommas(diaria.acumMensualActual)}
+                      </td>
+                      <td className="text-right text-xs">
+                        {numberWithCommas(diaria.acumMensualAnterior)}
+                      </td>
+                      <td className="text-right text-xs">
+                        {numberWithCommas(diaria.compromisoAcum)}
+                      </td>
+                      {formatNumber(diaria.diferencia)}
+                      {formatNumber(diaria.crecimientoMensual)}
+                      <td className="text-right text-xs font-bold">
+                        {numberWithCommas(diaria.acumAnualActual)}
+                      </td>
+                      <td className="text-right text-xs">
+                        {numberWithCommas(diaria.acumAnualAnterior)}
+                      </td>
+                      <td className="text-right text-xs">
+                        {numberWithCommas(diaria.compromisoAnual)}
+                      </td>
+                      {formatNumber(diaria.crecimientoAnual)}
+                      <td className="text-right text-xs font-bold">{diaria.dia}</td>
+                    </TableRow>
+                  ));
+                return Items
+                }
+                return <></>
+              })()}
             </tbody>
             <VentasDiariasTableFooter
               currentYear={plazaParametros.delAgno}
@@ -188,8 +215,8 @@ const Plaza = () => {
             />
           </VentasTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

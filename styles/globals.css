@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
 details > summary {
   list-style-type: none;
 }
@@ -19,14 +21,49 @@ input[type="date"]:in-range::-webkit-datetime-edit-text {
   color: transparent;
 }
 
+table thead > tr{
+  text-transform: uppercase;
+}
+
 table.tfooter tr:last-child {
-  @apply bg-black text-white font-bold;
+  @apply  text-white font-bold;
+}
+
+table.tfooter tr:last-child td{
+  @apply bg-black-shape
+}
+
+table.tfooter tr:last-child td:first-child{
+  @apply bg-black-shape rounded-bl-md text-white
+}
+
+table.tfooter tr:last-child td:last-child{
+  @apply bg-black-shape rounded-br-md text-white
 }
 
 @media (max-width: 1024px) {
   aside {
     height: 100vh;
   }
+}
+
+.mobile-table{
+  @apply w-full text-xs;
+}
+.mobile-table thead tr th, .mobile-table tbody tr:last-child td{
+  @apply bg-[#EFEDED];
+}
+.mobile-table thead tr th:first-child{
+  @apply rounded-tl-md;
+}
+.mobile-table thead tr th:last-child{
+  @apply rounded-tr-md;
+}
+.mobile-table tbody tr:last-child td:first-child{
+  @apply rounded-bl-md
+}
+.mobile-table tbody tr:last-child td:last-child{
+  @apply rounded-br-md
 }
 
 .blue-button {
@@ -37,8 +74,8 @@ table.tfooter tr:last-child {
   @apply outline-none border border-gray-300 rounded-md w-32;
 }
 
-table.last-row-bg tr:last-child {
-  @apply bg-black font-bold text-white;
+table.last-row-bg tbody tr:last-child {
+  @apply bg-black-shape font-bold text-white;
 }
 
 .buttonToggle {
@@ -47,12 +84,26 @@ table.last-row-bg tr:last-child {
 
 /*Buttons*/
 .primary-btn {
-  @apply h-12  border-none rounded-md bg-sky-500 text-center text-white  hover:bg-sky-600 transition ease-in-out duration-200 font-bold;
+  @apply h-9  border-none rounded-md bg-sky-500 text-center text-white  hover:bg-sky-600 transition ease-in-out duration-200 font-bold;
 }
 
 .secondary-btn {
-  @apply h-12 border-none rounded-md bg-zinc-300 text-center text-black hover:bg-gray-400 transition ease-in-out duration-200 font-semibold; 
+  @apply h-9 border-none rounded-md bg-zinc-300 text-center text-black hover:bg-gray-400 transition ease-in-out duration-200 font-semibold;
+
 }
+
+.table-head > tr th{
+  @apply bg-black-shape
+}
+
+.table-head-rl > tr:first-child th:first-child{
+  @apply rounded-tl-xl
+}
+
+.table-head-rr > tr:first-child th:last-child{
+  @apply rounded-tr-xl
+}
+
 /*Advnaced components*/
 @layer components {
   /*Accordion*/
@@ -213,3 +264,70 @@ table.last-row-bg tr:last-child {
 }
 
 
+.layout-ventas{
+  position: relative;
+  display: grid; 
+  grid-template-columns: 3rem 1fr; 
+  grid-template-rows: 3rem 1fr;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden; 
+  gap: 0px 0px; 
+  grid-template-areas: 
+    "Navbar Navbar"
+    "Toolbar Main"; 
+}
+
+
+.layout-ventas-navbar{
+  grid-area: Navbar;
+}
+.layout-ventas-toolbar{
+  grid-area: Toolbar;
+}
+.layout-ventas-main{
+  grid-area: Main;
+  height: 100%;
+  overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+  .layout-ventas{ 
+    grid-template-areas:
+      "Navbar Navbar"
+      "Main Main";
+  }
+  
+  .layout-ventas-toolbar{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    height: 3rem;
+    top: 3.2rem;
+    left: 0.1rem;
+  }
+}
+
+.layout-base{
+  display: grid;
+  position: relative; 
+  grid-template-columns: 1fr; 
+  grid-template-rows: 3rem 1fr;
+  width: 100vw;
+  height: 100vh;
+  gap: 0px 0px; 
+  grid-template-areas: 
+    "Navbar"
+    "Main";
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+.layout-base-navbar{
+  grid-area: Navbar;
+  z-index: 10;
+}
+.layout-base-main{
+  grid-area:  Main;
+  height: 100%;
+}

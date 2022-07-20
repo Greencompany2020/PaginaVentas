@@ -23,13 +23,13 @@ import { formatLastDate, getBeginEndMonth } from "../../utils/dateFunctions";
 import { getPresupuestoFechas } from "../../services/PresupuestoService";
 import { MENSAJE_ERROR } from "../../utils/data";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
-import { useAlert } from "../../context/alertContext";
+import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Fechas = () => {
-  const alert = useAlert();
-  const { plazas } = useUser();
+  const sendNotification = useNotification();
+  const { plazas } = useAuth();
   const [prespuestos, setPrespuestos] = useState({});
   const [paramFechas, setParamFechas] = useState({
     plaza: getInitialPlaza(plazas),
@@ -37,37 +37,39 @@ const Fechas = () => {
     fechaFin: getBeginEndMonth()[1],
   });
 
-  useEffect(() => {
-    if (validateInputDateRange(paramFechas.fechaInicio, paramFechas.fechaFin)) {
-      getPresupuestoFechas(paramFechas).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
-          setPrespuestos(response);
-        }
-      });
+  useEffect(()=>{
+    if(plazas){
+      setParamFechas(prev => ({...prev, plaza:getInitialPlaza(plazas)}));
     }
+  },[plazas])
+
+  useEffect(() => {
+    (async()=>{
+      if(validateInputDateRange(paramFechas.fechaInicio, paramFechas.fechaFin) && plazas){
+        try {
+          const response = await getPresupuestoFechas(paramFechas);
+          setPrespuestos(response);
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR
+          });
+        }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramFechas]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Compromisos plaza ${getPlazaName(
           paramFechas.plaza
         )} del ${formatLastDate(paramFechas.fechaInicio)} al ${formatLastDate(
           paramFechas.fechaFin
         )}`}
-        description={`ESTE REPORTE OBTIENE EL COMPROMISO DE VENTAS PARA CIERTO RANGO DE FECHAS, 
-          QUE PUEDE SER UN MES, UNA SEMANA, UN FIN DE SEMANA, BASADO EN LA FECHAS ESTABLECIDA...
-          `}
       />
-
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -87,7 +89,8 @@ const Fechas = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="p-4 overflow-y-auto ">
         <VentasTableContainer
           title={`Compromisos plaza ${getPlazaName(
             paramFechas.plaza
@@ -99,8 +102,8 @@ const Fechas = () => {
             <PresupuestoTable key={key} title={key} presupuestos={value} />
           ))}
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

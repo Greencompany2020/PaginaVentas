@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import {
   VentasTableContainer,
@@ -23,11 +22,12 @@ import { numberWithCommas } from "../../utils/resultsFormated";
 import { handleChange } from "../../utils/handlers";
 import { isError } from "../../utils/functions";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Concentrado = () => {
-  const alert = useAlert();
+const Concentrado = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
   const [concentrado, setConcentrado] = useState([]);
   const [concentradoParametros, setConcentradoParametros] = useState({
     delAgno: new Date(Date.now()).getFullYear(),
@@ -38,30 +38,38 @@ const Concentrado = () => {
     resultadosPesos: 0,
   });
 
+  useEffect(()=>{
+    setConcentradoParametros(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      ventasMilesDlls:config?.ventasMilesDlls || 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradas || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }))
+  },[config])
+
   useEffect(() => {
-    if (concentradoParametros.delAgno.toString().length === 4) {
-      getMensualesConcentrado(concentradoParametros).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
+    (async()=>{
+      if (concentradoParametros.delAgno.toString().length === 4) {
+        try {
+          const response = await getMensualesConcentrado(concentradoParametros);
           setConcentrado(response);
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message:response?.response?.data ?? MENSAJE_ERROR,
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [concentradoParametros]);
+  }, [concentradoParametros, ParametersContainer.delAgno]);
 
   return (
-    <>
-      <TitleReport
-        title="Ventas Mensuales de tiendas en el año 2022"
-        description="Este reporte muestra las ventas por tienda en el año especificado."
-      />
-      <main className="w-full h-full p-4 md:p-8">
+    <div className=" flex flex-col h-full">
+      <TitleReport title="Ventas Mensuales de tiendas en el año 2022" />
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -72,11 +80,10 @@ const Concentrado = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={concentradoParametros.conIva ? true : false}
                 name={inputNames.CON_IVA}
                 onChange={(e) => handleChange(e, setConcentradoParametros)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_EN_DLLS}
@@ -87,60 +94,64 @@ const Concentrado = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={concentradoParametros.conVentasEventos ? true : false}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setConcentradoParametros)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={concentradoParametros.conTiendasCerradas ? true : false}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 onChange={(e) => handleChange(e, setConcentradoParametros)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.RESULTADO_PESOS}
+                checked={concentradoParametros.resultadosPesos ? true : false}
                 name={inputNames.RESULTADOS_PESOS}
                 onChange={(e) => handleChange(e, setConcentradoParametros)}
               />
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="p-4 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable className="tfooter">
             <TableHead>
               <tr>
-                <th rowSpan={2}>TDA.</th>
-                <th>ENE</th>
-                <th>FEB</th>
-                <th>MAR</th>
-                <th>ABR</th>
-                <th>MAY</th>
-                <th>JUN</th>
-                <th>JUL</th>
-                <th>AGO</th>
-                <th>SEP</th>
-                <th>OCT</th>
-                <th>NOV</th>
-                <th>DIC</th>
-                <th>TTAL</th>
+                <th rowSpan={2} className=" bg-black-shape  rounded-tl-xl">
+                  TDA.
+                </th>
+                <th className=" bg-black-shape">ENE</th>
+                <th className=" bg-black-shape">FEB</th>
+                <th className=" bg-black-shape">MAR</th>
+                <th className=" bg-black-shape">ABR</th>
+                <th className=" bg-black-shape">MAY</th>
+                <th className=" bg-black-shape">JUN</th>
+                <th className=" bg-black-shape">JUL</th>
+                <th className=" bg-black-shape">AGO</th>
+                <th className=" bg-black-shape">SEP</th>
+                <th className=" bg-black-shape">OCT</th>
+                <th className=" bg-black-shape">NOV</th>
+                <th className=" bg-black-shape">DIC</th>
+                <th className=" bg-black-shape  rounded-tr-xl">TTAL</th>
               </tr>
               <tr className="text-center">
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>$</th>
-                <th>Año</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">$</th>
+                <th className=" bg-black-shape">Año</th>
               </tr>
             </TableHead>
             <tbody className="bg-white">
@@ -148,40 +159,34 @@ const Concentrado = () => {
                 <TableRow
                   key={items.tienda}
                   rowId={items.tienda}
-                  className={`text-center ${
+                  className={`text-xs text-right ${
                     concentradoPlazas.includes(items.tienda) &&
                     "bg-gray-300 font-bold"
                   }`}
                 >
-                  <td className="bg-black text-white font-bold">
+                  <td className="text-black font-bold text-left">
                     {items.tienda}
                   </td>
-                  <td className="text-sm">{numberWithCommas(items.enero)}</td>
-                  <td className="text-sm">{numberWithCommas(items.febrero)}</td>
-                  <td className="text-sm">{numberWithCommas(items.marzo)}</td>
-                  <td className="text-sm">{numberWithCommas(items.abril)}</td>
-                  <td className="text-sm">{numberWithCommas(items.mayo)}</td>
-                  <td className="text-sm">{numberWithCommas(items.junio)}</td>
-                  <td className="text-sm">{numberWithCommas(items.julio)}</td>
-                  <td className="text-sm">{numberWithCommas(items.agosto)}</td>
-                  <td className="text-sm">
-                    {numberWithCommas(items.septiembre)}
-                  </td>
-                  <td className="text-sm">{numberWithCommas(items.octubre)}</td>
-                  <td className="text-sm">
-                    {numberWithCommas(items.noviembre)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(items.diciembre)}
-                  </td>
-                  <td className="text-sm">{numberWithCommas(items.total)}</td>
+                  <td>{numberWithCommas(items.enero)}</td>
+                  <td>{numberWithCommas(items.febrero)}</td>
+                  <td>{numberWithCommas(items.marzo)}</td>
+                  <td>{numberWithCommas(items.abril)}</td>
+                  <td>{numberWithCommas(items.mayo)}</td>
+                  <td>{numberWithCommas(items.junio)}</td>
+                  <td>{numberWithCommas(items.julio)}</td>
+                  <td>{numberWithCommas(items.agosto)}</td>
+                  <td>{numberWithCommas(items.septiembre)}</td>
+                  <td>{numberWithCommas(items.octubre)}</td>
+                  <td>{numberWithCommas(items.noviembre)}</td>
+                  <td>{numberWithCommas(items.diciembre)}</td>
+                  <td>{numberWithCommas(items.total)}</td>
                 </TableRow>
               ))}
             </tbody>
           </VentasTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

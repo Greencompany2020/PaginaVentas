@@ -1,12 +1,11 @@
 import { useState, useEffect } from "react";
-import * as service from "../services/AccessService";
-import { useAlert } from "../context/alertContext";
+import * as service from "../services/configuratorService";
+import { useNotification } from "../components/notifications/NotificationsProvider";
 
-const ALERT_SETTIME = 4000
 
 export default function useAccess() {
 
-  const alert = useAlert();
+  const sendNotification = useNotification();
   const [users, setUsers] = useState([]);
   const [groups, setGroups] = useState([]);
   const [access, setAccess] = useState([]);
@@ -44,13 +43,15 @@ export default function useAccess() {
     try {
       const response = await service.getUserDetail(userId);
       const { Accesos, ...Usuario } = response;
-      const formatedAccess = replaceAccess(access, Accesos);
+      const formatedAcces = replaceAccess(access, Accesos)
       const formatedData = {
         userDetail: Usuario,
-        userAccess:formatedAccess,
+        userAccess:formatedAcces,
       };
       return formatedData;
-    } catch (error) {}
+    } catch (error) {
+
+    }
   };
 
   const createUser = async (body) => {
@@ -58,7 +59,10 @@ export default function useAccess() {
       const response = await service.createUser(body);
       if(response) await getUsers();
     } catch (error) {
-      alert.showAlert('Error al crear usuario', 'warning', ALERT_SETTIME);
+      sendNotification({
+        type:'ERROR',
+        message:'Error al crear usuario'
+      });
     }
   };
 
@@ -68,7 +72,10 @@ export default function useAccess() {
       const response = await service.updateUser(userId, values);
       if(response) await getUsers();
     } catch (error) {
-      alert.showAlert('Error al actualizar usuario', 'warning', ALERT_SETTIME);
+      sendNotification({
+        type:'ERROR',
+        message:'Error al actualizar usuario'
+      });
     }
   };
 
@@ -77,7 +84,10 @@ export default function useAccess() {
       const response = await service.deleteUser(userId);
       if(response) await getUsers();
     } catch (error) {
-      alert.showAlert('Error al eliminar usuario', 'warning', ALERT_SETTIME);
+      sendNotification({
+        type:'ERROR',
+        message:'Error al eliminar usuario'
+      });
     }
   };
 
@@ -86,7 +96,10 @@ export default function useAccess() {
       const response = await service.assignAccess(body);
       if(response) await getUserDetail(body.idUser);
     } catch (error) {
-      alert.showAlert('Error al asignar o actualizar permiso', 'warning', ALERT_SETTIME);
+      sendNotification({
+        type:'ERROR',
+        message:'Error al asignar o actualizar permiso'
+      });
     }
   }
 
@@ -96,7 +109,10 @@ export default function useAccess() {
       const response = await service.createGroup(body);
       if(response) await getGroups();
     } catch (error) {
-      alert.showAlert('Error al crear grupo', 'warning', ALERT_SETTIME);
+      sendNotification({
+        type:'ERROR',
+        message:'Error al crear grupo'
+      });
     }
   };
 
@@ -105,7 +121,10 @@ export default function useAccess() {
       const response = await service.updateGroup(groupId, body);
       if(response) await getGroups();
     } catch (error) {
-      alert.showAlert('Error al actulizar grupo', 'warning', ALERT_SETTIME);
+      sendNotification({
+        type:'ERROR',
+        message:'Error al actulizar grupo'
+      });
     }
   };
 
@@ -114,7 +133,10 @@ export default function useAccess() {
       const response = await service.deleteGroup(groupId);
       if(response) await getGroups();
     } catch (error) {
-      alert.showAlert('Error al eliminar grupo', 'warning', ALERT_SETTIME);
+      sendNotification({
+        type:'ERROR',
+        message:'Error al eliminar grupo'
+      });
     }
   };
 
@@ -124,7 +146,10 @@ export default function useAccess() {
       const response = await service.createAccess(body);
       if(response) await getAccess();
     } catch (error) {
-      alert.showAlert('Error al crear acceso usuario', 'warning', ALERT_SETTIME);
+      sendNotification({
+        type:'ERROR',
+        message:'Error al crear acceso usuario'
+      });
     }
   };
 
@@ -133,7 +158,10 @@ export default function useAccess() {
       const response = await service.updateAccess(accessId, body);
       if(response) await getAccess();
     } catch (error) {
-      alert.showAlert('Error al actualizar acceso', 'warning', ALERT_SETTIME);
+      sendNotification({
+        type:'ERROR',
+        message:'Error al actualizar acceso'
+      });
     }
   };
 
@@ -142,9 +170,35 @@ export default function useAccess() {
       const response = await service.deleteAccess(accessId);
       if(response) await getAccess();
     } catch (error) {
-      alert.showAlert('Error al eliminar acceso', 'warning', ALERT_SETTIME);
+      sendNotification({
+        type:'ERROR',
+        message:'Error al eliminar acceso'
+      });
     }
   };
+
+  const getParameters = async (idDashboard) => {
+    try {
+      const response = await service.getParameters(idDashboard);
+      return response;
+    } catch (error) {
+      sendNotification({
+        type:'ERROR',
+        message:'Error al consultar los parametros'
+      })
+    }
+  }
+
+  const configureParameters = async (idDashboard, body) => {
+    try {
+      const response = await service.configureParameters(idDashboard, body);
+    } catch (error) {
+      sendNotification({
+        type: 'ERROR',
+        message: 'Errror al configurar los parametros'
+      })
+    }
+  }
 
   const replaceAccess = (current, next) => {
     const modified = current.map((item) => {
@@ -174,7 +228,9 @@ export default function useAccess() {
     deleteAccess,
     createGroup,
     updateGroup,
-    deleteGroup
+    deleteGroup,
+    getParameters,
+    configureParameters
   };
 }
 

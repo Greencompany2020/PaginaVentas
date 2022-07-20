@@ -25,13 +25,13 @@ import { getRangoVentasTienda } from "../../services/RangoVentasService";
 import useGraphData from "../../hooks/useGraphData";
 import { MENSAJE_ERROR } from "../../utils/data";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
-import { useAlert } from "../../context/alertContext";
+import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Tienda = () => {
-  const alert = useAlert();
-  const { tiendas } = useUser();
+  const sendNotification = useNotification();
+  const { tiendas } = useAuth();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTienda, setParamTienda] = useState({
     tienda: getInitialTienda(tiendas),
@@ -40,32 +40,33 @@ const Tienda = () => {
     rangos: "100,200,300,400,500,600",
   });
 
-  useEffect(() => {
-    if (validateInputDateRange(paramTienda.fechaInicio, paramTienda.fechaFin)) {
-      getRangoVentasTienda(paramTienda).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
-          createRangoVentasDataset(response, setLabels, setDatasets);
-        }
-      });
+  useEffect(()=>{
+    if(tiendas){
+      setParamTienda(prev => ({...prev,tienda: getInitialTienda(tiendas)}));
     }
+  },[tiendas])
+
+  useEffect(() => {
+    (async()=>{
+      if(validateInputDateRange(paramTienda.fechaInicio, paramTienda.fechaFin) && tiendas){
+        try {
+          const response = await getRangoVentasTienda(paramTienda);
+          createRangoVentasDataset(response, setLabels, setDatasets);
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR
+          });
+        }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramTienda]);
 
   return (
-    <>
-      <TitleReport
-        title="Rangos de ventas por Tienda"
-        description={` ESTE REPORTE OBTIENE LOS RANGOS DE VENTA, DE LAS FECHAS ESTABLECIDAS. EL RANGO ESTABLEZCALO 
-        DE LA FORMA 1,150,250,350,400 QUE INDICA P.E. DEL 1 AL 149.00 DEL 150 AL 249.99.
-        `}
-      />
-      <main className="w-full h-full p-4 md:p-8">
+    <div className=" flex flex-col h-full">
+      <TitleReport title="Rangos de ventas por Tienda" />
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -92,7 +93,8 @@ const Tienda = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 h-full overflow-y-auto ">
         <ComparativoVentas>
           <PieChart
             data={{
@@ -101,8 +103,8 @@ const Tienda = () => {
             }}
           />
         </ComparativoVentas>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

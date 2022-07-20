@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, cloneElement } from "react";
+import React, { useReducer, useEffect, cloneElement, Children } from "react";
 import PropTypes from "prop-types";
 import ShowSelector from "./ShowSelector";
 import Pagination from "./Pagination";
@@ -79,6 +79,12 @@ export default function Paginate(props) {
     dispatch({ type: CALCULATE_SLICE, payload: definedSlice });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.data]);
+
+  const renderChildren = Children.map(props.children, (child) => {
+    return cloneElement(child, {
+      items: [...state.dataFilter],
+    });
+  });
 
   const nextPage = () => {
     const { currentPage, pages, showItems } = state;
@@ -230,10 +236,7 @@ export default function Paginate(props) {
         />
         <Search handleSearch={search} />
       </div>
-      {cloneElement(props.children, {
-        items: [...state.dataFilter],
-        ...props.actionsToChild,
-      })}
+      {renderChildren}
       <Pagination
         pages={state.pages}
         handleNext={nextPage}
@@ -261,13 +264,12 @@ Paginate.defaultProps = {
 
 //Props obligatiores del componente
 Paginate.propTypes = {
-  data: PropTypes.array.isRequired,
+  data: PropTypes.array,
   showItems: PropTypes.number,
   options: PropTypes.exact({
     labelSelector: PropTypes.string,
     optionRange: PropTypes.arrayOf(PropTypes.number),
     searchBy: PropTypes.arrayOf(PropTypes.string).isRequired,
   }),
-  actionsToChild: PropTypes.shape(),
 };
 

@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   Parameters,
   ParametersContainer,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -17,17 +16,18 @@ import SemanaSantaTable from "../../components/table/SemanaSantaTable";
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
 import { getCurrentYear } from "../../utils/dateFunctions";
 import { handleChange } from "../../utils/handlers";
-import { isError, validateYear } from "../../utils/functions";
+import {  validateYear } from "../../utils/functions";
 import {
   getSemanaSantaGrupo,
   getSemanaSantaGrupoConcentrado,
 } from "../../services/semanaSantaService";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Grupo = () => {
-  const alert = useAlert();
+const Grupo = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification()
   const [concentrado, setConcentrado] = useState(false);
   const [semanaSantaGrupo, setSemanaSantaGrupo] = useState({});
   const [paramGrupo, setParamGrupo] = useState({
@@ -41,45 +41,55 @@ const Grupo = () => {
     resultadosPesos: 1,
   });
 
+  useEffect(()=>{
+    setParamGrupo(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradasa || 0,
+      incluirFinSemanaAnterior: config?.incluirFinSemanaAnterior || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }));
+
+    setConcentrado(config?.concentrado ? true : false)
+  },[config])
+
   useEffect(() => {
-    if (
-      validateYear(paramGrupo.delAgno) &&
-      validateYear(paramGrupo.versusAgno)
-    ) {
-      if (concentrado) {
-        getSemanaSantaGrupoConcentrado(paramGrupo).then((response) => {
-          if (isError(response)) {
-            alert.showAlert(
-              response?.response?.data ?? MENSAJE_ERROR,
-              "warning",
-              1000
-            );
-          } else {
+    (async()=>{
+      if( validateYear(paramGrupo.delAgno) && validateYear(paramGrupo.versusAgno)){
+        if(concentrado){
+          try {
+            const response = await getSemanaSantaGrupoConcentrado(paramGrupo);
             setSemanaSantaGrupo(response);
+          } catch (error) {
+            sendNotification({
+              type:'ERROR',
+              message: MENSAJE_ERROR
+            });
           }
-        });
-      } else {
-        getSemanaSantaGrupo(paramGrupo).then((response) => {
-          if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true);
-          } else {
+        }else{
+          try {
+            const response = await getSemanaSantaGrupo(paramGrupo);
             setSemanaSantaGrupo(response);
+          } catch (error) {
+            sendNotification({
+              type:'ERROR',
+              message: MENSAJE_ERROR
+            });
           }
-        });
+        }
       }
-    }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramGrupo, concentrado]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas De Semana Santa del Año ${paramGrupo.delAgno}`}
-        description="ESTE REPORTE MUESTRA LAS VENTAS DE SEMANA SANTA DEL AÑO SELECCIONADO COMPARADAS CON EL AÑO ANTERIOR Y SU PORCENTAJE DE VARIACION."
       />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -106,6 +116,7 @@ const Grupo = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.CONCENTRADO}
+                checked={concentrado}
                 onChange={() => {
                   setConcentrado((prev) => !prev);
                 }}
@@ -114,6 +125,7 @@ const Grupo = () => {
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
                 name={inputNames.CON_IVA}
+                checked={paramGrupo.conIva}
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
@@ -122,6 +134,7 @@ const Grupo = () => {
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
                 name={inputNames.CON_VENTAS_EVENTOS}
+                checked={paramGrupo.conVentasEventos}
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
@@ -130,13 +143,12 @@ const Grupo = () => {
                 className="mb-3"
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={paramGrupo.conTiendasCerradas}
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
               />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
+               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_FIN_DE_SEMANA_ANTERIOR}
                 name={inputNames.INCLUIR_FIN_SEMANA_ANTERIOR}
@@ -144,11 +156,6 @@ const Grupo = () => {
                   handleChange(e, setParamGrupo);
                 }}
                 checked={paramGrupo.incluirFinSemanaAnterior}
-              />
-              <Checkbox
-                className="mb-3"
-                labelText={checkboxLabels.PERIODO_COMPLETO}
-                onChange={() => {}}
               />
               <Checkbox
                 labelText={checkboxLabels.RESULTADO_PESOS}
@@ -159,10 +166,10 @@ const Grupo = () => {
                 checked={paramGrupo.resultadosPesos}
               />
             </InputContainer>
-            <InputContainer></InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="p-4 overflow-y-auto ">
         <VentasTableContainer
           title={`Ventas De Semana Santa del Año ${paramGrupo.delAgno}`}
         >
@@ -176,8 +183,8 @@ const Grupo = () => {
             />
           ))}
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

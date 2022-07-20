@@ -1,9 +1,6 @@
 import { useState, useEffect } from "react";
 import { getVentasLayout } from "../../components/layout/VentasLayout";
-import {
-  ParametersContainer,
-  Parameters,
-} from "../../components/containers";
+import { ParametersContainer, Parameters } from "../../components/containers";
 import {
   InputContainer,
   InputDateRange,
@@ -17,7 +14,10 @@ import {
   TableRow,
 } from "../../components/table";
 import { checkboxLabels, MENSAJE_ERROR } from "../../utils/data";
-import { getSemanalesCompromisos, updateSemalesCompromisos } from "../../services/SemanalesService";
+import {
+  getSemanalesCompromisos,
+  updateSemalesCompromisos,
+} from "../../services/SemanalesService";
 import { numberWithCommas } from "../../utils/resultsFormated";
 import { getCurrentWeekDateRange } from "../../utils/dateFunctions";
 import {
@@ -28,11 +28,12 @@ import {
 import { inputNames } from "../../utils/data/checkboxLabels";
 import { handleChange } from "../../utils/handlers";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Compromiso = () => {
-  const alert = useAlert();
+const Compromiso = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesCompromisos, setSemanalesCompromisos] = useState([]);
   const [compromisosParametros, setCompromisosParametros] = useState({
@@ -44,83 +45,88 @@ const Compromiso = () => {
     conTiendasCerradas: 0,
   });
 
+  useEffect(()=>{
+    setCompromisosParametros(prev => ({
+      ...prev,
+      conIva:config.conIva || 0,
+      sinAgnoVenta:config.sinAgnoVenta || 0,
+      conTiendasCerradas:config.conTiendasCerradas || 0,
+    }))
+  },[config])
+
   useEffect(() => {
-    if (
-      validateInputDateRange(
-        compromisosParametros.fechaInicio,
-        compromisosParametros.fechaFin
-      )
-    ) {
-      getSemanalesCompromisos(compromisosParametros).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
+    (async()=>{
+      if (validateInputDateRange(compromisosParametros.fechaInicio,compromisosParametros.fechaFin)){
+        try {
+          const response = await getSemanalesCompromisos(compromisosParametros);
           setSemanalesCompromisos(response);
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [compromisosParametros]);
 
   const handleUpdatePromedio = (tienda, promedio) => {
-    setSemanalesCompromisos(current => 
-      current.map(compromiso => {
-        if (compromiso.NoTienda === tienda) return { ...compromiso, Promedio: parseInt(promedio, 10) }
-        return compromiso
+    setSemanalesCompromisos((current) =>
+      current.map((compromiso) => {
+        if (compromiso.NoTienda === tienda)
+          return { ...compromiso, Promedio: parseInt(promedio, 10) };
+        return compromiso;
       })
     );
-  }
-  
+  };
+
   const handleSubmitPromedios = async () => {
     const promedios = semanalesCompromisos.map((tiendaComp) => ({
       promedio: tiendaComp.Promedio,
-      tienda: tiendaComp.NoTienda
+      tienda: tiendaComp.NoTienda,
     }));
-    
+
     const updatePromedios = {
       empresa: compromisosParametros.plaza,
       fechaInicio: compromisosParametros.fechaInicio,
       fechaFin: compromisosParametros.fechaFin,
-      nuevosPromedios: promedios
-    }
-    
+      nuevosPromedios: promedios,
+    };
+
     const result = await updateSemalesCompromisos(updatePromedios);
-    
+
     if (result) {
-      alert.showAlert("Promedio Actualizado", "info", 1500);
-
+      sendNotification({
+        type:'OK',
+        message:'Promedio Actualizado'
+      });
       const compromisos = await getSemanalesCompromisos(compromisosParametros);
-
       if (isError(compromisos)) {
-        alert.showAlert(
-          compromisos?.response?.data ?? MENSAJE_ERROR,
-          "warning",
-          1000
-        );
+        sendNotification({
+          type:'ERROR',
+          message: compromisos?.response?.data ?? MENSAJE_ERROR
+        });
       } else {
         setSemanalesCompromisos(compromisos);
       }
     } else {
-      alert.showAlert("No se pudo actualizar", "warning", 1500);
+      sendNotification({
+        type:'ERROR',
+        message:'No se pudo actualizar'
+      });
     }
-  }
+  };
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`DEFINICION METAS: Semana ${dateRangeTitle(
           compromisosParametros.fechaInicio,
           compromisosParametros.fechaFin
         )}`}
-        description={`Este informe muestra un compartivo de la semana o en rango de fecha seleccionado. Recuerde que la comparacion se realiza lunes contra lunes,
-            lo cual quiere decir que las ventas del año anterior no seran por fecha sino lo que corresponda a los dias de la semana.
-          `}
       />
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -145,9 +151,7 @@ const Compromiso = () => {
                 labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
                 name={inputNames.SIN_AGNO_VENTA}
               />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
+               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
                 name={inputNames.CON_TIENDAS_CERRADAS}
@@ -156,32 +160,39 @@ const Compromiso = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="p-4 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable>
             <TableHead>
               <tr>
-                <th rowSpan={2} className="border border-white">
+                <th
+                  rowSpan={2}
+                  className="border border-white bg-black-shape rounded-tl-xl"
+                >
                   Tienda
                 </th>
-                <th colSpan={2} className="border border-white">
+                <th colSpan={1} className="border border-white bg-black-shape">
                   Venta
                 </th>
-                <th colSpan={2} className="border border-white">
+                <th colSpan={1} className="border border-white bg-black-shape">
                   Promedios
                 </th>
-                <th colSpan={2} className="border border-white">
+                <th
+                  colSpan={1}
+                  className="border border-white bg-black-shape rounded-tr-xl"
+                >
                   Operaciones
                 </th>
               </tr>
               <tr>
-                <th colSpan={2} className="border border-white">
+                <th colSpan={1} className="border border-white bg-black-shape text-right">
                   Compromiso
                 </th>
-                <th colSpan={2} className="border border-white">
+                <th colSpan={1} className="border border-white bg-black-shape text-right">
                   Comp
                 </th>
-                <th colSpan={2} className="border border-white">
+                <th colSpan={1} className="border border-white bg-black-shape text-right">
                   Comp
                 </th>
               </tr>
@@ -191,24 +202,28 @@ const Compromiso = () => {
                 <TableRow
                   key={compromiso.NoTienda}
                   rowId={compromiso.NoTienda}
-                  className="text-right"
+                  className="text-center"
                 >
-                  <td
-                    colSpan={2}
-                    className="text-center bg-black text-white font-bold p-2"
-                  >
+                  <td colSpan={1} className="text-black text-xs font-bold p-2 text-left">
                     {compromiso.Descrip}
                   </td>
-                  <td>{numberWithCommas(compromiso.PresupuestoSem)}</td>
-                  <td colSpan={2} className="pr-4">
+                  <td className="text-right text-xs">
+                    {numberWithCommas(compromiso.PresupuestoSem)}
+                  </td>
+                  <td colSpan={1} className="pr-4 text-right">
                     <input
                       type="text"
                       value={compromiso.Promedio}
                       className="w-16 outline-none bg-gray-200 text-right rounded-md pr-2"
-                      onChange={(e) => handleUpdatePromedio(compromiso.NoTienda, e.target.value)}
+                      onChange={(e) =>
+                        handleUpdatePromedio(
+                          compromiso.NoTienda,
+                          e.target.value
+                        )
+                      }
                     />
                   </td>
-                  <td colSpan={2} className="pr-4">
+                  <td colSpan={1} className="pr-4 text-right">
                     <input
                       type="text"
                       value={compromiso.OperacionesSem}
@@ -221,11 +236,16 @@ const Compromiso = () => {
             </tbody>
           </VentasTable>
           <div className="pt-4">
-            <button className="blue-button text-white" onClick={handleSubmitPromedios}>Grabar</button>
+            <button
+              className="blue-button text-white"
+              onClick={handleSubmitPromedios}
+            >
+              Grabar
+            </button>
           </div>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

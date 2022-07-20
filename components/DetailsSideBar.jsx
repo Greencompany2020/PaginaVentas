@@ -1,8 +1,9 @@
 import { useRouter } from "next/router";
+import Image from "next/image";
 import Link from "next/link";
-import { ChevronRightIcon } from "@heroicons/react/solid";
+import Plus from "../public/icons/plus.svg";
 
-const DetailsSideBar = ({ summaryText, links }) => {
+const DetailsSideBar = ({ summaryText, links, handleToggle, showChevron }) => {
   const router = useRouter();
   const activeLink = (link) => {
     if (router.pathname === link) return "bg-sky-500 text-white";
@@ -10,15 +11,15 @@ const DetailsSideBar = ({ summaryText, links }) => {
   };
 
   return (
-    <details>
+    <details className="hover:block">
       <summary className="cursor-pointer flex items-center pb-2 text-white">
-        <ChevronRightIcon width={16} />
+        {showChevron && <Image src={Plus} alt="Plus" height={16} width={16} />} 
         <span className="ml-1">{summaryText}</span>
       </summary>
       <ul>
         {links.map((item) => (
           <Link href={item.link} key={item.linkText}>
-            <a>
+            <a onClick={handleToggle}>
               <li
                 className={`pl-10 p-1 text-white  rounded-sm ${activeLink(
                   item.link

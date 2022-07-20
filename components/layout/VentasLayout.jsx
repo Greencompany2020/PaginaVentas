@@ -1,22 +1,22 @@
-// Componentes externos
-// Componentes propios
 import Navbar from "../Navbar";
 import SideMenu from "../SideMenu";
-// Funciones y hooks
-// Recursos (img, js, css)
+import Toolbar from "../toolbar";
 
 const VentasLayout = ({ children }) => {
   return (
-    <>
-      <div className="h-screen w-full overflow-hidden">
+    <div className="layout-ventas">
+      <div className="layout-ventas-navbar">
         <Navbar />
-        <SideMenu />
-        <section className="flex flex-col h-full ">{children}</section>
       </div>
-    </>
+      <div className="layout-ventas-toolbar">
+        <Toolbar>
+          <SideMenu />
+        </Toolbar>
+      </div>
+      <main className="layout-ventas-main">{children}</main>
+    </div>
   );
 };
 
 export const getVentasLayout = (page) => <VentasLayout>{page}</VentasLayout>;
-
 export default VentasLayout;

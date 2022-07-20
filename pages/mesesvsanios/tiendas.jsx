@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   Parameters,
   ParametersContainer,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -14,12 +13,11 @@ import {
   InputYear,
   Checkbox,
 } from "../../components/inputs";
-import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
+import { checkboxLabels, inputNames, MENSAJE_ERROR, plazas } from "../../utils/data";
 import {
   calculateCrecimiento,
   getInitialTienda,
   getTiendaName,
-  isError,
   validateMonthRange,
   validateYearRange,
 } from "../../utils/functions";
@@ -36,13 +34,14 @@ import { getMesesAgnosTiendas } from "../../services/MesesAgnosService";
 import { handleChange } from "../../utils/handlers";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
-import { useAlert } from "../../context/alertContext";
+import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Tiendas = () => {
-  const alert = useAlert();
-  const { tiendas } = useUser();
+const Tiendas = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
+  const { tiendas } = useAuth();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [parametrosTiendas, setParametrosTiendas] = useState({
     tienda: getInitialTienda(tiendas),
@@ -55,29 +54,39 @@ const Tiendas = () => {
     conIva: 0,
   });
 
-  useEffect(() => {
-    if (
-      validateMonthRange(parametrosTiendas.delMes, parametrosTiendas.alMes) &&
-      validateYearRange(parametrosTiendas.delAgno, parametrosTiendas.alAgno)
-    ) {
-      getMesesAgnosTiendas(parametrosTiendas).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
-          createMesesAgnosTiendasDataset(
-            response,
-            parametrosTiendas.delAgno,
-            parametrosTiendas.alAgno
-          );
-        }
-      });
+  useEffect(()=>{
+    if(tiendas){
+      setParametrosTiendas(prev => ({
+        ...prev, 
+        tienda:getInitialTienda(tiendas),
+        incluirTotal: config?.incluirTotal || 0,
+        ventasDiaMesActual: config?.ventasDiaMesActual || 0,
+        conIva: config?.conIva || 0,
+      }))
     }
+  },[tiendas, config])
+
+  useEffect(() => {
+    (async()=>{
+      if(validateMonthRange(parametrosTiendas.delMes, parametrosTiendas.alMes) &&
+        validateYearRange(parametrosTiendas.delAgno, parametrosTiendas.alAgno) && tiendas){
+          try {
+            const response = await getMesesAgnosTiendas(parametrosTiendas);
+            createMesesAgnosTiendasDataset(
+              response,
+              parametrosTiendas.delAgno,
+              parametrosTiendas.alAgno
+            );
+          } catch (error) {
+            sendNotification({
+              type:'ERROR',
+              message:response?.response?.data ?? MENSAJE_ERROR
+            });
+          }
+        }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parametrosTiendas]);
+  }, [parametrosTiendas, parametrosTiendas.delAgno]);
 
   const createMesesAgnosTiendasDataset = (data, fromYear, toYear) => {
     const colors = ["#006400", "#daa520", "#6495ed", "#ff7f50", "#98fb98"];
@@ -120,19 +129,15 @@ const Tiendas = () => {
   };
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas de la Tienda ${getTiendaName(
           parametrosTiendas.tienda
         )} del año ${parametrosTiendas.delAgno} al año ${
           parametrosTiendas.alAgno
         } (mls.dlls.)`}
-        description={`Esta grafica muestra las ventas de cada mes del año de la plaza seleccionada por cada uno de los años del rango especificado. 
-        Recuerde que el rango de años debe ser capturado de menor a el mayor, aunque en el reporte se mostrara en orden descendente.
-        `}
       />
-
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -174,6 +179,7 @@ const Tiendas = () => {
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TOTAL}
                 name={inputNames.INCLUIR_TOTAL}
+                checked = {parametrosTiendas.incluirTotal ? true : false}
                 onChange={(e) => {
                   handleChange(e, setParametrosTiendas);
                 }}
@@ -182,6 +188,7 @@ const Tiendas = () => {
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_AL_DIA_MES_ACTUAL}
                 name={inputNames.VENTAS_DIA_MES_ACTUAL}
+                checked = {parametrosTiendas.ventasDiaMesActual ? true : false}
                 onChange={(e) => {
                   handleChange(e, setParametrosTiendas);
                 }}
@@ -190,6 +197,7 @@ const Tiendas = () => {
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
                 name={inputNames.CON_IVA}
+                checked = {parametrosTiendas.conIva ? true : false}
                 onChange={(e) => {
                   handleChange(e, setParametrosTiendas);
                 }}
@@ -197,7 +205,8 @@ const Tiendas = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 h-full overflow-y-auto ">
         <ComparativoVentas>
           <BarChart
             text={`${
@@ -213,8 +222,8 @@ const Tiendas = () => {
             }}
           />
         </ComparativoVentas>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

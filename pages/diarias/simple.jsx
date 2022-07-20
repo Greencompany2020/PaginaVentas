@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import {
   VentasTableContainer,
@@ -24,19 +23,19 @@ import {
   getInitialTienda,
   getLastTwoNumbers,
   getTiendaName,
-  isError,
 } from "../../utils/functions";
 import { numberWithCommas } from "../../utils/resultsFormated";
 import { getMonthByNumber } from "../../utils/dateFunctions";
 import { handleChange } from "../../utils/handlers";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
-import { useAlert } from "../../context/alertContext";
+import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
+import {useNotification} from '../../components/notifications/NotificationsProvider';
 
-const Simple = () => {
-  const alert = useAlert();
-  const { tiendas } = useUser();
+const Simple = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
+  const { tiendas } = useAuth();
   const [tiendaSimple, setTiendaSimple] = useState([]);
   const [tiendaSimpleParametros, setTiendaSimpleParametros] = useState({
     delMes: new Date(Date.now()).getMonth() + 1,
@@ -45,34 +44,42 @@ const Simple = () => {
     conIva: 0,
   });
 
-  useEffect(() => {
-    if (tiendaSimpleParametros.tienda) {
-      getDiariasTiendaSimple(tiendaSimpleParametros).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
-          setTiendaSimple(response);
-        }
-      });
+  useEffect(()=>{
+    if(tiendas){
+      setTiendaSimpleParametros(prev => ({...prev, 
+        tienda:getInitialTienda(tiendas),
+        conIva: config.conIva || 0,
+      }));
     }
+  },[tiendas, config]);
+
+  useEffect(() => {
+      (async ()=>{
+        if(tiendas){
+          try {
+            const response = await getDiariasTiendaSimple(tiendaSimpleParametros);
+            setTiendaSimple(response);
+          } catch (error) {
+            sendNotification({
+              type:'ERROR',
+              message:response?.response?.data ?? MENSAJE_ERROR
+            });
+          }
+        }
+      })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tiendaSimpleParametros]);
+  }, [tiendaSimpleParametros, tiendaSimpleParametros.delAgno]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas Diarias ${getTiendaName(
           tiendaSimpleParametros.tienda
         )} ${getMonthByNumber(tiendaSimpleParametros.delMes)} ${
           tiendaSimpleParametros.delAgno
         }`}
-        description=" Esta tabla muestra las ventas vs presupuesto del grupo en el periodo de mes y año especificado, este siempre será comparado contra el año anterior."
       />
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -91,86 +98,108 @@ const Simple = () => {
               <Checkbox
                 className="mb-2"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={tiendaSimpleParametros.conIva ? true : false}
                 name="conIva"
                 onChange={(e) => handleChange(e, setTiendaSimpleParametros)}
               />
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="p-4 overflow-y-auto">
         <VentasTableContainer>
           <VentasTable>
             <TableHead>
               <tr>
-                <th colSpan={2} className="border border-white">
+                <th
+                  colSpan={2}
+                  className="border border-white bg-black-shape rounded-tl-xl"
+                >
                   Dia
                 </th>
-                <th colSpan={3} className="border border-white">
+                <th
+                  colSpan={3}
+                  className="border border-white bg-black-shape  rounded-tr-xl"
+                >
                   Venta por Dia
                 </th>
               </tr>
               <tr>
-                <th className="border border-white">
+                <th className="border border-white bg-black-shape text-right">
                   {getLastTwoNumbers(tiendaSimpleParametros.delAgno)}
                 </th>
-                <th className="border border-white">
+                <th className="border border-white bg-black-shape text-right">
                   {getLastTwoNumbers(tiendaSimpleParametros.delAgno - 1)}
                 </th>
-                <th className="border border-white">
+                <th className="border border-white bg-black-shape text-right">
                   {tiendaSimpleParametros.delAgno}
                 </th>
-                <th className="border border-white">
+                <th className="border border-white bg-black-shape text-right">
                   {tiendaSimpleParametros.delAgno - 1}
                 </th>
-                <th className="border border-white">Acum</th>
+                <th className="border border-white bg-black-shape text-right">Acum</th>
               </tr>
             </TableHead>
-            <tbody className="bg-white text-center">
-              {tiendaSimple?.map((ventas) => (
-                <TableRow key={ventas.dia} rowId={ventas.dia}>
-                  <td className="font-bold">{ventas.dia}</td>
-                  <td className="text-sm">{ventas.dia}</td>
-                  <td className="font-bold">
-                    {numberWithCommas(ventas.ventaActual)}
-                  </td>
-                  <td className="text-sm">
-                    {numberWithCommas(ventas.ventaAnterior)}
-                  </td>
-                  <td className="font-bold">
-                    {numberWithCommas(ventas.acumulado)}
-                  </td>
-                </TableRow>
-              ))}
+            <tbody className="bg-white text-right">
+              {
+                (()=>{
+                  if(tiendaSimple.length > 0){
+                    const Items = tiendaSimple?.map((ventas) => (
+                      <TableRow key={ventas.dia} rowId={ventas.dia}>
+                        <td className="text-xs font-bold">{ventas.dia}</td>
+                        <td className="text-xs">{ventas.dia}</td>
+                        <td className="text-xs font-bold">
+                          {numberWithCommas(ventas.ventaActual)}
+                        </td>
+                        <td className="text-xs">
+                          {numberWithCommas(ventas.ventaAnterior)}
+                        </td>
+                        <td className="text-xs font-bold">
+                          {numberWithCommas(ventas.acumulado)}
+                        </td>
+                      </TableRow>
+                    ));
+                    return Items;
+                  }
+                  return <></>
+                })()
+              }
             </tbody>
-            <tfoot className="bg-black text-white text-center font-bold">
+            <tfoot className=" text-white text-center text-xs font-bold">
               <tr>
-                <th className="border border-white">
+                <th className="border border-white bg-black text-right">
                   {getLastTwoNumbers(tiendaSimpleParametros.delAgno)}
                 </th>
-                <th className="border border-white">
+                <th className="border border-white bg-black text-right">
                   {getLastTwoNumbers(tiendaSimpleParametros.delAgno - 1)}
                 </th>
-                <th className="border border-white">
+                <th className="border border-white bg-black text-right">
                   {tiendaSimpleParametros.delAgno}
                 </th>
-                <th className="border border-white">
+                <th className="border border-white bg-black text-right">
                   {tiendaSimpleParametros.delAgno - 1}
                 </th>
-                <th className="border border-white">Acum</th>
+                <th className="border border-white bg-black text-right">Acum</th>
               </tr>
               <tr>
-                <th colSpan={2} className="border border-white">
+                <th
+                  colSpan={2}
+                  className="border border-white bg-black rounded-bl-xl"
+                >
                   Dia
                 </th>
-                <th colSpan={3} className="border border-white">
+                <th
+                  colSpan={3}
+                  className="border border-white bg-black rounded-br-xl"
+                >
                   Venta por Dia
                 </th>
               </tr>
             </tfoot>
           </VentasTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

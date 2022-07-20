@@ -16,13 +16,10 @@ import TitleReport from "../../components/TitleReport";
 
 const powerbrand = () => {
   return (
-    <>
-      <TitleReport
-        title="POWERBRAND COMPARATIVO VENTAS DEL AÑO 2022 (AL 11 DE ENERO S/IVA M.N. )"
-        description="Este reporte muestra las ventas acumuladas dia-semana-año"
-      />
+    <div className=" flex flex-col h-full">
+      <TitleReport title="POWERBRAND COMPARATIVO VENTAS DEL AÑO 2022 (AL 11 DE ENERO S/IVA M.N. )" />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -30,29 +27,39 @@ const powerbrand = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
+      </section>
+      <section className="p-4 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable className="last-row-bg">
             <TableHead>
               <tr>
-                <th rowSpan={2}>Pedidos Actuales</th>
-                <th colSpan={3}>Semana del 10 de Ene</th>
-                <th colSpan={5}>Acumulado Enero</th>
-                <th colSpan={5}>Acumulado Anual</th>
+                <th rowSpan={2} className="bg-black-shape rounded-tl-xl">
+                  Pedidos Actuales
+                </th>
+                <th colSpan={3} className="bg-black-shape">
+                  Semana del 10 de Ene
+                </th>
+                <th colSpan={5} className="bg-black-shape">
+                  Acumulado Enero
+                </th>
+                <th colSpan={5} className="bg-black-shape rounded-tr-xl">
+                  Acumulado Anual
+                </th>
               </tr>
               <tr>
-                <th>2020</th>
-                <th>2021</th>
-                <th>%</th>
-                <th>Presupuesto</th>
-                <th>2022</th>
-                <th>2021</th>
-                <th>% VS 2021</th>
-                <th>% VS Ppto.</th>
-                <th>Presupuesto</th>
-                <th>2022</th>
-                <th>2021</th>
-                <th>% VS 2021</th>
-                <th>% VS Ppto.</th>
+                <th className="bg-black-shape">2020</th>
+                <th className="bg-black-shape">2021</th>
+                <th className="bg-black-shape">%</th>
+                <th className="bg-black-shape">Presupuesto</th>
+                <th className="bg-black-shape">2022</th>
+                <th className="bg-black-shape">2021</th>
+                <th className="bg-black-shape">% VS 2021</th>
+                <th className="bg-black-shape">% VS Ppto.</th>
+                <th className="bg-black-shape">Presupuesto</th>
+                <th className="bg-black-shape">2022</th>
+                <th className="bg-black-shape">2021</th>
+                <th className="bg-black-shape">% VS 2021</th>
+                <th className="bg-black-shape">% VS Ppto.</th>
               </tr>
             </TableHead>
             <TableBody>
@@ -91,8 +98,8 @@ const powerbrand = () => {
             </TableBody>
           </VentasTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

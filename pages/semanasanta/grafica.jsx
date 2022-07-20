@@ -37,13 +37,10 @@ const Grafica = ({ year1, year2 }) => {
   };
 
   return (
-    <>
-      <TitleReport
-        title="Comparativo Semana Santa Grupo Frogs 2018 vs 2019 (mls.pesos) -iva no incluido"
-        description="Este reporte muestra las ventas de semana santa del año seleccionado comparadas con el año anterior y su porcentaje de variacion."
-      />
+    <div className=" flex flex-col h-full">
+      <TitleReport title="Comparativo Semana Santa Grupo Frogs 2018 vs 2019 (mls.pesos) -iva no incluido" />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -96,7 +93,8 @@ const Grafica = ({ year1, year2 }) => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="p-4 overflow-y-auto ">
         <VentasTableContainer>
           <BarChart
             text="Años"
@@ -143,8 +141,8 @@ const Grafica = ({ year1, year2 }) => {
             }}
           />
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

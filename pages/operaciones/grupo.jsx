@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   Parameters,
   ParametersContainer,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -20,18 +19,18 @@ import { getCurrentMonth, getCurrentYear } from "../../utils/dateFunctions";
 import { handleChange } from "../../utils/handlers";
 import {
   createOperacionesDatasets,
-  isError,
   validateMonthRange,
   validateYear,
 } from "../../utils/functions";
 import { getOperacionesGrupo } from "../../services/OperacionesService";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Grupo = () => {
-  const alert = useAlert();
+const Grupo = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramGrupo, setParamGrupo] = useState({
     delMes: 1,
@@ -45,40 +44,46 @@ const Grupo = () => {
     resultadosPesos: 0,
   });
 
+  useEffect(()=>{
+    setParamGrupo(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      tiendas: config?.tiendas || 0,
+      promedio: config?.promedio || 0,
+      acumulado: config?.acumulado || 0,
+      conEventos: config?.conEventos || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }))
+  },[config])
+
   useEffect(() => {
-    if (
-      validateMonthRange(paramGrupo.delMes, paramGrupo.alMes) &&
-      validateYear(paramGrupo.delAgno)
-    ) {
-      getOperacionesGrupo(paramGrupo).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
+    (async()=>{
+      if(validateMonthRange(paramGrupo.delMes, paramGrupo.alMes) &&  validateYear(paramGrupo.delAgno)){
+        try {
+          const response = await getOperacionesGrupo(paramGrupo);
           createOperacionesDatasets(
             response,
             paramGrupo.delAgno,
             setLabels,
             setDatasets
           );
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramGrupo]);
+  }, [paramGrupo, paramGrupo.delAgno]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Operaciones por Mes del Grupo del año ${paramGrupo.delAgno}`}
-        description={` Esta grafica muestra un comparativo de las ventas vs presupuesto del grupo en el periodo de meses y 
-        el año especificado, este siempre será comparado contra el año anterior.
-        `}
       />
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -115,6 +120,7 @@ const Grupo = () => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.promedio}
               />
               <Checkbox
                 className="mb-3"
@@ -123,6 +129,7 @@ const Grupo = () => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.acumulado}
               />
               <Checkbox
                 className="mb-3"
@@ -131,6 +138,7 @@ const Grupo = () => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.conEventos}
               />
               <Checkbox
                 className="mb-3"
@@ -139,6 +147,7 @@ const Grupo = () => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.conIva}
               />
               <Checkbox
                 className="mb-3"
@@ -147,11 +156,13 @@ const Grupo = () => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.resultadosPesos}
               />
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 h-full overflow-y-auto ">
         <ComparativoVentas>
           <BarChart
             data={{
@@ -160,8 +171,8 @@ const Grupo = () => {
             }}
           />
         </ComparativoVentas>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

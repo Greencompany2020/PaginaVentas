@@ -82,5 +82,7 @@ export const inputNames = {
   ACUMULATIVA: 'acumulado',
   GRAFICAR_TOTAL: 'total',
   PROMEDIO: 'promedio',
-  CON_EVENTOS: 'conEventos'
+  CON_EVENTOS: 'conEventos',
+  VISTA_DESKTOP: 'desktopReportView',
+  VISTA_MOBILE: 'mobileReportView',
 }

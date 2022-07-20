@@ -1,33 +1,67 @@
-import { useState } from "react";
-import { XIcon, FilterIcon } from "@heroicons/react/solid";
+import { useState, useRef } from "react";
+import Image from "next/image";
+import { XIcon} from "@heroicons/react/solid";
+import useClickOutside from "../../hooks/useClickOutside";
+import filter from '../../public/icons/filter.svg';
 
 const ParametersContainer = ({ children }) => {
+  const container = useRef(null);
   const [toggle, setToggle] = useState(false);
   const handleToggle = () => setToggle(!toggle);
+
+  useClickOutside(container, () => {
+    if (toggle) {
+      handleToggle();
+    }
+  });
+  const handleHover = () => {
+    if (!toggle) {
+      handleToggle();
+    }
+  };
+  const handleLeave = (evt) => {
+    let target = true;
+    if (
+      evt._targetInst.elementType == "select" ||
+      evt._targetInst.elementType == "input"
+    ) {
+      target = false;
+    }
+    if (toggle && target) {
+      handleToggle();
+    }
+  };
   return (
     <>
-      <div className="relative mb-1 pb-1 p-2 ">
+      <div className="relative">
         <div className="flex items-center space-x-2">
-          <p className=" text-lg">Filtros</p>
+          <p className=" font-semibold">Filtros</p>
           <button
-            className=" bg-slate-200 hover:bg-slate-300 rounded-md h-8 w-12 flex items-center justify-center"
+            className={` bg-slate-200 hover:bg-blue-400 rounded-md h-8 w-12 flex items-center justify-center ${toggle && 'bg-blue-400'}`}
             onClick={handleToggle}
+            onMouseOver={handleHover}
           >
-            <FilterIcon width={26} className=" text-slate-600" />
+            <figure>
+              <Image src={filter}  width={24} alt={'icon'}/>
+            </figure>
           </button>
         </div>
+
         <div
-          className={`absolute p-4 left-16 top-11 bg-slate-200 border-2 rounded-md ${
-            !toggle && "hidden"
-          }`}
+          className={`
+            absolute w-[22rem] md:w-[24rem] h-min[24rem] h-[28rem] left- top-9 bg-slate-200 rounded-md  ${!toggle && "hidden"}`}
+          ref={container}
+          onMouseLeave={handleLeave}
         >
-          <XIcon
-            width={28}
-            className="absolute right-1 top-1 cursor-pointer text-slate-500"
-            onClick={handleToggle}
-          />
-          <p className="font-semibold mb-4 text-lg">Parametros de busqueda</p>
-          {children}
+          <div className="flex flex-col h-full w-full p-4">
+            <XIcon
+              width={28}
+              className="cursor-pointer text-slate-500 self-end"
+              onClick={handleToggle}
+            />
+            <p className="font-semibold pb-4 text-lg">Parametros de busqueda</p>
+            <div className="flex-[2] overflow-y-auto">{children}</div>
+          </div>
         </div>
       </div>
     </>

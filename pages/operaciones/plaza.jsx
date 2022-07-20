@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   Parameters,
   ParametersContainer,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -22,20 +21,20 @@ import {
   getPlazaName,
   validateMonthRange,
   validateYear,
-  isError,
 } from "../../utils/functions";
 import { getCurrentMonth, getCurrentYear } from "../../utils/dateFunctions";
 import { handleChange } from "../../utils/handlers";
 import { getOperacionesPlaza } from "../../services/OperacionesService";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
-import { useAlert } from "../../context/alertContext";
+import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Plaza = () => {
-  const alert = useAlert();
-  const { plazas } = useUser();
+const Plaza = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
+  const { plazas } = useAuth();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramPlaza, setParamPlaza] = useState({
     plaza: getInitialPlaza(plazas),
@@ -51,43 +50,53 @@ const Plaza = () => {
     resultadosPesos: 0,
   });
 
+  useEffect(()=>{
+    if(plazas){
+      setParamPlaza(prev => ({
+        ...prev, 
+        plaza:getInitialPlaza(plazas),
+        promedio: config?.promedio || 0,
+        acumulado: config?.acumulado || 0,
+        conIva: config?.conIva || 0,
+        ventasMilesDlls: config?.ventasMilesDlls || 0,
+        conVentasEventos: config?.conVentasEventos || 0,
+        conTiendasCerradas: config?.conTiendasCerradas || 0,
+        resultadosPesos: config?.resultadosPesos || 0,
+      }))
+    }
+  },[plazas, config])
+
   useEffect(() => {
-    if (
-      validateMonthRange(paramPlaza.delMes, paramPlaza.alMes) &&
-      validateYear(paramPlaza.delAgno)
-    ) {
-      getOperacionesPlaza(paramPlaza).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
+    (async()=>{
+      if(validateMonthRange(paramPlaza.delMes, paramPlaza.alMes) && validateYear(paramPlaza.delAgno) && plazas){
+        try {
+          const response = await getOperacionesPlaza(paramPlaza);
           createOperacionesDatasets(
             response,
             paramPlaza.delAgno,
             setLabels,
             setDatasets
           );
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR,
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramPlaza]);
+  }, [paramPlaza, paramPlaza.delAgno]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Operaciones realizadas Plaza ${getPlazaName(
           paramPlaza.plaza
         )} ${paramPlaza.delAgno}`}
-        description={` Esta grafica muestra un comparativo de las ventas vs presupuesto del grupo en el periodo de meses y 
-        el año especificado, este siempre será comparado contra el año anterior.
-        `}
       />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -124,6 +133,7 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
                 }}
+                checked={paramPlaza.promedio}
               />
               <Checkbox
                 className="mb-3"
@@ -132,6 +142,7 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
                 }}
+                checked={paramPlaza.acumulado}
               />
               <Checkbox
                 className="mb-3"
@@ -140,16 +151,16 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
                 }}
+                checked={paramPlaza.conIva}
               />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
+               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.OPERACIONES_EN_MILES}
                 name={inputNames.VENTAS_MILES_DLLS}
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
                 }}
+                checked={paramPlaza.ventasMilesDlls}
               />
               <Checkbox
                 className="mb-3"
@@ -158,6 +169,7 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
                 }}
+                checked={paramPlaza.conVentasEventos}
               />
               <Checkbox
                 className="mb-3"
@@ -166,13 +178,7 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
                 }}
-              />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
-                className="mb-3"
-                labelText={checkboxLabels.DETALLADO_POR_TIENDA}
-                onChange={(e) => {}}
+                checked={paramPlaza.conTiendasCerradas}
               />
               <Checkbox
                 className="mb-3"
@@ -181,11 +187,13 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
                 }}
+                checked={paramPlaza.resultadosPesos}
               />
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 h-full overflow-y-auto ">
         <ComparativoVentas>
           <BarChart
             data={{
@@ -194,8 +202,8 @@ const Plaza = () => {
             }}
           />
         </ComparativoVentas>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

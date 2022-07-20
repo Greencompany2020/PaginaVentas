@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -37,11 +36,12 @@ import {
 } from "../../utils/functions";
 import { getPromotores } from "../../services/MKTService";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Promotores = () => {
-  const alert = useAlert();
+const Promotores = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
   const [promotores, setPromotores] = useState({});
   const [paramPromotores, setParamPromotores] = useState({
     delMes: 1,
@@ -50,25 +50,29 @@ const Promotores = () => {
     conIva: 0,
   });
 
+  useEffect(()=>{
+    setParamPromotores(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0
+    }))
+  },[config])
+
   useEffect(() => {
-    if (
-      validateMonthRange(paramPromotores.delMes, paramPromotores.alMes) &&
-      validateYear(paramPromotores.delAgno)
-    ) {
-      getPromotores(paramPromotores).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
+    (async()=>{
+      if( validateMonthRange(paramPromotores.delMes, paramPromotores.alMes) &&  validateYear(paramPromotores.delAgno)){
+        try {
+          const response = await getPromotores(paramPromotores);
           setPromotores(response);
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramPromotores]);
+  }, [paramPromotores, paramPromotores.delAgno]);
 
   const createPromotoresTableHead = () => {
     return meses
@@ -129,13 +133,10 @@ const Promotores = () => {
   };
 
   return (
-    <>
-      <TitleReport
-        title={`Ingresos Promotores ${paramPromotores.delAgno}`}
-        description=" Esta tabla le muestra los ingresgos generados por promotores asi como los canjes resultantes."
-      />
+    <div className=" flex flex-col h-full">
+      <TitleReport title={`Ingresos Promotores ${paramPromotores.delAgno}`} />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -164,11 +165,13 @@ const Promotores = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPromotores);
                 }}
+                checked={paramPromotores.conIva}
               />
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="p-4 overflow-y-auto ">
         <VentasTableContainer>
           <VentasTable>
             <TableHead>
@@ -186,8 +189,8 @@ const Promotores = () => {
             </TableBody>
           </VentasTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

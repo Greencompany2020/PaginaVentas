@@ -4,20 +4,19 @@ import Trend from "../public/images/trend.png";
 export default function TitleReport(props) {
   const { title, description } = props;
   return (
-    <section className="w-full h-fit pl-16 pt-1  space-x-1 space-y-1 bg-slate-50">
+    <section className=" pl-14 md:pl-8 pt-4 bg-slate-100">
       <div className="flex flex-row items-center space-x-3">
-        <div>
+        <figure>
           <Image
             src={Trend}
             alt=""
             className="w-8 h-8 text-black"
-            height={32}
-            width={32}
+            height={24}
+            width={24}
           />
-        </div>
-        <h1 className="text-2xl font-semibold">{title}</h1>
+        </figure>
+        <h1 className=" font-semibold uppercase text-sm md:text-lg truncate">{title}</h1>
       </div>
-      <p className="text-gray-400 text-md p-2">{description}</p>
     </section>
   );
 }

@@ -1,9 +1,9 @@
-import { useUser } from '../../context/UserContext';
+import { useAuth } from '../../context/AuthContext';
 import { Flex } from '../containers';
 
 const SelectTiendas = ({ onChange, value }) => {
 
-  const {tiendas} = useUser();
+  const {tiendas} = useAuth();
   
   const TiendasItem = ({tiendas}) => {
     if(!tiendas) return <></>

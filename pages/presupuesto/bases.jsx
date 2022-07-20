@@ -20,13 +20,10 @@ import TitleReport from "../../components/TitleReport";
 const porplaza = () => {
   const year = 2000;
   return (
-    <>
-      <TitleReport
-        title="Ventas Semana Santa"
-        description=" Esta tabla muestra las ventas del día por día del mes y año especificado."
-      />
+    <div className=" flex flex-col h-full">
+      <TitleReport title="Ventas Semana Santa" />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -60,7 +57,8 @@ const porplaza = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="p-4 overflow-y-auto ">
         <VentasTableContainer>
           <PresupuestoBasesTable title="M1"></PresupuestoBasesTable>
           <PresupuestoBasesTable title="M2"></PresupuestoBasesTable>
@@ -72,8 +70,8 @@ const porplaza = () => {
           <PresupuestoBasesTable title="M8"></PresupuestoBasesTable>
           <PresupuestoBasesTable title="M9"></PresupuestoBasesTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

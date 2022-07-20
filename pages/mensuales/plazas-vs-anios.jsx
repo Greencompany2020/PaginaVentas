@@ -3,9 +3,7 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
-import { VentasTableContainer } from "../../components/table";
 import {
   InputContainer,
   Checkbox,
@@ -28,16 +26,17 @@ import { inputNames } from "../../utils/data/checkboxLabels";
 import { getMensualesPlazasAgnos } from "../../services/MensualesServices";
 import {
   createDatasets,
-  isError,
   validateYearRange,
 } from "../../utils/functions";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import ComparativoVentas from "../../components/table/ComparativoVentas";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const PlazasVS = () => {
-  const alert = useAlert();
+const PlazasVS = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
   const [plazasAgnosParametros, setPlazasAgnosParametros] = useState({
     delMes: getCurrentMonth(),
@@ -50,21 +49,21 @@ const PlazasVS = () => {
     resultadosPesos: 1,
   });
 
+  useEffect(()=>{
+    setPlazasAgnosParametros(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      conVentasEventos:config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradas || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }))
+  },[config])
+
   useEffect(() => {
-    if (
-      validateYearRange(
-        plazasAgnosParametros.delAgno,
-        plazasAgnosParametros.alAgno
-      )
-    ) {
-      getMensualesPlazasAgnos(plazasAgnosParametros).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
+    (async()=>{
+      if (validateYearRange(plazasAgnosParametros.delAgno,plazasAgnosParametros.alAgno)){
+        try {
+          const response = await getMensualesPlazasAgnos(plazasAgnosParametros);
           createDatasets(
             response,
             plazasAgnosParametros.delAgno,
@@ -72,25 +71,28 @@ const PlazasVS = () => {
             setLabels,
             setDatasets
           );
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR,
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [plazasAgnosParametros]);
+  }, [plazasAgnosParametros, plazasAgnosParametros.delAgno]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas del mes de ${getMonthByNumber(
           plazasAgnosParametros.delMes
         )} del ${plazasAgnosParametros.alAgno} al ${
           plazasAgnosParametros.delAgno
         }`}
-        description={` Esta gráfica muestra las ventas por plaza del mes seleccionado en el rango de años especificado.
-        Recuerde que el rango de años debe ser capturado de menor a el mayor, aunque en el reporte se mostrara en orden descendente.
-        `}
       />
-      <main className="w-full h-full p-4 md:p-8">
+
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -115,20 +117,21 @@ const PlazasVS = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={plazasAgnosParametros.conIva ? true : false}
                 name={inputNames.CON_IVA}
                 onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={plazasAgnosParametros.conVentasEventos ? true : false}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
               />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
+               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={plazasAgnosParametros.conTiendasCerradas ? true : false}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
               />
@@ -141,9 +144,11 @@ const PlazasVS = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
+      </section>
 
-        <VentasTableContainer>
-          <BarChart
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 h-full overflow-y-auto ">
+       <ComparativoVentas>
+       <BarChart
             text={`Ventas al ${formatLastDate(
               formatedDate(
                 plazasAgnosParametros.alAgno,
@@ -155,9 +160,9 @@ const PlazasVS = () => {
               datasets: datasets,
             }}
           />
-        </VentasTableContainer>
-      </main>
-    </>
+       </ComparativoVentas>
+      </section>
+    </div>
   );
 };
 

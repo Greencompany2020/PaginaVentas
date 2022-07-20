@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   Parameters,
   ParametersContainer,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -22,16 +21,16 @@ import {
   validateMonthRange,
   validateYear,
   createPresupuestoDatasets,
-  isError,
 } from "../../utils/functions";
 import useGraphData from "../../hooks/useGraphData";
 import { getPresupuestoGrupo } from "../../services/PresupuestoService";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Grupo = (props) => {
-  const alert = useAlert();
+  const {config} = props;
+  const sendNotification = useNotification();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramGrupo, setParamGrupo] = useState({
     delMes: 1,
@@ -47,41 +46,47 @@ const Grupo = (props) => {
     resultadosPesos: 0,
   });
 
+  useEffect(()=>{
+    setParamGrupo(prev => ({
+      ...prev,
+      acumulado: config?.acumulado || 0,
+      total: config?.total || 0,
+      conIva: config?.conIva || 0,
+      porcentajeVentasCompromiso: config?.porcentajeVentasCompromiso || 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradas || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }))
+  },[config])
+
   useEffect(() => {
-    if (
-      validateYear(paramGrupo.delAgno) &&
-      validateMonthRange(paramGrupo.delMes, paramGrupo.alMes)
-    ) {
-      getPresupuestoGrupo(paramGrupo).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
+    (async()=>{
+      if(validateYear(paramGrupo.delAgno) && validateMonthRange(paramGrupo.delMes, paramGrupo.alMes)){
+        try {
+          const response = await getPresupuestoGrupo(paramGrupo);
           createPresupuestoDatasets(
             response,
             paramGrupo.delAgno,
             setLabels,
             setDatasets
           );
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramGrupo]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas vs. Compromiso del Grupo del año ${paramGrupo.delAgno}`}
-        description={` Esta grafica muestra las ventas vs. compromiso del grupo en el periodo de meses y 
-        el año especificado,este siempre será comparado contra el año anterior.
-        `}
       />
-
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -103,14 +108,14 @@ const Grupo = (props) => {
                   handleChange(e, setParamGrupo);
                 }}
               />
-            </InputContainer>
-            <InputContainer>
-              <SelectTiendasGeneral
+               <SelectTiendasGeneral
                 value={paramGrupo.tiendas}
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
               />
+            </InputContainer>
+            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.ACUMULATIVA}
@@ -118,6 +123,7 @@ const Grupo = (props) => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.acumulado}
               />
               <Checkbox
                 className="mb-3"
@@ -126,6 +132,7 @@ const Grupo = (props) => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.total}
               />
               <Checkbox
                 className="mb-3"
@@ -134,9 +141,8 @@ const Grupo = (props) => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.conIva}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.PORCENTAJE_VENTAS_VS_COMPROMISO}
@@ -144,6 +150,7 @@ const Grupo = (props) => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.porcentajeVentasCompromiso}
               />
               <Checkbox
                 className="mb-3"
@@ -152,6 +159,7 @@ const Grupo = (props) => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.conVentasEventos}
               />
               <Checkbox
                 className="mb-3"
@@ -160,6 +168,7 @@ const Grupo = (props) => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.conTiendasCerradas}
               />
               <Checkbox
                 className="mb-3"
@@ -168,11 +177,13 @@ const Grupo = (props) => {
                 onChange={(e) => {
                   handleChange(e, setParamGrupo);
                 }}
+                checked={paramGrupo.resultadosPesos}
               />
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 h-full overflow-y-auto ">
         <ComparativoVentas>
           <BarChart
             data={{
@@ -181,8 +192,8 @@ const Grupo = (props) => {
             }}
           />
         </ComparativoVentas>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

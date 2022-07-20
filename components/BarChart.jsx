@@ -15,6 +15,7 @@ CharJS.register(
 const BarChart = ({ text, data }) => {
   return (
     <Bar
+      className='h-full'
       options={{
         responsive: true,
         plugins: {
@@ -35,7 +36,8 @@ const BarChart = ({ text, data }) => {
               weight: 'bold'
             }
           }
-        }
+        },
+        maintainAspectRatio: false
       }}
       data={data}
     />

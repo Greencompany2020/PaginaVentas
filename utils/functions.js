@@ -1,5 +1,5 @@
 import { getDay } from "date-fns";
-import { concentradoPlazas, dias, meses, plazas, regiones, tiendas } from "./data";
+import { concentradoPlazas, dias, meses, plazas, regiones, tiendas, regionesTiendas } from "./data";
 import { getMonthByNumber, getMonthChars } from "./dateFunctions";
 
 /**
@@ -97,14 +97,20 @@ export const validateDate = (date) => {
  * @returns {object[]} El identificador de la tienda
  */
 export const getInitialTienda = (tiendas) => {
-  return `${tiendas[0]?.EmpresaWeb}${tiendas[0]?.NoTienda}`;
+  if(tiendas){
+    return `${tiendas[0]?.EmpresaWeb}${tiendas[0]?.NoTienda}`;
+  }
+  return false;
 }
 /**
  * Obtiene el valor de la plaza que estará por defecto.
  * @returns {number} El identificador de la plaza
  */
-export const getInitialPlaza = (plazas) => {
-  return plazas[0]?.NoEmpresa;
+export const getInitialPlaza = (plazas) => {;
+  if(plazas){
+    return plazas[0]?.NoEmpresa;
+  }
+  return false;
 };
 /**
  * Crea los array de etiquetas y de dato para la gráfica de barras.
@@ -197,13 +203,13 @@ export const createSimpleDatasets = (data, updateLabels, updateDataset) => {
  */
 export const getTableName = (name) => {
   if (name?.toLowerCase().includes("frogs") && !name?.toLowerCase().includes("proyectos")) {
-    return (<h2 className='text-center text-2xl p-3'>Tiendas Frogs</h2>);
+    return (<h2 className='text-center text-sm font-bold'>Tiendas Frogs</h2>);
   } else if (name?.toLowerCase().includes("web")) {
-    return (<h2 className='text-center text-2xl p-3'>Tienda En Línea</h2>);
+    return (<h2 className='text-center text-sm font-bold'>Tienda en Línea</h2>);
   } else if (name?.toLowerCase().includes("proyectos")) {
-    return (<h2 className='text-center text-2xl p-3'>Tiendas Frogs - Proyectos</h2>);
+    return (<h2 className='text-center text-sm font-bold'>Tiendas Frogs - Proyectos</h2>);
   } else if (name?.toLowerCase().includes("skoro")) {
-    return (<h2 className='text-center text-2xl p-3'>Tiendas Skoro</h2>);
+    return (<h2 className='text-center text-sm font-bold'>Tiendas Skoro</h2>);
   }
 }
 /**
@@ -327,6 +333,114 @@ export const rowColor = (item) => {
     return "bg-gray-300 font-bold";
   }
   return ""
+}
+
+/**
+ * 
+ * @param {*} item 
+ * @returns 
+ */
+
+export const rowRegion = item => {
+  if(plazas.findIndex(plaza => plaza.text === item ) !== -1){
+    return "bg-gray-200 font-semibold";
+  }
+  if(regiones.includes(item)){
+    return "bg-gray-300 font-bold";
+  }
+}
+
+/**
+ * Regresa si la linea actual es de una plaza
+ * @param {*} item 
+ * @returns 
+ */
+export const isPlaza = (item) => {
+  if (concentradoPlazas.findIndex(plaza => plaza === item.tienda) !== -1) {
+    return true;
+  }
+  return false;
+}
+/**
+ * Hace un splice de la data por regiones,
+ * funciona si la data esca contenida dentro de un objeto
+ * @param {*} data 
+ * @returns 
+ */
+export const spliceByRegion = (data) => {
+  const replaced = {};
+  Object.entries(data ?? {})?.map(([key,value]) => {
+    let initial = 0;
+    regiones.forEach (region => {
+      const final = value.findIndex(el => el.tienda == region);
+      if(final != -1){
+        const temp = value.slice(initial, final + 1);
+        if(temp.length > 0) Object.assign(replaced, {[region]: temp});
+        initial = final + 1;
+      }
+    });
+
+  });
+
+  Object.assign(replaced, {"TOTAL": getTotalsFromShops(data)});
+  return replaced;
+}
+
+/**
+ * Obtiene el total de la plazas, se ejecuta junto con spliceByRegion
+ * @param {*} data 
+ * @returns 
+ */
+const getTotalsFromShops = data => {
+  const replaced = {};
+  Object.entries(data ?? {})?.map(([key, value]) => {
+    if(value){
+      const temp = value.find( row => row.tienda == 'TOTAL');
+      Object.assign(replaced, {[key]: temp})
+    }
+  });
+  return replaced;
+}
+/**
+ * Obtiene el nombre de la tienda segun la region
+ * @param {*} region 
+ * @returns 
+ */
+export const getShopNameByRegion = region => {
+  switch (region){
+    case "REGION I":
+      return "Tiendas frogs";
+    case "REGION II":
+      return "Tiendas frogs";
+    case "REGION III":
+      return "Tiendas frogs";
+    case "WEB":
+      return "Web";
+    default:
+      return "Tiendas Frogs"
+  }
+}
+
+/**
+ * Oobtiene la data ya la regresa en regiones
+ * esta funcion solo funciona si la data esta contenida en un array
+ * @param {*} data 
+ * @returns 
+ */
+export const spliceByRegionShops = data =>{
+  const replaced = {};
+  if(Array.isArray(data)){
+    let initial = 0;
+    regionesTiendas.forEach(region=>{
+      const final = data.findIndex(item => item.plaza === region);
+      if(final !== -1){
+        const temp = data.slice(initial, final + 1);
+        if(temp.length > 0) Object.assign(replaced, {[region]: temp});
+        initial = final + 1;
+      }
+    });
+  }
+  return replaced;
 }
 /**
  * Crear un texto de título a partir del rango de fechas ingresado. Ej.
@@ -557,4 +671,64 @@ export const generateLivKey = (pre) => {
   return `${pre}_${Date.now()}`
 }
 
+/**
+ * Retorna una objeto divido por las llaves que el usuario le indique
+ * @param {*} data 
+ * @param {*} keys 
+ * @returns 
+ */
+export const spliceData = (data, keys) => {
+  const replaced = {};
+  if(Array.isArray(data) && data.length > 0 && keys){
+    let initial = 0;
+    keys.forEach(key =>{
+      const final = data.findIndex(item => item.plaza === key);
+      if(final !== -1){
+        const temp = data.slice(initial, final + 1);
+        if(temp.length > 0) Object.assign(replaced, {[key]: temp});
+        initial = final + 1;
+      }
+    });
+    return replaced;
+  }
+  return null;
+}
 
+export const spliceDataObject = (data, keys, unifiedKey = null) => {
+  const replaced = {};
+  if(Object.keys(data).length > 0 && keys){
+    Object.entries(data ?? {})?.map(([key,value]) => {
+      keys.forEach (itemKey => {
+        const final = value.findIndex(el => el.plaza == itemKey);
+        if(final != -1){
+          const temp = value.slice(final ,final + 1);
+          if(temp.length > 0) Object.assign(replaced, {[itemKey]: temp});
+        }
+      });
+    });
+    if( unifiedKey) Object.assign(replaced, {[unifiedKey]: getTotalFromDataObject(data, unifiedKey)});
+    return replaced;
+  }
+  return null;
+}
+
+const getTotalFromDataObject = (data, unifiedKey) => {
+  const replaced = {};
+  Object.entries(data ?? {})?.map(([key, value]) => {
+    if(value){
+      const temp = value.find( row => row.plaza == unifiedKey);
+      Object.assign(replaced, {[key]: temp})
+    }
+  });
+  return replaced;
+}
+
+export const getValueFromObject = (data, findKey=null) => {
+  if(Object.keys(data).length > 0 && findKey){
+    const temp= Object.entries(data?? {})?.map(([key,value]) => (value.map(item => item[findKey])));
+    const tempFlat = temp.flat();
+    const unique = [... new Set(tempFlat)];
+    return unique;
+  }
+  return null;
+}

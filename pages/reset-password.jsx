@@ -1,23 +1,20 @@
 import Image from "next/image";
-import { useState } from "react";
 import { useRouter } from "next/router";
-import { EyeIcon, EyeOffIcon } from "@heroicons/react/outline";
 import Link from "next/link";
-import { Formik, Form, Field } from "formik";
+import { Formik, Form} from "formik";
 import * as Yup from "yup";
-import Logo from "../public/images/green-company.png";
-import { post_newPassword } from "../services/UserServices";
-import { MessageModal } from "../components/modals";
-import useMessageModal from "../hooks/useMessageModal";
+import logo from "../public/images/brand.svg";
 import useToggle from "../hooks/useToggle";
 import LoaderComponentBas from "../components/LoaderComponentBas";
+import userService from '../services/userServices';
+import {useNotification} from'../components/notifications/NotificationsProvider';
+import { ResetViewInput } from "../components/FormInputs";
 
 export default function RestorePassword() {
   const router = useRouter();
-  const { modalOpen, message, setMessage, setModalOpen } = useMessageModal();
+  const service = userService();
   const [isLoading, setLoading] = useToggle(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
+  const sendNotification = useNotification();
 
   const validationSchema = Yup.object().shape({
     password: Yup.string()
@@ -35,138 +32,69 @@ export default function RestorePassword() {
   };
 
   const sendNewPassword = async (values) => {
-    const body = { password: values.password };
-    if (!router.query?.resetToken) return false;
-    const { resetToken } = router.query;
-    setLoading(false);
-    const response = await post_newPassword(body, resetToken);
-    setLoading(false);
-    const mesage = response
-      ? "Su contraseña ha sido cambiada"
-      : "No se pudo restablecer su contraseña";
-    setMessage(mesage);
-    setModalOpen(true);
-    if (response) window.location.href = "/";
-  };
+    if(router.query?.resetToken){
+      setLoading();
+      const { resetToken } = router.query;
+      const body = { password: values.password };
+      try {
+        const response = await service.resetPassword(body, resetToken);
+        sendNotification({
+          type:'OK',
+          message:'Se ha restablecido su contraseña'
+        });
+        awaitToRedirect();
+      } catch (error) {
+        sendNotification({
+          type:'ERROR',
+          message:'upps no se ha podido restablecer su contraseña'
+        });
+      }
+      setLoading();
+    }else{
+      sendNotification({
+        type:'ERROR',
+        message: 'No puede restablecer su cantraseña sin token'
+      })
+    }
+  }
+
+  const awaitToRedirect = () =>{
+    setTimeout(() => {
+      router.push('/');
+    }, 2000);
+  }
 
   const handleSubmit = (values) => sendNewPassword(values);
-  const handleShowPassword = () => setShowPassword(!showPassword);
-  const handleShowConfirm = () => setShowConfirm(!showConfirm);
 
-  return (
-    <>
-      <MessageModal />
-      <div className="w-screen h-screen grid place-items-center p-3 bg-cyan-600">
-        <div className="flex flex-col  p-4  rounded-md bg-gray-200">
-          <div className=" w-2/3 m-auto mb-4">
-            <Image
-              src={Logo}
-              alt="Green Company"
-              className=" object-fill h-40"
-            />
-          </div>
-          <h1 className="text-center text-xl mb-4 font-semibold text-gray-500">
-            Restablecer Contraseña
-          </h1>
-          <Formik
-            initialValues={initialValues}
-            validationSchema={validationSchema}
-            onSubmit={(values) => handleSubmit(values)}
-          >
-            {({ errors, touched }) => (
-              <Form>
-                <div className="space-y-4">
-                  <div className="flex flex-col justify-start">
-                    <figure
-                      className={`flex items-center p-1 pr-2 rounded-md bg-white outline-none ${
-                        errors?.password &&
-                        touched?.password &&
-                        "border-[3px] border-red-500"
-                      }`}
-                    >
-                      <Field
-                        type={showPassword ? "text" : "password"}
-                        placeholder="Contraseña"
-                        name="password"
-                        id="password"
-                        className=" w-full outline-none p-3"
-                      />
-                      {showPassword ? (
-                        <EyeOffIcon
-                          width={32}
-                          className="text-blue-500 hover:cursor-pointer"
-                          onClick={handleShowPassword}
-                        />
-                      ) : (
-                        <EyeIcon
-                          width={32}
-                          className="text-blue-500 hover:cursor-pointer"
-                          onClick={handleShowPassword}
-                        />
-                      )}
-                    </figure>
-                    {errors?.password && touched?.password ? (
-                      <span className="font-semibold text-red-500">
-                        {errors?.password}
-                      </span>
-                    ) : null}
-                  </div>
+  return(
+    <section className=" h-screen grid place-items-center bg-cyan-600 p-4">
+      <div className="w-full md:w-[50%] xl:w-[20%] min-h-[30rem] h-fit p-4 bg-gray-50 rounded-md shadow-sm shadow-slate-800">
 
-                  <div className="flex flex-col justify-start">
-                    <figure
-                      className={`flex items-center p-1 pr-2 rounded-md bg-white outline-none ${
-                        errors?.confirmPassword &&
-                        touched?.confirmPassword &&
-                        "border-[3px] border-red-500"
-                      }`}
-                    >
-                      <Field
-                        type={showConfirm ? "text" : "password"}
-                        placeholder="Confirmar contraseña"
-                        name="confirmPassword"
-                        id="confirmPassword"
-                        className="w-full outline-none p-3"
-                      />
-                      {showConfirm ? (
-                        <EyeOffIcon
-                          width={32}
-                          className="text-blue-500 hover:cursor-pointer"
-                          onClick={handleShowConfirm}
-                        />
-                      ) : (
-                        <EyeIcon
-                          width={32}
-                          className="text-blue-500 hover:cursor-pointer"
-                          onClick={handleShowConfirm}
-                        />
-                      )}
-                    </figure>
-                    {errors?.confirmPassword && touched?.confirmPassword ? (
-                      <span className="font-semibold text-red-500">
-                        {errors?.confirmPassword}
-                      </span>
-                    ) : null}
-                  </div>
-                </div>
+        <figure className="relative w-full h-44">
+          <Image src={logo} layout='fill' alt="logo"/>
+        </figure>
 
-                <button
-                  type="submit"
-                  className="w-full h-12 rounded-md bg-sky-500 mt-4 text-center text-white hover:cursor-pointer hover:bg-sky-400 transition ease-in-out duration-200 font-bold"
-                >
-                  Solicitar cambio
-                </button>
-              </Form>
-            )}
+        <div>
+          <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleSubmit}>
+            <Form>
+              <fieldset className='space-y-4'>
+                < ResetViewInput type='password' name='password' placeholder='Constraseña'/>
+                < ResetViewInput type='password' name='confirmPassword' placeholder='Confirmar contraseña'/>
+              </fieldset>
+              <input type='submit' value='Ingresar' className="primary-btn  w-full mt-4"/>
+            </Form>
           </Formik>
           <LoaderComponentBas isLoading={isLoading} />
-          <Link href="/">
-            <a className="text-lg cursor-pointer text-sky-500 text-center mt-8 font-semibold">
+        </div>
+        <div className="text-center mt-8">
+        <Link href="/">
+            <a className="text-sm cursor-pointer text-sky-500  font-semibold">
               Ir a Inicio
             </a>
-          </Link>
+        </Link>
         </div>
       </div>
-    </>
-  );
+   </section>
+  )
 }
 

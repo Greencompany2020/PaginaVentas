@@ -1,6 +1,5 @@
 import { useState, useEffect, Fragment } from "react";
 import {
-  SmallContainer,
   ParametersContainer,
   Parameters,
 } from "../../components/containers";
@@ -31,17 +30,17 @@ import {
   validateYear,
   getTableName,
   dateRangeTitleSemanaSanta,
-  isError,
 } from "../../utils/functions";
 import { handleChange } from "../../utils/handlers";
 import { getSemanaSantaAcumulado } from "../../services/semanaSantaService";
 import { formatNumber, numberWithCommas } from "../../utils/resultsFormated";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Acumulado = () => {
-  const alert = useAlert();
+const Acumulado = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification;
   const [fechaInicioSemana, setFechaInicioSemana] = useState(
     semanaSanta(getCurrentYear())[0]
   );
@@ -60,23 +59,32 @@ const Acumulado = () => {
     paramAcumulado.incluirFinSemanaAnterior ? true : false
   );
 
+  useEffect(()=>{
+    setParamAcumulado(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      porcentajeVentasCompromiso: config?.porcentajeVentasCompromiso || 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradas || 0,
+      incluirFinSemanaAnterior: config?.incluirFinSemanaAnterior || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }))
+  },[config])
+
   useEffect(() => {
-    if (
-      validateDate(paramAcumulado.fecha) &&
-      validateYear(paramAcumulado.versusAgno)
-    ) {
-      getSemanaSantaAcumulado(paramAcumulado).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
+    (async()=>{
+      if( validateDate(paramAcumulado.fecha) && validateYear(paramAcumulado.versusAgno)){
+        try {
+          const response = await getSemanaSantaAcumulado(paramAcumulado);
           setAcumulado(response);
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramAcumulado]);
 
@@ -87,15 +95,13 @@ const Acumulado = () => {
   }, [finSemana, paramAcumulado.fecha]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas Semana Santa del año ${getYearFromDate(
           paramAcumulado.fecha
         )}`}
-        description=" Este reporte muestra la venta del dia y la venta acumulada de la semana santa en la fecha especificada."
       />
-
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -116,14 +122,15 @@ const Acumulado = () => {
                 value={paramAcumulado.versusAgno}
                 onChange={(e) => handleChange(e, setParamAcumulado)}
               />
+            </InputContainer>
+            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
                 name={inputNames.CON_IVA}
+                checked={paramAcumulado.conIva ? true : false}
                 onChange={(e) => handleChange(e, setParamAcumulado)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.PORCENTAJE_VENTAS_VS_LOGRO}
@@ -135,16 +142,16 @@ const Acumulado = () => {
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
                 name={inputNames.CON_VENTAS_EVENTOS}
+                checked={paramAcumulado.conVentasEventos ? true : false}
                 onChange={(e) => handleChange(e, setParamAcumulado)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
                 name={inputNames.CON_TIENDAS_CERRADAS}
+                checked={paramAcumulado.conTiendasCerradas ? true : false}
                 onChange={(e) => handleChange(e, setParamAcumulado)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_FIN_DE_SEMANA_ANTERIOR}
@@ -164,137 +171,134 @@ const Acumulado = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="p-4 overflow-y-auto ">
         <VentasTableContainer>
           {Object.entries(acumulado).map(([key, value]) => (
             <Fragment key={key}>
               {getTableName(key)}
-              <VentasTable className="last-row-bg">
+              <VentasTable className="tfooter">
                 <TableHead>
                   <tr>
-                    <td rowSpan={3} className="border border-white">
+                    <th rowSpan={3} className="border border-white">
                       Tienda
-                    </td>
-                    <td colSpan={10} className="border border-white">
+                    </th>
+                    <th colSpan={10} className="border border-white">
                       {getDayName(paramAcumulado.fecha)}
-                    </td>
-                    <td colSpan={4} className="border border-white">
+                    </th>
+                    <th colSpan={4} className="border border-white">
                       {dateRangeTitleSemanaSanta(
                         fechaInicioSemana,
                         paramAcumulado.fecha
                       )}
-                    </td>
+                    </th>
                   </tr>
-                  <tr>
-                    <td colSpan={4} className="border border-white">
+                  <tr className="text-right">
+                    <th colSpan={4} className="border border-white">
                       Venta
-                    </td>
-                    <td colSpan={3} className="border border-white">
+                    </th>
+                    <th colSpan={3} className="border border-white">
                       Promedio
-                    </td>
-                    <td colSpan={3} className="border border-white">
+                    </th>
+                    <th colSpan={3} className="border border-white">
                       Operaciones
-                    </td>
-                    <td colSpan={4} className="border border-white">
+                    </th>
+                    <th colSpan={4} className="border border-white">
                       Venta
-                    </td>
+                    </th>
                   </tr>
-                  <tr>
-                    <td rowSpan={2} className="border border-white">
+                  <tr className="text-right">
+                    <th rowSpan={2} className="border border-white">
                       {getYearFromDate(paramAcumulado.fecha)}
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       {paramAcumulado.versusAgno}
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       PPTO.
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       %
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       {getYearFromDate(paramAcumulado.fecha)}
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       {paramAcumulado.versusAgno}
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       %
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       {getYearFromDate(paramAcumulado.fecha)}
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       {paramAcumulado.versusAgno}
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       %
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       {getYearFromDate(paramAcumulado.fecha)}
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       {paramAcumulado.versusAgno}
-                    </td>
-                    <td rowSpan={2} className="border border-white">
+                    </th>
+                    <th rowSpan={2} className="border border-white">
                       PPTO.
-                    </td>
-                    <td rowSpan={3} className="border border-white">
+                    </th>
+                    <th rowSpan={3} className="border border-white">
                       %
-                    </td>
+                    </th>
                   </tr>
                 </TableHead>
-                <tbody className="bg-white text-center">
-                  {value?.map((venta) => (
-                    <TableRow
-                      key={venta.tienda}
-                      rowId={venta.tienda}
-                      className={rowColor(venta)}
-                    >
-                      <td className="text-sm">{venta.tienda}</td>
-                      <td className="font-bold">
-                        {numberWithCommas(venta.ventaActual)}
-                      </td>
-                      <td className="text-sm">
-                        {numberWithCommas(venta.ventaAnterior)}
-                      </td>
-                      <td className="text-sm">
-                        {numberWithCommas(venta.presupuesto)}
-                      </td>
-                      {formatNumber(venta.porcentaje)}
-                      <td className="font-bold">
-                        {numberWithCommas(venta.promedioActual)}
-                      </td>
-                      <td className="text-sm">
-                        {numberWithCommas(venta.promedioAnterior)}
-                      </td>
-                      {formatNumber(venta.porcentajePromedios)}
-                      <td className="font-bold">
-                        {numberWithCommas(venta.operacionesActual)}
-                      </td>
-                      <td className="text-sm">
-                        {numberWithCommas(venta.operacionesAnterior)}
-                      </td>
-                      {formatNumber(venta.porcentajeOperaciones)}
-                      <td className="font-bold">
-                        {numberWithCommas(venta.ventaAcumuladaActual)}
-                      </td>
-                      <td className="text-sm">
-                        {numberWithCommas(venta.ventaAcumuladaAnterior)}
-                      </td>
-                      <td className="text-sm">
-                        {numberWithCommas(venta.presupuestoAcumulado)}
-                      </td>
-                      {formatNumber(venta.porcentajeAcumulado)}
-                    </TableRow>
-                  ))}
+                <tbody className="bg-white text-right text-xs">
+                  {
+                    (()=>{
+                      if(value){
+                        const count = value.length - 1;
+                        const Items = value?.map((venta, index) => (
+                          <TableRow
+                            key={venta.tienda}
+                            rowId={venta.tienda}
+                            className={rowColor(venta)}
+                          >
+                            <td className="text-left">{venta.tienda}</td>
+                            <td className="font-bold">
+                              {numberWithCommas(venta.ventaActual)}
+                            </td>
+                            <td>{numberWithCommas(venta.ventaAnterior)}</td>
+                            <td>{numberWithCommas(venta.presupuesto)}</td>
+                            {formatNumber(venta.porcentaje, count == index)}
+                            <td className="font-bold">
+                              {numberWithCommas(venta.promedioActual)}
+                            </td>
+                            <td>{numberWithCommas(venta.promedioAnterior)}</td>
+                            {formatNumber(venta.porcentajePromedios, count == index)}
+                            <td className="font-bold">
+                              {numberWithCommas(venta.operacionesActual)}
+                            </td>
+                            <td>{numberWithCommas(venta.operacionesAnterior)}</td>
+                            {formatNumber(venta.porcentajeOperaciones, count == index)}
+                            <td className="font-bold">
+                              {numberWithCommas(venta.ventaAcumuladaActual)}
+                            </td>
+                            <td>{numberWithCommas(venta.ventaAcumuladaAnterior)}</td>
+                            <td>{numberWithCommas(venta.presupuestoAcumulado)}</td>
+                            {formatNumber(venta.porcentajeAcumulado, count == index)}
+                          </TableRow>
+                        ));
+                        return Items;
+                      }
+                    })()
+                  }
                 </tbody>
               </VentasTable>
             </Fragment>
           ))}
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

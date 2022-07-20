@@ -16,7 +16,7 @@ import {
 import ComparativoVentas from "../../components/table/ComparativoVentas";
 import BarChart from "../../components/BarChart";
 import { getPresupuestoTienda } from "../../services/PresupuestoService";
-import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
+import { checkboxLabels, inputNames, MENSAJE_ERROR, plazas } from "../../utils/data";
 import {
   getInitialTienda,
   validateMonthRange,
@@ -29,13 +29,14 @@ import { getCurrentMonth, getCurrentYear } from "../../utils/dateFunctions";
 import { handleChange } from "../../utils/handlers";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
-import { useAlert } from "../../context/alertContext";
+import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Tienda = () => {
-  const alert = useAlert();
-  const { tiendas } = useUser();
+const Tienda = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
+  const { tiendas } = useAuth();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTienda, setParamTienda] = useState({
     tienda: getInitialTienda(tiendas),
@@ -44,48 +45,53 @@ const Tienda = () => {
     delAgno: getCurrentYear(),
     total: 0,
     acumulado: 0,
-    total: 0,
     conIva: 0,
     resultadosPesos: 0,
   });
 
+  useEffect(()=>{
+    if(tiendas){
+      setParamTienda(prev => ({
+        ...prev, 
+        tienda:getInitialTienda(tiendas),
+        total: config?.total || 0,
+        acumulado: config?.acumulado || 0,
+        conIva: config?.conIva || 0,
+        resultadosPesos: config?.resultadosPesos || 0,
+      }))
+    }
+  },[tiendas, config])
+
   useEffect(() => {
-    if (
-      validateMonthRange(paramTienda.delMes, paramTienda.alMes) &&
-      validateYear(paramTienda.delAgno)
-    ) {
-      getPresupuestoTienda(paramTienda).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
+    (async()=>{
+      if( validateMonthRange(paramTienda.delMes, paramTienda.alMes) &&  validateYear(paramTienda.delAgno) && tiendas){
+        try {
+          const response = await  getPresupuestoTienda(paramTienda);
           createPresupuestoDatasets(
             response,
             paramTienda.delAgno,
             setLabels,
             setDatasets
           );
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramTienda]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas por Mes Tienda ${getTiendaName(
           paramTienda.tienda
         )} del año ${paramTienda.delAgno}`}
-        description={`Esta grafica muestra un comparativo de las ventas vs compromiso del grupo en el periodo de meses y
-        el año especificado, este siempre será comparado contra el año anterior.
-        `}
       />
-
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -122,6 +128,7 @@ const Tienda = () => {
                 onChange={(e) => {
                   handleChange(e, setParamTienda);
                 }}
+                checked={paramTienda.acumulado}
               />
               <Checkbox
                 className="mb-3"
@@ -130,6 +137,7 @@ const Tienda = () => {
                 onChange={(e) => {
                   handleChange(e, setParamTienda);
                 }}
+                checked={paramTienda.total}
               />
               <Checkbox
                 className="mb-3"
@@ -138,6 +146,7 @@ const Tienda = () => {
                 onChange={(e) => {
                   handleChange(e, setParamTienda);
                 }}
+                checked={paramTienda.conIva}
               />
               <Checkbox
                 className="mb-3"
@@ -146,11 +155,13 @@ const Tienda = () => {
                 onChange={(e) => {
                   handleChange(e, setParamTienda);
                 }}
+                checked={paramTienda.resultadosPesos}
               />
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className=" pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 h-full overflow-y-auto ">
         <ComparativoVentas>
           <BarChart
             data={{
@@ -159,8 +170,8 @@ const Tienda = () => {
             }}
           />
         </ComparativoVentas>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

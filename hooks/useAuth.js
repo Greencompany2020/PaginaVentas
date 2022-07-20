@@ -1,27 +1,74 @@
-import jsCookie from 'js-cookie';
-import { post_login, get_logouth} from '../services/AuthServices';
+import {useState, useEffect} from 'react';
+import userService from '../services/userServices';
+import { useNotification } from '../components/notifications/NotificationsProvider';
 
-function useAuth(){
+export default function useProviderAuth(){
+    const [auth, setAuth] = useState(false);
+    const [user, setUser] = useState();
+    const [globalParameters, setGlobalParameters] = useState({});
+    const [tiendas, setTiendas] = useState();
+    const [plazas, setPlazas] = useState();
+    const service = userService();
+    const sendNotification = useNotification();
 
-    const login = async (body) => {
-        const token = await post_login(body)
-        if(!token) return false;
-        jsCookie.set('accessToken', token);
-        return true;
+    const refreshUser = async () => {
+       try {
+            const response = await service.getUser();
+            if(response) setUser(response);
+       } catch (error) {
+        sendNotification({
+            type:'ERROR',
+            message:error.message,
+           })
+       }
     }
 
-    const logOut = async () => {
-        await get_logouth();
-        jsCookie.remove('accessToken');
-        jsCookie.remove('jwt');
-        window.location.href = '/'
-        return true;
+    const refreshGlobalParameters = async  () =>{
+        try {
+            const response = await service.getGlobalParameters();
+            setGlobalParameters(response);
+        } catch (error) {
+            sendNotification({
+                type:'ERROR',
+                message:error.message,
+               })
+        }
     }
+    
+
+    useEffect(()=>{
+        (async()=>{
+            if(auth){
+                try {
+                    //get all data
+                    const responseUser = await service.getUser();
+                    const responsePlazas = await service.getPlazas();
+                    const responseTiendas = await service.getTiendas();
+                    const responseGlobalParameters = await service.getGlobalParameters();
+
+                    //set all data
+                    setUser(responseUser);
+                    setPlazas(responsePlazas);
+                    setTiendas(responseTiendas);
+                    setGlobalParameters(responseGlobalParameters);
+                } catch (error) {
+                   sendNotification({
+                    type:'ERROR',
+                    message:error.message,
+                   })
+                }
+            }
+        })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    },[auth])
 
     return {
-        logOut,
-        login
+        plazas,
+        tiendas,
+        user,
+        setAuth,
+        refreshUser,
+        globalParameters,
+        refreshGlobalParameters,
     }
 }
-
-export default useAuth;

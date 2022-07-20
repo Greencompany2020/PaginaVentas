@@ -1,9 +1,9 @@
-import { useUser } from '../../context/UserContext';
+import { useAuth } from '../../context/AuthContext';
 import { Flex } from '../containers';
 
 const SelectPlazas = ({ classLabel, onChange, value }) => {
   
-  const {plazas} = useUser();
+  const {plazas} = useAuth();
 
   const PlazasItem = ({plazas}) => {
     if(!plazas) return <></>

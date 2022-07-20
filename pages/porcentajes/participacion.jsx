@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -23,13 +22,14 @@ import { getCurrentYear } from "../../utils/dateFunctions";
 import { handleChange } from "../../utils/handlers";
 import { numberWithCommas } from "../../utils/resultsFormated";
 import { getPorcenatajesParticipacion } from "../../services/PorcentajesService";
-import { isError, validateYear } from "../../utils/functions";
+import { validateYear } from "../../utils/functions";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Participacion = () => {
-  const alert = useAlert();
+const Participacion = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
   const [participacionVentas, setParticipacionVentas] = useState([]);
   const [parametrosParticipacion, setParametrosParticipacion] = useState({
     alAgno: getCurrentYear(),
@@ -41,31 +41,42 @@ const Participacion = () => {
     resultadosPesos: 0,
   });
 
+  useEffect(()=>{
+    setParametrosParticipacion(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradas|| 0,
+      sinTiendasSuspendidas: config?.sinTiendasSuspendidas || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }));
+    
+  },[config])
+
   useEffect(() => {
-    if (validateYear(parametrosParticipacion.alAgno)) {
-      getPorcenatajesParticipacion(parametrosParticipacion).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
+    (async()=>{
+      if(validateYear(parametrosParticipacion.alAgno)){
+        try{
+          const response = await getPorcenatajesParticipacion(parametrosParticipacion);
           setParticipacionVentas(response);
+        }catch(error){
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [parametrosParticipacion]);
+  }, [parametrosParticipacion, parametrosParticipacion.alAgno]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`PARTICIPACION DE VENTAS DE TIENDAS EN EL AÑO ${parametrosParticipacion.alAgno}`}
-        description="Este reporte muestra la participación de ventas en el mes de cada una de las tiendas en razon de las vents generales en el año especificado."
       />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -82,44 +93,46 @@ const Participacion = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={parametrosParticipacion.conIva ? true : false}
                 name={inputNames.CON_IVA}
                 onChange={(e) => handleChange(e, setParametrosParticipacion)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={parametrosParticipacion.conVentasEventos ? true : false}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setParametrosParticipacion)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={parametrosParticipacion.conTiendasCerradas ? true : false}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 onChange={(e) => handleChange(e, setParametrosParticipacion)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
                 name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
-                checked={
-                  parametrosParticipacion.sinTiendasSuspendidas ? true : false
-                }
+                checked={parametrosParticipacion.sinTiendasSuspendidas ? true : false}
                 onChange={(e) => handleChange(e, setParametrosParticipacion)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.RESULTADO_PESOS}
+                checked={parametrosParticipacion.resultadosPesos ? true : false}
                 name={inputNames.RESULTADOS_PESOS}
                 onChange={(e) => handleChange(e, setParametrosParticipacion)}
               />
             </InputContainer>
           </Parameters>
         </ParametersContainer>
+      </section>
 
+      <section className="p-4 overflow-y-auto ">
         <VentasTableContainer>
-          <VentasTable className="last-row-bg">
+          <VentasTable className="tfooter">
             <TableHead>
               <tr>
                 <th rowSpan={2}>TDA.</th>
@@ -137,7 +150,7 @@ const Participacion = () => {
                 <th colSpan={2}>DIC</th>
                 <th rowSpan={2}>TOTAL AÑO</th>
               </tr>
-              <tr>
+              <tr className="text-right">
                 <th>$</th>
                 <th>%</th>
                 <th>$</th>
@@ -169,11 +182,11 @@ const Participacion = () => {
                 <TableRow
                   key={venta.tienda}
                   rowId={venta.tienda}
-                  className="text-center"
+                  className="text-right text-xs"
                 >
                   {index + 1 === participacionVentas.length ? (
                     <>
-                      <td>{venta.tienda}</td>
+                      <td className="text-left">{venta.tienda}</td>
                       <td colSpan={2}>{numberWithCommas(venta.enero)}</td>
                       <td colSpan={2}>{numberWithCommas(venta.febrero)}</td>
                       <td colSpan={2}>{numberWithCommas(venta.marzo)}</td>
@@ -190,7 +203,7 @@ const Participacion = () => {
                     </>
                   ) : (
                     <>
-                      <td>{venta.tienda}</td>
+                      <td className="text-left">{venta.tienda}</td>
                       <td>{numberWithCommas(venta.enero)}</td>
                       <td className="bg-gray-200">
                         {numberWithCommas(venta.porcentajeEnero)}
@@ -247,8 +260,8 @@ const Participacion = () => {
             </TableBody>
           </VentasTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

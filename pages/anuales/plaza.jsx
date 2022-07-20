@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -13,7 +12,6 @@ import {
   InputYear,
   SelectToMonth,
 } from "../../components/inputs";
-import { VentasTableContainer } from "../../components/table";
 import BarChart from "../../components/BarChart";
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
 import {
@@ -25,19 +23,20 @@ import { handleChange } from "../../utils/handlers";
 import { getAnualesPlazas } from "../../services/AnualesServices";
 import {
   createDatasets,
-  isError,
   validateYearRange,
 } from "../../utils/functions";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import ComparativoVentas from "../../components/table/ComparativoVentas";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Plazas = () => {
-  const alert = useAlert();
+const Plazas = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
   const [plazasParametros, setPlazasParametros] = useState({
-    delAgno: getCurrentYear() - 4,
+    delAgno: getCurrentYear(),
     alAgno: getCurrentYear(),
     alMes: getCurrentMonth(),
     tiendas: 0,
@@ -47,16 +46,21 @@ const Plazas = () => {
     resultadosPesos: 1,
   });
 
+  useEffect(()=>{
+    setPlazasParametros(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradasa || 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }))
+  },[config])
+
   useEffect(() => {
-    if (validateYearRange(plazasParametros.delAgno, plazasParametros.alAgno)) {
-      getAnualesPlazas(plazasParametros).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
+    (async()=>{
+      if(validateYearRange(plazasParametros.delAgno, plazasParametros.alAgno)){
+        try {
+          const response = await getAnualesPlazas(plazasParametros);
           createDatasets(
             response,
             plazasParametros.delAgno,
@@ -64,26 +68,28 @@ const Plazas = () => {
             setLabels,
             setDatasets
           );
+        } catch (error) {
+          sendNotification({
+            type: 'ERROR',
+            message: MENSAJE_ERROR,
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plazasParametros]);
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas Plazas Acumuladas a ${getMonthByNumber(
           plazasParametros.alMes
         )} del año ${plazasParametros.delAgno} al año ${
           plazasParametros.alAgno
         }`}
-        description={`Esta gráfica muestra las ventas anuales por plaza seguna el rango de años especificado.
-        Recuerde que el rango de años debe ser capturado de el menor a el mayor, aunque en el reporte se mostrarara el orden descendiente.
-        `}
       />
 
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -95,8 +101,6 @@ const Plazas = () => {
                 value={plazasParametros.alAgno}
                 onChange={(e) => handleChange(e, setPlazasParametros)}
               />
-            </InputContainer>
-            <InputContainer>
               <SelectToMonth
                 value={plazasParametros.alMes}
                 onChange={(e) => handleChange(e, setPlazasParametros)}
@@ -110,20 +114,21 @@ const Plazas = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={plazasParametros.conIva ? true : false}
                 name={inputNames.CON_IVA}
                 onChange={(e) => handleChange(e, setPlazasParametros)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={plazasParametros.conVentasEventos ? true : false}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setPlazasParametros)}
               />
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
+               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={plazasParametros.conTiendasCerradas ? true : false}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 onChange={(e) => handleChange(e, setPlazasParametros)}
               />
@@ -136,17 +141,18 @@ const Plazas = () => {
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
-        <VentasTableContainer>
-          <BarChart
+      </section>
+      <section className=" p-4 overflow-y-auto ">
+        <ComparativoVentas>
+        <BarChart
             data={{
               labels: labels,
               datasets: datasets,
             }}
           />
-        </VentasTableContainer>
-      </main>
-    </>
+        </ComparativoVentas>
+      </section>
+    </div>
   );
 };
 

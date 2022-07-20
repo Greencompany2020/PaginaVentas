@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -27,17 +26,17 @@ import {
 import { handleChange } from "../../utils/handlers";
 import {
   getLastTwoNumbers,
-  isError,
   validateDate,
 } from "../../utils/functions";
 import { getPorcentajeCrecimiento } from "../../services/PorcentajesService";
 import { numberWithCommas } from "../../utils/resultsFormated";
 import withAuth from "../../components/withAuth";
-import { useAlert } from "../../context/alertContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Crecimiento = () => {
-  const alert = useAlert();
+const Crecimiento = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
   const [dateRange, setDateRange] = useState([]);
   const [crecimiento, setCrecimiento] = useState([]);
   const [paramCrecimiento, setParamCrecimiento] = useState({
@@ -59,21 +58,32 @@ const Crecimiento = () => {
     setDateRange(dateRange);
   }, [paramCrecimiento.fecha]);
 
+  useEffect(()=>{
+    setParamCrecimiento(prev => ({
+      ...prev,
+      conIva: config?.conIva || 0,
+      conVentasEventos: config?.conVentasEventos || 0,
+      conTiendasCerradas: config?.conTiendasCerradas || 0,
+      sinTiendasSuspendidas: config?.sinTiendasSuspendidas|| 0,
+      resultadosPesos: config?.resultadosPesos || 0,
+    }))
+  },[config])
+
   useEffect(() => {
-    if (validateDate(paramCrecimiento.fecha)) {
-      getPorcentajeCrecimiento(paramCrecimiento).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
+    (async()=>{
+      if(validateDate(paramCrecimiento.fecha)){
+        try{
+          const response = await getPorcentajeCrecimiento(paramCrecimiento);
           createDateRange();
           setCrecimiento(response);
+        }catch(error){
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR
+          });
         }
-      });
-    }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramCrecimiento, createDateRange]);
 
@@ -84,17 +94,14 @@ const Crecimiento = () => {
   };
 
   return (
-    <>
+    <div className=" flex flex-col h-full">
       <TitleReport
         title={`Factor de crecimiento al 
           ${paramCrecimiento.fecha.split("-")[2]} de 
           ${getMonthByNumber(paramCrecimiento.fecha.split("-")[1])} de 
           ${getYearFromDate(paramCrecimiento.fecha)} Acumulado y Anual`}
-        description={`Este reporte muestra el factor de crecimiento de las tiendas sobre la ventas del mes y acumuladas, 
-        con respecto a años anteriores segun la fecha especificada.
-        `}
       />
-      <main className="w-full h-full p-4 md:p-8">
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -111,23 +118,24 @@ const Crecimiento = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
+                checked={paramCrecimiento.conIva ? true : false}
                 name={inputNames.CON_IVA}
                 onChange={(e) => handleChange(e, setParamCrecimiento)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={paramCrecimiento.conVentasEventos ? true : false}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setParamCrecimiento)}
               />
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={paramCrecimiento.conTiendasCerradas ? true : false}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 onChange={(e) => handleChange(e, setParamCrecimiento)}
               />
-            </InputContainer>
-            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
@@ -138,20 +146,22 @@ const Crecimiento = () => {
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.RESULTADO_PESOS}
+                checked={paramCrecimiento.resultadosPesos ? true : false}
                 name={inputNames.RESULTADOS_PESOS}
                 onChange={(e) => handleChange(e, setParamCrecimiento)}
               />
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="p-4 overflow-y-auto ">
         <VentasTableContainer
           title={`Factor de crecimiento al 
           ${paramCrecimiento.fecha.split("-")[2]} de 
           ${getMonthByNumber(paramCrecimiento.fecha.split("-")[1])} de 
           ${getYearFromDate(paramCrecimiento.fecha)} Acumulado y Anual`}
         >
-          <VentasTable className="last-row-bg">
+          <VentasTable className="tfooter">
             <TableHead>
               <tr>
                 <th rowSpan={2}>Tiendas</th>
@@ -161,7 +171,7 @@ const Crecimiento = () => {
                 <th colSpan={6}>Factor Crecimiento</th>
                 <th colSpan={7}>Factor Crecimiento</th>
               </tr>
-              <tr>
+              <tr className="text-right">
                 {createTableHeadForYears()}
                 <th>
                   {getMonthByNumber(paramCrecimiento.fecha.split("-")[1])}-
@@ -175,35 +185,29 @@ const Crecimiento = () => {
                 <TableRow
                   key={item.tiendas}
                   rowId={item.tiendas}
-                  className="text-center"
+                  className="text-right text-xs"
                 >
-                  <td className="text-sm">{item.tiendas}</td>
-                  <td className="text-sm">
-                    {numberWithCommas(item.ventaAcumuladaActual)}
-                  </td>
+                  <td className=" text-left">{item.tiendas}</td>
+                  <td>{numberWithCommas(item.ventaAcumuladaActual)}</td>
                   <td className="font-bold">
                     {item[`porcentajeAcumulado${dateRange[0]}`]}
                   </td>
                   <td
-                    className={`text-sm ${
+                    className={` ${
                       item.tiendas !== "TOTAL" ? "bg-gray-200" : ""
                     }`}
                   >
                     {item[`porcentajeAcumulado${dateRange[1]}`]}
                   </td>
-                  <td className="text-sm">
-                    {item[`porcentajeAcumulado${dateRange[2]}`]}
-                  </td>
+                  <td>{item[`porcentajeAcumulado${dateRange[2]}`]}</td>
                   <td
-                    className={`text-sm ${
+                    className={` ${
                       item.tiendas !== "TOTAL" ? "bg-gray-200" : ""
                     }`}
                   >
                     {item[`porcentajeAcumulado${dateRange[3]}`]}
                   </td>
-                  <td className="text-sm">
-                    {item[`porcentajeAcumulado${dateRange[4]}`]}
-                  </td>
+                  <td>{item[`porcentajeAcumulado${dateRange[4]}`]}</td>
                   <td
                     className={`text-sm ${
                       item.tiendas !== "TOTAL" ? "bg-gray-200" : ""
@@ -211,9 +215,7 @@ const Crecimiento = () => {
                   >
                     {item[`porcentajeAcumulado${dateRange[5]}`]}
                   </td>
-                  <td className="text-sm">
-                    {numberWithCommas(item.ventaMensualActual)}
-                  </td>
+                  <td>{numberWithCommas(item.ventaMensualActual)}</td>
                   <td
                     className={`${
                       item.tiendas !== "TOTAL" ? "bg-gray-200 font-bold" : ""
@@ -221,36 +223,30 @@ const Crecimiento = () => {
                   >
                     {item[`porcentajeMensual${dateRange[0]}`]}
                   </td>
-                  <td className="text-sm">
-                    {item[`porcentajeMensual${dateRange[1]}`]}
-                  </td>
+                  <td>{item[`porcentajeMensual${dateRange[1]}`]}</td>
                   <td
-                    className={`text-sm ${
+                    className={` ${
                       item.tiendas !== "TOTAL" ? "bg-gray-200" : ""
                     }`}
                   >
                     {item[`porcentajeMensual${dateRange[2]}`]}
                   </td>
-                  <td className="text-sm">
-                    {item[`porcentajeMensual${dateRange[3]}`]}
-                  </td>
+                  <td>{item[`porcentajeMensual${dateRange[3]}`]}</td>
                   <td
-                    className={`text-sm ${
+                    className={`${
                       item.tiendas !== "TOTAL" ? "bg-gray-200" : ""
                     }`}
                   >
                     {item[`porcentajeMensual${dateRange[4]}`]}
                   </td>
-                  <td className="text-sm">
-                    {item[`porcentajeMensual${dateRange[5]}`]}
-                  </td>
+                  <td>{item[`porcentajeMensual${dateRange[5]}`]}</td>
                 </TableRow>
               ))}
             </TableBody>
           </VentasTable>
         </VentasTableContainer>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

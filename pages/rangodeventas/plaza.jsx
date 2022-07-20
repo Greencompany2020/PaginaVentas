@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   Parameters,
   ParametersContainer,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -17,7 +16,6 @@ import PieChart from "../../components/Pie";
 import {
   createRangoVentasDataset,
   getInitialPlaza,
-  isError,
   validateInputDateRange,
 } from "../../utils/functions";
 import { getBeginEndMonth } from "../../utils/dateFunctions";
@@ -26,13 +24,14 @@ import { getRangoVentasPlaza } from "../../services/RangoVentasService";
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useUser } from "../../context/UserContext";
-import { useAlert } from "../../context/alertContext";
+import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const Plaza = () => {
-  const alert = useAlert();
-  const { plazas } = useUser();
+const Plaza = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
+  const { plazas } = useAuth();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramPlaza, setParamPlaza] = useState({
     plaza: getInitialPlaza(plazas),
@@ -42,33 +41,37 @@ const Plaza = () => {
     conTiendasCerradas: 0,
   });
 
-  useEffect(() => {
-    if (validateInputDateRange(paramPlaza.fechaInicio, paramPlaza.fechaFin)) {
-      getRangoVentasPlaza(paramPlaza).then((response) => {
-        if (isError(response)) {
-          alert.showAlert(
-            response?.response?.data ?? MENSAJE_ERROR,
-            "warning",
-            1000
-          );
-        } else {
-          createRangoVentasDataset(response, setLabels, setDatasets);
-        }
-      });
+  useEffect(()=>{
+    if(plazas){
+      setParamPlaza(prev => ({
+        ...prev, 
+        plaza:getInitialPlaza(plazas),
+        conTiendasCerradas: config?.conTiendasCerradas || 0,
+      }));
     }
+  },[plazas, config])
+
+  useEffect(() => {
+    (async()=>{
+      if(validateInputDateRange(paramPlaza.fechaInicio, paramPlaza.fechaFin) && plazas){
+        try {
+          const response = await getRangoVentasPlaza(paramPlaza);
+          createRangoVentasDataset(response, setLabels, setDatasets);
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: MENSAJE_ERROR
+          });
+        }
+      }
+    })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramPlaza]);
 
   return (
-    <>
-      <TitleReport
-        title="Rangos de ventas por plaza"
-        description={`ESTE REPORTE OBTIENE LOS RANGOS DE VENTA, DE LAS FECHAS ESTABLECIDAS. EL RANGO ESTABLEZCALO 
-        DE LA FORMA 1,150,250,350,400 QUE INDICA P.E. DEL 1 AL 149.00 DEL 150 AL 249.99.
-        `}
-      />
-
-      <main className="w-full h-full p-4 md:p-8">
+    <div className=" flex flex-col h-full">
+      <TitleReport title="Rangos de ventas por plaza" />
+      <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
             <InputContainer>
@@ -102,11 +105,13 @@ const Plaza = () => {
                 onChange={(e) => {
                   handleChange(e, setParamPlaza);
                 }}
+                checked={paramPlaza.conTiendasCerradas}
               />
             </InputContainer>
           </Parameters>
         </ParametersContainer>
-
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 h-full pb-4 overflow-y-auto ">
         <ComparativoVentas title="Rangos de ventas por plaza">
           <PieChart
             text="Rangos de ventas por plaza"
@@ -116,8 +121,8 @@ const Plaza = () => {
             }}
           />
         </ComparativoVentas>
-      </main>
-    </>
+      </section>
+    </div>
   );
 };
 

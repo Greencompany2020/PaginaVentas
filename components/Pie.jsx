@@ -36,6 +36,7 @@ const PieChart = ({ text, data }) => {
             }
           }
         },
+        maintainAspectRatio: false,
       }}
       data={data}
     />

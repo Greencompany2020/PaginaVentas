@@ -1,6 +1,6 @@
 const InputContainer = ({ children }) => {
   return (
-    <div className="flex flex-col pr-8">
+    <div className="space-y-2">
       {children}
     </div>
   )
