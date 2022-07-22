@@ -80,12 +80,12 @@ const Participacion = (props) => {
         <ParametersContainer>
           <Parameters>
             <InputContainer>
-              <InputToYear
-                value={parametrosParticipacion.alAgno}
-                onChange={(e) => handleChange(e, setParametrosParticipacion)}
-              />
               <SelectTiendasGeneral
                 value={parametrosParticipacion.tiendas}
+                onChange={(e) => handleChange(e, setParametrosParticipacion)}
+              />
+              <InputToYear
+                value={parametrosParticipacion.alAgno}
                 onChange={(e) => handleChange(e, setParametrosParticipacion)}
               />
             </InputContainer>

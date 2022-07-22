@@ -96,24 +96,32 @@ const PlazasVS = (props) => {
         <ParametersContainer>
           <Parameters>
             <InputContainer>
-              <SelectMonth
-                value={plazasAgnosParametros.delMes}
-                onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
-              />
-              <InputYear
-                value={plazasAgnosParametros.delAgno}
-                onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
-              />
-              <InputToYear
-                value={plazasAgnosParametros.alAgno}
-                onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
-              />
-            </InputContainer>
-            <InputContainer>
               <SelectTiendasGeneral
                 value={plazasAgnosParametros.tiendas}
                 onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
               />
+              <SelectMonth
+                value={plazasAgnosParametros.delMes}
+                onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+              />
+              <div className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <InputYear
+                    value={plazasAgnosParametros.delAgno}
+                    onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+                  />
+                </div>
+                <div className="flex-1">
+                  <InputToYear
+                    value={plazasAgnosParametros.alAgno}
+                    onChange={(e) => handleChange(e, setPlazasAgnosParametros)}
+                  />
+                </div>
+              </div>
+             
+              
+            </InputContainer>
+            <InputContainer>
               <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}

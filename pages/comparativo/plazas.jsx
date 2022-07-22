@@ -10,7 +10,7 @@ import {
   TableHead,
   TableRow,
 } from "../../components/table";
-import { InputContainer, Checkbox, InputDate } from "../../components/inputs";
+import { InputContainer, Checkbox, InputDate, SelectTiendasCombo, SelectCompromiso } from "../../components/inputs";
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
 import {
   getMonthByNumber,
@@ -107,15 +107,23 @@ const Plazas = (props) => {
                   value={parametrosPlazas.fecha}
                   onChange={(e) => handleChange(e, setParametrosPlazas)}
                 />
+                <SelectCompromiso
+                  value={parametrosPlazas.fecha}
+                  onChange={(e) => handleChange(e, setParametrosPlazas)}
+                />
+                <SelectTiendasCombo
+                 value={'awanta'}
+                 onChange={(e) => handleChange(e, setParametrosPlazas)}
+                />
+              </InputContainer>
+              <InputContainer>
                 <Checkbox
-                  className="mb-3"
                   labelText={checkboxLabels.VENTAS_IVA}
                   checked={parametrosPlazas.conIva ? true : false}
                   name={inputNames.CON_IVA}
                   onChange={(e) => handleChange(e, setParametrosPlazas)}
                 />
                 <Checkbox
-                  className="mb-3"
                   labelText={checkboxLabels.VENTAS_VS_COMPROMISO}
                   name={inputNames.PORCENTAJE_COMPROMISO}
                   checked={
@@ -124,42 +132,24 @@ const Plazas = (props) => {
                   onChange={(e) => handleChange(e, setParametrosPlazas)}
                 />
                 <Checkbox
-                  className="mb-3"
                   labelText={checkboxLabels.SEMANA_SANTA}
                   name={inputNames.SEMANA_SANTA}
                   checked={semanaSanta}
                   onChange={() => setSemanaSanta((prev) => !prev)}
                 />
                 <Checkbox
-                  className="mb-3"
                   labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
                   checked={parametrosPlazas.conVentasEventos ? true : false}
                   name={inputNames.CON_VENTAS_EVENTOS}
                   onChange={(e) => handleChange(e, setParametrosPlazas)}
                 />
                 <Checkbox
-                  className="mb-3"
-                  labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
-                  checked={parametrosPlazas.conTiendasCerradas ? true : false}
-                  name={inputNames.CON_TIENDAS_CERRADAS}
-                  onChange={(e) => handleChange(e, setParametrosPlazas)}
-                />
-                <Checkbox
-                  className="mb-3"
-                  labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
-                  name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
-                  checked={parametrosPlazas.sinTiendasSuspendidas ? true : false}
-                  onChange={(e) => handleChange(e, setParametrosPlazas)}
-                />
-                <Checkbox
-                  className="mb-3"
                   labelText={checkboxLabels.RESULTADO_PESOS}
                   name={inputNames.RESULTADOS_PESOS}
                   checked={parametrosPlazas.resultadosPesos ? true : false}
                   onChange={(e) => handleChange(e, setParametrosPlazas)}
                 />
                 <Checkbox
-                  className="mb-3"
                   labelText={checkboxLabels.TIPO_CAMBIO_TIENDAS}
                   checked={parametrosPlazas.tipoCambioTiendas ? true : false}
                   name={inputNames.TIPO_CAMBIO_TIENDAS}

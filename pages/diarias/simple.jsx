@@ -87,14 +87,21 @@ const Simple = (props) => {
                 value={tiendaSimpleParametros.tienda}
                 onChange={(e) => handleChange(e, setTiendaSimpleParametros)}
               />
-              <InputYear
-                value={tiendaSimpleParametros.delAgno}
-                onChange={(e) => handleChange(e, setTiendaSimpleParametros)}
-              />
-              <SelectMonth
-                value={tiendaSimpleParametros.delMes}
-                onChange={(e) => handleChange(e, setTiendaSimpleParametros)}
-              />
+              <div className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <InputYear
+                    value={tiendaSimpleParametros.delAgno}
+                    onChange={(e) => handleChange(e, setTiendaSimpleParametros)}
+                  />
+                </div>
+                <div className="flex-1">
+                  <SelectMonth
+                    value={tiendaSimpleParametros.delMes}
+                    onChange={(e) => handleChange(e, setTiendaSimpleParametros)}
+                  />
+                </div>
+              </div>
+             
               <Checkbox
                 className="mb-2"
                 labelText={checkboxLabels.VENTAS_IVA}

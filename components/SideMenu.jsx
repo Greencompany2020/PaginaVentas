@@ -68,16 +68,14 @@ const SideMenu = () => {
         } transition duration-200 ease-in-out`}
         onMouseLeave={handleOnLeave}
       >
-        <div className="flex flex-col h-full justify-between p-4">
-          <div className="flex justify-end ">
+        <div className="flex flex-col h-full justify-between p-4 space-y-3">
+          <div className="flex justify-between items-center">
+            <h3 className=" text-white text-2xl">Menu</h3>
             <XIcon
-              width={32}
+              width={28}
               className=" text-white cursor-pointer"
               onClick={toggleVisible}
             />
-          </div>
-          <div className="mb-4">
-            <h3 className=" text-white text-2xl">Menu</h3>
           </div>
           <div className=" flex-[2] overflow-y-auto pl-2">
             {enlacesMenuLateral.map(({ summaryText, links }) => (

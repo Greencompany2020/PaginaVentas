@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import {EmojiSadIcon, EmojiHappyIcon, UploadIcon} from '@heroicons/react/solid'
 
 export default function Notification(props){
@@ -27,14 +27,15 @@ export default function Notification(props){
     }
 
     useEffect(()=>{
-        handleCloseNotification();
         switch (type) {
             case 'ERROR':
                 setStyle('bg-red-400');
+                handleCloseNotification();
                 break;
 
             case 'OK':
                 setStyle('bg-blue-400');
+                handleCloseNotification();
                 break;
         
             case 'PROGRESS':
@@ -43,6 +44,7 @@ export default function Notification(props){
 
             default:
                 setStyle(prev => prev)
+                handleCloseNotification();
                 break;
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps

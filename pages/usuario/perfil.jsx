@@ -23,6 +23,7 @@ const Perfil = () => {
     setVisible();
     try {
       const response =  await service.setUserAvatar(files);
+      console.log(globalProgress);
       if(response) await refreshUser();
     } catch (error) {
       sendNotification({

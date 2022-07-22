@@ -6,6 +6,7 @@ import {useNotification} from '../notifications/NotificationsProvider';
 import ParameterForm from '../ParameterForm';
 import configuratorService from '../../services/configuratorService';
 import { useAuth } from "../../context/AuthContext";
+import NewForm from '../NewForm';
 
 export default function ParameterAccesItem(props) {
     const service = userService();
@@ -37,7 +38,7 @@ export default function ParameterAccesItem(props) {
             sendNotification({
                 type: 'OK',
                 message: 'Preferencias guardadas'
-            })
+            });
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
@@ -53,15 +54,38 @@ export default function ParameterAccesItem(props) {
             sendNotification({
                 type: 'OK',
                 message: 'Establecido como favorito'
-            })
+            });
         } catch (error) {
             sendNotification({
                 type: 'OK',
                 message: 'Error al guardar favorito'
-            })
+            });
         }
     }
     const isFavorite = () => (idAccess == globalParameters?.idAcceso ? true : false);
+
+    const RenderForm  = () => {
+        const {idDashboard} = parameters?.userParameters || false;
+        if(idDashboard && (idDashboard == 20 || idDashboard == 21 || idDashboard == 12 || idDashboard == 13 || idDashboard == 29)){
+            return(
+                <NewForm 
+                    submit={handleSubmit} 
+                    userParams={parameters.userParameters}
+                    dashbordParams={parameters.accessParameters} 
+                />
+            )
+        }else
+        {
+            return( 
+                <ParameterForm 
+                    submit={handleSubmit} 
+                    savedParameters={parameters.userParameters} 
+                    includedParameters={parameters.accessParameters} 
+                    onlySelect={true}
+                />
+            )
+        }
+    }
 
     useEffect(()=>{
         (async()=>{
@@ -72,7 +96,7 @@ export default function ParameterAccesItem(props) {
                     setParameters({
                         userParameters: response,
                         accessParameters: responseEnabledControls
-                    })
+                    });
                 } catch (error) {
                     sendNotification({
                         type:'ERROR',
@@ -99,13 +123,7 @@ export default function ParameterAccesItem(props) {
                     </div>
                 </section>
                 <section className={`transition-height  transform duration-100  overflow-hidden ${isSelected ? 'h-fit' : 'h-0'}`}>
-                    {isSelected && 
-                        <ParameterForm 
-                            submit={handleSubmit} 
-                            savedParameters={parameters.userParameters} 
-                            includedParameters={parameters.accessParameters} 
-                            onlySelect={true}
-                        />}
+                    {isSelected && <RenderForm/>}
                 </section>
             </div>
         </li>

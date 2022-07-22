@@ -82,57 +82,57 @@ const Grupo = (props) => {
         <ParametersContainer>
           <Parameters>
             <InputContainer>
-              <SelectMonth
-                value={parametrosConsulta.delMes}
-                onChange={(e) => handleChange(e, setParametrosConsulta)}
-              />
-              <InputYear
-                value={parametrosConsulta.delAgno}
-                onChange={(e) => handleChange(e, setParametrosConsulta)}
-              />
               <SelectTiendasGeneral
                 value={parametrosConsulta.tienda}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
+              <div className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <SelectMonth
+                    value={parametrosConsulta.delMes}
+                    onChange={(e) => handleChange(e, setParametrosConsulta)}
+                  />
+                </div>
+               <div className="flex-1">
+                <InputYear
+                  value={parametrosConsulta.delAgno}
+                  onChange={(e) => handleChange(e, setParametrosConsulta)}
+                />
+               </div>
+              </div>
             </InputContainer>
             <InputContainer>
               <Checkbox
-                className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
                 name={inputNames.CON_IVA}
                 checked={parametrosConsulta.conIva ? true : false}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
               <Checkbox
-                className="mb-3"
                 labelText={checkboxLabels.SEMANA_SANTA}
                 name={inputNames.SEMANA_SANTA}
                 checked={parametrosConsulta.semanaSanta ? true : false}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
               <Checkbox
-                className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 checked={parametrosConsulta.conVentasEventos ? true : false}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
                <Checkbox
-                className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 checked={parametrosConsulta.conTiendasCerradas ? true : false}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
               <Checkbox
-                className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
                 name={inputNames.SIN_AGNO_VENTA}
                 checked={parametrosConsulta.sinAgnoVenta ? true : false}
                 onChange={(e) => handleChange(e, setParametrosConsulta)}
               />
               <Checkbox
-                className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
                 name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
                 checked={parametrosConsulta.sinTiendasSuspendidas ? true : false}

@@ -6,7 +6,9 @@ import {
 import {
   InputContainer,
   InputDateRange,
+  SelectTiendasCombo,
   Checkbox,
+  SelectCompromiso,
 } from "../../components/inputs";
 import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
@@ -36,6 +38,9 @@ import ViewFilter from "../../components/ViewFilter";
 import { isMobile } from "react-device-detect";
 import {spliceData} from '../../utils/functions';
 import { v4 } from "uuid";
+import semPlaza from "../../utils/excel/templates/semPlaza";
+import exportExcel from "../../utils/excel/exportExcel";
+import ExportExcel from "../../components/buttons/ExportExcel";
 
 const Plazas = (props) => {
   const {config} = props;
@@ -89,53 +94,47 @@ const Plazas = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [plazasParametros]);
 
+  const handleExport = () => {
+    const template = semPlaza(dateRangeTitle(plazasParametros.fechaInicio,plazasParametros.fechaFin));
+    exportExcel('semanales plaza',template.columns, [...semanalesPlaza, ...semanalesPlaza],template.style)
+  }
+
   return (
     <div className=" flex flex-col h-full">
       <TitleReport title="Detalles de información / Semanales por plaza" />
 
-      <section className="p-4 flex flex-row justify-between items-baseline">
-        <div className="flex flex-col justify-between h-full">
+      <section className="p-4 space-y-2">
+        <div className="flex justify-between items-center">
           <ParametersContainer>
             <Parameters>
-              <InputDateRange
-                onChange={(e) => handleChange(e, setPlazasParametros)}
-                beginDate={plazasParametros.fechaInicio}
-                endDate={plazasParametros.fechaFin}
-              />
+
+              <InputContainer>
+                <InputDateRange
+                  onChange={(e) => handleChange(e, setPlazasParametros)}
+                  beginDate={plazasParametros.fechaInicio}
+                  endDate={plazasParametros.fechaFin}
+                />
+                <SelectCompromiso
+                  onChange={(e) => handleChange(e, setPlazasParametros)}
+                  value={'compromiso'}
+                />
+                <SelectTiendasCombo
+                  onChange={(e) => handleChange(e, setPlazasParametros)}
+                  value={'todas'}
+                />
+              </InputContainer>
+             
               <InputContainer>
                 <Checkbox
-                  className="mb-3"
                   labelText={checkboxLabels.VENTAS_IVA}
                   checked={plazasParametros.conIva ? 1 : 0}
                   name={inputNames.CON_IVA}
                   onChange={(e) => handleChange(e, setPlazasParametros)}
                 />
                 <Checkbox
-                  className="mb-3"
                   labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
                   checked={plazasParametros.conVentasEventos ? 1 : 0}
                   name={inputNames.CON_VENTAS_EVENTOS}
-                  onChange={(e) => handleChange(e, setPlazasParametros)}
-                />
-                <Checkbox
-                  className="mb-3"
-                  labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
-                  checked={plazasParametros.conTiendasCerradas ? 1 : 0}
-                  name={inputNames.CON_TIENDAS_CERRADAS}
-                  onChange={(e) => handleChange(e, setPlazasParametros)}
-                />
-                <Checkbox
-                  className="mb-3"
-                  labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
-                  checked={plazasParametros.sinAgnoVenta ? 1 : 0}
-                  name={inputNames.SIN_AGNO_VENTA}
-                  onChange={(e) => handleChange(e, setPlazasParametros)}
-                />
-                <Checkbox
-                  className="mb-3"
-                  labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
-                  checked={plazasParametros.sinTiendasSuspendidas ? 1 : 0}
-                  name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
                   onChange={(e) => handleChange(e, setPlazasParametros)}
                 />
                 <Checkbox
@@ -147,15 +146,18 @@ const Plazas = (props) => {
               </InputContainer>
             </Parameters>
           </ParametersContainer>
-          <p className={`text-sm font-bold ${displayType != 3 && 'hidden'}`}>{selectRegion}</p>
+          <ViewFilter 
+            viewOption={displayType} 
+            handleView={setDisplayType} 
+            selectOption={selectRegion} 
+            handleSelect = {setRegion}
+            options={semanalesPlaza && semanalesPlaza.map(item => item.plaza)}
+          />
         </div>
-        <ViewFilter 
-          viewOption={displayType} 
-          handleView={setDisplayType} 
-          selectOption={selectRegion} 
-          handleSelect = {setRegion}
-          options={semanalesPlaza && semanalesPlaza.map(item => item.plaza)}
-        />
+        <div className="flex justify-between">
+          <p className='text-sm font-bold'>{selectRegion}</p>
+          <ExportExcel handleClick={handleExport}/>
+        </div>
       </section>
 
       <section className="p-4 overflow-y-auto ">

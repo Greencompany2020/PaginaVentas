@@ -14,12 +14,12 @@ const SelectTiendas = ({ onChange, value }) => {
   }
 
   return (
-    <Flex className='mb-3'>
-      <label htmlFor="mes">Tienda: </label>
-      <select name="tienda" value={value} className='select ml-2' onChange={onChange}>
+    <label htmlFor="mes" className='flex flex-col text-sm'>
+      <span className='font-semibold'>Tienda</span> 
+      <select name="tienda" value={value} className='h-8 border rounded-md pl-2 border-slate-400' onChange={onChange}>
         <TiendasItem tiendas={tiendas}/>
       </select>
-    </Flex>
+    </label>
   )
 }
 

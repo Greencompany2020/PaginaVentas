@@ -134,12 +134,12 @@ const Compromiso = (props) => {
                 classLabel="xl:text-center"
                 onChange={(e) => handleChange(e, setCompromisosParametros)}
               />
+              <InputDateRange
+                onChange={(e) => handleChange(e, setCompromisosParametros)}
+                beginDate={compromisosParametros.fechaInicio}
+                endDate={compromisosParametros.fechaFin}
+              />
             </InputContainer>
-            <InputDateRange
-              onChange={(e) => handleChange(e, setCompromisosParametros)}
-              beginDate={compromisosParametros.fechaInicio}
-              endDate={compromisosParametros.fechaFin}
-            />
             <InputContainer>
               <Checkbox
                 className="mb-3"

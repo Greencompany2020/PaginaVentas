@@ -15,6 +15,8 @@ import {
   InputDateRange,
   Checkbox,
   SelectTiendasGeneral,
+  SelectTiendasCombo,
+  SelectCompromiso,
 } from "../../components/inputs";
 import RegionesPlazaTableRow from "../../components/table/RegionesPlazaTableRow";
 import {
@@ -137,54 +139,57 @@ const Tiendas = (props) => {
         <div className="flex flex-col justify-between h-full">
           <ParametersContainer>
             <Parameters>
-              <InputDateRange
-                beginDate={tiendasParametros.fechaInicio}
-                endDate={tiendasParametros.fechaFin}
-                onChange={(e) => handleChange(e, setTiendasParametros)}
-              />
               <InputContainer>
                 <SelectTiendasGeneral
                   value={tiendasParametros.tiendas}
                   onChange={(e) => handleChange(e, setTiendasParametros)}
                 />
+                <InputDateRange
+                  beginDate={tiendasParametros.fechaInicio}
+                  endDate={tiendasParametros.fechaFin}
+                  onChange={(e) => handleChange(e, setTiendasParametros)}
+                />
+                <SelectCompromiso
+                  value={'awanta - 2'}
+                  onChange={(e) => handleChange(e, setTiendasParametros)}
+                />
+                <SelectTiendasCombo
+                  value={'awanta'}
+                  onChange={(e) => handleChange(e, setTiendasParametros)}
+                />
               </InputContainer>
               <InputContainer>
                 <Checkbox
-                  className="mb-3"
                   labelText={checkboxLabels.VENTAS_IVA}
                   checked={tiendasParametros.conIva ? true : false}
                   name={inputNames.CON_IVA}
                   onChange={(e) => handleChange(e, setTiendasParametros)}
                 />
                 <Checkbox
-                  className="mb-3"
                   labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
                   checked={tiendasParametros.conVentasEventos ? true : false}
                   name={inputNames.CON_VENTAS_EVENTOS}
                   onChange={(e) => handleChange(e, setTiendasParametros)}
                 />
                 <Checkbox
-                  className="mb-3"
-                  labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
-                  checked={tiendasParametros.conTiendasCerradas ? true : false}
-                  name={inputNames.CON_TIENDAS_CERRADAS}
+                  labelText={checkboxLabels.RESULTADO_PESOS}
+                  checked={tiendasParametros.resultadosPesos ? true : false}
+                  name={inputNames.RESULTADOS_PESOS}
                   onChange={(e) => handleChange(e, setTiendasParametros)}
                 />
-                <Checkbox
-                  className="mb-3"
-                  labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
-                  checked={tiendasParametros.sinAgnoVenta ? true : false}
-                  name={inputNames.SIN_AGNO_VENTA}
+                 <Checkbox
+                  labelText={checkboxLabels.RESULTADO_PESOS}
+                  checked={tiendasParametros.resultadosPesos ? true : false}
+                  name={inputNames.RESULTADOS_PESOS}
                   onChange={(e) => handleChange(e, setTiendasParametros)}
                 />
-                <Checkbox
-                  className="mb-3"
-                  labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
-                  checked={tiendasParametros.sinTiendasSuspendidas ? true : false}
-                  name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
+                 <Checkbox
+                  labelText={checkboxLabels.RESULTADO_PESOS}
+                  checked={tiendasParametros.resultadosPesos ? true : false}
+                  name={inputNames.RESULTADOS_PESOS}
                   onChange={(e) => handleChange(e, setTiendasParametros)}
                 />
-                <Checkbox
+                 <Checkbox
                   labelText={checkboxLabels.RESULTADO_PESOS}
                   checked={tiendasParametros.resultadosPesos ? true : false}
                   name={inputNames.RESULTADOS_PESOS}

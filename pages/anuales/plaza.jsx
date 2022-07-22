@@ -93,22 +93,29 @@ const Plazas = (props) => {
         <ParametersContainer>
           <Parameters>
             <InputContainer>
-              <InputYear
-                value={plazasParametros.delAgno}
-                onChange={(e) => handleChange(e, setPlazasParametros)}
-              />
-              <InputToYear
-                value={plazasParametros.alAgno}
+              <SelectTiendasGeneral
+                value={plazasParametros.tiendas}
                 onChange={(e) => handleChange(e, setPlazasParametros)}
               />
               <SelectToMonth
                 value={plazasParametros.alMes}
                 onChange={(e) => handleChange(e, setPlazasParametros)}
               />
-              <SelectTiendasGeneral
-                value={plazasParametros.tiendas}
-                onChange={(e) => handleChange(e, setPlazasParametros)}
-              />
+              <div className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <InputYear
+                    value={plazasParametros.delAgno}
+                    onChange={(e) => handleChange(e, setPlazasParametros)}
+                  />
+                </div>
+                <div className="flex-1">
+                  <InputToYear
+                    value={plazasParametros.alAgno}
+                    onChange={(e) => handleChange(e, setPlazasParametros)}
+                  />
+                </div>
+              </div>
+            
             </InputContainer>
             <InputContainer>
               <Checkbox
@@ -142,7 +149,7 @@ const Plazas = (props) => {
           </Parameters>
         </ParametersContainer>
       </section>
-      <section className=" p-4 overflow-y-auto ">
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 h-full overflow-y-auto ">
         <ComparativoVentas>
         <BarChart
             data={{

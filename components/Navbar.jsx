@@ -78,25 +78,23 @@ const Navbar = () => {
       {/* Menú Opciones Usuario */}
       <div
         ref={userMenuRef}
-        className={`absolute w-[280px] h-[250px] z-50 right-0 transform bg-black-light ${
+        className={`absolute w-[280px] h-[190px] z-50 right-0 transform bg-black-light ${
           !showDialog && "translate-x-full"
         }  transition duration-200 ease-in-out`}
       >
-        <div className="flex flex-col justify-between p-4">
-          <div className="flex justify-start ">
+        <div className="flex flex-col justify-between p-4 relative space-y-3">
+          <div className="flex items-center space-x-3">
             <XIcon
-              width={32}
+              width={28}
               className=" text-white cursor-pointer"
               onClick={handleToggle}
             />
+             <h3 className=" text-white text-xl">Opciones de cuenta</h3>
           </div>
-          <div className="mb-4 pl-8">
-            <h3 className=" text-white text-xl">Opciones de cuenta</h3>
-          </div>
-          <div className="pl-10 space-y-1">
+          <div className="space-y-1">
             <Link href="/usuario/perfil">
               <a 
-                className="hover:bg-sky-400 m-1 flex p-2 rounded-sm transition ease-in-out duration-200"
+                className="hover:bg-sky-400 m-1 flex p-1 rounded-sm transition ease-in-out duration-200"
                 onClick={handleToggle}
               >
                 <Image
@@ -112,7 +110,7 @@ const Navbar = () => {
 
             <Link href="/configuracion/usuarios">
               <a 
-                className="hover:bg-sky-400 m-1 flex  p-2 rounded-sm transition ease-in-out duration-200"
+                className="hover:bg-sky-400 m-1 flex  p-1 rounded-sm transition ease-in-out duration-200"
                 onClick={handleToggle}
               >
                 <Image
@@ -127,7 +125,7 @@ const Navbar = () => {
             </Link>
 
             <a
-              className="hover:bg-sky-400 m-1 flex rounded-sm  p-2 transition ease-in-out duration-200 cursor-pointer"
+              className="hover:bg-sky-400 m-1 flex rounded-sm  p-1 transition ease-in-out duration-200 cursor-pointer"
               onClick={handleLogout}
             >
               <LogoutIcon width={25} className="text-white" />
