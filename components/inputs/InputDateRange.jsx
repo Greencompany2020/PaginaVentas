@@ -1,9 +1,7 @@
-import { Flex } from '../containers';
-
 const InputDateRange = ({ beginDate, endDate, onChange }) => {
   return (
-    <label className='text-sm'>
-      <span className='font-semibold'>Rango de fecha</span>
+    <label className='block text-sm border border-slate-400 p-2 rounded-md'>
+      <span className='block mb-1 font-semibold'>Rango de fecha</span>
       <div className='flex justify-evenly items-center'>
         <div className='flex-1' >
           <span className='text-xs font-semibold'>Inicio</span>

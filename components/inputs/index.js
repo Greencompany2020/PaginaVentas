@@ -15,3 +15,4 @@ export { default as InputYearPresupuesto} from './InputYearPresupuesto';
 export { default as InputRangos } from './InputRangos';
 export {default as SelectTiendasCombo} from './SelectTiendasCombo';
 export {default as SelectCompromiso} from './SelectCompromiso';
+export {default as InputDateComparative} from './InputDateComparative'

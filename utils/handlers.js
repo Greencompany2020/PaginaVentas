@@ -20,8 +20,10 @@ export const handleChange = (evt, updateState) => {
     value = Number(evt.target.value);
   }
 
+
   updateState(prev => ({
     ...prev,
     [evt.target.name]: value
   }));
 }
+
