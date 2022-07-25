@@ -148,40 +148,10 @@ export const formatedDate = (year = 0, month = 0) => {
  * @returns {string} Nombre del dia de la semana
  */
 export const getNameDay = (date) => {
-  const dateParts = date?.split("-");
-  const weekDays = [
-    {
-      name: "Lunes",
-      value: 1
-    },
-    {
-      name: "Martes",
-      value: 2
-    },
-    {
-      name: "Miercoles",
-      value: 3
-    },
-    {
-      name: "Jueves",
-      value: 4
-    },
-    {
-      name: "Viernes",
-      value: 5
-    },
-    {
-      name: "Sabado",
-      value: 6
-    },
-    {
-      name: "Lunes",
-      value: 0
-    },
-  ]
-  const currentDate = new Date(dateParts[0], dateParts[1], dateParts[2]);
-  const dayName = weekDays.find(day => day.value === getDay(currentDate))
-  return dayName.name;
+  const days = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+  const currentDate = new Date(date.toString().split('-'));
+  const dayName = days[currentDate.getDay()];
+  return dayName.toString();
 }
 /**
  * Resta los días indicados a partir de la fecha actual.

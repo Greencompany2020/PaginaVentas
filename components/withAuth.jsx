@@ -7,6 +7,7 @@ import authService from "../services/authService";
 import { urlExceptions } from "../utils/constants";
 
 const witAuth = (Component) => {
+
   const AuthorizationComponent = () => {
     const router = useRouter();
     const service = authService();

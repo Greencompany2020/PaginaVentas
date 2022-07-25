@@ -19,15 +19,13 @@ const DetailsSideBar = ({ summaryText, links, handleToggle, showChevron }) => {
       <ul>
         {links.map((item) => (
           <Link href={item.link} key={item.linkText}>
-            <a onClick={handleToggle}>
               <li
-                className={`pl-10 p-1 text-white  rounded-sm ${activeLink(
+                className={`pl-10 p-1 text-white cursor-pointer  rounded-sm ${activeLink(
                   item.link
                 )} transition-all ease-in-out duration-200`}
               >
-                {item.linkText}
+                <a onClick={handleToggle}>{item.linkText}</a>
               </li>
-            </a>
           </Link>
         ))}
       </ul>

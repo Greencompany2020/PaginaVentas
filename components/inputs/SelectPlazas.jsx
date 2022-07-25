@@ -1,7 +1,6 @@
 import { useAuth } from '../../context/AuthContext';
-import { Flex } from '../containers';
 
-const SelectPlazas = ({ classLabel, onChange, value }) => {
+const SelectPlazas = ({ onChange, value }) => {
   
   const {plazas} = useAuth();
 
@@ -14,12 +13,12 @@ const SelectPlazas = ({ classLabel, onChange, value }) => {
   }
 
   return (
-    <Flex className='mb-3'>
-      <label htmlFor="plaza" className={classLabel}>Plaza: </label>
-      <select name="plaza" value={value} className='select ml-2' onChange={onChange}>
+    <label htmlFor="plaza" className='flex flex-col text-sm'>
+      <span className='font-semibold'>Plaza</span> 
+      <select name="plaza" value={value} className='h-8 border rounded-md pl-2 border-slate-400' onChange={onChange}>
         <PlazasItem plazas={plazas}/>
       </select>
-    </Flex>
+    </label>
   )
 }
 

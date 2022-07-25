@@ -15,6 +15,8 @@ import {
   Checkbox,
   InputOfTheDate,
   InputVsYear,
+  SelectTiendasCombo,
+  SelectCompromiso,
 } from "../../components/inputs";
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
 import {
@@ -122,6 +124,14 @@ const Acumulado = (props) => {
                 value={paramAcumulado.versusAgno}
                 onChange={(e) => handleChange(e, setParamAcumulado)}
               />
+              <SelectTiendasCombo
+                value={'awanta'}
+                onChange={(e) => handleChange(e, setParamAcumulado)}
+              />
+              <SelectCompromiso
+                value={'awanta'}
+                onChange={(e) => handleChange(e, setParamAcumulado)}
+              />
             </InputContainer>
             <InputContainer>
               <Checkbox
@@ -133,23 +143,9 @@ const Acumulado = (props) => {
               />
               <Checkbox
                 className="mb-3"
-                labelText={checkboxLabels.PORCENTAJE_VENTAS_VS_LOGRO}
-                name={inputNames.PORCENTAJE_COMPROMISO}
-                onChange={(e) => handleChange(e, setParamAcumulado)}
-                checked={paramAcumulado.porcentajeVentasCompromiso}
-              />
-              <Checkbox
-                className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 checked={paramAcumulado.conVentasEventos ? true : false}
-                onChange={(e) => handleChange(e, setParamAcumulado)}
-              />
-              <Checkbox
-                className="mb-3"
-                labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
-                name={inputNames.CON_TIENDAS_CERRADAS}
-                checked={paramAcumulado.conTiendasCerradas ? true : false}
                 onChange={(e) => handleChange(e, setParamAcumulado)}
               />
               <Checkbox

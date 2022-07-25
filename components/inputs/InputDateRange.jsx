@@ -2,28 +2,20 @@ import { Flex } from '../containers';
 
 const InputDateRange = ({ beginDate, endDate, onChange }) => {
   return (
-    <div className='flex flex-col pr-16'>
-      <Flex className=''>
-        <label htmlFor="fechaInicio">Fecha inicial:</label>
-        <input
-          type="date"
-          name='fechaInicio'
-          className='ml-3 outline-none border border-gray-300 rounded-md'
-          onChange={onChange}
-          value={beginDate}
-        />
-      </Flex>
-      <Flex className=''>
-        <label htmlFor="fechaFin">Fecha final:</label>
-        <input
-          type="date"
-          name='fechaFin'
-          className='ml-5 outline-none border border-gray-300 rounded-md'
-          onChange={onChange}
-          value={endDate}
-        />
-      </Flex>
-    </div>
+    <label className='text-sm'>
+      <span className='font-semibold'>Rango de fecha</span>
+      <div className='flex justify-evenly items-center'>
+        <div className='flex-1' >
+          <span className='text-xs font-semibold'>Inicio</span>
+          <input name='fechaInicio' value={beginDate} onChange={onChange} type="date" className='w-full h-8 border rounded-md pl-2 border-slate-400 outline-none'/>
+        </div>
+        <span className='font-bold pl-1 pr-1 relative top-2'>:</span>
+        <div className='flex-1'>
+          <span className='text-xs font-semibold'>Fin</span>
+          <input name='fechaFin' value={endDate} onChange={onChange} type="date" className='w-full h-8 border rounded-md pl-2 border-slate-400 outline-none' />
+        </div>
+      </div>
+    </label>
   )
 }
 

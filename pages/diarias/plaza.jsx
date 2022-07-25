@@ -93,53 +93,54 @@ const Plaza = (props) => {
                 onChange={(e) => handleChange(e, setPlazaParametros)}
                 value={plazaParametros.plaza}
               />
-              <SelectMonth
-                value={plazaParametros.delMes}
-                onChange={(e) => handleChange(e, setPlazaParametros)}
-              />
-              <InputYear
-                value={plazaParametros.delAgno}
-                onChange={(e) => handleChange(e, setPlazaParametros)}
-              />
+              <div className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <SelectMonth
+                    value={plazaParametros.delMes}
+                    onChange={(e) => handleChange(e, setPlazaParametros)}
+                  />
+                </div>
+                <div className="flex-1">
+                  <InputYear
+                    value={plazaParametros.delAgno}
+                    onChange={(e) => handleChange(e, setPlazaParametros)}
+                  />
+                </div>
+              </div>         
             </InputContainer>
+
             <InputContainer>
               <Checkbox
-                className="mb-3"
                 labelText={checkboxLabels.VENTAS_IVA}
                 checked={plazaParametros.conIva ? true : false}
                 name={inputNames.CON_IVA}
                 onChange={(e) => handleChange(e, setPlazaParametros)}
               />
               <Checkbox
-                className="mb-3"
                 labelText={checkboxLabels.SEMANA_SANTA}
                 checked={plazaParametros.semanaSanta ? true : false}
                 name={inputNames.SEMANA_SANTA}
                 onChange={(e) => handleChange(e, setPlazaParametros)}
               />
               <Checkbox
-                className="mb-3"
                 labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
                 checked={plazaParametros.conVentasEventos ? true : false}
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setPlazaParametros)}
               />
                <Checkbox
-                className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
                 name={inputNames.CON_TIENDAS_CERRADAS}
                 checked={plazaParametros.conTiendasCerradas ? true : false}
                 onChange={(e) => handleChange(e, setPlazaParametros)}
               />
               <Checkbox
-                className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
                 checked={plazaParametros.sinAgnoVenta ? true : false}
                 name={inputNames.SIN_AGNO_VENTA}
                 onChange={(e) => handleChange(e, setPlazaParametros)}
               />
                <Checkbox
-                className="mb-3"
                 labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
                 checked={plazaParametros.sinTiendasSuspendidas ? true : false}
                 name={inputNames.SIN_TIENDAS_SUSPENDIDAS}

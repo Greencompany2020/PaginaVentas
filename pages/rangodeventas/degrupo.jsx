@@ -6,7 +6,6 @@ import {
 import {
   InputContainer,
   SelectTiendasGeneral,
-  InputDateDate,
 } from "../../components/inputs";
 import ComparativoVentas from "../../components/table/ComparativoVentas";
 import PieChart from "../../components/Pie";
@@ -15,6 +14,7 @@ import TitleReport from "../../components/TitleReport";
 
 const degrupo = () => {
   return (
+    {/*
     <div className=" flex flex-col h-full">
       <TitleReport title="Rangos de ventas de grupo" />
       <section className="p-4 flex flex-row justify-between items-baseline">
@@ -72,6 +72,7 @@ const degrupo = () => {
         </ComparativoVentas>
       </section>
     </div>
+    */}
   );
 };
 

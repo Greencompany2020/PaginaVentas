@@ -36,7 +36,6 @@ export default function ParameterForm({submit, savedParameters, onlySelect = tru
         for(const item in values){
             let value = null
             if (item == inputNames.VISTA_MOBILE || item == inputNames.VISTA_DESKTOP){
-                console.log(onlySelect);
                 if(!onlySelect) {
                     value = values[item] == true ? 1 : 0;
                 }

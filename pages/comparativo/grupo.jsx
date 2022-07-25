@@ -4,7 +4,7 @@ import {
   ParametersContainer,
   Parameters,
 } from "../../components/containers";
-import { InputContainer, Checkbox, InputDate } from "../../components/inputs";
+import { InputContainer, Checkbox, InputDate, SelectTiendasCombo, SelectCompromiso } from "../../components/inputs";
 import {
   VentasTableContainer,
   VentasTable,
@@ -122,73 +122,47 @@ function Grupo(props) {
                   value={parametrosGrupo.fecha}
                   onChange={(e) => handleChange(e, setParametrosGrupo)}
                 />
+                <SelectCompromiso
+                value={'awanta'}
+                onChange={(e) => handleChange(e, setParametrosGrupo)}
+                />
+                <SelectTiendasCombo
+                 value={'awanta'}
+                 onChange={(e) => handleChange(e, setParametrosGrupo)}
+                />
               </InputContainer>
               <InputContainer>
               <Checkbox
-                  className="mb-3"
                   labelText={checkboxLabels.VENTAS_IVA}
                   checked={parametrosGrupo.conIva ? true : false}
                   name={inputNames.CON_IVA}
                   onChange={(e) => handleChange(e, setParametrosGrupo)}
                 />
                 <Checkbox
-                  className="mb-3"
-                  labelText={checkboxLabels.VENTAS_VS_COMPROMISO}
-                  name={inputNames.PORCENTAJE_COMPROMISO}
-                  checked={parametrosGrupo.porcentajeVentasCompromiso ? true : false}
-                  onChange={(e) => handleChange(e, setParametrosGrupo)}
-                />
-                <Checkbox
-                  className="mb-3"
                   labelText={checkboxLabels.NO_HORAS_VENTAS_PARCIALES}
                   checked={parametrosGrupo.noHorasVentasParciales ? true : false}
                   name={inputNames.NO_HORAS_VENTAS_PARCIALES}
                   onChange={(e) => handleChange(e, setParametrosGrupo)}
                 />
                 <Checkbox
-                  className="mb-3"
                   labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
                   checked={parametrosGrupo.conVentasEventos ? true : false}
                   name={inputNames.CON_VENTAS_EVENTOS}
                   onChange={(e) => handleChange(e, setParametrosGrupo)}
                 />
                 <Checkbox
-                  className="mb-3"
-                  labelText={checkboxLabels.EXCLUIR_SIN_AGNO_VENTAS}
-                  checked={parametrosGrupo.sinAgnoVenta ? true : false}
-                  name={inputNames.SIN_AGNO_VENTA}
-                  onChange={(e) => handleChange(e, setParametrosGrupo)}
-                />
-                <Checkbox
-                  className="mb-3"
                   labelText={checkboxLabels.ACUMULADO_SEMANAL}
                   checked={acumuladoSemanal ? true : false}
                   name={inputNames.ACUMULADO_SEMANAL}
                   onChange={() => setAcumuladoSemanal((prev) => !prev)}
                 />
                 <Checkbox
-                  className="mb-3"
-                  labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
-                  name={inputNames.CON_TIENDAS_CERRADAS}
-                  checked={parametrosGrupo.conTiendasCerradas ? true : false}
-                  onChange={(e) => handleChange(e, setParametrosGrupo)}
-                />
-                <Checkbox
-                  className="mb-3"
-                  labelText={checkboxLabels.EXCLUIR_TIENDAS_SUSPENDIDAS}
-                  name={inputNames.SIN_TIENDAS_SUSPENDIDAS}
-                  checked={parametrosGrupo.sinTiendasSuspendidas ? true : false}
-                  onChange={(e) => handleChange(e, setParametrosGrupo)}
-                />
-                <Checkbox
-                  className="mb-3"
                   labelText={checkboxLabels.RESULTADO_PESOS}
                   name={inputNames.RESULTADOS_PESOS}
                   checked={parametrosGrupo.resultadosPesos ? true : false}
                   onChange={(e) => handleChange(e, setParametrosGrupo)}
                 />
                 <Checkbox
-                  className="mb-3"
                   labelText={checkboxLabels.TIPO_CAMBIO_TIENDAS}
                   checked={parametrosGrupo.tipoCambioTiendas ? true : false}
                   name={inputNames.TIPO_CAMBIO_TIENDAS}

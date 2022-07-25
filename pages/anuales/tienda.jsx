@@ -8,8 +8,8 @@ import {
   InputContainer,
   SelectTiendasGeneral,
   Checkbox,
-  InputToYear,
-  SelectToMonth,
+  InputYear,
+  SelectMonth,
 } from "../../components/inputs";
 import BarChart from "../../components/BarChart";
 import { checkboxLabels, MENSAJE_ERROR } from "../../utils/data";
@@ -82,18 +82,24 @@ const Tienda = (props) => {
         <ParametersContainer>
           <Parameters>
             <InputContainer>
-              <InputToYear
-                value={tiendasParametros.alAgno}
-                onChange={(e) => handleChange(e, setTiendasParametros)}
-              />
-              <SelectToMonth
-                value={tiendasParametros.alMes}
-                onChange={(e) => handleChange(e, setTiendasParametros)}
-              />
               <SelectTiendasGeneral
                 value={tiendasParametros.tiendas}
                 onChange={(e) => handleChange(e, setTiendasParametros)}
               />
+              <div className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <SelectMonth
+                    value={tiendasParametros.alMes}
+                    onChange={(e) => handleChange(e, setTiendasParametros)}
+                  />
+                </div>
+                <div className="flex-1">
+                  <InputYear
+                    value={tiendasParametros.alAgno}
+                    onChange={(e) => handleChange(e, setTiendasParametros)}
+                  />
+                </div>
+              </div>
             </InputContainer>
             <InputContainer>
               <Checkbox

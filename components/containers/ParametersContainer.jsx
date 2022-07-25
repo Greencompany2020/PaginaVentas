@@ -23,7 +23,9 @@ const ParametersContainer = ({ children }) => {
     let target = true;
     if (
       evt._targetInst.elementType == "select" ||
-      evt._targetInst.elementType == "input"
+      evt._targetInst.elementType == "input"  ||
+      evt._targetInst.elementType == "span"   ||
+      evt._targetInst.elementType == "div"
     ) {
       target = false;
     }
@@ -49,18 +51,24 @@ const ParametersContainer = ({ children }) => {
 
         <div
           className={`
-            absolute w-[22rem] md:w-[24rem] h-min[24rem] h-[28rem] left- top-9 bg-slate-200 rounded-md  ${!toggle && "hidden"}`}
+            absolute w-[21.5rem] md:w-[23rem] h-min-fit h-max[28rem] top-9 border border-slate-400 bg-slate-200 rounded-md  ${!toggle && "hidden"}`}
           ref={container}
           onMouseLeave={handleLeave}
         >
-          <div className="flex flex-col h-full w-full p-4">
-            <XIcon
-              width={28}
-              className="cursor-pointer text-slate-500 self-end"
-              onClick={handleToggle}
-            />
-            <p className="font-semibold pb-4 text-lg">Parametros de busqueda</p>
-            <div className="flex-[2] overflow-y-auto">{children}</div>
+          <div className="flex flex-col h-full w-full p-4 space-y-2">
+            <section className="flex justify-between">
+              <h3 className="font-semibold">Filtros de búsqueda</h3>
+              <XIcon
+                width={28}
+                className="cursor-pointer text-slate-500"
+                onClick={handleToggle}
+              />
+            </section>
+            <section className="flex-[2] overflow-y-auto">
+              <div className="p-2">
+                {children}
+              </div>
+            </section>
           </div>
         </div>
       </div>

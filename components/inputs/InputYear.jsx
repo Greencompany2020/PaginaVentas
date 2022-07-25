@@ -3,9 +3,9 @@ import { Flex } from "../containers";
 const InputYear = ({ value, onChange }) => {
   const currentYear = new Date().getFullYear();
   return (
-    <Flex className="mb-3">
-      <label htmlFor="anio">Del Año: </label>
-      <select name="delAgno" id="anio" className='select ml-2' value={value} onChange={onChange}>
+    <label htmlFor="anio" className="flex flex-col text-sm">
+      <span className="font-semibold">Del año</span> 
+      <select name="delAgno" id="anio" className='h-8 border rounded-md pl-2 border-slate-400' value={value} onChange={onChange}>
         {
           (()=>{
             if(currentYear){
@@ -18,7 +18,7 @@ const InputYear = ({ value, onChange }) => {
           })()
         }
       </select>
-    </Flex>
+    </label>
   );
 };
 

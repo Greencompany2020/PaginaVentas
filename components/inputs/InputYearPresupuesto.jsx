@@ -2,10 +2,10 @@ import { Flex } from '../containers';
 
 const InputYear = ({ value, onChange }) => {
   return (
-    <Flex className='mb-3'>
-      <label htmlFor="anio">Año Presupuesto: </label>
-      <input type="number" name="anio" id="" className='select ml-2' value={value} onChange={onChange} />
-    </Flex>
+    <label htmlFor="anio" className='flex flex-col text-sm'>
+      <span className='font-semibold'>Año presupuesto</span> 
+      <input type="number" name="anio" id="" className='h-8 border rounded-md pl-2 border-slate-400' value={value} onChange={onChange} />
+    </label>
   )
 }
 

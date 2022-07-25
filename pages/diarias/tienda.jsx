@@ -85,18 +85,24 @@ const Tienda = (props) => {
         <ParametersContainer>
           <Parameters>
             <InputContainer>
-              <SelectMonth
-                value={tiendasParametros.delMes}
-                onChange={(e) => handleChange(e, setTiendaParametros)}
-              />
-              <InputYear
-                value={tiendasParametros.delAgno}
-                onChange={(e) => handleChange(e, setTiendaParametros)}
-              />
               <SelectTiendas
                 value={tiendasParametros.tienda}
                 onChange={(e) => handleChange(e, setTiendaParametros)}
               />
+              <div className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <SelectMonth
+                    value={tiendasParametros.delMes}
+                    onChange={(e) => handleChange(e, setTiendaParametros)}
+                  />
+                </div>
+                <div className="flex-1">
+                  <InputYear
+                    value={tiendasParametros.delAgno}
+                    onChange={(e) => handleChange(e, setTiendaParametros)}
+                  />
+                </div>
+              </div>
             </InputContainer>
             <InputContainer>
               <Checkbox

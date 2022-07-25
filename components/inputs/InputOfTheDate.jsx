@@ -2,10 +2,10 @@ import { Flex } from '../containers'
 
 const InputDate = ({ value, onChange }) => {
   return (
-    <Flex className='mb-3 items-center'>
-      <label htmlFor="fecha">De la fecha: </label>
-      <input type="date" name="fecha" id="" className='outline-none border border-gray-300 rounded-md ml-2' value={value} onChange={onChange} />
-    </Flex>
+    <label htmlFor="fecha" className='flex flex-col text-sm'>
+      <span className='font-semibold'>De la fecha</span>
+      <input type="date" name="fecha" id="" className='h-8 border rounded-md pl-2 border-slate-400' value={value} onChange={onChange} />
+    </label>
   )
 }
 
