@@ -17,6 +17,7 @@ import {
   SelectTiendasGeneral,
   SelectTiendasCombo,
   SelectCompromiso,
+  InputDateComparative
 } from "../../components/inputs";
 import RegionesPlazaTableRow from "../../components/table/RegionesPlazaTableRow";
 import {
@@ -33,7 +34,8 @@ import {
   dateRangeTitle,
   validateInputDateRange,
   rowRegion,
-  spliceData
+  spliceData,
+  spliteArrDate
 } from "../../utils/functions";
 import { getSemanalesTiendas } from "../../services/SemanalesService";
 import { inputNames } from "../../utils/data/checkboxLabels";
@@ -49,6 +51,7 @@ import { v4 } from "uuid";
 
 const Tiendas = (props) => {
   const {config} = props;
+  const currentYear = new Date(Date.now()).getFullYear();
   const sendNotification = useNotification();
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesRegion, setSemanalesRegion] = useState({});
@@ -57,16 +60,18 @@ const Tiendas = (props) => {
   const [displayType, setDisplayType] = useState(1);
   const [seccion, setSeccion] = useState([]);
 
+  const [cbAgnosComparar, setCbAgnosComparar] = useState(1);
   const [tiendasParametros, setTiendasParametros] = useState({
     fechaInicio: beginDate,
     fechaFin: endDate,
     tiendas: 0,
-    conIva: 0,
+    conIva: 1,
     conVentasEventos: 0,
-    conTiendasCerradas: 0,
-    sinAgnoVenta: 0,
-    sinTiendasSuspendidas: 0,
     resultadosPesos: 0,
+    incremento: 'compromiso',
+    mostrarTiendas: 'activas',
+    agnosComparar: [currentYear - 1,currentYear - 2],
+    tipoCambioTiendas: 0,
   });
 
   useEffect(()=>{
@@ -74,12 +79,12 @@ const Tiendas = (props) => {
       ...prev,
       conIva: config?.conIva || 0,
       conVentasEventos:  config?.conVentasEventos || 0,
-      conTiendasCerradas:  config?.conTiendasCerradas || 0,
-      sinAgnoVenta:  config?.sinAgnoVenta || 0,
-      sinTiendasSuspendidas:  config?.sinTiendasSuspendidas || 0,
-      resultadosPesos:  config?.resultadosPesos|| 0,
+      resultadosPesos: 0,
+      agnosComparar: spliteArrDate(config.agnosComparativos),
     }));
+
     setDisplayType((isMobile ? config?.mobileReportView : config?.desktopReportView));
+    setCbAgnosComparar(config?.cbAgnosComparar || 1)
   },[config])
 
   useEffect(() => {
@@ -88,6 +93,7 @@ const Tiendas = (props) => {
         try {
           let seccionesTemp = null
           const response = await getSemanalesTiendas(tiendasParametros);
+          console.log(response);
           setSemanalesTienda(response);
           switch(tiendasParametros.tiendas){
             case 0:
@@ -149,6 +155,13 @@ const Tiendas = (props) => {
                   endDate={tiendasParametros.fechaFin}
                   onChange={(e) => handleChange(e, setTiendasParametros)}
                 />
+                <InputDateComparative
+                  cbEnabledYears={cbAgnosComparar}
+                  changeEnabled={setCbAgnosComparar}
+                  firstYear={tiendasParametros.agnosComparar[0]}
+                  secondYear={tiendasParametros.agnosComparar[1]}
+                  onChange = {setTiendasParametros}
+                />
                 <SelectCompromiso
                   value={'awanta - 2'}
                   onChange={(e) => handleChange(e, setTiendasParametros)}
@@ -177,24 +190,6 @@ const Tiendas = (props) => {
                   name={inputNames.RESULTADOS_PESOS}
                   onChange={(e) => handleChange(e, setTiendasParametros)}
                 />
-                 <Checkbox
-                  labelText={checkboxLabels.RESULTADO_PESOS}
-                  checked={tiendasParametros.resultadosPesos ? true : false}
-                  name={inputNames.RESULTADOS_PESOS}
-                  onChange={(e) => handleChange(e, setTiendasParametros)}
-                />
-                 <Checkbox
-                  labelText={checkboxLabels.RESULTADO_PESOS}
-                  checked={tiendasParametros.resultadosPesos ? true : false}
-                  name={inputNames.RESULTADOS_PESOS}
-                  onChange={(e) => handleChange(e, setTiendasParametros)}
-                />
-                 <Checkbox
-                  labelText={checkboxLabels.RESULTADO_PESOS}
-                  checked={tiendasParametros.resultadosPesos ? true : false}
-                  name={inputNames.RESULTADOS_PESOS}
-                  onChange={(e) => handleChange(e, setTiendasParametros)}
-                />
               </InputContainer>
             </Parameters>
           </ParametersContainer>
@@ -210,7 +205,8 @@ const Tiendas = (props) => {
       </section>
 
       <section className="p-4 overflow-y-auto ">
-        {
+        <Table tiendasParametros={tiendasParametros} semanalesTienda={semanalesTienda}/>
+        {/*
           (()=>{
               switch(displayType){
                 case 1:
@@ -225,94 +221,32 @@ const Tiendas = (props) => {
                   return <Table tiendasParametros={tiendasParametros} semanalesTienda={semanalesTienda}/>
               }
           })()
-        }
+        */}
       </section>
     </div>
   );
 };
 
 const Table = ({tiendasParametros, semanalesTienda}) => {
+  const compareYears = [
+    ... new 
+    Set([...tiendasParametros.agnosComparar, getYearFromDate(tiendasParametros.fechaFin)])
+  ].sort((a, b) => a + b);
+
   return(
     <VentasTableContainer>
       <VentasTable className="tfooter">
         <TableHead>
           <tr>
-            <td
-              rowSpan={3}
-              className="border border-white bg-black-shape rounded-tl-xl"
-            >
-              Plaza
-            </td>
-            <td
-              colSpan={15}
-              className="border border-white bg-black-shape rounded-tr-xl"
-            >
+            <td rowSpan={3} className="border border-white bg-black-shape rounded-tl-xl">Plaza</td>
+            <td colSpan={15} className="border border-white bg-black-shape rounded-tr-xl">
               {dateRangeTitle(
                 tiendasParametros.fechaInicio,
                 tiendasParametros.fechaFin
               )}
             </td>
           </tr>
-          <tr className="text-right">
-            <td rowSpan={2} className="border border-white bg-black-shape">
-              Comp
-            </td>
-            <td rowSpan={2} className="border border-white bg-black-shape">
-              {getYearFromDate(tiendasParametros.fechaFin)}
-            </td>
-            <td rowSpan={2} className="border border-white bg-black-shape">
-              %
-            </td>
-            <td rowSpan={2} className="border border-white bg-black-shape">
-              {getYearFromDate(tiendasParametros.fechaFin) - 1}
-            </td>
-            <td colSpan={4} className="border border-white bg-black-shape">
-              operaciones
-            </td>
-            <td colSpan={4} className="border border-white bg-black-shape">
-              promedios
-            </td>
-            <td colSpan={3} className="border border-white bg-black-shape">
-              Articulos Prom.
-            </td>
-          </tr>
-          <tr className="text-right">
-            <td className="border border-white bg-black-shape">Comp</td>
-            <td className="border border-white bg-black-shape">
-              {getYearFromDate(tiendasParametros.fechaFin)}
-            </td>
-            <td className="border border-white bg-black-shape">%</td>
-            <td className="border border-white bg-black-shape">
-              {getYearFromDate(tiendasParametros.fechaFin) - 1}
-            </td>
-            <td className="border border-white bg-black-shape">comp</td>
-            <td className="border border-white bg-black-shape">
-              {getYearFromDate(tiendasParametros.fechaFin)}
-            </td>
-            <td className="border border-white bg-black-shape">%</td>
-            <td className="border border-white bg-black-shape">
-              {getYearFromDate(tiendasParametros.fechaFin) - 1}
-            </td>
-            <td className="border border-white bg-black-shape">
-              {getYearFromDate(tiendasParametros.fechaFin)}
-            </td>
-            <td className="border border-white bg-black-shape">%</td>
-            <td className="border border-white bg-black-shape">
-              {getYearFromDate(tiendasParametros.fechaFin) - 1}
-            </td>
-          </tr>
         </TableHead>
-        <tbody className="bg-white text-xs text-right">
-          {
-            (() => {
-              if(semanalesTienda.length > 0){
-                const count = semanalesTienda.length - 1;
-                const Items = semanalesTienda?.map((tienda, index) => renderRow(tienda, count == index))
-                return Items;
-              }
-            })()
-          }
-        </tbody>
       </VentasTable>
     </VentasTableContainer>
   )

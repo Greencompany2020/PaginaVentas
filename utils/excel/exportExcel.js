@@ -2,175 +2,176 @@ import { saveAs } from "file-saver";
 import * as Excel from 'exceljs';
 
 /**
- * Default values
- * @const {string} FILE_EXTENSION extencion por defecto de los archivos
- * @const {string} DEFAULT_FILENAME nombre por defecto del archivo
- * @const {string} DEFAULT_COLUMN columna inicial por defecto
+ * Valores por defecto
+ * @const {string} FILE_EXTENSION Extencion de los arvhivos por defecto
+ * @const {string} DEFAULT_FILENAME Nombre default del archivo
+ * @const {string} DEFAULT_SHEETNAME Nombre default de la tab
+ * @const {string} INITIAL_COL Columna inicial del reporte
  */
+
 const FILE_EXTENSION = '.xlsx';
-const DEFAULT_FILENAME = 'workbook';
-const DEFAULT_COLUMN = 'A'
+const DEFAULT_FILENAME = 'Workbook';
+const DEFAULT_SHEETNAME = 'Sheet 1';
+const INITIAL_COL = 'A'
 
 /**
- * 
- * @param {array} columns array de objetos para header personalizado
- * @param {array} rows arra de objetos que contienen la informacion
- * @param {*} fileName nombre del archivo generado
- *  
+ * Funcion principal del exportador
+ * @param {*} filename 
+ * @param {*} columns 
+ * @param {*} rows 
+ * @param {*} sheetNames 
+ * @param {*} format 
  */
-export default  function exportExcel(fileName, columns,  rows, styles){
-    //Crea un nuevo archivo de excel 
-    const wb = new Excel.Workbook();
-    const ws = wb.addWorksheet('new sheet');
-
-
-    AddColumns();
-    Addrows();
-
-
-    /**
-     * Esta funcion se encarga de crear las columnas
-     * ademas de agregar las propiedades de las mismas
-     */
-    function AddColumns(){
-        if(columns){
-            let initialRow = 1;
-            columns.forEach(head => {
-                const props = getProps(head);
-                if(props){
-                    const subProps = getProps(head?.styles);
-                    const cell = ws.getCell(head?.cell || DEFAULT_COLUMN + initialRow);
-            
-                    //agrega el value y cualquier otra propiedad que no este relacionada al style
-                    props.forEach(prop => {
-                        cell[prop] = head[prop];
-                    });
-
-                    //agrega el stylo de la plantilla 
-                    if(subProps){
-                        subProps.forEach(prop => {
-                            cell[prop] = head.styles[prop];
-                        });
-                    }
-
-                    //si la paltilla tiene merge se lo asigna
-                    if(hasProp(head, 'merge')) ws.mergeCells(head.merge);
-                }
+export default function exportExcel(filename, columns, rows, sheetNames, format){
+    try {
+        //Se crea el objeto principal de excel
+        const wb = new Excel.Workbook();
+        const arr = arrType(rows);
+        
+        if(arr === 'plain'){
+            addSheet(wb, columns, rows, '1', format);
+        }else if(arr === 'nested'){
+            Object.entries(rows ?? {}).forEach(([key, value]) => {
+                addSheet(wb, columns, value, key, format);
             });
         }
+
+        //Esta promesa escribe el archivo de lo decarga
+        wb.xlsx.writeBuffer().then(buffer => {
+            saveAs(new Blob([buffer], {type:'application/octet-stream'}),`${filename || DEFAULT_FILENAME}${FILE_EXTENSION}`)
+        }).catch(err => {
+            console.error(err);
+        });
+
+    } catch (error) {
+        throw error;
     }
-
-    /**
-     * Esta funcion se encarga de crear las filas
-     * 
-     */
-     function Addrows(){
-        if(rows){
-            rows.forEach(row => {
-                const values = Object.values(row);
-                ws.addRow(values);
-                const currentRow = ws.getRow(ws.actualRowCount);
-                currentRow.eachCell(cell => {
-                    appliedCellStyle(cell);
-                });
-            });
-        }
-    }
-
-    /**
-     * Esta funcion evalua si el objeto tiene una propiedades especifica
-     * @param {object} obj  objeto a evaluar
-     * @param {string} prop propiedad a comparar
-     * @returns retorna verdadero o false
-     */
-    function hasProp(obj, prop){
-        if(obj && prop) return Object.hasOwn(obj, prop);
-        return false;
-    }
-
-    /**
-     * Esta funcion obtiene todos las propiedades de un objeto
-     * @param {object} obj objeto donde se tienen las propiedades
-     * @returns retorna un array con las propiedades
-     */
-    function getProps(obj){
-        if(obj) return Object.getOwnPropertyNames(obj);
-        return null;
-    }
-
-    /**
-     * Esta funcion regresa el tipo de dato del valor
-     * @param {*} value valor a evaluar el tipo de dato
-     * @returns 
-     */
-    function getTypeof(value){
-        switch(typeof(value)){
-
-            case 'string':
-                return 'text';
-
-            //realiza una evaluacion del tipo number, si tiene un - es negativo, si contiene . es un decimal
-            case 'number':
-                if(String(value).includes('-')) return 'negative'
-                else if(String(value).includes('.')) return 'decimal'
-                else return 'number'
-            
-            //Regresa el valor por defacto del valor si este no tiene ninguna evaluacion
-            default:
-                return typeof(value);
-        }
-    }
-
-
-    /**
-     * Esta funcion agrega los estylos y formatos de celda
-     * Ojo primero se le aplica un formato base a la celda y despues
-     * si la plantilla tiene formatos personalizados se los aplica.
-     * @param {*} cell celda actual de reporte
-     */
-    function appliedCellStyle(cell) {
-        if(styles){
-            const props = getProps(styles);
-            const {address, value} = cell;
-            if(props){
-
-                props.forEach(prop => {
-                    switch(prop){
-
-                        case 'format':
-                            const cellFormat = getTypeof(value);
-                            if(hasProp(styles[prop], cellFormat)) cell.numFmt = styles[prop][cellFormat];
-                            break;
-
-
-                        case 'cells':
-                            const cellProps = getProps(styles[prop]);
-                            cellProps.forEach(cellProp => {
-                               if(address.match(cellProp, 'ig')) cell.style = {...styles[prop][cellProp]};
-                            });
-                            
-                        default:
-                            break;
-                    }
-
-                });
-            }
-        }
-    }
-
-    /**
-     * Escribe el buffer del arivho y lo descarga para el cliente
-     * si el archivo no tiene nombre usara el nombre por defecto
-     */
-    wb.xlsx.writeBuffer().then(buffer => {
-        saveAs(new Blob([buffer], {type:'application/octet-stream'}),`${fileName || DEFAULT_FILENAME}${FILE_EXTENSION}`)
-    }).catch(err => {
-        console.error(err);
-    });
 }
 
 
+/**
+ * Obtiene los atributos de los objetos
+ * @param {*} obj Objeto 
+ * @returns 
+ */
+const getAttributes = obj => {
+    if(typeof(obj) === 'object'){
+        return  Object.getOwnPropertyNames(obj);
+    }else{
+        return null;
+    }
+}
+
+/**
+ * Evalua si el objeto tiene la propiedad indicada
+ * @param {*} obj Objeto a evaluar
+ * @param {*} attr Propiedad indicada
+ * @returns 
+ */
+const hasAttribute = (obj, attr) => {
+    if(typeof(obj) === 'object'){
+        return Object.hasOwn(obj, attr)
+    }else{
+        return null;
+    }
+}
+
+/**
+ * Evalua el tipo dato de un valor
+ * @param {*} val Valor a evaluar
+ * @returns 
+ */
+const getTypeof = val => {
+    switch(typeof(val)){
+        case 'string':
+            return 'text';
+
+        //Si el tipo numero tiene un - al inicio es negativo y si tiene solo un . es decimal si no es entero
+        case 'number':
+            if(String(val).includes('-')) return 'negative';
+            else if(String(val).includes('.')) return 'decimal'
+            else return 'number'
+        
+        //si el tipo de dato no se encuantre especificado, retorna como valor general
+        default:
+            return 'general'
+    }
+}
+
+/**
+ * Evalua el tipo de objeto
+ * @param {*} obj objeto a evaluar
+ * @returns Si el objeto es un array retorna plain, 
+ * si es un objeto con array de primer niver retorna nested,
+ * si el objeto no cumple con ninguna de esas condiciones retorna notArr
+ */
+const arrType = obj => {
+    if(Array.isArray(obj)) return 'plain';
+    else if(Object.entries(obj).every(([key]) => Array.isArray(obj[key]))) return 'nested';
+    else return 'notArr'
+}
 
 
+/**
+ * Esta funcion se encarga aplicar los estilos y atributos de la plantilla
+ * @param {*} format formato de la platilla
+ * @param {*} ws worksheet actual
+ * @param {*} cell celada actual
+ */
+const setFormat = (format, ws, cell) => {
+    if(format){
+        const attributes = getAttributes(format);
+        const {address, value} = cell;
+        
+        if(attributes){
+            attributes.forEach(attr => {
+                switch(attr){
+                    case 'styles':
+                        cell.style = {...format.styles};
+                        break;
+                    case 'merge':
+                        ws.mergeCells(format.merge)
+                        break;
+                    case 'cellFormat':
+                        const currentCellFormat = getTypeof(value);
+                        if(hasAttribute(format.cellFormat, currentCellFormat)) cell.numFmt = format.cellFormat[currentCellFormat];
+                        break;
+                    case 'cols':
+                       const colsAttr = getAttributes(format.cols);
+                       colsAttr.forEach(col => {
+                            if(address.match(col, 'ig')) cell.style = {...format.cols[col].styles};
+                       });
+                       break;
+                }   
+            });
+        }
+    }
+}
 
+/**
+ * Esta funcion se encarga de agregar una nueva sheet 
+ * @param {*} wb workbook actual
+ * @param {*} columns columnas 
+ * @param {*} rows filas
+ * @param {*} sheetname nombre de la sheet
+ * @param {*} format formatos
+ */
+const addSheet  = (wb, columns, rows , sheetname, format) =>{
+    const ws = wb.addWorksheet(sheetname);
 
+    columns.forEach(col => {
+        const attributes = getAttributes(col);
+        if(attributes){
+            const cell = ws.getCell(col.cell);
+            cell.value = col.value;
+            setFormat(col, ws, cell);
+        }
+    });
+
+    rows.forEach(row => {
+        const rowValues = Object.values(row);
+        ws.addRow(rowValues);
+        const currentRows = ws.getRow(ws.actualRowCount);
+        if(format) currentRows.eachCell( cell => setFormat (format, ws, cell));
+    });
+}

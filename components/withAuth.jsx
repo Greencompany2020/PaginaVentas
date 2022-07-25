@@ -64,10 +64,18 @@ const witAuth = (Component) => {
       if(userParams){
         for(const item in userParams){
           let value = null;
-          if(isNaN(userParams[item])){
-            value = (userParams[item] == 'Y') ? 1 : 0;
-          }else{
-            value = userParams[item] || 0;
+          switch(typeof(userParams[item])){
+            case 'string':
+              if(userParams[item] == 'Y' || userParams[item] == 'N'){
+                value = (userParams[item] == 'Y') ? 1 : 0;
+              }else{
+                value = userParams[item] || null
+              }
+              break;
+
+            case 'number':
+              value = userParams[item] || null;
+              break;
           }
           Object.assign(configuration, {[item]:value});
         }

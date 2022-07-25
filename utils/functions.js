@@ -732,3 +732,17 @@ export const getValueFromObject = (data, findKey=null) => {
   }
   return null;
 }
+
+export const spliteArrDate = (arr) => {
+  const currentYear = new Date(Date.now()).getFullYear();
+  if(arr){
+    if(arr.includes(',')){
+       return arr.split(',');
+    } else {
+      const tempArray = arr.split('');
+      return [tempArray[0] , tempArray[0] - 1];
+    }
+  }else{
+    return [currentYear - 1, currentYear - 2]
+  }
+}
