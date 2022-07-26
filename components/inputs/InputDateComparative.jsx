@@ -1,27 +1,27 @@
 import { useRef } from "react";
 export default function InputDateComparative({firstYear, secondYear, onChange, cbEnabledYears, changeEnabled}) {
-  const currentYear = new Date().getFullYear();
+  const currentYear = new Date().getFullYear() - 1;
   const firstYearRef = useRef(null);
   const secondYearRef = useRef(null);
+  const cbEnableRef = useRef(null);
 
   const handleOnchange = evt =>  {
-    if(cbEnabledYears == 1 || (evt.target == firstYearRef.current)){
-      const {value} = evt.target;
-      const newArr = [value, secondYear];
+    const {value} = evt.target;
+    const {target} = evt;
 
-      onChange( prev => ({
-        ...prev,
-        agnosComparar: newArr
-      }));
-
-    }else{
-      const {value} = evt.target;
-      const newArr = [firstYear, value];
-
-      onChange( prev => ({
-        ...prev,
-        agnosComparar: newArr
-      }));
+    if(target === cbEnableRef.current){
+      changeEnabled(value);
+      if(value == 1){
+        onChange(prev => ({...prev, agnosComparar:[firstYearRef.current.value]}));
+      }else{
+        onChange(prev => ({...prev, agnosComparar:[firstYearRef.current.value, secondYearRef.current.value]}));
+      }
+    }
+    else if(target == firstYearRef.current && cbEnableRef.current.value == 1){
+      onChange(prev => ({...prev, agnosComparar:[firstYearRef.current.value]}));
+    }
+    else{
+      onChange(prev => ({...prev, agnosComparar:[firstYearRef.current.value, secondYearRef.current.value]}));
     }
   }
 
@@ -35,7 +35,8 @@ export default function InputDateComparative({firstYear, secondYear, onChange, c
             name="cbAgnosComparar" 
             className=' flex-1 w-full h-8 border rounded-md pl-2 border-slate-400' 
             value={cbEnabledYears}
-            onChange={(evt) =>  changeEnabled(evt.target.value)}
+            onChange={handleOnchange}
+            ref = {cbEnableRef}
           >
             <option value="1">1</option>
             <option value="2">2</option>

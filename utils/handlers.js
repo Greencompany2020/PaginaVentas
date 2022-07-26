@@ -5,6 +5,7 @@
  * @param {Dispatch<SetStateAction<any>>} updateState setState de los parámetros
  */
 export const handleChange = (evt, updateState) => {
+
   let value = '';
   if (evt.target.hasOwnProperty('checked')) {
     value = evt.target.checked ? 1 : 0;
@@ -17,7 +18,7 @@ export const handleChange = (evt, updateState) => {
     value = Number(newValue);
   }
   else{
-    value = Number(evt.target.value);
+    value = ( !isNaN(evt.target.value)) ? Number(evt.target.value) : String(evt.target.value);
   }
 
 

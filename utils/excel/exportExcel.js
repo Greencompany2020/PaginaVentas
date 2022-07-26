@@ -22,7 +22,7 @@ const INITIAL_COL = 'A'
  * @param {*} sheetNames 
  * @param {*} format 
  */
-export default function exportExcel(filename, columns, rows, sheetNames, format){
+export default function exportExcel(filename, columns, rows, format, sheetNames){
     try {
         //Se crea el objeto principal de excel
         const wb = new Excel.Workbook();
