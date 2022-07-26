@@ -733,16 +733,29 @@ export const getValueFromObject = (data, findKey=null) => {
   return null;
 }
 
-export const spliteArrDate = (arr) => {
-  const currentYear = new Date(Date.now()).getFullYear();
-  if(arr){
-    if(arr.includes(',')){
-       return arr.split(',');
-    } else {
-      const tempArray = arr.split('');
-      return [tempArray[0] , tempArray[0] - 1];
+export const spliteArrDate = (arr, cb = 1) => {
+  const currentYear = new Date(Date.now()).getFullYear() - 1;
+  if(cb == 1){
+    if(arr){
+      if(arr.includes(',')){
+        return arr.split(',')[0];
+      }
+      else{
+        return [arr]
+      }
+    }else{
+      return [currentYear];
     }
   }else{
-    return [currentYear - 1, currentYear - 2]
+    if(arr){
+      if(arr.includes(',')){
+        return arr.split(',');
+      }
+      else{
+        return [arr]
+      }
+    }else{
+      return [currentYear , currentYear - 1];
+    }
   }
 }

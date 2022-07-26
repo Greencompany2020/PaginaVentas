@@ -1,4 +1,4 @@
-import { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import {
   ParametersContainer,
   Parameters,
@@ -44,10 +44,13 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 import Stats from "../../components/Stats";
-import { numberWithCommas, stringFormatNumber, tdFormatNumber} from "../../utils/resultsFormated";
+import { numberWithCommas, stringFormatNumber, tdFormatNumber, formatNumber} from "../../utils/resultsFormated";
 import { isMobile } from "react-device-detect";
 import ViewFilter from "../../components/ViewFilter";
 import { v4 } from "uuid";
+import ExcelButton from "../../components/buttons/ExcelButton";
+import semTienda from "../../utils/excel/templates/semtTienda";
+import exportExcel from "../../utils/excel/exportExcel";
 
 const Tiendas = (props) => {
   const {config} = props;
@@ -80,7 +83,7 @@ const Tiendas = (props) => {
       conIva: config?.conIva || 0,
       conVentasEventos:  config?.conVentasEventos || 0,
       resultadosPesos: 0,
-      agnosComparar: spliteArrDate(config.agnosComparativos),
+      agnosComparar: spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1),
     }));
 
     setDisplayType((isMobile ? config?.mobileReportView : config?.desktopReportView));
@@ -93,14 +96,13 @@ const Tiendas = (props) => {
         try {
           let seccionesTemp = null
           const response = await getSemanalesTiendas(tiendasParametros);
-          console.log(response);
           setSemanalesTienda(response);
           switch(tiendasParametros.tiendas){
             case 0:
               seccionesTemp = ['REGION I', 'REGION II', 'REGION III', 'GRUPO'];
               break;
             case 2:
-              seccionesTemp = ['SK-MAZATLAN', 'SK CULIACAN', 'SK MEXICALI', 'SK CHIHUAHUA', 'SK TIJUANA', 'SIN REGION', 'GRUPO'];
+              seccionesTemp = ['SK MAZATLAN', 'SK CULIACAN', 'SK MEXICALI', 'SK CHIHUAHUA', 'SK TIJUANA', 'SIN REGION', 'GRUPO', ];
               break;
             case 3:
               seccionesTemp = ['WEB', 'SIN REGION' ,'GRUPO']
@@ -122,7 +124,7 @@ const Tiendas = (props) => {
       }
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tiendasParametros]);
+  }, [tiendasParametros, cbAgnosComparar]);
 
   const getRegionName =  () =>{
     switch(tiendasParametros.tiendas){
@@ -137,12 +139,17 @@ const Tiendas = (props) => {
     }
   }
 
+  const handleExport = () => {
+    const template = semTienda();
+    exportExcel('semanales plaza',template.columns,[...semanalesTienda],template.format)
+  }
+
   return (
     <div className=" flex flex-col h-full">
       <TitleReport title="Detalles de información / Semanales por Tienda" />
 
-      <section className="p-4 flex flex-row justify-between items-baseline">
-        <div className="flex flex-col justify-between h-full">
+      <section className="p-4 space-y-2">
+        <div className="flex justify-between items-center">
           <ParametersContainer>
             <Parameters>
               <InputContainer>
@@ -163,11 +170,11 @@ const Tiendas = (props) => {
                   onChange = {setTiendasParametros}
                 />
                 <SelectCompromiso
-                  value={'awanta - 2'}
+                  value={tiendasParametros.incremento}
                   onChange={(e) => handleChange(e, setTiendasParametros)}
                 />
                 <SelectTiendasCombo
-                  value={'awanta'}
+                  value={tiendasParametros.mostrarTiendas}
                   onChange={(e) => handleChange(e, setTiendasParametros)}
                 />
               </InputContainer>
@@ -193,20 +200,22 @@ const Tiendas = (props) => {
               </InputContainer>
             </Parameters>
           </ParametersContainer>
-          <p className={`text-sm font-bold ${displayType != 3 && 'hidden'}`}>{ getRegionName()}</p>
+          <ViewFilter 
+            viewOption={displayType} 
+            handleView={setDisplayType} 
+            selectOption={selectRegion} 
+            handleSelect = {setRegion}
+            options={seccion}
+          />
         </div>
-        <ViewFilter 
-          viewOption={displayType} 
-          handleView={setDisplayType} 
-          selectOption={selectRegion} 
-          handleSelect = {setRegion}
-          options={seccion}
-        />
+        <div className="flex justify-between">
+          <p className={`text-sm font-bold `}>{ getRegionName()}</p>
+          <ExcelButton  handleClick={handleExport}/>
+        </div>
       </section>
 
       <section className="p-4 overflow-y-auto ">
-        <Table tiendasParametros={tiendasParametros} semanalesTienda={semanalesTienda}/>
-        {/*
+        {
           (()=>{
               switch(displayType){
                 case 1:
@@ -221,17 +230,18 @@ const Tiendas = (props) => {
                   return <Table tiendasParametros={tiendasParametros} semanalesTienda={semanalesTienda}/>
               }
           })()
-        */}
+        }
       </section>
     </div>
   );
 };
 
 const Table = ({tiendasParametros, semanalesTienda}) => {
-  const compareYears = [
+  const years = [
     ... new 
-    Set([...tiendasParametros.agnosComparar, getYearFromDate(tiendasParametros.fechaFin)])
-  ].sort((a, b) => a + b);
+    Set([...tiendasParametros.agnosComparar])
+  ].sort((a, b) => b - a);
+  const count = semanalesTienda.length - 1;
 
   return(
     <VentasTableContainer>
@@ -239,20 +249,137 @@ const Table = ({tiendasParametros, semanalesTienda}) => {
         <TableHead>
           <tr>
             <td rowSpan={3} className="border border-white bg-black-shape rounded-tl-xl">Plaza</td>
-            <td colSpan={15} className="border border-white bg-black-shape rounded-tr-xl">
+            <td colSpan={15 + (years.length == 2 ? 8 : 0)} className="border border-white bg-black-shape rounded-tr-xl">
               {dateRangeTitle(
                 tiendasParametros.fechaInicio,
                 tiendasParametros.fechaFin
               )}
             </td>
           </tr>
+          <tr className="text-right">
+            <td rowSpan={2} className="border border-white bg-black-shape">Comp</td>
+            <td rowSpan={2} className="border border-white bg-black-shape">
+              {getYearFromDate(tiendasParametros.fechaFin)}
+            </td>
+            {
+              years.map(year => (
+                <React.Fragment key={v4()}>
+                  <td rowSpan={2} className="border border-white bg-black-shape">%</td>
+                  <td rowSpan={2} className="border border-white bg-black-shape">{year}</td>
+                </ React.Fragment>
+              ))
+            }
+            <td colSpan={3 + (years.length == 2 ? 3 : 1)} className="border border-white bg-black-shape">operaciones</td>
+            <td colSpan={3 + (years.length == 2 ? 3 : 1)} className="border border-white bg-black-shape">promedios</td>
+            <td colSpan={3 + (years.length == 2 ? 3 : 1)} className="border border-white bg-black-shape">Articulos Prom.</td>
+          </tr>
+          <tr className="text-right">
+            <td className="border border-white bg-black-shape">Comp</td>
+            <td className="border border-white bg-black-shape">
+              {getYearFromDate(tiendasParametros.fechaFin)}
+            </td>
+            {
+              years.map(year => (
+                <React.Fragment key={v4()}>
+                  <td className="border border-white bg-black-shape">%</td>
+                  <td className="border border-white bg-black-shape">{year}</td>
+                </ React.Fragment>
+              ))
+            }
+            <td className="border border-white bg-black-shape">comp</td>
+            <td className="border border-white bg-black-shape">
+              {getYearFromDate(tiendasParametros.fechaFin)}
+            </td>
+            {
+              years.map(year => (
+                <React.Fragment key={v4()}>
+                  <td className="border border-white bg-black-shape">%</td>
+                  <td className="border border-white bg-black-shape">{year}</td>
+                </ React.Fragment>
+              ))
+            }
+            <td className="border border-white bg-black-shape">
+              {getYearFromDate(tiendasParametros.fechaFin)}
+            </td>
+            {
+              years.map(year => (
+                <React.Fragment key={v4()}>
+                  <td className="border border-white bg-black-shape">%</td>
+                  <td className="border border-white bg-black-shape">{year}</td>
+                </ React.Fragment>
+              ))
+            }
+          </tr>
         </TableHead>
+        <tbody className="text-xs text-right">
+          {
+            (()=> {
+              if(Array.isArray(semanalesTienda) && semanalesTienda.length > 0){
+                const Items = semanalesTienda.map((tienda, index) => (
+                  <TableRow key={tienda.plaza} rowId={tienda.plaza} className={rowRegion(tienda.plaza)}>
+                    <td className="text-left font-bold">{tienda.plaza}</td>
+                    <td>{numberWithCommas(tienda['compromiso' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
+                    <td className="font-bold">{numberWithCommas(tienda['ventasActuales' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
+                    {
+                      years.map(year => (
+                        <React.Fragment key={v4()}>
+                          {formatNumber(tienda['porcentaje' + year], count == index, 12)}
+                          <td>{numberWithCommas(tienda['ventasActuales' + year])}</td>
+                        </React.Fragment>
+                      ))
+                    }
+                   
+                    <td className="font-bold">{numberWithCommas(tienda['operacionesComp'+ getYearFromDate(tiendasParametros.fechaFin)])}</td>
+                    <td className="font-bold">{numberWithCommas(tienda['operacionesActual'+ getYearFromDate(tiendasParametros.fechaFin)])}</td>
+                    {
+                      years.map(year => (
+                        <React.Fragment key={v4()}>
+                          {formatNumber(tienda['porcentajeOperaciones'+ year], count == index, 12)}
+                          <td>{numberWithCommas(tienda['operacionesActual'+ year])}</td>
+                        </React.Fragment>
+                      )) 
+                    }
+            
+    
+                    <td className="font-bold">{numberWithCommas(tienda['promedioComp' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
+                    <td className="font-bold">{numberWithCommas(tienda['promedioActual' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
+                    {
+                      years.map(year => (
+                        <React.Fragment key={v4()}>
+                          {formatNumber(tienda['porcentajePromedios' + year], count == index, 12)}
+                          <td>{numberWithCommas(tienda['promedioActual' + year])}</td>
+                        </React.Fragment>
+                      ))
+                    }
+                    
+    
+                    <td className="font-bold">{numberWithCommas(tienda['articulosActual' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
+                    {
+                      years.map(year => (
+                        <React.Fragment key={v4()}>
+                          {formatNumber(tienda['articulosPorcentaje' + year], count == index, 12)}
+                          <td>{numberWithCommas(tienda['articulosActual' + year])}</td>
+                        </React.Fragment>
+                      ))
+                    }
+                   
+                  </TableRow>
+                ));
+                return Items;
+              }
+            })()
+          }
+        </tbody>
       </VentasTable>
     </VentasTableContainer>
   )
 }
 
 const Stat = ({tiendasParametros, semanalesTienda}) => {
+  const years = [
+    ... new 
+    Set([...tiendasParametros.agnosComparar])
+  ].sort((a, b) => b - a);
   return(
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
       {
@@ -264,21 +391,25 @@ const Stat = ({tiendasParametros, semanalesTienda}) => {
                 values:[
                   {
                     caption:'COMP',
-                    value:numberWithCommas(tienda.compromiso)
+                    value:numberWithCommas(tienda['compromiso' + getYearFromDate(tiendasParametros.fechaFin)])
                   },
                   {
                     caption:getYearFromDate(tiendasParametros.fechaFin),
-                    value:numberWithCommas(tienda.ventasActuales)
+                    value:numberWithCommas(tienda['ventasActuales' + getYearFromDate(tiendasParametros.fechaFin)])
                   },
-                  {
-                    caption:'%',
-                    value:stringFormatNumber(tienda.porcentaje, false)
-                  },
-                  {
-                    caption:getYearFromDate(tiendasParametros.fechaFin) - 1,
-                    value:numberWithCommas(tienda.ventasAnterior)
-                  }
-                ]
+                  years.map(year =>(
+                    [
+                      {
+                        caption:'%',
+                        value:stringFormatNumber(tienda['porcentaje' + year])
+                      },
+                      {
+                        caption: year,
+                        value:numberWithCommas(tienda['ventasActuales' + year])
+                      }
+                    ]
+                  ))
+                ].flat(2)
               }
 
               const operaciones = {
@@ -286,21 +417,25 @@ const Stat = ({tiendasParametros, semanalesTienda}) => {
                 values:[
                   {
                     caption:'COMP',
-                    value:numberWithCommas(tienda.operacionesComp)
+                    value:numberWithCommas(tienda['operacionesComp'+ getYearFromDate(tiendasParametros.fechaFin)])
                   },
                   {
                     caption:getYearFromDate(tiendasParametros.fechaFin),
-                    value:numberWithCommas(tienda.operacionesActual)
+                    value:numberWithCommas(tienda['operacionesActual'+ getYearFromDate(tiendasParametros.fechaFin)])
                   },
-                  {
-                    caption:'%',
-                    value:stringFormatNumber(tienda.porcentajeOperaciones, false)
-                  },
-                  {
-                    caption:getYearFromDate(tiendasParametros.fechaFin) - 1,
-                    value:numberWithCommas(tienda.operacionesAnterior)
-                  }
-                ]
+                  years.map(year =>(
+                    [
+                      {
+                        caption:'%',
+                        value:stringFormatNumber(tienda['porcentajeOperaciones'+ year])
+                      },
+                      {
+                        caption: year,
+                        value:numberWithCommas(tienda['operacionesActual'+ year])
+                      }
+                    ]
+                  ))
+                ].flat(2)
               }
 
               const promedios = {
@@ -308,21 +443,25 @@ const Stat = ({tiendasParametros, semanalesTienda}) => {
                 values:[
                   {
                     caption:'COMP',
-                    value:numberWithCommas(tienda.promedioComp)
+                    value:numberWithCommas(tienda['promedioComp' + getYearFromDate(tiendasParametros.fechaFin)])
                   },
                   {
                     caption:getYearFromDate(tiendasParametros.fechaFin),
-                    value:numberWithCommas(tienda.promedioActual)
+                    value:numberWithCommas(tienda['promedioActual' + getYearFromDate(tiendasParametros.fechaFin)])
                   },
-                  {
-                    caption:'%',
-                    value:stringFormatNumber(tienda.porcentajePromedios, false)
-                  },
-                  {
-                    caption:getYearFromDate(tiendasParametros.fechaFin) - 1,
-                    value:numberWithCommas(tienda.promedioAnterior)
-                  }
-                ]
+                  years.map(year =>(
+                    [
+                      {
+                        caption:'%',
+                        value:stringFormatNumber(tienda['porcentajePromedios' + year])
+                      },
+                      {
+                        caption: year,
+                        value:numberWithCommas(tienda['promedioActual' + year])
+                      }
+                    ]
+                  ))
+                ].flat(2)
               }
 
               const articulos = {
@@ -330,17 +469,21 @@ const Stat = ({tiendasParametros, semanalesTienda}) => {
                 values:[
                   {
                     caption:getYearFromDate(tiendasParametros.fechaFin),
-                    value:numberWithCommas(tienda.articulosActual)
+                    value:numberWithCommas(tienda['articulosActual' + getYearFromDate(tiendasParametros.fechaFin)])
                   },
-                  {
-                    caption:'%',
-                    value:stringFormatNumber(tienda.articulosPorcentaje, false)
-                  },
-                  {
-                    caption:getYearFromDate(tiendasParametros.fechaFin) - 1,
-                    value:numberWithCommas(tienda.articulosAnterior)
-                  }
-                ]
+                  years.map(year =>(
+                    [
+                      {
+                        caption:'%',
+                        value:stringFormatNumber(tienda['articulosPorcentaje' + year])
+                      },
+                      {
+                        caption: year,
+                        value:numberWithCommas(tienda['articulosActual' + year])
+                      }
+                    ]
+                  ))
+                ].flat(2)
               }
 
               return(
@@ -366,6 +509,11 @@ const Stat = ({tiendasParametros, semanalesTienda}) => {
 }
 
 const TableMobil = ({tiendasParametros, semanalesTienda}) => {
+  const years = [
+    ... new 
+    Set([...tiendasParametros.agnosComparar])
+  ].sort((a, b) => b - a);
+
   return(
     <section>
       {
@@ -382,8 +530,14 @@ const TableMobil = ({tiendasParametros, semanalesTienda}) => {
                         <th className="text-center">Plaza</th>
                         <th>COMP</th>
                         <th>{getYearFromDate(tiendasParametros.fechaFin)}</th>
-                        <th>%</th>
-                        <th>{getYearFromDate(tiendasParametros.fechaFin) - 1}</th>
+                        {
+                          years.map(year => (
+                            <React.Fragment key={v4()}>
+                              <th>%</th>
+                              <th>{year}</th>
+                            </ React.Fragment>
+                          ))
+                        }
                       </tr>
                     </thead>
                     <tbody className="text-[10px]">
@@ -391,10 +545,16 @@ const TableMobil = ({tiendasParametros, semanalesTienda}) => {
                       semanalesTienda.map((tienda, index) => (
                           <TableRow key={tienda.plaza} rowId={tienda.plaza} className={rowRegion(tienda.plaza)}>
                             <td className="text-left">{tienda.plaza}</td>
-                            <td className="text-right">{numberWithCommas(tienda.compromiso)}</td>
-                            <td className="font-bold text-right" >{numberWithCommas(tienda.ventasActuales)}</td>
-                            {tdFormatNumber(tienda.porcentaje, count == index, 10)}
-                            <td className="text-right">{numberWithCommas(tienda.ventasAnterior)}</td>
+                            <td className="text-right">{numberWithCommas(tienda['compromiso' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
+                            <td className="font-bold text-right" >{numberWithCommas(tienda['ventasActuales' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
+                            {
+                              years.map(year => (
+                                <React.Fragment key={v4()}>
+                                  {tdFormatNumber(tienda['porcentaje' + year], count == index, 10)}
+                                  <td className="text-right">{numberWithCommas(tienda['ventasActuales' + year])}</td>
+                                </React.Fragment>
+                              ))
+                            }
                           </TableRow>
                         ))
                       }
@@ -408,8 +568,14 @@ const TableMobil = ({tiendasParametros, semanalesTienda}) => {
                       <th className="text-center">Plaza</th>
                       <th>COMP</th>
                       <th>{getYearFromDate(tiendasParametros.fechaFin)}</th>
-                      <th>%</th>
-                      <th>{getYearFromDate(tiendasParametros.fechaFin) - 1}</th>
+                      {
+                        years.map(year => (
+                          <React.Fragment key={v4()}>
+                            <th>%</th>
+                            <th>{year}</th>
+                          </ React.Fragment>
+                        ))
+                      }
                     </tr>
                   </thead>
                   <tbody className="text-[10px]">
@@ -417,10 +583,16 @@ const TableMobil = ({tiendasParametros, semanalesTienda}) => {
                      semanalesTienda.map((tienda, index) => (
                         <TableRow key={tienda.plaza} rowId={tienda.plaza} className={rowRegion(tienda.plaza)}>
                           <td className="text-left">{tienda.plaza}</td>
-                          <td className="text-right">{numberWithCommas(tienda.operacionesComp)}</td>
-                          <td className="font-bold text-right" >{numberWithCommas(tienda.operacionesActual)}</td>
-                          {tdFormatNumber(tienda.porcentajeOperaciones, count == index, 10)}
-                          <td className="text-right">{numberWithCommas(tienda.operacionesAnterior)}</td>
+                          <td className="text-right">{numberWithCommas(tienda['operacionesComp'+ getYearFromDate(tiendasParametros.fechaFin)])}</td>
+                          <td className="font-bold text-right" >{numberWithCommas(tienda['operacionesActual'+ getYearFromDate(tiendasParametros.fechaFin)])}</td>
+                          {
+                            years.map(year => (
+                              <React.Fragment key={v4()}>
+                                {tdFormatNumber(tienda['porcentajeOperaciones'+ year], count == index, 10)}
+                                <td className="text-right">{numberWithCommas(tienda['operacionesActual'+ year])}</td>
+                              </React.Fragment>
+                            ))
+                          }
                         </TableRow>
                       ))
                     }
@@ -434,8 +606,14 @@ const TableMobil = ({tiendasParametros, semanalesTienda}) => {
                       <th className="text-center">Plaza</th>
                       <th>COMP</th>
                       <th>{getYearFromDate(tiendasParametros.fechaFin)}</th>
-                      <th>%</th>
-                      <th>{getYearFromDate(tiendasParametros.fechaFin) - 1}</th>
+                      {
+                        years.map(year => (
+                          <React.Fragment key={v4()}>
+                            <th>%</th>
+                            <th>{year}</th>
+                          </ React.Fragment>
+                        ))
+                      }
                     </tr>
                   </thead>
                   <tbody className="text-[10px]">
@@ -443,10 +621,16 @@ const TableMobil = ({tiendasParametros, semanalesTienda}) => {
                       semanalesTienda.map((tienda, index) => (
                         <TableRow key={tienda.plaza} rowId={tienda.plaza} className={rowRegion(tienda.plaza)}>
                           <td className="text-left">{tienda.plaza}</td>
-                          <td className="text-right">{numberWithCommas(tienda.promedioComp)}</td>
-                          <td className="font-bold text-right" >{numberWithCommas(tienda.promedioActual)}</td>
-                          {tdFormatNumber(tienda.porcentajePromedios, count == index, 10)}
-                          <td className="text-right">{numberWithCommas(tienda.promedioAnterior)}</td>
+                          <td className="text-right">{numberWithCommas(tienda['promedioComp' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
+                          <td className="font-bold text-right" >{numberWithCommas(tienda['promedioActual' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
+                          {
+                            years.map(year => (
+                              <React.Fragment key={v4()}>
+                                {tdFormatNumber(tienda['porcentajePromedios' + year], count == index, 10)}
+                                <td className="text-right">{numberWithCommas(tienda['promedioActual' + year])}</td>
+                              </React.Fragment>
+                            ))
+                          }
                         </TableRow>
                       ))
                     }
@@ -459,8 +643,14 @@ const TableMobil = ({tiendasParametros, semanalesTienda}) => {
                     <tr>
                       <th className="text-center">Plaza</th>
                       <th>{getYearFromDate(tiendasParametros.fechaFin)}</th>
-                      <th>%</th>
-                      <th>{getYearFromDate(tiendasParametros.fechaFin) - 1}</th>
+                      {
+                        years.map(year => (
+                          <React.Fragment key={v4()}>
+                            <th>%</th>
+                            <th>{year}</th>
+                          </ React.Fragment>
+                        ))
+                      }
                     </tr>
                   </thead>
                   <tbody className="text-[10px]">
@@ -468,9 +658,15 @@ const TableMobil = ({tiendasParametros, semanalesTienda}) => {
                       semanalesTienda.map((tienda, index) => (
                         <TableRow key={tienda.plaza} rowId={tienda.plaza} className={rowRegion(tienda.plaza)}>
                           <td className="text-left">{tienda.plaza}</td>
-                          <td className="font-bold text-right" >{numberWithCommas(tienda.articulosActual)}</td>
-                          {tdFormatNumber(tienda.articulosPorcentaje, count == index, 10)}
-                          <td className="text-right">{numberWithCommas(tienda.articulosAnterior)}</td>
+                          <td className="font-bold text-right" >{numberWithCommas(tienda['articulosActual' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
+                          {
+                            years.map(year => (
+                              <React.Fragment key={v4()}>
+                                {tdFormatNumber(tienda['articulosPorcentaje' + year], count == index, 10)}
+                                <td className="text-right">{numberWithCommas(tienda['articulosActual' + year])}</td>
+                              </React.Fragment>
+                            ))
+                          }
                         </TableRow>
                       ))
                     }
@@ -487,11 +683,16 @@ const TableMobil = ({tiendasParametros, semanalesTienda}) => {
 }
 
 const StatGroup = ({data, tiendasParametros, selectRegion}) => {
+  const years = [
+    ... new 
+    Set([...tiendasParametros.agnosComparar])
+  ].sort((a, b) => b - a);
+
   return(
     <div>
       {
         (()=>{
-          if(Object.keys(data).length > 0 && data.hasOwnProperty(selectRegion)){
+          if( data && Object.keys(data).length > 0 && data.hasOwnProperty(selectRegion)){
 
 
             const comp = data[selectRegion].map(tienda => (
@@ -500,21 +701,25 @@ const StatGroup = ({data, tiendasParametros, selectRegion}) => {
                 values:[
                   {
                     caption:'COMP',
-                    value:numberWithCommas(tienda.compromiso)
+                    value:numberWithCommas(tienda['compromiso' + getYearFromDate(tiendasParametros.fechaFin)])
                   },
                   {
                     caption:getYearFromDate(tiendasParametros.fechaFin),
-                    value:numberWithCommas(tienda.ventasActuales)
+                    value:numberWithCommas(tienda['ventasActuales' + getYearFromDate(tiendasParametros.fechaFin)])
                   },
-                  {
-                    caption:'%',
-                    value:stringFormatNumber(tienda.porcentaje)
-                  },
-                  {
-                    caption:getYearFromDate(tiendasParametros.fechaFin) - 1,
-                    value:numberWithCommas(tienda.ventasAnterior)
-                  }
-                ]
+                  years.map(year =>(
+                    [
+                      {
+                        caption:'%',
+                        value:stringFormatNumber(tienda['porcentaje' + year])
+                      },
+                      {
+                        caption: year,
+                        value:numberWithCommas(tienda['ventasActuales' + year])
+                      }
+                    ]
+                  ))
+                ].flat(2)
               }
             ));
 
@@ -524,21 +729,25 @@ const StatGroup = ({data, tiendasParametros, selectRegion}) => {
                 values:[
                   {
                     caption:'COMP',
-                    value:numberWithCommas(tienda.operacionesComp)
+                    value:numberWithCommas(tienda['operacionesComp'+ getYearFromDate(tiendasParametros.fechaFin)])
                   },
                   {
                     caption:getYearFromDate(tiendasParametros.fechaFin),
-                    value:numberWithCommas(tienda.operacionesActual)
+                    value:numberWithCommas(tienda['operacionesActual'+ getYearFromDate(tiendasParametros.fechaFin)])
                   },
-                  {
-                    caption:'%',
-                    value:stringFormatNumber(tienda.porcentajeOperaciones)
-                  },
-                  {
-                    caption:getYearFromDate(tiendasParametros.fechaFin) - 1,
-                    value:numberWithCommas(tienda.operacionesAnterior)
-                  }
-                ]
+                  years.map(year =>(
+                    [
+                      {
+                        caption:'%',
+                        value:stringFormatNumber(tienda['porcentajeOperaciones'+ year])
+                      },
+                      {
+                        caption: year,
+                        value:numberWithCommas(tienda['operacionesActual'+ year])
+                      }
+                    ]
+                  ))
+                ].flat(2)
               }
             ));
 
@@ -548,21 +757,25 @@ const StatGroup = ({data, tiendasParametros, selectRegion}) => {
                 values:[
                   {
                     caption:'COMP',
-                    value:numberWithCommas(tienda.promedioComp)
+                    value:numberWithCommas(tienda['promedioComp' + getYearFromDate(tiendasParametros.fechaFin)])
                   },
                   {
                     caption:getYearFromDate(tiendasParametros.fechaFin),
-                    value:numberWithCommas(tienda.promedioActual)
+                    value:numberWithCommas(tienda['promedioActual' + getYearFromDate(tiendasParametros.fechaFin)])
                   },
-                  {
-                    caption:'%',
-                    value:stringFormatNumber(tienda.porcentajePromedios)
-                  },
-                  {
-                    caption:getYearFromDate(tiendasParametros.fechaFin) - 1,
-                    value:numberWithCommas(tienda.promedioAnterior)
-                  }
-                ]
+                  years.map(year =>(
+                    [
+                      {
+                        caption:'%',
+                        value:stringFormatNumber(tienda['porcentajePromedios' + year])
+                      },
+                      {
+                        caption: year,
+                        value:numberWithCommas(tienda['promedioActual' + year])
+                      }
+                    ]
+                  ))
+                ].flat(2)
               }
             ));
 
@@ -572,17 +785,21 @@ const StatGroup = ({data, tiendasParametros, selectRegion}) => {
                 values:[
                   {
                     caption:getYearFromDate(tiendasParametros.fechaFin),
-                    value:numberWithCommas(tienda.articulosActual)
+                    value:numberWithCommas(tienda['articulosActual' + getYearFromDate(tiendasParametros.fechaFin)])
                   },
-                  {
-                    caption:'%',
-                    value:stringFormatNumber(tienda.articulosPorcentaje)
-                  },
-                  {
-                    caption:getYearFromDate(tiendasParametros.fechaFin) - 1,
-                    value:numberWithCommas(tienda.articulosAnterior)
-                  }
-                ]
+                  years.map(year =>(
+                    [
+                      {
+                        caption:'%',
+                        value:stringFormatNumber(tienda['articulosPorcentaje' + year])
+                      },
+                      {
+                        caption: year,
+                        value:numberWithCommas(tienda['articulosActual' + year])
+                      }
+                    ]
+                  ))
+                ].flat(2)
               }
             ));
 

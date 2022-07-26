@@ -8,6 +8,7 @@ export const formatNumber = (num, isLast=false) => {
   let numberText = '';
   if (num < 0) {
     numberText = Math.abs(num).toLocaleString('en-US');
+    if(isNaN(numberText)) numberText = 0;
     return (<td style={{
       color: isLast ? "white" : "rgb(220 38 38)",
       fontWeight: 700,
@@ -16,6 +17,7 @@ export const formatNumber = (num, isLast=false) => {
     }}>{`(${numberText})`}</td>)
   } else {
     numberText = Math.abs(num).toLocaleString('en-US');
+    if(isNaN(numberText)) numberText = 0;
     return (<td style={{
       color: isLast ? "white" : "rgb(5 150 105)",
       fontWeight: 700,
@@ -29,6 +31,7 @@ export const stringFormatNumber = (num, isLast=false) => {
   let numberText = '';
   if (num < 0) {
     numberText = Math.abs(num).toLocaleString('en-US');
+    if(isNaN(numberText)) numberText = 0;
     return (<span style={{
       color: isLast ? "black" : "rgb(220 38 38)",
       fontWeight: 700,
@@ -37,6 +40,7 @@ export const stringFormatNumber = (num, isLast=false) => {
     }}>{`(${numberText})`}</span>)
   } else {
     numberText = Math.abs(num).toLocaleString('en-US');
+    if(isNaN(numberText)) numberText = 0;
     return (<span style={{
       color: isLast ? "black" : "rgb(5 150 105)",
       fontWeight: 700,
@@ -50,6 +54,7 @@ export const tdFormatNumber = (num, isLast=false, font=12) => {
   let numberText = '';
   if (num < 0) {
     numberText = Math.abs(num).toLocaleString('en-US');
+    if(isNaN(numberText)) numberText = 0;
     return (<td style={{
       color: isLast ? "black" : "rgb(220 38 38)",
       fontWeight: 700,
@@ -58,6 +63,7 @@ export const tdFormatNumber = (num, isLast=false, font=12) => {
     }}>{`(${numberText})`}</td>)
   } else {
     numberText = Math.abs(num).toLocaleString('en-US');
+    if(isNaN(numberText)) numberText = 0;
     return (<td style={{
       color: isLast ? "black" : "rgb(5 150 105)",
       fontWeight: 700,
@@ -72,5 +78,6 @@ export const tdFormatNumber = (num, isLast=false, font=12) => {
  * @returns {string} El valor formateado
  */
 export const numberWithCommas = (num) => {
-  return num.toLocaleString('en-US');
+  if(num) return num.toLocaleString('en-US');
+  return 0;
 }
