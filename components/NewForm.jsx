@@ -73,7 +73,6 @@ export default function NewForm({submit, userParams, dashbordParams}) {
     }
   }
 
-  console.log(dashbordParams);
   
   /**
    * Establece el objeto de valores iniciales
