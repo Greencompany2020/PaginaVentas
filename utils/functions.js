@@ -17,7 +17,7 @@ export const getTiendaName = (tiendaId) => {
  * @returns {string} El nombre de la plaza.
  */
 export const getPlazaName = (plazaId) => {
-  const plaza = plazas.find((plaza) => plaza.value === plazaId);
+  const plaza = plazas.find((plaza) => plaza.value == plazaId);
   return plaza?.text;
 }
 /**
@@ -735,31 +735,16 @@ export const getValueFromObject = (data, findKey=null) => {
 
 export const spliteArrDate = (arr, cb = 1) => {
   const currentYear = new Date(Date.now()).getFullYear() - 1;
-  if(cb == 1){
-    if(arr){
-      if(arr.includes(',')){
-        parseInt(arr.split(',')[0]);
-      }
-      else{
-        const temp = arr.split(',');
-        return [parseInt(temp[0]), parseInt(temp[1])];
-      }
-    }else{
-      return [currentYear];
-    }
-  }else{
-    if(arr){
-      if(arr.includes(',')){
-        const temp = arr.split(',');
-        return [parseInt(temp[0]), parseInt(temp[1])];
-      }
-      else{
-        return [parseInt(arr)];
-      }
-    }else{
-      return [currentYear , currentYear - 1];
-    }
+  if(arr){
+    const arrTemp = arr.split(',');
+    if(arrTemp.length == 1) arrTemp.push(arrTemp[0] - 1)
+    return arrTemp;
   }
+  else{
+    const arrTemp = [currentYear - 1 ,currentYear - 2];
+    return arrTemp;
+  }
+
 }
 
 /**

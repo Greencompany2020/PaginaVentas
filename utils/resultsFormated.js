@@ -98,7 +98,7 @@ export const numberAbs = (num) => {
 
 export const isNegative = (num) => {
   if(isNaN(num)) return 'positive';
-  return parseInt(num) < 0 ? 'negative' : 'positive';
+  return parseFloat(num) >= 0 ? 'positive' : 'negative';
 }
 
 export const isRegionOrPlaza = val =>{
@@ -110,4 +110,21 @@ export const isRegionOrPlaza = val =>{
   }else{
     return 'tienda'
   }
+}
+
+/**
+ * Esta funcion resalta la lienea seleccionada
+ * @param {*} evt 
+ */
+export const selectRow = evt =>{
+  const {target:{parentElement}} = evt;
+    const {localName} = parentElement;
+
+    if(localName == 'tr'){
+      if(parentElement.classList.contains('selected-row')){
+        parentElement.classList.remove('selected-row')
+      }else{
+        parentElement.classList.add('selected-row')
+      }
+    }
 }

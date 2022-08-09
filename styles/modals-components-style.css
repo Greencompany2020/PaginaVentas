@@ -1,0 +1,46 @@
+/*MODAL*/
+.modal-main,
+.confirm-modal{
+    @apply
+    fixed 
+    bg-white
+    top-0
+    min-w-[300px] 
+    min-h-[200px]
+    w-fit  
+    translate-x-[calc(50vw_-_50%)] 
+    translate-y-[calc(50vh_-_50%)]
+    z-30
+    rounded-md
+    box-content
+    overflow-hidden
+    transition-transform duration-300 ease-in-out
+    transform scale-0
+    shadow-sm
+}
+
+.modal-main.active, 
+.confirm-modal.active{
+    @apply transform scale-100
+}
+
+.modal-main-header ,
+.confirm-modal-header{
+    @apply 
+    flex 
+    justify-between
+    items-center
+    h-12
+    p-2
+    bg-black-shape
+}
+.modal-main-body{
+    @apply 
+    min-w-[350px] 
+    min-h-[200px] 
+    max-w-fit 
+    max-h-fit p-2
+    overflow-auto 
+}
+
+

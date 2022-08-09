@@ -4,7 +4,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {getCurrentWeekDateRange, getYearFromDate} from "../../utils/dateFunctions";
 import {
   dateRangeTitle,
-  validateInputhateRange,
   spliceData,
   spliteArrDate,
   parseParams,
@@ -16,26 +15,24 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 import Stats from "../../components/Stats";
-import { numberWithCommas, numberAbs, isNegative, isRegionOrPlaza, stringFormatNumber} from "../../utils/resultsFormated";
+import { numberWithCommas, numberAbs, isNegative, isRegionOrPlaza, stringFormatNumber, selectRow} from "../../utils/resultsFormated";
 import { isMobile } from "react-device-detect";
 import ViewFilter from "../../components/ViewFilter";
 import { v4 } from "uuid";
-import ExcelButton from "../../components/buttons/ExcelButton";
-import semTienda from "../../utils/excel/templates/semtTienda";
-import exportExcel from "../../utils/excel/exportExcel";
-
 import { Formik,Form } from "formik";
 import {Select, DateRange, Checkbox, BeetWenYears} from '../../components/inputs/reportInputs';
 import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
+import ExcelButton from "../../components/buttons/ExcelButton";
+import exportExcel from "../../utils/excel/exportExcel";
+import semTiendas from "../../utils/excel/templates/semTiendas";
 
 const Tiendas = (props) => {
   const {config} = props;
   const sendNotification = useNotification();
-  const currenthate = new Date(Date.now());
 
   //Estados de los reportes
   const [beginDate, endDate] = getCurrentWeekDateRange();
-  const [reportDate, setReportDate] = useState({beginDate, endDate, dateRange:[currenthate.getFullYear() -1, currenthate.getFullYear() -2]});
+  const [reportDate, setReportDate] = useState({beginDate, endDate, dateRange:spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)});
   const [dataReport, setDataReport] = useState(null);
 
   //Estado del reporte por secciones;
@@ -46,8 +43,7 @@ const Tiendas = (props) => {
   const [currentShop, setCurrentShop] = useState('Frogs');
 
 
-
-  let parameters = {
+  const parameters = {
     fechaInicio: beginDate,
     fechaFin: endDate,
     tiendas: 0,
@@ -60,8 +56,7 @@ const Tiendas = (props) => {
     tipoCambioTiendas: 0,
     cbAgnosComparar: config?.cbAgnosComparar || 1, 
   }
-
-
+  Object.seal(parameters);
 
   const handleSubmit = async values =>{
     try {
@@ -111,6 +106,15 @@ const Tiendas = (props) => {
     setDataReportSeccions(spliceData(data, dataSeccions));
   }
 
+  const handleExport = () => {
+    const template = semTiendas(
+      dateRangeTitle(reportDate.beginDate, reportDate.endDate),
+      dataReport, 
+      [getYearFromDate(reportDate.endDate), reportDate.dateRange].flat(1)
+    );
+    exportExcel('Semanales Tienda', template.getColums(), template.getRows(), template.style);
+  }
+
 
   return (
     <div className=" flex flex-col h-full">
@@ -154,7 +158,7 @@ const Tiendas = (props) => {
                       endDate={{
                         id:'agnosComparar[1]',
                         name:'agnosComparar[1]',
-                        label:'Primer año'
+                        label:'Segundo año'
                       }}  
                     />
                     <Select id='incremento' name='incremento' label='Formular % de incremento'>
@@ -191,6 +195,7 @@ const Tiendas = (props) => {
         </div>
         <div className="flex justify-between">
           <p className="text-sm font-bold">{currentShop}</p>
+          <ExcelButton handleClick={handleExport} />
         </div>
       </section>
 
@@ -225,17 +230,9 @@ const Tiendas = (props) => {
 const Table = props => {
   const {data, date} = props;
 
-  const handleClick = evt =>{
-    const {target:{parentElement}} = evt;
-    if(parentElement.classList.contains('selected-row')){
-      parentElement.classList.remove('selected-row')
-    }else{
-      parentElement.classList.add('selected-row')
-    }
-  }
 
   return(
-    <table className="table-report" onClick={handleClick}>
+    <table className="table-report" onClick={selectRow}>
       <thead>
         <tr>
           <th rowSpan={3} className='text-center'>Plaza</th>
@@ -342,19 +339,11 @@ const Table = props => {
 
 const TableMobil = props =>{
   const {data, date} = props;
-  const handleClick = evt =>{
-    const {target:{parentElement}} = evt;
-    if(parentElement.classList.contains('selected-row')){
-      parentElement.classList.remove('selected-row')
-    }else{
-      parentElement.classList.add('selected-row')
-    }
-  }
-
+  
   return(
     <>
       <div className="space-y-8">
-        <table className="table-report-mobile" onClick={handleClick}>
+        <table className="table-report-mobile" onClick={selectRow}>
           <caption>Compromiso</caption>
           <thead>
             <tr>
@@ -392,7 +381,7 @@ const TableMobil = props =>{
           </tbody>
         </table>
 
-        <table className="table-report-mobile" onClick={handleClick}>
+        <table className="table-report-mobile" onClick={selectRow}>
           <caption>Operaciones</caption>
           <thead>
             <tr>
@@ -430,7 +419,7 @@ const TableMobil = props =>{
           </tbody>
         </table>
 
-        <table className="table-report-mobile" onClick={handleClick}>
+        <table className="table-report-mobile" onClick={selectRow}>
           <caption>Promedios</caption>
           <thead>
             <tr>
@@ -468,7 +457,7 @@ const TableMobil = props =>{
           </tbody>
         </table>
 
-        <table className="table-report-mobile" onClick={handleClick}>
+        <table className="table-report-mobile" onClick={selectRow}>
           <caption>Articulos prom</caption>
           <thead>
             <tr>

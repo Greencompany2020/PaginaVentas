@@ -14,7 +14,7 @@ const witAuth = (Component) => {
     const service = authService();
     const [loading, setLoading] = useState(true);
     const [config, setConfig] = useState({});
-    const {setAuth} = useAuth();
+    const {setAuth, getAllParameters} = useAuth();
 
     const getConfiguration = (userParams) => {
       const configuration = {}
@@ -60,7 +60,11 @@ const witAuth = (Component) => {
           else if(exceptions.tokenRequired && !token){
             router.push('/')
           }
-          setAuth(true);
+          if(token){
+           await setAuth(true);
+           await getAllParameters()
+          } 
+          
           setLoading(false)
         } catch (error) {
           router.push('/')

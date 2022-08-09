@@ -46,7 +46,7 @@ const Navbar = () => {
   return (
     <>
       <nav className="w-full h-[3rem] bg-black-shape">
-        <div className="flex pl-4 pr-4  h-full justify-between">
+        <div className="flex  h-full justify-between">
             <Link href={'/dashboard'}>
               <a>
                 <figure className="relative w-[3rem] h-[3rem]">

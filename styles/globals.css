@@ -3,6 +3,7 @@
 @tailwind utilities;
 
 @import "./tables-components-styles.css";
+@import "./modals-components-style.css";
 
 
 details > summary {

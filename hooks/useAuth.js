@@ -1,4 +1,4 @@
-import {useState, useEffect} from 'react';
+import {useState} from 'react';
 import userService from '../services/userServices';
 import { useNotification } from '../components/notifications/NotificationsProvider';
 
@@ -34,34 +34,28 @@ export default function useProviderAuth(){
                })
         }
     }
+
+    const getAllParameters = async() => {
+        try {
+            //get all data
+            const responseUser = await service.getUser();
+            const responsePlazas = await service.getPlazas();
+            const responseTiendas = await service.getTiendas();
+            const responseGlobalParameters = await service.getGlobalParameters();
+
+            //set all data
+            setUser(responseUser);
+            setPlazas(responsePlazas);
+            setTiendas(responseTiendas);
+            setGlobalParameters(responseGlobalParameters);
+        } catch (error) {
+           sendNotification({
+            type:'ERROR',
+            message:error.message,
+           })
+        }
+    }
     
-
-    useEffect(()=>{
-        (async()=>{
-            if(auth){
-                try {
-                    //get all data
-                    const responseUser = await service.getUser();
-                    const responsePlazas = await service.getPlazas();
-                    const responseTiendas = await service.getTiendas();
-                    const responseGlobalParameters = await service.getGlobalParameters();
-
-                    //set all data
-                    setUser(responseUser);
-                    setPlazas(responsePlazas);
-                    setTiendas(responseTiendas);
-                    setGlobalParameters(responseGlobalParameters);
-                } catch (error) {
-                   sendNotification({
-                    type:'ERROR',
-                    message:error.message,
-                   })
-                }
-            }
-        })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[auth])
-
     return {
         plazas,
         tiendas,
@@ -70,5 +64,6 @@ export default function useProviderAuth(){
         refreshUser,
         globalParameters,
         refreshGlobalParameters,
+        getAllParameters,
     }
 }

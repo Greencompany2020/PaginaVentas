@@ -1,5 +1,6 @@
 import React from "react";
 import { TrashIcon, PencilAltIcon } from "@heroicons/react/outline";
+import { v4 } from "uuid";
 
 export default function GroupTable(props) {
   const { items, handleSelect,handleShowModal, deleteGroup } = props;
@@ -16,17 +17,17 @@ export default function GroupTable(props) {
           </tr>
         </thead>
         <tbody>
-          {items.map((item, index) => (
-            <tr key={item.Id} className="cursor-pointer" onClick={() => handleSelect(item)}>
+          {items.map(item => (
+            <tr key={v4()} className="cursor-pointer" onClick={() => handleSelect(item)}>
               <td>{item.Nombre}</td>
               <td className="flex justify-end space-x-1">
                 <PencilAltIcon
-                  width={32}
+                  width={26}
                   className="cursor-pointer hover:text-blue-500"
                   onClick={handleShowModal}
                 />
                 <TrashIcon
-                  width={32}
+                  width={26}
                   className="cursor-pointer hover:text-blue-500"
                   onClick={() => deleteGroup(item.Id)}
                 />

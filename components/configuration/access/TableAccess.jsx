@@ -1,5 +1,6 @@
 import { TrashIcon, PencilAltIcon, AdjustmentsIcon } from "@heroicons/react/outline";
 import { generateLivKey } from "../../../utils/functions";
+import { v4 } from "uuid";
 
 export default function TableAccess(props) {
   const { items, handleSelect, handleShowModal, deleteAccess, handleShowRetrive} = props;
@@ -19,24 +20,24 @@ export default function TableAccess(props) {
           </tr>
         </thead>
         <tbody>
-          {items.map((item, index) => (
-            <tr key={generateLivKey(index)} className="cursor-pointer" onClick={()=>handleSelect(item)}>
+          {items.map(item => (
+            <tr key={v4()} className="cursor-pointer" onClick={()=>handleSelect(item)}>
               <td className=" hidden lg:table-cell">{item.menu}</td>
               <td className=" hidden lg:table-cell">{item.reporte}</td>
               <td>{item.nombreReporte}</td>
               <td className="flex justify-center space-x-1">
                 <PencilAltIcon
-                  width={32}
+                  width={26}
                   className="cursor-pointer hover:text-blue-500"
                   onClick={handleShowModal}
                 />
                  <AdjustmentsIcon
-                  width={32}
+                  width={26}
                   className="curos-pointer hover:text-blue-500"
                   onClick={handleShowRetrive}
                 />
                 <TrashIcon
-                  width={32}
+                  width={26}
                   className="cursor-pointer hover:text-blue-500"
                   onClick={() => deleteAccess(item.idDashboard)}
                 />
