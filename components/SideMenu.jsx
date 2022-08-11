@@ -65,14 +65,14 @@ const SideMenu = () => {
         ref={menuRef}
         className={`w-80 h-[calc(_100vh_-_3rem)] bg-black-light left-0 top-[3rem] z-40  transform fixed  ${
           visible && "-translate-x-full"
-        } transition duration-200 ease-in-out`}
+        } transition duration-200 ease-in-out shadow-md`}
         onMouseLeave={handleOnLeave}
       >
         <div className="flex flex-col h-full justify-between p-4 space-y-3">
           <div className="flex justify-between items-center">
-            <h3 className=" text-white text-2xl">Menu</h3>
+            <h3 className=" text-white font-bold">Menu</h3>
             <XIcon
-              width={28}
+              width={24}
               className=" text-white cursor-pointer"
               onClick={toggleVisible}
             />

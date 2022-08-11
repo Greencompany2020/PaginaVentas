@@ -98,7 +98,7 @@ const Plazas = (props) => {
         dataReport, 
         [getYearFromDate(reportDate.endDate), reportDate.dateRange].flat(1)
       );
-    exportExcel('semanales plaza', template.getColums(), template.getRows(), template.style)
+    exportExcel(`semanales plaza ${reportDate.endDate}`, template.getColums(), template.getRows(), template.style, ['Tiendas Frogs', 'Tienda en linea'])
   }
 
   return (

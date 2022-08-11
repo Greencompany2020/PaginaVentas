@@ -1,210 +1,128 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getVentasLayout } from "../../components/layout/VentasLayout";
-import {
-  ParametersContainer,
-  Parameters,
-} from "../../components/containers";
-import {
-  VentasTableContainer,
-  VentasTable,
-  TableHead,
-  TableRow,
-} from "../../components/table";
-import {
-  SelectTiendas,
-  SelectMonth,
-  InputYear,
-  InputContainer,
-  Checkbox,
-} from "../../components/inputs";
-import { checkboxLabels, MENSAJE_ERROR } from "../../utils/data";
+import {ParametersContainer,Parameters,} from "../../components/containers";
+import { checkboxLabels} from "../../utils/data";
 import { getDiariasTiendaSimple } from "../../services/DiariasServices";
-import {
-  getInitialTienda,
-  getLastTwoNumbers,
-  getTiendaName,
-} from "../../utils/functions";
-import { numberWithCommas } from "../../utils/resultsFormated";
-import { getMonthByNumber } from "../../utils/dateFunctions";
-import { handleChange } from "../../utils/handlers";
+import {getInitialTienda,getLastTwoNumbers,getTiendaName,parseNumberToBoolean,parseParams,} from "../../utils/functions";
+import { numberWithCommas, selectRow } from "../../utils/resultsFormated";
+import { getMonthByNumber,} from "../../utils/dateFunctions";
 import withAuth from "../../components/withAuth";
 import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import {useNotification} from '../../components/notifications/NotificationsProvider';
+import { Form, Formik } from "formik";
+import { Select, SelectYear, SelectMonth, Checkbox } from "../../components/inputs/reportInputs";
+import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
 
 const Simple = (props) => {
   const {config} = props;
   const sendNotification = useNotification();
   const { tiendas } = useAuth();
-  const [tiendaSimple, setTiendaSimple] = useState([]);
-  const [tiendaSimpleParametros, setTiendaSimpleParametros] = useState({
+  
+  const [reportDate, setReportDate] = useState({
+    year: new Date(Date.now()).getUTCFullYear(),
+    month: new Date(Date.now()).getMonth() + 1
+  });
+
+  const [currentShop, setCurrentShop] = useState(getInitialTienda(tiendas));
+  const [dataReport, setDataReport] = useState(null);
+
+  const parameters = {
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
     tienda: getInitialTienda(tiendas),
-    conIva: 0,
-  });
+    conIva: parseNumberToBoolean(config?.conIva || 0)
+  }
 
-  useEffect(()=>{
-    if(tiendas){
-      setTiendaSimpleParametros(prev => ({...prev, 
-        tienda:getInitialTienda(tiendas),
-        conIva: config.conIva || 0,
-      }));
+  const handleSubmit = async params => {
+    try {
+      const response = await getDiariasTiendaSimple(parseParams(params));
+      setReportDate({year: params.delAgno, month:params.delMes});
+      setCurrentShop(getTiendaName(params.tienda));
+      setDataReport(response);
+    } catch (error) {
+      sendNotification({
+        type:'ERROR',
+        message:'Error al consultar datos'
+      });
     }
-  },[tiendas, config]);
-
-  useEffect(() => {
-      (async ()=>{
-        if(tiendas){
-          try {
-            const response = await getDiariasTiendaSimple(tiendaSimpleParametros);
-            setTiendaSimple(response);
-          } catch (error) {
-            sendNotification({
-              type:'ERROR',
-              message:response?.response?.data ?? MENSAJE_ERROR
-            });
-          }
-        }
-      })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tiendaSimpleParametros, tiendaSimpleParametros.delAgno]);
+  }
 
   return (
     <div className=" flex flex-col h-full">
-      <TitleReport
-        title={`Ventas Diarias ${getTiendaName(
-          tiendaSimpleParametros.tienda
-        )} ${getMonthByNumber(tiendaSimpleParametros.delMes)} ${
-          tiendaSimpleParametros.delAgno
-        }`}
-      />
+      <TitleReport title={`Ventas Diarias ${currentShop} ${getMonthByNumber(reportDate.month)} ${reportDate.year}`}/>
       <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
-            <InputContainer>
-              <SelectTiendas
-                value={tiendaSimpleParametros.tienda}
-                onChange={(e) => handleChange(e, setTiendaSimpleParametros)}
-              />
-              <div className="flex items-center space-x-1">
-                <div className="flex-1">
-                  <InputYear
-                    value={tiendaSimpleParametros.delAgno}
-                    onChange={(e) => handleChange(e, setTiendaSimpleParametros)}
-                  />
-                </div>
-                <div className="flex-1">
-                  <SelectMonth
-                    value={tiendaSimpleParametros.delMes}
-                    onChange={(e) => handleChange(e, setTiendaSimpleParametros)}
-                  />
-                </div>
-              </div>
-             
-              <Checkbox
-                className="mb-2"
-                labelText={checkboxLabels.VENTAS_IVA}
-                checked={tiendaSimpleParametros.conIva ? true : false}
-                name="conIva"
-                onChange={(e) => handleChange(e, setTiendaSimpleParametros)}
-              />
-            </InputContainer>
+            <Formik initialValues={parameters} onSubmit={handleSubmit}>
+                <Form>
+                  <AutoSubmitToken/>
+                  <fieldset className="space-y-2 mb-3">
+                    <Select id='tienda' name='tienda' label='Tienda'>
+                      {
+                        tiendas && tiendas.map(tienda =>(
+                          <option value={`${tienda.EmpresaWeb}${tienda.NoTienda}`} key={tienda.Descrip}>{tienda.Descrip}</option>
+                        ))
+                      }
+                    </Select>
+                    <div className="grid grid-cols-2 gap-2 ">
+                      <SelectMonth id='delMes' name='delMes' label='Del Mes'/>
+                      <SelectYear id='delAgno' name='delAgno' label='Del año'/>
+                    </div>
+                  </fieldset>
+                  <fieldset className="space-y-1">
+                      <Checkbox id='conIva' name='conIva' label={checkboxLabels.VENTAS_IVA}/>
+                  </fieldset>
+              </Form>
+            </Formik>
           </Parameters>
         </ParametersContainer>
       </section>
-      <section className="p-4 overflow-y-auto">
-        <VentasTableContainer>
-          <VentasTable>
-            <TableHead>
+
+      <section className="p-4 overflow-auto">
+        <div className="overflow-y-auto">
+          <table className="table-report-footer" onClick={selectRow}>
+            <thead>
               <tr>
-                <th
-                  colSpan={2}
-                  className="border border-white bg-black-shape rounded-tl-xl"
-                >
-                  Dia
-                </th>
-                <th
-                  colSpan={3}
-                  className="border border-white bg-black-shape  rounded-tr-xl"
-                >
-                  Venta por Dia
-                </th>
+                <th colSpan={2} className='text-center'>dia</th>
+                <th colSpan={3} className='text-center'>Venta por dia</th>
               </tr>
               <tr>
-                <th className="border border-white bg-black-shape text-right">
-                  {getLastTwoNumbers(tiendaSimpleParametros.delAgno)}
-                </th>
-                <th className="border border-white bg-black-shape text-right">
-                  {getLastTwoNumbers(tiendaSimpleParametros.delAgno - 1)}
-                </th>
-                <th className="border border-white bg-black-shape text-right">
-                  {tiendaSimpleParametros.delAgno}
-                </th>
-                <th className="border border-white bg-black-shape text-right">
-                  {tiendaSimpleParametros.delAgno - 1}
-                </th>
-                <th className="border border-white bg-black-shape text-right">Acum</th>
+                <th>{getLastTwoNumbers(reportDate.year)}</th>
+                <th>{getLastTwoNumbers(reportDate.year) - 1}</th>
+                <th>{reportDate.year}</th>
+                <th>{reportDate.year - 1}</th>
+                <th>Acum</th>
               </tr>
-            </TableHead>
-            <tbody className="bg-white text-right">
+            </thead>
+            <tbody>
               {
-                (()=>{
-                  if(tiendaSimple.length > 0){
-                    const Items = tiendaSimple?.map((ventas) => (
-                      <TableRow key={ventas.dia} rowId={ventas.dia}>
-                        <td className="text-xs font-bold">{ventas.dia}</td>
-                        <td className="text-xs">{ventas.dia}</td>
-                        <td className="text-xs font-bold">
-                          {numberWithCommas(ventas.ventaActual)}
-                        </td>
-                        <td className="text-xs">
-                          {numberWithCommas(ventas.ventaAnterior)}
-                        </td>
-                        <td className="text-xs font-bold">
-                          {numberWithCommas(ventas.acumulado)}
-                        </td>
-                      </TableRow>
-                    ));
-                    return Items;
-                  }
-                  return <></>
-                })()
+                (dataReport && dataReport.length > 0) && dataReport.map(item => (
+                  <tr>
+                    <td  className="priority-cell">{item.dia}</td>
+                    <td>{item.dia}</td>
+                    <td  className="priority-cell">{numberWithCommas(item.ventaActual)}</td>
+                    <td>{numberWithCommas(item.ventaAnterior)}</td>
+                    <td  className="priority-cell">{numberWithCommas(item.acumulado)}</td>
+                  </tr>
+                ))
               }
             </tbody>
-            <tfoot className=" text-white text-center text-xs font-bold">
+            <tfoot>
               <tr>
-                <th className="border border-white bg-black text-right">
-                  {getLastTwoNumbers(tiendaSimpleParametros.delAgno)}
-                </th>
-                <th className="border border-white bg-black text-right">
-                  {getLastTwoNumbers(tiendaSimpleParametros.delAgno - 1)}
-                </th>
-                <th className="border border-white bg-black text-right">
-                  {tiendaSimpleParametros.delAgno}
-                </th>
-                <th className="border border-white bg-black text-right">
-                  {tiendaSimpleParametros.delAgno - 1}
-                </th>
-                <th className="border border-white bg-black text-right">Acum</th>
+                <td >{getLastTwoNumbers(reportDate.year)}</td>
+                <td>{getLastTwoNumbers(reportDate.year) - 1}</td>
+                <td>{reportDate.year}</td>
+                <td>{reportDate.year - 1}</td>
+                <td>Acum</td>
               </tr>
               <tr>
-                <th
-                  colSpan={2}
-                  className="border border-white bg-black rounded-bl-xl"
-                >
-                  Dia
-                </th>
-                <th
-                  colSpan={3}
-                  className="border border-white bg-black rounded-br-xl"
-                >
-                  Venta por Dia
-                </th>
+                <td colSpan={2}>dia</td>
+                <td colSpan={3}>Venta por dia</td>
               </tr>
             </tfoot>
-          </VentasTable>
-        </VentasTableContainer>
+          </table>
+        </div>
       </section>
     </div>
   );

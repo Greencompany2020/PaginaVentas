@@ -17,7 +17,6 @@ const Fechas = (props) => {
   const sendNotification = useNotification();
   const [fechas, setFechas] = useState([]);
 
-
   useEffect(() => {
     (async()=>{
       try {
