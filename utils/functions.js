@@ -17,7 +17,7 @@ export const getTiendaName = (tiendaId) => {
  * @returns {string} El nombre de la plaza.
  */
 export const getPlazaName = (plazaId) => {
-  const plaza = plazas.find((plaza) => plaza.value === plazaId);
+  const plaza = plazas.find((plaza) => plaza.value == plazaId);
   return plaza?.text;
 }
 /**
@@ -735,27 +735,83 @@ export const getValueFromObject = (data, findKey=null) => {
 
 export const spliteArrDate = (arr, cb = 1) => {
   const currentYear = new Date(Date.now()).getFullYear() - 1;
-  if(cb == 1){
-    if(arr){
-      if(arr.includes(',')){
-        return arr.split(',')[0];
-      }
-      else{
-        return [arr]
-      }
-    }else{
-      return [currentYear];
-    }
-  }else{
-    if(arr){
-      if(arr.includes(',')){
-        return arr.split(',');
-      }
-      else{
-        return [arr]
-      }
-    }else{
-      return [currentYear , currentYear - 1];
-    }
+  if(arr){
+    const arrTemp = arr.split(',');
+    if(arrTemp.length == 1) arrTemp.push(arrTemp[0] - 1)
+    return arrTemp;
   }
+  else{
+    const arrTemp = [currentYear - 1 ,currentYear - 2];
+    return arrTemp;
+  }
+
+}
+
+/**
+ * Convierte valores con Y a booleans
+ * @param {*} val 
+ * @returns 
+ */
+export const parseStringToBoolean = val => (String(val).toUpperCase === 'Y');
+
+/**
+ * Convierte valores booleanos a strings
+ * @param {*} val 
+ * @returns 
+ */
+export const parseBooleanToString = val => (val ? 'Y' : 'N');
+
+/**
+ * Convierte valores booleanos o strings a numeros
+ * @param {*} val 
+ * @returns 
+ */
+export const parseToNumber = val => {
+  switch (typeof val){
+    case 'boolean':
+      return val ? 1  : 0;
+    case 'string':
+      return  parseStringToBoolean(val) ? 1 : 0;
+    default:
+      return 0;
+  }
+}
+
+/**
+ * Convierte valores numericos a booleanos
+ * @param {*} val 
+ * @returns 
+ */
+export const parseNumberToBoolean = val => (val == 1 ? true : false);
+
+
+/**
+ * Convierte los parametros en el tipo de dato solicitado
+ * @param {*} params 
+ */
+export const parseParams = params => {
+  const parse = {};
+  for (const param  in params){
+    const value = params[param];
+    let newValue;
+    switch(typeof value){
+
+      case 'string':
+        if(value.toUpperCase == 'N' || value.toLocaleUpperCase == 'Y'){
+          newValue = parseToNumber(value);
+        }else{
+          newValue = value;
+        }
+        break;
+
+      case 'boolean':
+        newValue = parseToNumber(value);
+        break;
+      
+      default:
+        newValue = value;
+    }
+    Object.assign(parse, {[param]:newValue});
+  }
+  return parse;
 }

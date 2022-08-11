@@ -1,868 +1,768 @@
-import React, { useState, useEffect, Fragment } from "react";
-import {
-  ParametersContainer,
-  Parameters,
-} from "../../components/containers";
+import React, { useState } from "react";
+import { ParametersContainer, Parameters, } from "../../components/containers";
 import { getVentasLayout } from "../../components/layout/VentasLayout";
-import {
-  VentasTableContainer,
-  VentasTable,
-  TableHead,
-  TableRow
-} from "../../components/table";
-import {
-  InputContainer,
-  InputDateRange,
-  Checkbox,
-  SelectTiendasGeneral,
-  SelectTiendasCombo,
-  SelectCompromiso,
-  InputDateComparative
-} from "../../components/inputs";
-import RegionesPlazaTableRow from "../../components/table/RegionesPlazaTableRow";
-import {
-  regiones,
-  checkboxLabels,
-  plazas,
-  MENSAJE_ERROR,
-} from "../../utils/data";
-import {
-  getCurrentWeekDateRange,
-  getYearFromDate,
-} from "../../utils/dateFunctions";
+import {getCurrentWeekDateRange, getYearFromDate} from "../../utils/dateFunctions";
 import {
   dateRangeTitle,
-  validateInputDateRange,
-  rowRegion,
   spliceData,
-  spliteArrDate
+  spliteArrDate,
+  parseParams,
+  parseNumberToBoolean
 } from "../../utils/functions";
 import { getSemanalesTiendas } from "../../services/SemanalesService";
-import { inputNames } from "../../utils/data/checkboxLabels";
-import { handleChange } from "../../utils/handlers";
+import { comboValues } from "../../utils/data/checkboxLabels";
 import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 import Stats from "../../components/Stats";
-import { numberWithCommas, stringFormatNumber, tdFormatNumber, formatNumber} from "../../utils/resultsFormated";
+import { numberWithCommas, numberAbs, isNegative, isRegionOrPlaza, stringFormatNumber, selectRow} from "../../utils/resultsFormated";
 import { isMobile } from "react-device-detect";
 import ViewFilter from "../../components/ViewFilter";
 import { v4 } from "uuid";
+import { Formik,Form } from "formik";
+import {Select, DateRange, Checkbox, BeetWenYears} from '../../components/inputs/reportInputs';
+import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
 import ExcelButton from "../../components/buttons/ExcelButton";
-import semTienda from "../../utils/excel/templates/semtTienda";
 import exportExcel from "../../utils/excel/exportExcel";
+import semTiendas from "../../utils/excel/templates/semTiendas";
 
 const Tiendas = (props) => {
   const {config} = props;
-  const currentYear = new Date(Date.now()).getFullYear();
   const sendNotification = useNotification();
-  const [beginDate, endDate] = getCurrentWeekDateRange();
-  const [semanalesRegion, setSemanalesRegion] = useState({});
-  const [semanalesTienda, setSemanalesTienda] = useState([]);
-  const [selectRegion, setRegion] = useState(null);
-  const [displayType, setDisplayType] = useState(1);
-  const [seccion, setSeccion] = useState([]);
 
-  const [cbAgnosComparar, setCbAgnosComparar] = useState(1);
-  const [tiendasParametros, setTiendasParametros] = useState({
+  //Estados de los reportes
+  const [beginDate, endDate] = getCurrentWeekDateRange();
+  const [reportDate, setReportDate] = useState({beginDate, endDate, dateRange:spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)});
+  const [dataReport, setDataReport] = useState(null);
+
+  //Estado del reporte por secciones;
+  const [dataReportSeccions, setDataReportSeccions] = useState(null);
+  const [seccions, setSeccions] = useState(null);
+  const [currentRegion, setCurrentRegion] = useState(null);
+  const [displayMode, setDisplayMode] = useState((isMobile ? config?.mobileReportView : config?.desktopReportView));
+  const [currentShop, setCurrentShop] = useState('Frogs');
+
+
+  const parameters = {
     fechaInicio: beginDate,
     fechaFin: endDate,
     tiendas: 0,
-    conIva: 1,
-    conVentasEventos: 0,
-    resultadosPesos: 0,
-    incremento: 'compromiso',
-    mostrarTiendas: 'activas',
-    agnosComparar: [currentYear - 1,currentYear - 2],
+    conIva: parseNumberToBoolean(config?.conIva || 0),
+    conVentasEventos:parseNumberToBoolean(config?.conVentasEventos || 0),
+    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
+    incremento: config?.cbIncremento || 'compromiso',
+    mostrarTiendas: config?.cbMostrarTiendas || 'activas',
+    agnosComparar: spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1),
     tipoCambioTiendas: 0,
-  });
+    cbAgnosComparar: config?.cbAgnosComparar || 1, 
+  }
+  Object.seal(parameters);
 
-  useEffect(()=>{
-    setTiendasParametros(prev => ({
-      ...prev,
-      conIva: config?.conIva || 0,
-      conVentasEventos:  config?.conVentasEventos || 0,
-      resultadosPesos: 0,
-      agnosComparar: spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1),
-    }));
+  const handleSubmit = async values =>{
+    try {
+      const params = removeParams(values);
+      const response = await getSemanalesTiendas(parseParams(params));
+      sliceForRegion(response, params.tiendas);
+      setDataReport(response);
 
-    setDisplayType((isMobile ? config?.mobileReportView : config?.desktopReportView));
-    setCbAgnosComparar(config?.cbAgnosComparar || 1)
-  },[config])
-
-  useEffect(() => {
-    (async()=>{
-      if (validateInputDateRange(tiendasParametros.fechaInicio,tiendasParametros.fechaFin)){
-        try {
-          let seccionesTemp = null
-          const response = await getSemanalesTiendas(tiendasParametros);
-          setSemanalesTienda(response);
-          switch(tiendasParametros.tiendas){
-            case 0:
-              seccionesTemp = ['REGION I', 'REGION II', 'REGION III', 'GRUPO'];
-              break;
-            case 2:
-              seccionesTemp = ['SK MAZATLAN', 'SK CULIACAN', 'SK MEXICALI', 'SK CHIHUAHUA', 'SK TIJUANA', 'SIN REGION', 'GRUPO', ];
-              break;
-            case 3:
-              seccionesTemp = ['WEB', 'SIN REGION' ,'GRUPO']
-              break;
-            default:
-              seccionesTemp = null;
-              break;
-          }
-          const formated = spliceData(response, seccionesTemp);
-          setSemanalesRegion(formated);
-          setRegion(seccionesTemp[0]);
-          setSeccion(seccionesTemp);
-        } catch (error) {
-          sendNotification({
-            type:'ERROR',
-            message: MENSAJE_ERROR
-          });
-        }
-      }
-    })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tiendasParametros, cbAgnosComparar]);
-
-  const getRegionName =  () =>{
-    switch(tiendasParametros.tiendas){
-      case 0:
-       return 'Tiendas Frogs'
-      case 2:
-       return 'Skoro'
-      case 3:
-       return 'Web'
-      default:
-        return 'Tiendas Frogs'
+    } catch (error) {
+      sendNotification({
+        type:'ERROR',
+        message: 'Error al consultar los datos'
+      });
     }
   }
 
-  const handleExport = () => {
-    const template = semTienda();
-    exportExcel('semanales plaza',template.columns,[...semanalesTienda],template.format)
+  const removeParams = params => {
+    if(params.cbAgnosComparar == 1){
+      const {cbAgnosComparar, agnosComparar:[a], ...rest} = params;
+      setReportDate(prev => ({...prev, dateRange:[a]}));
+      return {...rest, agnosComparar:[a]}
+    }else{
+      const {cbAgnosComparar, ...rest} = params;
+      setReportDate(prev => ({...prev, dateRange:params.agnosComparar}));
+      return rest;
+    }
   }
+
+  const sliceForRegion = async(data,tiendas) =>{
+
+    let dataSeccions;
+    if(tiendas == 0){
+      setCurrentShop('Frogs');
+      dataSeccions = ['REGION I', 'REGION II', 'REGION III', 'GRUPO'];
+    }
+    else if(tiendas == 2){
+      setCurrentShop('Skoro');
+      dataSeccions = ['SK MAZATLAN', 'SK CULIACAN', 'SK MEXICALI', 'SK CHIHUAHUA', 'SK TIJUANA', 'SIN REGION', 'GRUPO', ];
+    }
+    else if(tiendas == 3){
+      setCurrentShop('Web');
+      dataSeccions = ['WEB', 'SIN REGION' ,'GRUPO'];
+    }
+
+    setSeccions(dataSeccions);
+    setCurrentRegion(dataSeccions[0] || null);
+    setDataReportSeccions(spliceData(data, dataSeccions));
+  }
+
+  const handleExport = () => {
+    const template = semTiendas(
+      dateRangeTitle(reportDate.beginDate, reportDate.endDate),
+      dataReport, 
+      [getYearFromDate(reportDate.endDate), reportDate.dateRange].flat(1)
+    );
+    exportExcel('Semanales Tienda', template.getColums(), template.getRows(), template.style);
+  }
+
 
   return (
     <div className=" flex flex-col h-full">
       <TitleReport title="Detalles de información / Semanales por Tienda" />
-
       <section className="p-4 space-y-2">
-        <div className="flex justify-between items-center">
+        <div className="flex justify-between  items-start">
           <ParametersContainer>
             <Parameters>
-              <InputContainer>
-                <SelectTiendasGeneral
-                  value={tiendasParametros.tiendas}
-                  onChange={(e) => handleChange(e, setTiendasParametros)}
-                />
-                <InputDateRange
-                  beginDate={tiendasParametros.fechaInicio}
-                  endDate={tiendasParametros.fechaFin}
-                  onChange={(e) => handleChange(e, setTiendasParametros)}
-                />
-                <InputDateComparative
-                  cbEnabledYears={cbAgnosComparar}
-                  changeEnabled={setCbAgnosComparar}
-                  firstYear={tiendasParametros.agnosComparar[0]}
-                  secondYear={tiendasParametros.agnosComparar[1]}
-                  onChange = {setTiendasParametros}
-                />
-                <SelectCompromiso
-                  value={tiendasParametros.incremento}
-                  onChange={(e) => handleChange(e, setTiendasParametros)}
-                />
-                <SelectTiendasCombo
-                  value={tiendasParametros.mostrarTiendas}
-                  onChange={(e) => handleChange(e, setTiendasParametros)}
-                />
-              </InputContainer>
-              <InputContainer>
-                <Checkbox
-                  labelText={checkboxLabels.VENTAS_IVA}
-                  checked={tiendasParametros.conIva ? true : false}
-                  name={inputNames.CON_IVA}
-                  onChange={(e) => handleChange(e, setTiendasParametros)}
-                />
-                <Checkbox
-                  labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
-                  checked={tiendasParametros.conVentasEventos ? true : false}
-                  name={inputNames.CON_VENTAS_EVENTOS}
-                  onChange={(e) => handleChange(e, setTiendasParametros)}
-                />
-                <Checkbox
-                  labelText={checkboxLabels.RESULTADO_PESOS}
-                  checked={tiendasParametros.resultadosPesos ? true : false}
-                  name={inputNames.RESULTADOS_PESOS}
-                  onChange={(e) => handleChange(e, setTiendasParametros)}
-                />
-              </InputContainer>
+              <Formik initialValues={parameters} onSubmit={handleSubmit} enableReinitialize>
+                <Form>
+                  <AutoSubmitToken/>
+                  <fieldset className="space-y-2 mb-3">
+                    <Select id='tiendas' name='tiendas' label='Tiendas'>
+                      <option value={0}>Frogs</option>
+                      <option value={2}>Skoro</option>
+                      <option value={3}>Web</option>
+                    </Select>
+                    <DateRange
+                      begindDate={{
+                        id:'fechaInicio',
+                        name:'fechaInicio',
+                        label:'Fecha inicial'
+                      }}
+                      endDate={{
+                        id:'fechaFin',
+                        name:'fechaFin',
+                        label:'Fecha final'
+                      }}  
+                    />
+                    <BeetWenYears
+                      enabledDates={{
+                        id:'cbAgnosComparar',
+                        name:'cbAgnosComparar',
+                        label: 'Años a comparar'
+                      }}
+                      begindDate={{
+                        id:'agnosComparar[0]',
+                        name:'agnosComparar[0]',
+                        label:'Primer año'
+                      }}
+                      endDate={{
+                        id:'agnosComparar[1]',
+                        name:'agnosComparar[1]',
+                        label:'Segundo año'
+                      }}  
+                    />
+                    <Select id='incremento' name='incremento' label='Formular % de incremento'>
+                      {
+                        comboValues.CBINCREMENTO.map((item, i) => (
+                          <option key={i} value={item.value}>{item.text}</option>
+                        ))
+                      }
+                    </Select>
+                    <Select id='mostrarTiendas' name='mostrarTiendas' label='Mostrar tiendas'>
+                      {
+                        comboValues.CBMOSTRARTIENDAS.map((item, i) => (
+                          <option key={i} value={item.value}>{item.text}</option>
+                        ))
+                      }
+                    </Select>
+                  </fieldset>
+                  <fieldset className="space-y-1">
+                    <Checkbox id='conIVa' name='conIva' label='Ventas con Iva' />
+                    <Checkbox id='conVentasEventos' name='conVentasEventos' label='Incluir ventas de eventos' />
+                    <Checkbox id='resultadosPesos' name='resultadosPesos' label='Resultados en pesos' />
+                  </fieldset>
+                </Form>
+              </Formik>
             </Parameters>
           </ParametersContainer>
           <ViewFilter 
-            viewOption={displayType} 
-            handleView={setDisplayType} 
-            selectOption={selectRegion} 
-            handleSelect = {setRegion}
-            options={seccion}
+            viewOption={displayMode} 
+            handleView={setDisplayMode} 
+            selectOption={currentRegion} 
+            handleSelect = {setCurrentRegion}
+            options={seccions}
           />
         </div>
         <div className="flex justify-between">
-          <p className={`text-sm font-bold `}>{ getRegionName()}</p>
-          <ExcelButton  handleClick={handleExport}/>
+          <p className="text-sm font-bold">{currentShop}</p>
+          <ExcelButton handleClick={handleExport} />
         </div>
       </section>
 
-      <section className="p-4 overflow-y-auto ">
+      <section className="p-4 overflow-auto">
+        <div className=" overflow-y-auto">
         {
           (()=>{
-              switch(displayType){
-                case 1:
-                  return <Table tiendasParametros={tiendasParametros} semanalesTienda={semanalesTienda}/>
-                case 2:
-                  return <Stat tiendasParametros={tiendasParametros} semanalesTienda={semanalesTienda}/>
-                case 3:
-                  return <StatGroup data={semanalesRegion} tiendasParametros={tiendasParametros} selectRegion ={selectRegion}/>;
-                case 4:
-                  return <TableMobil tiendasParametros={tiendasParametros} semanalesTienda={semanalesTienda}/>
-                default:
-                  return <Table tiendasParametros={tiendasParametros} semanalesTienda={semanalesTienda}/>
-              }
+            switch (displayMode) {
+              case 1:
+                return <Table data={dataReport} date={reportDate}/>
+
+              case 2:
+                return <Stat data={dataReport} date={reportDate}/>
+
+              case 3:
+                return <StatGroup data={dataReportSeccions} date={reportDate} region={currentRegion}/>
+
+              case 4:
+                return <TableMobil data={dataReport} date={reportDate}/>
+              default:
+                return <Table data={dataReport} date={reportDate}/>
+            }
           })()
         }
+        </div>
       </section>
     </div>
   );
 };
 
-const Table = ({tiendasParametros, semanalesTienda}) => {
-  const years = [
-    ... new 
-    Set([...tiendasParametros.agnosComparar])
-  ].sort((a, b) => b - a);
-  const count = semanalesTienda.length - 1;
+
+const Table = props => {
+  const {data, date} = props;
+
 
   return(
-    <VentasTableContainer>
-      <VentasTable className="tfooter">
-        <TableHead>
-          <tr>
-            <td rowSpan={3} className="border border-white bg-black-shape rounded-tl-xl">Plaza</td>
-            <td colSpan={15 + (years.length == 2 ? 8 : 0)} className="border border-white bg-black-shape rounded-tr-xl">
-              {dateRangeTitle(
-                tiendasParametros.fechaInicio,
-                tiendasParametros.fechaFin
-              )}
-            </td>
-          </tr>
-          <tr className="text-right">
-            <td rowSpan={2} className="border border-white bg-black-shape">Comp</td>
-            <td rowSpan={2} className="border border-white bg-black-shape">
-              {getYearFromDate(tiendasParametros.fechaFin)}
-            </td>
-            {
-              years.map(year => (
-                <React.Fragment key={v4()}>
-                  <td rowSpan={2} className="border border-white bg-black-shape">%</td>
-                  <td rowSpan={2} className="border border-white bg-black-shape">{year}</td>
-                </ React.Fragment>
-              ))
-            }
-            <td colSpan={3 + (years.length == 2 ? 3 : 1)} className="border border-white bg-black-shape">operaciones</td>
-            <td colSpan={3 + (years.length == 2 ? 3 : 1)} className="border border-white bg-black-shape">promedios</td>
-            <td colSpan={3 + (years.length == 2 ? 3 : 1)} className="border border-white bg-black-shape">Articulos Prom.</td>
-          </tr>
-          <tr className="text-right">
-            <td className="border border-white bg-black-shape">Comp</td>
-            <td className="border border-white bg-black-shape">
-              {getYearFromDate(tiendasParametros.fechaFin)}
-            </td>
-            {
-              years.map(year => (
-                <React.Fragment key={v4()}>
-                  <td className="border border-white bg-black-shape">%</td>
-                  <td className="border border-white bg-black-shape">{year}</td>
-                </ React.Fragment>
-              ))
-            }
-            <td className="border border-white bg-black-shape">comp</td>
-            <td className="border border-white bg-black-shape">
-              {getYearFromDate(tiendasParametros.fechaFin)}
-            </td>
-            {
-              years.map(year => (
-                <React.Fragment key={v4()}>
-                  <td className="border border-white bg-black-shape">%</td>
-                  <td className="border border-white bg-black-shape">{year}</td>
-                </ React.Fragment>
-              ))
-            }
-            <td className="border border-white bg-black-shape">
-              {getYearFromDate(tiendasParametros.fechaFin)}
-            </td>
-            {
-              years.map(year => (
-                <React.Fragment key={v4()}>
-                  <td className="border border-white bg-black-shape">%</td>
-                  <td className="border border-white bg-black-shape">{year}</td>
-                </ React.Fragment>
-              ))
-            }
-          </tr>
-        </TableHead>
-        <tbody className="text-xs text-right">
+    <table className="table-report" onClick={selectRow}>
+      <thead>
+        <tr>
+          <th rowSpan={3} className='text-center'>Plaza</th>
+          <th colSpan={15 + (date.dateRange.length == 2 ? 8 : 0)} className='text-center'>{ dateRangeTitle(date.beginDate, date.endDate)}</th>
+        </tr>
+        <tr>
+          <th rowSpan={2}>Comp</th>
+          <th rowSpan={2}>{getYearFromDate(date.endDate)}</th>
           {
-            (()=> {
-              if(Array.isArray(semanalesTienda) && semanalesTienda.length > 0){
-                const Items = semanalesTienda.map((tienda, index) => (
-                  <TableRow key={tienda.plaza} rowId={tienda.plaza} className={rowRegion(tienda.plaza)}>
-                    <td className="text-left font-bold">{tienda.plaza}</td>
-                    <td>{numberWithCommas(tienda['compromiso' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
-                    <td className="font-bold">{numberWithCommas(tienda['ventasActuales' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
-                    {
-                      years.map(year => (
-                        <React.Fragment key={v4()}>
-                          {formatNumber(tienda['porcentaje' + year], count == index, 12)}
-                          <td>{numberWithCommas(tienda['ventasActuales' + year])}</td>
-                        </React.Fragment>
-                      ))
-                    }
-                   
-                    <td className="font-bold">{numberWithCommas(tienda['operacionesComp'+ getYearFromDate(tiendasParametros.fechaFin)])}</td>
-                    <td className="font-bold">{numberWithCommas(tienda['operacionesActual'+ getYearFromDate(tiendasParametros.fechaFin)])}</td>
-                    {
-                      years.map(year => (
-                        <React.Fragment key={v4()}>
-                          {formatNumber(tienda['porcentajeOperaciones'+ year], count == index, 12)}
-                          <td>{numberWithCommas(tienda['operacionesActual'+ year])}</td>
-                        </React.Fragment>
-                      )) 
-                    }
-            
-    
-                    <td className="font-bold">{numberWithCommas(tienda['promedioComp' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
-                    <td className="font-bold">{numberWithCommas(tienda['promedioActual' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
-                    {
-                      years.map(year => (
-                        <React.Fragment key={v4()}>
-                          {formatNumber(tienda['porcentajePromedios' + year], count == index, 12)}
-                          <td>{numberWithCommas(tienda['promedioActual' + year])}</td>
-                        </React.Fragment>
-                      ))
-                    }
-                    
-    
-                    <td className="font-bold">{numberWithCommas(tienda['articulosActual' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
-                    {
-                      years.map(year => (
-                        <React.Fragment key={v4()}>
-                          {formatNumber(tienda['articulosPorcentaje' + year], count == index, 12)}
-                          <td>{numberWithCommas(tienda['articulosActual' + year])}</td>
-                        </React.Fragment>
-                      ))
-                    }
-                   
-                  </TableRow>
-                ));
-                return Items;
-              }
-            })()
+            date.dateRange.map(year => (
+              <React.Fragment key={v4()}>
+                <th rowSpan={2}>%</th>
+                <th rowSpan={2}>{year}</th>
+              </React.Fragment>
+            ))
           }
-        </tbody>
-      </VentasTable>
-    </VentasTableContainer>
+          <th colSpan={3 + (date.dateRange.length == 2 ? 3 : 1)}>operaciones</th>
+          <th colSpan={3 + (date.dateRange.length == 2 ? 3 : 1)}>promedios</th>
+          <th colSpan={2 + (date.dateRange.length == 2 ? 3 : 1)}>Articulos Prom.</th>
+        </tr>
+        <tr>
+          <th>Comp</th>
+          <th>{getYearFromDate(date.endDate)}</th>
+          {
+            date.dateRange.map(year => (
+              <React.Fragment key={v4()}>
+                <th>%</th>
+                <th>{year}</th>
+              </React.Fragment>
+            ))
+          }
+          <th>comp</th>
+          <th>{getYearFromDate(date.endDate)}</th>
+          {
+            date.dateRange.map(year => (
+              <React.Fragment key={v4()}>
+                <th>%</th>
+                <th>{year}</th>
+              </React.Fragment>
+            ))
+          }
+          <th>{getYearFromDate(date.endDate)}</th>
+          {
+            date.dateRange.map(year => (
+              <React.Fragment key={v4()}>
+                <th>%</th>
+                <th>{year}</th>
+              </React.Fragment>
+            ))
+          }
+        </tr>
+      </thead>
+      <tbody>
+        {
+          data && data.map(item =>(
+            <tr key={v4()} data-row-format={isRegionOrPlaza(item.plaza)}>
+              <td data-type-format="text" className="priority-cell">{item.plaza}</td>
+              <td data-type-format="number">{ numberWithCommas(item['compromiso'+ getYearFromDate(date.endDate)])}</td>
+              <td data-type-format="number" className="priority-cell">{ numberWithCommas(item['ventasActuales'+ getYearFromDate(date.endDate)])}</td>
+              {
+                date.dateRange.map(year => (
+                  <React.Fragment key={v4()}>
+                    <td data-porcent-format={isNegative(item['porcentaje' + year])}>{ numberAbs(item['porcentaje' + year])}</td>
+                    <td>{ numberWithCommas(item['ventasActuales' + year])}</td>
+                  </React.Fragment>
+                ))
+              }
+              <td className="priority-cell">{ numberWithCommas(item['operacionesComp'+ getYearFromDate(date.endDate)])}</td>
+              <td className="priority-cell">{ numberWithCommas(item['operacionesActual'+ getYearFromDate(date.endDate)])}</td>
+              {
+                date.dateRange.map(year => (
+                  <React.Fragment key={v4()}>
+                    <td data-porcent-format={isNegative(item['porcentajeOperaciones' + year])}>{numberAbs(item['porcentajeOperaciones' + year])}</td>
+                    <td>{ numberWithCommas(item['operacionesActual' + year])}</td>
+                  </React.Fragment>
+                ))
+              }
+              <td className="priority-cell">{ numberWithCommas(item['promedioComp'+ getYearFromDate(date.endDate)])}</td>
+              <td className="priority-cell">{ numberWithCommas(item['promedioActual'+ getYearFromDate(date.endDate)])}</td>
+              {
+                date.dateRange.map(year => (
+                  <React.Fragment key={v4()}>
+                    <td data-porcent-format={isNegative(item['porcentajePromedios' + year])}>{ numberAbs(item['porcentajePromedios' + year])}</td>
+                    <td>{ numberAbs(item['promedioActual' + year])}</td>
+                  </React.Fragment>
+                ))
+              }
+              <td className="priority-cell">{ numberWithCommas(item['articulosActual'+ getYearFromDate(date.endDate)])}</td>
+              {
+                date.dateRange.map(year => (
+                  <React.Fragment key={v4()}>
+                    <td data-porcent-format={isNegative(item['articulosPorcentaje' + year])}>{ numberAbs(item['articulosPorcentaje' + year])}</td>
+                    <td>{item['articulosActual' + year]}</td>
+                  </React.Fragment>
+                ))
+              }
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
   )
 }
 
-const Stat = ({tiendasParametros, semanalesTienda}) => {
-  const years = [
-    ... new 
-    Set([...tiendasParametros.agnosComparar])
-  ].sort((a, b) => b - a);
+const TableMobil = props =>{
+  const {data, date} = props;
+  
   return(
+    <>
+      <div className="space-y-8">
+        <table className="table-report-mobile" onClick={selectRow}>
+          <caption>Compromiso</caption>
+          <thead>
+            <tr>
+              <th>Plaza</th>
+              <th>Comp</th>
+              <th>{getYearFromDate(date.endDate)}</th>
+              {
+                date.dateRange.map(year => (
+                  <React.Fragment key={v4()}>
+                    <th>%</th>
+                    <th>{year}</th>
+                  </React.Fragment>
+                ))
+              }
+            </tr>
+          </thead>
+          <tbody>
+            {
+              data && data.map(item => (
+                <tr key={v4()} data-row-format={isRegionOrPlaza(item.plaza)}>
+                  <td data-type-format="text">{item.plaza}</td>
+                  <td data-type-format="number">{numberWithCommas(item['compromiso' + getYearFromDate(date.endDate)])}</td>
+                  <td data-type-format="number">{numberWithCommas(item['ventasActuales' + getYearFromDate(date.endDate)])}</td>
+                  {
+                    date.dateRange.map(year => (
+                      <React.Fragment key={v4()}>
+                        <td data-porcent-format={isNegative(item['porcentaje' + year])}>{numberAbs(item['porcentaje' + year])}</td>
+                        <td>{numberWithCommas(item['ventasActuales' + year])}</td>
+                      </React.Fragment>
+                    ))
+                  }
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+
+        <table className="table-report-mobile" onClick={selectRow}>
+          <caption>Operaciones</caption>
+          <thead>
+            <tr>
+              <th>Plaza</th>
+              <th>comp</th>
+              <th>{getYearFromDate(date.endDate)}</th>
+              {
+                date.dateRange.map(year => (
+                  <React.Fragment key={v4()}>
+                    <th>%</th>
+                    <th>{year}</th>
+                  </React.Fragment>
+                ))
+              }
+            </tr>
+          </thead>
+          <tbody>
+            {
+              data && data.map(item => (
+                <tr key={v4()} data-row-format={isRegionOrPlaza(item.plaza)}>
+                  <td data-type-format="text">{item.plaza}</td>
+                  <td>{numberWithCommas(item['operacionesComp' + getYearFromDate(date.endDate)])}</td>
+                  <td>{numberWithCommas(item['operacionesActual' + getYearFromDate(date.endDate)])}</td>
+                  {
+                    date.dateRange.map(year => (
+                      <React.Fragment key={v4()}>
+                        <td data-porcent-format={isNegative(item['porcentajeOperaciones' + year])}>{numberAbs(item['porcentajeOperaciones' + year])}</td>
+                        <td>{numberWithCommas(item['operacionesActual' + year])}</td>
+                      </React.Fragment>
+                    ))
+                  }
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+
+        <table className="table-report-mobile" onClick={selectRow}>
+          <caption>Promedios</caption>
+          <thead>
+            <tr>
+              <th>Plaza</th>
+              <th>comp</th>
+              <th>{getYearFromDate(date.endDate)}</th>
+              {
+                date.dateRange.map(year => (
+                  <React.Fragment key={v4()}>
+                    <th>%</th>
+                    <th>{year}</th>
+                  </React.Fragment>
+                ))
+              }
+            </tr>
+          </thead>
+          <tbody>
+            {
+              data && data.map(item => (
+                <tr key={v4()} data-row-format={isRegionOrPlaza(item.plaza)}>
+                  <td data-type-format="text">{item.plaza}</td>
+                  <td>{numberWithCommas(item['promedioComp' + getYearFromDate(date.endDate)])}</td>
+                  <td>{numberWithCommas(item['promedioActual' + getYearFromDate(date.endDate)])}</td>
+                  {
+                    date.dateRange.map(year => (
+                      <React.Fragment key={v4()}>
+                        <td data-porcent-format={isNegative(item['porcentajePromedios' + year])}>{numberAbs(item['porcentajePromedios' + year])}</td>
+                        <td>{numberAbs(item['promedioActual' + year])}</td>
+                      </React.Fragment>
+                    ))
+                  }
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+
+        <table className="table-report-mobile" onClick={selectRow}>
+          <caption>Articulos prom</caption>
+          <thead>
+            <tr>
+              <th>Plaza</th>
+              <th>{getYearFromDate(date.endDate)}</th>
+              {
+                date.dateRange.map(year => (
+                  <React.Fragment key={v4()}>
+                    <th>%</th>
+                    <th>{year}</th>
+                  </React.Fragment>
+                ))
+              }
+            </tr>
+          </thead>
+          <tbody>
+            {
+              data && data.map(item => (
+                <tr key={v4()} data-row-format={isRegionOrPlaza(item.plaza)}>
+                  <td data-type-format="text">{item.plaza}</td>
+                  <td>{numberWithCommas(item['articulosActual' + getYearFromDate(date.endDate)])}</td>
+                  {
+                    date.dateRange.map(year => (
+                      <React.Fragment key={v4()}>
+                        <td data-porcent-format={isNegative(item['articulosPorcentaje' + year])}>{numberAbs(item['articulosPorcentaje' + year])}</td>
+                        <td>{item['articulosActual' + year]}</td>
+                      </React.Fragment>
+                    ))
+                  }
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+    </>
+  )
+}
+
+const Stat = props => {
+  const { data, date } = props;
+  return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
       {
-        (()=>{
-          if(Array.isArray(semanalesTienda)){
-            const Item = semanalesTienda.map((tienda, index) => {
-              const comp = {
-                columnTitle: 'COMPROMISO',
-                values:[
+        data && data.map(item => {
+          const comp = {
+            columnTitle: 'COMPROMISO',
+            values: [
+              {
+                caption: 'COMP',
+                value: numberWithCommas(item['compromiso' + getYearFromDate(date.endDate)])
+              },
+              {
+                caption: getYearFromDate(date.endDate),
+                value: numberWithCommas(item['ventasActuales' + getYearFromDate(date.endDate)])
+              },
+              date.dateRange.map(year => (
+                [
                   {
-                    caption:'COMP',
-                    value:numberWithCommas(tienda['compromiso' + getYearFromDate(tiendasParametros.fechaFin)])
+                    caption: '%',
+                    value: stringFormatNumber(item['porcentaje' + year])
                   },
                   {
-                    caption:getYearFromDate(tiendasParametros.fechaFin),
-                    value:numberWithCommas(tienda['ventasActuales' + getYearFromDate(tiendasParametros.fechaFin)])
-                  },
-                  years.map(year =>(
-                    [
-                      {
-                        caption:'%',
-                        value:stringFormatNumber(tienda['porcentaje' + year])
-                      },
-                      {
-                        caption: year,
-                        value:numberWithCommas(tienda['ventasActuales' + year])
-                      }
-                    ]
-                  ))
-                ].flat(2)
-              }
-
-              const operaciones = {
-                columnTitle: 'OPERACIONES',
-                values:[
-                  {
-                    caption:'COMP',
-                    value:numberWithCommas(tienda['operacionesComp'+ getYearFromDate(tiendasParametros.fechaFin)])
-                  },
-                  {
-                    caption:getYearFromDate(tiendasParametros.fechaFin),
-                    value:numberWithCommas(tienda['operacionesActual'+ getYearFromDate(tiendasParametros.fechaFin)])
-                  },
-                  years.map(year =>(
-                    [
-                      {
-                        caption:'%',
-                        value:stringFormatNumber(tienda['porcentajeOperaciones'+ year])
-                      },
-                      {
-                        caption: year,
-                        value:numberWithCommas(tienda['operacionesActual'+ year])
-                      }
-                    ]
-                  ))
-                ].flat(2)
-              }
-
-              const promedios = {
-                columnTitle: 'PROMEDIOS',
-                values:[
-                  {
-                    caption:'COMP',
-                    value:numberWithCommas(tienda['promedioComp' + getYearFromDate(tiendasParametros.fechaFin)])
-                  },
-                  {
-                    caption:getYearFromDate(tiendasParametros.fechaFin),
-                    value:numberWithCommas(tienda['promedioActual' + getYearFromDate(tiendasParametros.fechaFin)])
-                  },
-                  years.map(year =>(
-                    [
-                      {
-                        caption:'%',
-                        value:stringFormatNumber(tienda['porcentajePromedios' + year])
-                      },
-                      {
-                        caption: year,
-                        value:numberWithCommas(tienda['promedioActual' + year])
-                      }
-                    ]
-                  ))
-                ].flat(2)
-              }
-
-              const articulos = {
-                columnTitle: 'ARTICULOS PROM',
-                values:[
-                  {
-                    caption:getYearFromDate(tiendasParametros.fechaFin),
-                    value:numberWithCommas(tienda['articulosActual' + getYearFromDate(tiendasParametros.fechaFin)])
-                  },
-                  years.map(year =>(
-                    [
-                      {
-                        caption:'%',
-                        value:stringFormatNumber(tienda['articulosPorcentaje' + year])
-                      },
-                      {
-                        caption: year,
-                        value:numberWithCommas(tienda['articulosActual' + year])
-                      }
-                    ]
-                  ))
-                ].flat(2)
-              }
-
-              return(
-                <Stats
-                  key={index}
-                  title={tienda.plaza}
-                  expand={true}
-                  columns={[
-                    comp,
-                    operaciones,
-                    promedios,
-                    articulos
-                  ]}
-                />
-              )
-            });
-            return Item;
+                    caption: year,
+                    value: numberWithCommas(item['ventasActuales' + year])
+                  }
+                ]
+              ))
+            ].flat(2)
           }
-        })()
+
+          const operaciones = {
+            columnTitle: 'OPERACIONES',
+            values: [
+              {
+                caption: 'COMP',
+                value: numberWithCommas(item['operacionesComp' + getYearFromDate(date.endDate)])
+              },
+              {
+                caption: getYearFromDate(date.endDate),
+                value: numberWithCommas(item['operacionesActual' + getYearFromDate(date.endDate)])
+              },
+              date.dateRange.map(year => (
+                [
+                  {
+                    caption: '%',
+                    value: stringFormatNumber(item['porcentajeOperaciones' + year])
+                  },
+                  {
+                    caption: year,
+                    value: numberWithCommas(item['operacionesActual' + year])
+                  }
+                ]
+              ))
+            ].flat(2)
+          }
+          const promedios = {
+            columnTitle: 'PROMEDIOS',
+            values: [
+              {
+                caption: 'COMP',
+                value: numberWithCommas(item['promedioComp' + getYearFromDate(date.endDate)])
+              },
+              {
+                caption: getYearFromDate(date.endDate),
+                value: numberWithCommas(item['promedioActual' + getYearFromDate(date.endDate)])
+              },
+              date.dateRange.map(year => (
+                [
+                  {
+                    caption: '%',
+                    value: stringFormatNumber(item['porcentajePromedios' + year])
+                  },
+                  {
+                    caption: year,
+                    value: numberWithCommas(item['promedioActual' + year])
+                  }
+                ]
+              ))
+            ].flat(2)
+          }
+
+          const articulos = {
+            columnTitle: 'ARTICULOS PROM',
+            values: [
+              {
+                caption: getYearFromDate(date.endDate),
+                value: numberWithCommas(item['articulosActual' + getYearFromDate(date.endDate)])
+              },
+              date.dateRange.map(year => (
+                [
+                  {
+                    caption: '%',
+                    value: stringFormatNumber(item['articulosPorcentaje' + year])
+                  },
+                  {
+                    caption: year,
+                    value: numberWithCommas(item['articulosActual' + year])
+                  }
+                ]
+              ))
+            ].flat(2)
+          }
+
+          return (
+            <Stats
+              key={v4()}
+              title={item.plaza}
+              expand={true}
+              columns={[
+                comp,
+                operaciones,
+                promedios,
+                articulos
+              ]}
+            />
+          )
+
+        })
       }
     </div>
   )
 }
 
-const TableMobil = ({tiendasParametros, semanalesTienda}) => {
-  const years = [
-    ... new 
-    Set([...tiendasParametros.agnosComparar])
-  ].sort((a, b) => b - a);
-
-  return(
-    <section>
+const StatGroup = props =>{
+  const { data, date, region } = props;
+  if(data &&  data.hasOwnProperty(region)){
+    const comp = data[region].map(item => (
       {
-        (()=>{
-          if(Array.isArray(semanalesTienda)){
-            const count = semanalesTienda.length - 1;
-            return(
-              <Fragment>
-
-                <table className="mobile-table mb-8">
-                    <caption className="text-blue-500 font-bold mb-1 uppercase">compromiso</caption>
-                    <thead className="text-right text-xs">
-                      <tr>
-                        <th className="text-center">Plaza</th>
-                        <th>COMP</th>
-                        <th>{getYearFromDate(tiendasParametros.fechaFin)}</th>
-                        {
-                          years.map(year => (
-                            <React.Fragment key={v4()}>
-                              <th>%</th>
-                              <th>{year}</th>
-                            </ React.Fragment>
-                          ))
-                        }
-                      </tr>
-                    </thead>
-                    <tbody className="text-[10px]">
-                      {
-                      semanalesTienda.map((tienda, index) => (
-                          <TableRow key={tienda.plaza} rowId={tienda.plaza} className={rowRegion(tienda.plaza)}>
-                            <td className="text-left">{tienda.plaza}</td>
-                            <td className="text-right">{numberWithCommas(tienda['compromiso' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
-                            <td className="font-bold text-right" >{numberWithCommas(tienda['ventasActuales' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
-                            {
-                              years.map(year => (
-                                <React.Fragment key={v4()}>
-                                  {tdFormatNumber(tienda['porcentaje' + year], count == index, 10)}
-                                  <td className="text-right">{numberWithCommas(tienda['ventasActuales' + year])}</td>
-                                </React.Fragment>
-                              ))
-                            }
-                          </TableRow>
-                        ))
-                      }
-                    </tbody>
-                  </table>
-
-                <table className="mobile-table mb-8">
-                  <caption className="text-blue-500 font-bold mb-1 uppercase">Operaciones</caption>
-                  <thead className="text-right text-xs">
-                    <tr>
-                      <th className="text-center">Plaza</th>
-                      <th>COMP</th>
-                      <th>{getYearFromDate(tiendasParametros.fechaFin)}</th>
-                      {
-                        years.map(year => (
-                          <React.Fragment key={v4()}>
-                            <th>%</th>
-                            <th>{year}</th>
-                          </ React.Fragment>
-                        ))
-                      }
-                    </tr>
-                  </thead>
-                  <tbody className="text-[10px]">
-                    {  
-                     semanalesTienda.map((tienda, index) => (
-                        <TableRow key={tienda.plaza} rowId={tienda.plaza} className={rowRegion(tienda.plaza)}>
-                          <td className="text-left">{tienda.plaza}</td>
-                          <td className="text-right">{numberWithCommas(tienda['operacionesComp'+ getYearFromDate(tiendasParametros.fechaFin)])}</td>
-                          <td className="font-bold text-right" >{numberWithCommas(tienda['operacionesActual'+ getYearFromDate(tiendasParametros.fechaFin)])}</td>
-                          {
-                            years.map(year => (
-                              <React.Fragment key={v4()}>
-                                {tdFormatNumber(tienda['porcentajeOperaciones'+ year], count == index, 10)}
-                                <td className="text-right">{numberWithCommas(tienda['operacionesActual'+ year])}</td>
-                              </React.Fragment>
-                            ))
-                          }
-                        </TableRow>
-                      ))
-                    }
-                  </tbody>
-                </table>
-
-                <table className="mobile-table mb-8">
-                  <caption className="text-blue-500 font-bold mb-1 uppercase">Promedios</caption>
-                  <thead className="text-right text-xs">
-                    <tr>
-                      <th className="text-center">Plaza</th>
-                      <th>COMP</th>
-                      <th>{getYearFromDate(tiendasParametros.fechaFin)}</th>
-                      {
-                        years.map(year => (
-                          <React.Fragment key={v4()}>
-                            <th>%</th>
-                            <th>{year}</th>
-                          </ React.Fragment>
-                        ))
-                      }
-                    </tr>
-                  </thead>
-                  <tbody className="text-[10px]">
-                    {
-                      semanalesTienda.map((tienda, index) => (
-                        <TableRow key={tienda.plaza} rowId={tienda.plaza} className={rowRegion(tienda.plaza)}>
-                          <td className="text-left">{tienda.plaza}</td>
-                          <td className="text-right">{numberWithCommas(tienda['promedioComp' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
-                          <td className="font-bold text-right" >{numberWithCommas(tienda['promedioActual' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
-                          {
-                            years.map(year => (
-                              <React.Fragment key={v4()}>
-                                {tdFormatNumber(tienda['porcentajePromedios' + year], count == index, 10)}
-                                <td className="text-right">{numberWithCommas(tienda['promedioActual' + year])}</td>
-                              </React.Fragment>
-                            ))
-                          }
-                        </TableRow>
-                      ))
-                    }
-                  </tbody>
-                </table>
-
-                <table className="mobile-table">
-                  <caption className="text-blue-500 font-bold mb-1 uppercase">Articulos Prom.</caption>
-                  <thead className="text-right text-xs">
-                    <tr>
-                      <th className="text-center">Plaza</th>
-                      <th>{getYearFromDate(tiendasParametros.fechaFin)}</th>
-                      {
-                        years.map(year => (
-                          <React.Fragment key={v4()}>
-                            <th>%</th>
-                            <th>{year}</th>
-                          </ React.Fragment>
-                        ))
-                      }
-                    </tr>
-                  </thead>
-                  <tbody className="text-[10px]">
-                    {
-                      semanalesTienda.map((tienda, index) => (
-                        <TableRow key={tienda.plaza} rowId={tienda.plaza} className={rowRegion(tienda.plaza)}>
-                          <td className="text-left">{tienda.plaza}</td>
-                          <td className="font-bold text-right" >{numberWithCommas(tienda['articulosActual' + getYearFromDate(tiendasParametros.fechaFin)])}</td>
-                          {
-                            years.map(year => (
-                              <React.Fragment key={v4()}>
-                                {tdFormatNumber(tienda['articulosPorcentaje' + year], count == index, 10)}
-                                <td className="text-right">{numberWithCommas(tienda['articulosActual' + year])}</td>
-                              </React.Fragment>
-                            ))
-                          }
-                        </TableRow>
-                      ))
-                    }
-                  </tbody>
-                </table>
-
-              </Fragment>
-            )
-          }
-        })()
+        columnTitle: item.plaza,
+        values: [
+          {
+            caption: 'COMP',
+            value: numberWithCommas(item['compromiso' + getYearFromDate(date.endDate)])
+          },
+          {
+            caption: getYearFromDate(date.endDate),
+            value: numberWithCommas(item['ventasActuales' + getYearFromDate(date.endDate)])
+          },
+          date.dateRange.map(year => (
+            [
+              {
+                caption: '%',
+                value: stringFormatNumber(item['porcentaje' + year])
+              },
+              {
+                caption: year,
+                value: numberWithCommas(item['ventasActuales' + year])
+              }
+            ]
+          ))
+        ].flat(2)
       }
-    </section>
-  )
-}
+    ));
 
-const StatGroup = ({data, tiendasParametros, selectRegion}) => {
-  const years = [
-    ... new 
-    Set([...tiendasParametros.agnosComparar])
-  ].sort((a, b) => b - a);
-
-  return(
-    <div>
+    const operaciones = data[region].map(item => (
       {
-        (()=>{
-          if( data && Object.keys(data).length > 0 && data.hasOwnProperty(selectRegion)){
-
-
-            const comp = data[selectRegion].map(tienda => (
+        columnTitle: item.plaza,
+        values: [
+          {
+            caption: 'COMP',
+            value: numberWithCommas(item['operacionesComp' + getYearFromDate(date.endDate)])
+          },
+          {
+            caption: getYearFromDate(date.endDate),
+            value: numberWithCommas(item['operacionesActual' + getYearFromDate(date.endDate)])
+          },
+          date.dateRange.map(year => (
+            [
               {
-                columnTitle:tienda.plaza,
-                values:[
-                  {
-                    caption:'COMP',
-                    value:numberWithCommas(tienda['compromiso' + getYearFromDate(tiendasParametros.fechaFin)])
-                  },
-                  {
-                    caption:getYearFromDate(tiendasParametros.fechaFin),
-                    value:numberWithCommas(tienda['ventasActuales' + getYearFromDate(tiendasParametros.fechaFin)])
-                  },
-                  years.map(year =>(
-                    [
-                      {
-                        caption:'%',
-                        value:stringFormatNumber(tienda['porcentaje' + year])
-                      },
-                      {
-                        caption: year,
-                        value:numberWithCommas(tienda['ventasActuales' + year])
-                      }
-                    ]
-                  ))
-                ].flat(2)
-              }
-            ));
-
-            const operaciones = data[selectRegion].map(tienda => (
+                caption: '%',
+                value: stringFormatNumber(item['porcentajeOperaciones' + year])
+              },
               {
-                columnTitle:tienda.plaza,
-                values:[
-                  {
-                    caption:'COMP',
-                    value:numberWithCommas(tienda['operacionesComp'+ getYearFromDate(tiendasParametros.fechaFin)])
-                  },
-                  {
-                    caption:getYearFromDate(tiendasParametros.fechaFin),
-                    value:numberWithCommas(tienda['operacionesActual'+ getYearFromDate(tiendasParametros.fechaFin)])
-                  },
-                  years.map(year =>(
-                    [
-                      {
-                        caption:'%',
-                        value:stringFormatNumber(tienda['porcentajeOperaciones'+ year])
-                      },
-                      {
-                        caption: year,
-                        value:numberWithCommas(tienda['operacionesActual'+ year])
-                      }
-                    ]
-                  ))
-                ].flat(2)
+                caption: year,
+                value: numberWithCommas(item['operacionesActual' + year])
               }
-            ));
-
-            const promedios = data[selectRegion].map(tienda => (
-              {
-                columnTitle:tienda.plaza,
-                values:[
-                  {
-                    caption:'COMP',
-                    value:numberWithCommas(tienda['promedioComp' + getYearFromDate(tiendasParametros.fechaFin)])
-                  },
-                  {
-                    caption:getYearFromDate(tiendasParametros.fechaFin),
-                    value:numberWithCommas(tienda['promedioActual' + getYearFromDate(tiendasParametros.fechaFin)])
-                  },
-                  years.map(year =>(
-                    [
-                      {
-                        caption:'%',
-                        value:stringFormatNumber(tienda['porcentajePromedios' + year])
-                      },
-                      {
-                        caption: year,
-                        value:numberWithCommas(tienda['promedioActual' + year])
-                      }
-                    ]
-                  ))
-                ].flat(2)
-              }
-            ));
-
-            const articulos = data[selectRegion].map(tienda => (
-              {
-                columnTitle:tienda.plaza,
-                values:[
-                  {
-                    caption:getYearFromDate(tiendasParametros.fechaFin),
-                    value:numberWithCommas(tienda['articulosActual' + getYearFromDate(tiendasParametros.fechaFin)])
-                  },
-                  years.map(year =>(
-                    [
-                      {
-                        caption:'%',
-                        value:stringFormatNumber(tienda['articulosPorcentaje' + year])
-                      },
-                      {
-                        caption: year,
-                        value:numberWithCommas(tienda['articulosActual' + year])
-                      }
-                    ]
-                  ))
-                ].flat(2)
-              }
-            ));
-
-            return(
-              <Fragment key={v4()}>
-                <div className='grid grid-cols-1 xl:grid-cols-4 gap-4'>
-                  <Stats
-                    title='COMPROMISO'
-                    expand={false}
-                    columns={(comp && [...comp])}
-                  />
-                  <Stats
-                    title='OPERACIONES'
-                    expand={false}
-                    columns={(operaciones && [...operaciones])}
-                  />
-                  <Stats
-                    title='PROMEDIOS'
-                    expand={false}
-                    columns={(promedios && [...promedios])}
-                  />
-                  <Stats
-                    title='ARTICULOS PROM'
-                    expand={false}
-                    columns={(articulos && [...articulos])}
-                  />
-                </div>
-              </Fragment>
-            )
-          }
-        })()
+            ]
+          ))
+        ].flat(2)
       }
-    </div>
-  )
-}
+    ));
 
-const renderRow = (item, isLast = false) => {
-  if (plazas.findIndex((plaza) => plaza.text === item.plaza) !== -1) {
+    const promedios = data[region].map(item => (
+      {
+        columnTitle: item.plaza,
+        values: [
+          {
+            caption: 'COMP',
+            value: numberWithCommas(item['promedioComp' + getYearFromDate(date.endDate)])
+          },
+          {
+            caption: getYearFromDate(date.endDate),
+            value: numberWithCommas(item['promedioActual' + getYearFromDate(date.endDate)])
+          },
+          date.dateRange.map(year => (
+            [
+              {
+                caption: '%',
+                value: stringFormatNumber(item['porcentajePromedios' + year])
+              },
+              {
+                caption: year,
+                value: numberWithCommas(item['promedioActual' + year])
+              }
+            ]
+          ))
+        ].flat(2)
+      }
+    ));
+
+    const articulos = data[region].map(item => (
+      {
+        columnTitle: item.plaza,
+        values: [
+          {
+            caption: getYearFromDate(date.endDate),
+            value: numberWithCommas(item['articulosActual' + getYearFromDate(date.endDate)])
+          },
+          date.dateRange.map(year => (
+            [
+              {
+                caption: '%',
+                value: stringFormatNumber(item['articulosPorcentaje' + year])
+              },
+              {
+                caption: year,
+                value: numberWithCommas(item['articulosActual' + year])
+              }
+            ]
+          ))
+        ].flat(2)
+      }
+    ));
+
     return (
-      <RegionesPlazaTableRow
-        item={item}
-        type="plaza"
-        key={item.plaza}
-        rowId={item.plaza}
-        isLast = {isLast}
-      />
-    );
+      <>
+        <div className='grid grid-cols-1 xl:grid-cols-4 gap-4'>
+          <Stats
+            title='COMPROMISO'
+            expand={false}
+            columns={(comp && [...comp])}
+          />
+          <Stats
+            title='OPERACIONES'
+            expand={false}
+            columns={(operaciones && [...operaciones])}
+          />
+          <Stats
+            title='PROMEDIOS'
+            expand={false}
+            columns={(promedios && [...promedios])}
+          />
+          <Stats
+            title='ARTICULOS PROM'
+            expand={false}
+            columns={(articulos && [...articulos])}
+          />
+        </div>
+      </>
+    )
   }
-  if (regiones.includes(item.plaza)) {
-    return (
-      <RegionesPlazaTableRow
-        item={item}
-        type="region"
-        key={item.plaza}
-        rowId={item.plaza}
-        isLast = {isLast}
-      />
-    );
-  }
-  return (
-    <RegionesPlazaTableRow item={item} key={item.plaza} rowId={item.plaza} isLast = {isLast}/>
-  );
-};
+
+  return null;
+}
 
 const TiendasWithAuth = withAuth(Tiendas);
 TiendasWithAuth.getLayout = getVentasLayout;

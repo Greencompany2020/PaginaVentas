@@ -18,14 +18,14 @@ export default function Drawer(props) {
                 ref={drawerRef}
             >
                 <div className='relative h-[5%] top-0 flex items-center p-2'>
-                    <XIcon width={32} className='text-gray-500 cursor-pointer' onClick={handleExpand}/>
+                    <XIcon width={28} className='text-gray-500 cursor-pointer' onClick={handleExpand}/>
                 </div>
                 <section className="p-4 overflow-y-auto h-[95%]">
                     {children}
                 </section>
             </aside>
             {/*Overlay*/}
-            <div className={`${!expand && 'hidden'}  absolute top-0 right-0 w-screen h-screen bg-gray-500 z-10 opacity-80`}></div>
+            <div className={`${!expand && 'hidden'}  fixed top-0 right-0 w-screen h-screen bg-gray-500 z-10 opacity-80`}></div>
         </>
     )
 }

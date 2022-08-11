@@ -85,9 +85,9 @@ ViewFilter.defaultProps = {
 }
 
 ViewFilter.propTypes = {
-    viewOption: PropTypes.number.isRequired,
-    handleView: PropTypes.func.isRequired,
-    handleSelect: PropTypes.func.isRequired,
-    selectOption: PropTypes.string.isRequired,
+    viewOption: PropTypes.number,
+    handleView: PropTypes.func,
+    handleSelect: PropTypes.func,
+    selectOption: PropTypes.string,
     options: PropTypes.array
 }

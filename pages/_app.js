@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import '../styles/globals.css'
 import ProviderAuth from '../context/AuthContext';
 import NotificationProvide from '../components/notifications/NotificationsProvider';
@@ -7,7 +8,10 @@ function MyApp({ Component, pageProps }) {
   
   return(
     <NotificationProvide>
-      <ProviderAuth>    
+      <ProviderAuth>
+        <Head>
+          <title>Pagina de ventas</title>
+        </Head>    
         { getLayout(<Component {...pageProps} />)}
       </ProviderAuth>
     </NotificationProvide>

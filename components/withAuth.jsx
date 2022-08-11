@@ -6,69 +6,26 @@ import {useAuth} from '../context/AuthContext';
 import authService from "../services/authService";
 import { urlExceptions } from "../utils/constants";
 
+
 const witAuth = (Component) => {
 
   const AuthorizationComponent = () => {
     const router = useRouter();
     const service = authService();
-    const {auth, setAuth} = useAuth();
     const [loading, setLoading] = useState(true);
     const [config, setConfig] = useState({});
-   
-    /**
-     * callback que redirige la pagina
-     * @param {*} page
-     * @param {*} opt
-     */
-    const redirecTo = (page, opt = "push") => {
-      switch (opt) {
-        case "replace":
-          router.replace(page);
-          break;
-        case "push":
-          router.push(page);
-          break;
-        default:
-          router.push(page);
-          break;
-      }
-    };
+    const {setAuth, getAllParameters} = useAuth();
 
-    /**
-     * Evalua si el usuario tiene tiene un token de acceso
-     * Si lo tiene y esa expirado tratara de refrescarlo
-     * @returns boolean
-     */
-    const userHastoken = () => {
-      const token = cookie.get("accessToken");
-      if(!token) return false;
-      if(!auth) setAuth(true);
-      return true;
-    };
-
-    /**
-     * Evalua si el usuario tiene permisos para ingresar al point
-     * @returns data
-     */
-    const getAuthToPath = async () => {
-      try {
-        const data = service.getUserAuthorization(router.asPath);
-        return data; 
-      } catch (error) {
-        return false;
-      }
-    };
-
-    const getConfiguration = (userParams) =>{
+    const getConfiguration = (userParams) => {
       const configuration = {}
-      if(userParams){
-        for(const item in userParams){
+      if (userParams) {
+        for (const item in userParams) {
           let value = null;
-          switch(typeof(userParams[item])){
+          switch (typeof (userParams[item])) {
             case 'string':
-              if(userParams[item] == 'Y' || userParams[item] == 'N'){
+              if (userParams[item] == 'Y' || userParams[item] == 'N') {
                 value = (userParams[item] == 'Y') ? 1 : 0;
-              }else{
+              } else {
                 value = userParams[item] || null
               }
               break;
@@ -77,7 +34,7 @@ const witAuth = (Component) => {
               value = userParams[item] || null;
               break;
           }
-          Object.assign(configuration, {[item]:value});
+          Object.assign(configuration, { [item]: value });
         }
       }
       return configuration;
@@ -89,31 +46,37 @@ const witAuth = (Component) => {
      * @returns
      */
     const pathEvaluate = async () => {
-      const attemptException = urlExceptions.find(
-        (paths) => paths.pathname == router.asPath
-      );
-      const userToken = userHastoken();
-      if (attemptException) {
-        if (attemptException.tokenRequired && !userToken)
-          redirecTo("/", "push");
-        if (attemptException.pathname == "/" && userToken)
-          redirecTo("/dashboard", "push");
-        setLoading(false);
-      } else {
-        if (!userToken) redirecTo("/", "push");
-        const userAccess = await getAuthToPath();
-        if (!userAccess.access) return redirecTo("/unauthorized", "replace");
-        setLoading(false);
-        setConfig(getConfiguration(userAccess.config));
+  
+        try {
+          const token = cookie.get('accessToken');
+          const {asPath} = router;
+          const exceptions = urlExceptions.find(path => path.pathname == asPath);
+
+          if(!exceptions && token){
+            const response = await service.getUserAuthorization(asPath);
+            if(!response.access) router.replace('/unauthorized');
+            setConfig(getConfiguration(response.config));
+          }
+          else if(exceptions.tokenRequired && !token){
+            router.push('/')
+          }
+          if(token){
+           await setAuth(true);
+           await getAllParameters()
+          } 
+          
+          setLoading(false)
+        } catch (error) {
+          router.push('/')
+        }
       }
-    };
 
     useEffect(() => {
       pathEvaluate();
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    return loading ? <LoaderComponent /> : <Component config={config}/>;
+    return loading ? <LoaderComponent /> : <Component config={config} />;
   };
 
    /**
@@ -127,7 +90,7 @@ const witAuth = (Component) => {
       if (req && res) {
         const { url } = req;
         const { accessToken } = req.cookies;
-  
+
         if (url !== "/" && !accessToken) {
           res.writeHead(302, {
             location: "/",
@@ -144,7 +107,7 @@ const witAuth = (Component) => {
        * ¯\_(ツ)_/¯
        */
       return { nothingToseeHere: "yay" };
-    };
+};
 
   return AuthorizationComponent;
 };

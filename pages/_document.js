@@ -8,7 +8,6 @@ export default function Document(){
                 <meta name='description' content='Pagina de reportes corporativos'/>
                 <meta name='author' content='Grupo serigrafico'/>
                 <meta name='robots' content='noindex, nofollow' />
-                <title>Pagina de ventas</title>
             </Head>
             <body>
                 <Main/>

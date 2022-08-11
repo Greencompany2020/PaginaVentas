@@ -3,7 +3,7 @@ import ApiProvider from "./ApiProvider";
 export default function configuratorService(){
   const getUsers = async () => {
     try {
-      const { data } = await ApiProvider.get("/configurador/usuarios");
+      const { data } = await ApiProvider.get("/configurador/usuarios?page=1&size=300");
       return data;
     } catch (error) {
       throw error;

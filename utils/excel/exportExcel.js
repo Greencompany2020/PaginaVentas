@@ -122,7 +122,6 @@ const setFormat = (format, ws, cell) => {
     if(format){
         const attributes = getAttributes(format);
         const {address, value} = cell;
-        
         if(attributes){
             attributes.forEach(attr => {
                 switch(attr){
@@ -132,14 +131,14 @@ const setFormat = (format, ws, cell) => {
                     case 'merge':
                         ws.mergeCells(format.merge)
                         break;
-                    case 'cellFormat':
+                    case 'format':
                         const currentCellFormat = getTypeof(value);
-                        if(hasAttribute(format.cellFormat, currentCellFormat)) cell.numFmt = format.cellFormat[currentCellFormat];
+                        if(hasAttribute(format.format, currentCellFormat)) cell.numFmt = format.format[currentCellFormat];
                         break;
                     case 'cols':
                        const colsAttr = getAttributes(format.cols);
                        colsAttr.forEach(col => {
-                            if(address.match(col, 'ig')) cell.style = {...format.cols[col].styles};
+                            if(address.match(col, 'ig')) cell.style = {...format.cols[col]};
                        });
                        break;
                 }   

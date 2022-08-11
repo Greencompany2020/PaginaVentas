@@ -185,7 +185,7 @@ const Users = (props) => {
                     </Paginate>
                 </div>
             </FormModal>
-            <ConfirmModal ref={confirmModalRef}/>
+            <ConfirmModal ref={confirmModalRef} title='Eliminar usuario' message={`Eliminar al usuario usuario ${selectedUser.Nombre}`}/>
         </>
     )
 }

@@ -56,7 +56,7 @@ export default function UserForm({item, groups, addNewUser, updateUser, handleTo
           <TextInput label='Usuario' name='UserCode'/>
           <TextInput label='Correo' name='Email' type='email'/>
           { !item && <TextInput label='Password' name='password' type='password'/>}
-          <div className="flex flex-row space-x-2">
+          <div className="flex flex-row justify-evenly">
             <SelectInput label='Clase' name='Clase'>
               <option value={0}>0</option>
               <option value={1}>1</option>
