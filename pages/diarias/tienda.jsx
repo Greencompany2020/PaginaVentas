@@ -1,188 +1,180 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
 } from "../../components/containers";
-import {
-  VentasTableContainer,
-  VentasTable,
-  VentasDiariasTableFooter,
-  VentasDiariasTableHead,
-  TableRow,
-} from "../../components/table";
-import {
-  InputContainer,
-  SelectMonth,
-  InputYear,
-  SelectTiendas,
-  Checkbox,
-} from "../../components/inputs";
-import { checkboxLabels, MENSAJE_ERROR } from "../../utils/data";
+import { checkboxLabels} from "../../utils/data";
 import { getDiariasTienda } from "../../services/DiariasServices";
-import { formatNumber, numberWithCommas } from "../../utils/resultsFormated";
+import {  numberWithCommas, isNegative, numberAbs, selectRow } from "../../utils/resultsFormated";
 import {
   getInitialTienda,
   getTiendaName,
+  parseNumberToBoolean,
+  parseParams,
+  getLastTwoNumbers
 } from "../../utils/functions";
-import { handleChange } from "../../utils/handlers";
 import withAuth from "../../components/withAuth";
 import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import { Form, Formik } from "formik";
+import { Select, SelectYear, SelectMonth, Checkbox } from "../../components/inputs/reportInputs";
+import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
+import { getMonthByNumber } from "../../utils/dateFunctions";
 
 const Tienda = (props) => {
   const {config} = props;
-  const sendNotification = useNotification();
   const { tiendas } = useAuth();
-  const [diariasTienda, setDiariasTienda] = useState([]);
-  const [tiendasParametros, setTiendaParametros] = useState({
+  const sendNotification = useNotification();
+
+  const [reportDate, setReportDate] = useState({
+    year: new Date(Date.now()).getUTCFullYear(),
+    month: new Date(Date.now()).getMonth() + 1
+  });
+
+  const [currentShop, setCurrentShop] = useState(getInitialTienda(tiendas));
+  const [dataReport, setDataReport] = useState(null);
+
+  const parameters = {
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
     tienda: getInitialTienda(tiendas),
-    conIva: 0,
-    semanaSanta: 0,
-    resultadosPesos: 0,
-  });
+    conIva: parseNumberToBoolean(config?.conIva || 0),
+    semanaSanta: parseNumberToBoolean(config?.semanaSanta || 0),
+    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0)
+  }
 
-  useEffect(()=>{
-    if(tiendas){
-      setTiendaParametros(prev => ({
-        ...prev, tienda:getInitialTienda(tiendas),
-        conIva: config.conIva || 0,
-        semanaSanta: config.semanaSanta || 0,
-        resultadosPesos: config.resultadosPesos || 0,
-      }))
+  const handleSubmit = async params => {
+    try {
+      const response = await getDiariasTienda(parseParams(params));
+      setReportDate({year: params.delAgno, month:params.delMes});
+      setCurrentShop(getTiendaName(params.tienda));
+      setDataReport(response);
+    } catch (error) {
+      sendNotification({
+        type:'ERROR',
+        message:'Error al consultar datos'
+      })
     }
-  },[tiendas, config])
-
-  useEffect(() => {
-    (async()=>{
-      if(tiendas){
-        try {
-          const response = await getDiariasTienda(tiendasParametros)
-          setDiariasTienda(response)
-        } catch (error) {
-          sendNotification({
-            type:'ERROR',
-            message: MENSAJE_ERROR,
-          });
-        }
-      }
-    })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tiendasParametros, tiendasParametros.delAgno]);
+  }
 
   return (
     <div className=" flex flex-col h-full">
-      <TitleReport
-        title={`Ventas Diarias Tienda ${getTiendaName(
-          tiendasParametros.tienda
-        )}`}
-      />
-
+      <TitleReport title={`Ventas Diarias Tienda ${currentShop}`}/>
       <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
-            <InputContainer>
-              <SelectTiendas
-                value={tiendasParametros.tienda}
-                onChange={(e) => handleChange(e, setTiendaParametros)}
-              />
-              <div className="flex items-center space-x-1">
-                <div className="flex-1">
-                  <SelectMonth
-                    value={tiendasParametros.delMes}
-                    onChange={(e) => handleChange(e, setTiendaParametros)}
-                  />
-                </div>
-                <div className="flex-1">
-                  <InputYear
-                    value={tiendasParametros.delAgno}
-                    onChange={(e) => handleChange(e, setTiendaParametros)}
-                  />
-                </div>
-              </div>
-            </InputContainer>
-            <InputContainer>
-              <Checkbox
-                className="mb-3"
-                labelText={checkboxLabels.VENTAS_IVA}
-                checked={tiendasParametros.conIva ? true : false}
-                name="conIva"
-                onChange={(e) => handleChange(e, setTiendaParametros)}
-              />
-              <Checkbox
-                className="mb-3"
-                labelText={checkboxLabels.SEMANA_SANTA}
-                checked={tiendasParametros.semanaSanta ? true : false}
-                name="semanaSanta"
-                onChange={(e) => handleChange(e, setTiendaParametros)}
-              />
-              <Checkbox
-                labelText={checkboxLabels.RESULTADO_PESOS}
-                checked={tiendasParametros.resultadosPesos ? true : false}
-                name="resultadosPesos"
-                onChange={(e) => handleChange(e, setTiendaParametros)}
-              />
-            </InputContainer>
+            <Formik initialValues={parameters} onSubmit={handleSubmit}>
+              <Form>
+                <AutoSubmitToken/>
+                <fieldset className="space-y-2 mb-3">
+                  <Select id='tienda' name='tienda' label='Tienda'>
+                    {
+                      tiendas && tiendas.map(tienda =>(
+                        <option value={`${tienda.EmpresaWeb}${tienda.NoTienda}`} key={tienda.Descrip}>{tienda.Descrip}</option>
+                      ))
+                    }
+                  </Select>
+                  <div className="grid grid-cols-2 gap-2 ">
+                    <SelectMonth id='delMes' name='delMes' label='Del Mes'/>
+                    <SelectYear id='delAgno' name='delAgno' label='Del año'/>
+                  </div>
+                </fieldset>
+                <fieldset className="space-y-1">
+                    <Checkbox id='conIva' name='conIva' label={checkboxLabels.VENTAS_IVA}/>
+                    <Checkbox id='semanaSanta' name='semanaSanta' label={checkboxLabels.SEMANA_SANTA}/>
+                    <Checkbox id='resultadosPesos' name='resultadosPesos' label={checkboxLabels.RESULTADO_PESOS}/>
+                </fieldset>
+              </Form>
+            </Formik>
           </Parameters>
         </ParametersContainer>
       </section>
 
-      <section className="p-4 overflow-y-auto ">
-        <VentasTableContainer>
-          <VentasTable>
-            <VentasDiariasTableHead
-              currentYear={tiendasParametros.delAgno}
-              month={tiendasParametros.delMes}
-            />
-            <tbody className="bg-white text-right">
-              {diariasTienda?.map((diaria) => (
-                <TableRow key={diaria.dia} rowId={diaria.dia}>
-                  <td className="text-right text-xs font-bold">{diaria.dia}</td>
-                  <td className="text-right text-xs">{diaria.dia}</td>
-                  <td className="text-right text-xs font-bold">
-                    {numberWithCommas(diaria.ventaActual)}
-                  </td>
-                  <td className="text-right text-xs">
-                    {numberWithCommas(diaria.ventaAnterior)}
-                  </td>
-                  <td className="text-right text-xs">
-                    {numberWithCommas(diaria.compromisoDiario)}
-                  </td>
-                  {formatNumber(diaria.crecimientoDiario)}
-                  <td className="text-right text-xs font-bold">
-                    {numberWithCommas(diaria.acumMensualActual)}
-                  </td>
-                  <td className="text-right text-xs">
-                    {numberWithCommas(diaria.acumMensualAnterior)}
-                  </td>
-                  <td className="text-right text-xs">
-                    {numberWithCommas(diaria.compromisoAcum)}
-                  </td>
-                  {formatNumber(diaria.diferencia)}
-                  {formatNumber(diaria.crecimientoMensual)}
-                  <td className="text-right text-xs font-bold">
-                    {numberWithCommas(diaria.acumAnualActual)}
-                  </td>
-                  <td className="text-right text-xs">
-                    {numberWithCommas(diaria.acumAnualAnterior)}
-                  </td>
-                  <td className="text-right text-xs">
-                    {numberWithCommas(diaria.compromisoAnual)}
-                  </td>
-                  {formatNumber(diaria.crecimientoAnual)}
-                  <td className="text-right text-xs font-bold">{diaria.dia}</td>
-                </TableRow>
-              ))}
+      <section className="p-4 overflow-auto ">
+        <div className="overflow-y-auto">
+          <table className="table-report-footer" onClick={selectRow}>
+            <thead>
+              <tr>
+                <th colSpan={2} className='text-center'>dia</th>
+                <th colSpan={4} className='text-center'>venta por dia</th>
+                <th colSpan={5} className='text-center'>{`Acumulado ${ getMonthByNumber(reportDate.month)}`}</th>
+                <th colSpan={4} className='text-center'>Acumulado anual</th>
+                <th className='text-center'>Dia</th>
+              </tr>
+              <tr>
+                <th>{getLastTwoNumbers(reportDate.year)}</th>
+                <th>{getLastTwoNumbers(reportDate.year) - 1}</th>
+                <th>{reportDate.year}</th>
+                <th>{reportDate.year - 1}</th>
+                <th>COMP</th>
+                <th>%</th>
+                <th>{reportDate.year}</th>
+                <th>{reportDate.year - 1}</th>
+                <th>COMP</th>
+                <th>(-)</th>
+                <th>%</th>
+                <th>{reportDate.year}</th>
+                <th>{reportDate.year - 1}</th>
+                <th>COMP</th>
+                <th>%</th>
+                <th>{getLastTwoNumbers(reportDate.year)}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {
+                (dataReport && dataReport.length > 0) && dataReport.map(item =>(
+                  <tr>
+                    <td className="priority-cell">{item.dia}</td>
+                    <td>{item.dia}</td>
+                    <td className="priority-cell">{numberWithCommas(item.ventaActual)}</td>
+                    <td>{numberWithCommas(item.ventaAnterior)}</td>
+                    <td>{numberWithCommas(item.compromisoDiario)}</td>
+                    <td data-porcent-format={isNegative(item.crecimientoDiario)}>{numberAbs(item.crecimientoDiario)}</td>
+                    <td className="priority-cell">{numberWithCommas(item.acumMensualActual)}</td>
+                    <td>{numberWithCommas(item.acumMensualAnterior)}</td>
+                    <td>{numberWithCommas(item.compromisoAcum)}</td>
+                    <td data-porcent-format={isNegative(item.diferencia)}>{numberWithCommas(numberAbs(item.diferencia))}</td>
+                    <td data-porcent-format={isNegative(item.crecimientoMensual)}>{numberAbs(item.crecimientoMensual)}</td>
+                    <td className="priority-cell">{numberWithCommas(item.acumAnualActual)}</td>
+                    <td>{numberWithCommas(item.acumAnualAnterior)}</td>
+                    <td>{numberWithCommas(item.compromisoAnual)}</td>
+                    <td data-porcent-format={isNegative(item.crecimientoAnual)}>{numberAbs(item.crecimientoAnual)}</td>
+                    <td className="priority-cell">{item.dia}</td>
+                  </tr>
+                ))
+              }
             </tbody>
-            <VentasDiariasTableFooter
-              currentYear={tiendasParametros.delAgno}
-              month={tiendasParametros.delMes}
-            />
-          </VentasTable>
-        </VentasTableContainer>
+            <tfoot>
+              <tr>
+                <td>{getLastTwoNumbers(reportDate.year)}</td>
+                <td>{getLastTwoNumbers(reportDate.year) - 1}</td>
+                <td>{reportDate.year}</td>
+                <td>{reportDate.year - 1}</td>
+                <td>COMP</td>
+                <td>%</td>
+                <td>{reportDate.year}</td>
+                <td>{reportDate.year - 1}</td>
+                <td>COMP</td>
+                <td>(-)</td>
+                <td>%</td>
+                <td>{reportDate.year}</td>
+                <td>{reportDate.year - 1}</td>
+                <td>COMP</td>
+                <td>%</td>
+                <td>{getLastTwoNumbers(reportDate.year)}</td>
+              </tr>
+              <tr>
+                <td colSpan={2} className='text-center'>dia</td>
+                <td colSpan={4} className='text-center'>venta por dia</td>
+                <td colSpan={5} className='text-center'>{`Acumulado ${getMonthByNumber(reportDate.month)}`}</td>
+                <td colSpan={4} className='text-center'>Acumulado anual</td>
+                <td className='text-center'>Dia</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
       </section>
     </div>
   );

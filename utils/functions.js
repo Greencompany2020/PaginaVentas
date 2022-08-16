@@ -8,7 +8,7 @@ import { getMonthByNumber, getMonthChars } from "./dateFunctions";
  * @returns {string} El nombre de la tienda.
  */
 export const getTiendaName = (tiendaId) => {
-  const tienda = tiendas.find((tienda) => tienda.value === tiendaId);
+  const tienda = tiendas.find((tienda) => tienda.value == tiendaId);
   return tienda?.text;
 }
 /**

@@ -92,7 +92,10 @@ export const numberWithCommas = (num) => {
  * @returns 
  */
 export const numberAbs = (num) => {
-  if(!isNaN(num)) return Math.abs(num);
+  if(!isNaN(num)){
+    const val = (num < 0) ? `(${Math.abs(num)})` : `${Math.abs(num)}`;
+    return val;
+  } 
   return 0;
 }
 

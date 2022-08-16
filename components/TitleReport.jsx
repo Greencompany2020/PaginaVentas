@@ -15,7 +15,7 @@ export default function TitleReport(props) {
             width={24}
           />
         </figure>
-        <h1 className=" font-semibold uppercase text-sm md:text-lg truncate">{title}</h1>
+        <h1 className=" ">{title}</h1>
       </div>
     </section>
   );

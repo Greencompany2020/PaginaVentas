@@ -80,16 +80,16 @@ const Navbar = () => {
         ref={userMenuRef}
         className={`absolute w-[280px] h-[190px] z-50 right-0 transform bg-black-light ${
           !showDialog && "translate-x-full"
-        }  transition duration-200 ease-in-out`}
+        }  transition duration-200 ease-in-out shadow-md`}
       >
         <div className="flex flex-col justify-between p-4 relative space-y-3">
           <div className="flex items-center space-x-3">
             <XIcon
-              width={28}
+              width={24}
               className=" text-white cursor-pointer"
               onClick={handleToggle}
             />
-             <h3 className=" text-white text-xl">Opciones de cuenta</h3>
+             <h3 className=" text-white font-bold">Opciones de cuenta</h3>
           </div>
           <div className="space-y-1">
             <Link href="/usuario/perfil">

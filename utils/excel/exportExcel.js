@@ -5,34 +5,44 @@ import * as Excel from 'exceljs';
  * Valores por defecto
  * @const {string} FILE_EXTENSION Extencion de los arvhivos por defecto
  * @const {string} DEFAULT_FILENAME Nombre default del archivo
- * @const {string} DEFAULT_SHEETNAME Nombre default de la tab
- * @const {string} INITIAL_COL Columna inicial del reporte
+ * @const {string} DEFAULT_SHEETNAME Nombre por defecto de la hoja
+ * @const {object} DEFAULT_CONFIG Objeto de configuracion
  */
 
 const FILE_EXTENSION = '.xlsx';
 const DEFAULT_FILENAME = 'Workbook';
 const DEFAULT_SHEETNAME = 'Sheet 1';
-const INITIAL_COL = 'A'
+const DEFAULT_CONFIG = {
+    ignoreAutoMargin: false, 
+    margin:5
+}
+
 
 /**
  * Funcion principal del exportador
- * @param {*} filename 
- * @param {*} columns 
- * @param {*} rows 
- * @param {*} sheetNames 
- * @param {*} format 
+ * @param {*} filename - Nombre del archivo de excel 
+ * @param {*} columns  - Columnas o encabezado del documento
+ * @param {*} rows  - filas del documento
+ * @param {*} format  - objeto de configuracion de estilos y formatos
+ * @param {*} sheetNames - Nombres de las hojas del excel,
+ * @param {object} config - objeto de configuracion
+ * @param {boolean} config.ignoreAutoMargin - ignorar el maring automatico de las celdas,
+ * @param {number} config.margin - margin adicional en pixeles
  */
-export default function exportExcel(filename, columns, rows, format, sheetNames){
+export default function exportExcel(filename, columns, rows, format, sheetNames = DEFAULT_SHEETNAME, config = {...DEFAULT_CONFIG }){
     try {
         //Se crea el objeto principal de excel
         const wb = new Excel.Workbook();
         const arr = arrType(rows);
         
         if(arr === 'plain'){
-            addSheet(wb, columns, rows, '1', format);
-        }else if(arr === 'nested'){
-            Object.entries(rows ?? {}).forEach(([key, value]) => {
-                addSheet(wb, columns, value, key, format);
+            const sheet = Array.isArray(sheetNames) ? sheetNames[0] : sheetNames;
+            addSheet(wb, columns, rows, sheet, format, config);
+        }
+        else if(arr === 'nested'){
+            Object.entries(rows ?? {}).forEach(([key, value], i) => {
+                const sheet = Array.isArray(sheetNames) ? sheetNames[i] : `${sheetNames} ${i}`;
+                addSheet(wb, columns, value, sheet, format, config);
             });
         }
 
@@ -46,6 +56,7 @@ export default function exportExcel(filename, columns, rows, format, sheetNames)
     } catch (error) {
         throw error;
     }
+    
 }
 
 
@@ -148,16 +159,38 @@ const setFormat = (format, ws, cell) => {
 }
 
 /**
+ * Esta funcio agrega un margin a las columnas
+ * @param {*} ws workbook actual 
+ * @param {*} initialDataRow primera fila de datos
+ * @param {*} margin margin en pixceles
+ */
+const setAutoMargin = (ws, initialDataRow, margin) => {
+    for(let colNumber = 1; ws.actualColumnCount > colNumber; colNumber ++){
+        const currentCol = ws.getColumn(colNumber);
+        const cellValues = [];
+        currentCol.eachCell((cell, row) => {
+          if(row > initialDataRow)cellValues.push(String(cell.value || 0).length)
+        });
+        const  maxWidth = Math.max(...cellValues);
+        currentCol.width = maxWidth + margin;
+    }
+}
+
+
+/**
  * Esta funcion se encarga de agregar una nueva sheet 
  * @param {*} wb workbook actual
  * @param {*} columns columnas 
  * @param {*} rows filas
  * @param {*} sheetname nombre de la sheet
  * @param {*} format formatos
+ * @param {object} config Objeto de configuracion
  */
-const addSheet  = (wb, columns, rows , sheetname, format) =>{
+const addSheet  = (wb, columns, rows , sheetname, format, config) =>{
     const ws = wb.addWorksheet(sheetname);
+    let initialDataRow = 0;
 
+    //Agrega las columnas al documento
     columns.forEach(col => {
         const attributes = getAttributes(col);
         if(attributes){
@@ -167,10 +200,17 @@ const addSheet  = (wb, columns, rows , sheetname, format) =>{
         }
     });
 
+    //Agrega las filas al documento
     rows.forEach(row => {
         const rowValues = Object.values(row);
         ws.addRow(rowValues);
         const currentRows = ws.getRow(ws.actualRowCount);
-        if(format) currentRows.eachCell( cell => setFormat (format, ws, cell));
+        if(format) currentRows.eachCell( cell => {
+            setFormat (format, ws, cell);
+        });
+        if(initialDataRow == 0) initialDataRow = ws.actualRowCount;
     });
+
+    if(config.ignoreAutoMargin == false) setAutoMargin(ws, initialDataRow, config.margin);
+    
 }

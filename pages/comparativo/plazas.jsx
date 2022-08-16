@@ -24,6 +24,9 @@ import { isMobile } from "react-device-detect";
 import {Formik, Form} from 'formik'
 import { Input, Select, BeetWenYears, Checkbox } from "../../components/inputs/reportInputs";
 import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
+import ExcelButton from '../../components/buttons/ExcelButton';
+import exportExcel from '../../utils/excel/exportExcel';
+import comPlazas from "../../utils/excel/templates/comPlazas";
 
 const Plazas = (props) => {
   const {config} = props;
@@ -83,6 +86,21 @@ const Plazas = (props) => {
       setReportDate(prev => ({...prev, dateRange:params.agnosComparar}));
       return rest;
     }
+  }
+
+  const handleExport = () => {
+    const template = comPlazas(
+      getMonthByNumber(reportDate.current.split("-")[1]), 
+      dataReport, 
+      [getYearFromDate(reportDate.current), reportDate.dateRange].flat(1)
+    );
+    exportExcel(
+      `Comparativo plaza ${reportDate.current}`, 
+      template.getColumns(), 
+      template.getRows(), 
+      template.style,
+      ['Tiendas frogs', 'Tienda en  linea']
+    );
   }
 
   return (
@@ -152,6 +170,7 @@ const Plazas = (props) => {
         </div>
         <div className="flex justify-between">
           <p className={`text-sm font-bold`}>{currentRegion}</p>
+          <ExcelButton handleClick={handleExport}/>
         </div>
       </section>
 

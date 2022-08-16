@@ -126,27 +126,27 @@ export default function semPlaza (title, rows, years) {
     if(rows){
       const items = rows.map(item =>({
         plaza: item['plaza'],
-        compromisoActual: item['compromiso' + years[0]],
-        ventasActual: item['ventasActuales' + years[0]],
-        porcentajeActual: item['porcentaje' + years[1]],
-        ventasAnterior: item['ventasActuales' + years[1]],
-        ...(years[2]) && {porcentajeActualAdicional:item['porcentaje' + years[2]]},
-        ...(years[2]) && {ventasAnteriorAdicional:item['ventasActuales' + years[2]]},
+        compromisoActual: item['compromiso' + years[0]] || 0,
+        ventasActual: item['ventasActuales' + years[0]] || 0,
+        porcentajeActual: item['porcentaje' + years[1]] || 0,
+        ventasAnterior: item['ventasActuales' + years[1]] || 0,
+        ...(years[2]) && {porcentajeActualAdicional:item['porcentaje' + years[2]] || 0},
+        ...(years[2]) && {ventasAnteriorAdicional:item['ventasActuales' + years[2]] || 0},
 
 
-        compromisoOperaciones: item['operacionesComp' + years[0]],
-        compromisoVentas: item['operacionesActual' +  years[0]],
-        compromisoPorcentaje: item['porcentajeOperaciones' + years[1]],
-        compromisoVentasAnterior: item['operacionesActual' + years[1]],
-        ...(years[2]) && {compromisoPorcentajeAdicional: item['porcentajeOperaciones' + years[2]]},
-        ...(years[2]) && {compromisoVentasAnteriorAdicional: item['operacionesActual' + years[2]]},
+        compromisoOperaciones: item['operacionesComp' + years[0]] || 0,
+        compromisoVentas: item['operacionesActual' +  years[0]] || 0,
+        compromisoPorcentaje: item['porcentajeOperaciones' + years[1]] || 0,
+        compromisoVentasAnterior: item['operacionesActual' + years[1]] || 0,
+        ...(years[2]) && {compromisoPorcentajeAdicional: item['porcentajeOperaciones' + years[2]] || 0},
+        ...(years[2]) && {compromisoVentasAnteriorAdicional: item['operacionesActual' + years[2]] || 0},
 
-        promedioscompromiso: item['promedioComp' + years[0]],
-        promedioVentas: item['promedioActual' + years[0]],
-        promedioPorcentaje: item['porcentajePromedios' + years[1]],
-        promediosVentasAnterior:item['promedioActual' + years[1]],
-        ...(years[2]) && {promediosPorcentajeAdicional: item['porcentajePromedios' + years[2]]},
-        ...(years[2]) && {promediosVentasAnteriorAdicional: item['promedioActual' + years[2]]}
+        promedioscompromiso: item['promedioComp' + years[0]] || 0,
+        promedioVentas: item['promedioActual' + years[0]] || 0,
+        promedioPorcentaje: item['porcentajePromedios' + years[1]] || 0,
+        promediosVentasAnterior:item['promedioActual' + years[1]] || 0,
+        ...(years[2]) && {promediosPorcentajeAdicional: item['porcentajePromedios' + years[2]] || 0},
+        ...(years[2]) && {promediosVentasAnteriorAdicional: item['promedioActual' + years[2]] || 0}
       }));
 
       return items;
@@ -156,15 +156,15 @@ export default function semPlaza (title, rows, years) {
     }
   }
   const style = {
-    format:{number: '0,00', decimal: '0.00'},
+    format:{number: '#,##', decimal: '#.##'},
     cols:{
-      L:{numFmt:'#,##0;[Color 3]#,##0'},
-      D:{numFmt:'#,##0;[Color 3]#,##0'},
-      H:{numFmt:'#,##0;[Color 3]#,##0'},
-      ...(years[2]) && {F:{numFmt:'#,##0;[Color 3]#,##0'}},
-      ...(years[2]) && {J:{numFmt:'#,##0;[Color 3]#,##0'}},
-      ...(years[2]) && {P:{numFmt:'#,##0;[Color 3]#,##0'}},
-      ...(years[2]) && {R:{numFmt:'#,##0;[Color 3]#,##0'}},
+      L:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'},
+      D:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'},
+      H:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'},
+      ...(years[2]) && {F:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'}},
+      ...(years[2]) && {J:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'}},
+      ...(years[2]) && {P:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'}},
+      ...(years[2]) && {R:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'}},
     }
   }
 

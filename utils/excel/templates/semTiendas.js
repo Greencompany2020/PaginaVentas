@@ -152,32 +152,32 @@ export default function semTiendas(title, rows, years){
         if(rows){
             const items = rows.map(item  => ({
                 plaza: item['plaza'],
-                compromisoActual: item['compromiso' + years[0]],
-                ventasActual: item['ventasActuales' + years[0]],
-                porcentajeActual: item['porcentaje' + years[0]],
-                ventasAnterior: item['ventasActuales' + years[1]],
-                ...(years[2]) && {porcentajeActualAdicional: item['porcentaje' + years[2]]},
-                ...(years[2]) && {ventasAdicional: item['ventasActuales' + years[2]]},
+                compromisoActual: item['compromiso' + years[0]] || 0,
+                ventasActual: item['ventasActuales' + years[0]] || 0,
+                porcentajeActual: item['porcentaje' + years[0]] || 0,
+                ventasAnterior: item['ventasActuales' + years[1]] || 0,
+                ...(years[2]) && {porcentajeActualAdicional: item['porcentaje' + years[2]] || 0},
+                ...(years[2]) && {ventasAdicional: item['ventasActuales' + years[2]] || 0},
 
-                operacionesCompromiso: item['operacionesComp' + years[0]],
-                operacionesVentas: item['operacionesActual' + years[0]],
-                operacionesPorcentaje: item['porcentajeOperaciones' + years[1]],
-                operacionesVentasAnterior: item['operacionesActual' + years[1]],
-                ...(years[2]) && {operacionesPorcentajeAdicional: item['porcentajeOperaciones' + years[2]]},
-                ...(years[2]) && {operacionesVentasAdicional: item['operacionesActual' + years[2]]},
+                operacionesCompromiso: item['operacionesComp' + years[0]] || 0,
+                operacionesVentas: item['operacionesActual' + years[0]] || 0,
+                operacionesPorcentaje: item['porcentajeOperaciones' + years[1]]|| 0,
+                operacionesVentasAnterior: item['operacionesActual' + years[1]]|| 0,
+                ...(years[2]) && {operacionesPorcentajeAdicional: item['porcentajeOperaciones' + years[2]] || 0},
+                ...(years[2]) && {operacionesVentasAdicional: item['operacionesActual' + years[2]] || 0},
 
-                promedioscompromiso: item['promedioComp' + years[0]],
-                promedioVentas: item['promedioActual' + years[0]],
-                promedioPorcentaje: item['porcentajePromedios' + years[1]],
-                promediosVentasAnterior:item['promedioActual' + years[1]],
-                ...(years[2]) && {promediosPorcentajeAdicional: item['porcentajePromedios' + years[2]]},
-                ...(years[2]) && {promediosVentasAdicional: item['promedioActual' + years[2]]},
+                promedioscompromiso: item['promedioComp' + years[0]]|| 0,
+                promedioVentas: item['promedioActual' + years[0]]|| 0,
+                promedioPorcentaje: item['porcentajePromedios' + years[1]]|| 0,
+                promediosVentasAnterior:item['promedioActual' + years[1]]|| 0,
+                ...(years[2]) && {promediosPorcentajeAdicional: item['porcentajePromedios' + years[2]] || 0},
+                ...(years[2]) && {promediosVentasAdicional: item['promedioActual' + years[2]] || 0},
 
-                articulosVentas: item['articulosActual' + years[0]],
-                articulosPorcentaje: item['articulosPorcentaje' + years[1]],
-                articulosVentasAnterior: item['articulosActual' + years[1]],
-                ...(years[2]) && {articulosProcentajeAdicional: item['articulosPorcentaje' + years[2]]},
-                ...(years[2]) && {articulosVentasAdicional: item['articulosActual' + years[2]]}
+                articulosVentas: item['articulosActual' + years[0]] || 0,
+                articulosPorcentaje: item['articulosPorcentaje' + years[1]] || 0,
+                articulosVentasAnterior: item['articulosActual' + years[1]] || 0,
+                ...(years[2]) && {articulosProcentajeAdicional: item['articulosPorcentaje' + years[2]] || 0},
+                ...(years[2]) && {articulosVentasAdicional: item['articulosActual' + years[2]] || 0}
             }));
 
             return items;
@@ -188,17 +188,17 @@ export default function semTiendas(title, rows, years){
     }
 
     const style = {
-        format:{number: '0,00', decimal: '0.00'},
+        format:{number: '#,##', decimal: '#.##'},
         cols:{
-            D:{numFmt:'#,##0;[Color 3]#,##0'},
-            L:{numFmt:'#,##0;[Color 3]#,##0'},
-            ...(!years[2]) && {O:{numFmt:'#,##0;[Color 3]#,##0'}},
-            ...(years[2]) && {F:{numFmt:'#,##0;[Color 3]#,##0'}},
-            ...(years[2]) && {J:{numFmt:'#,##0;[Color 3]#,##0'}},
-            ...(years[2]) && {P:{numFmt:'#,##0;[Color 3]#,##0'}},
-            ...(years[2]) && {U:{numFmt:'#,##0;[Color 3]#,##0'}},
-            ...(years[2]) && {W:{numFmt:'#,##0;[Color 3]#,##0'}},
-            ...(years[2]) && {R:{numFmt:'#,##0;[Color 3]#,##0'}},
+            D:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'},
+            L:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'},
+            ...(!years[2]) && {O:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'}},
+            ...(years[2]) && {F:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'}},
+            ...(years[2]) && {J:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'}},
+            ...(years[2]) && {P:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'}},
+            ...(years[2]) && {U:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'}},
+            ...(years[2]) && {W:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'}},
+            ...(years[2]) && {R:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'}},
         }
     }
 

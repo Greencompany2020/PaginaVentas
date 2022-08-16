@@ -121,7 +121,7 @@ const Grupo = (props) => {
       </section>
 
       <section className="p-4 overflow-auto ">
-        <div className=" overflow-y-auto">
+        <div className=" ">
           <table className="table-report-footer" onClick={selectRow}>
             <thead className=" text-white text-center text-xs  rounded-md">
             <tr>
@@ -153,23 +153,23 @@ const Grupo = (props) => {
             <tbody>
               {
                 dataReport && dataReport.map(item =>(
-                  <tr key={v4()} className='bg-none'>
-                    <td className="priority-cell">{item.dia}</td>
+                  <tr key={v4()}>
                     <td>{item.dia}</td>
-                    <td className="priority-cell">{numberWithCommas(item.ventaActual)}</td>
-                    <td>{numberWithCommas(item.ventaAnterior)}</td>
-                    <td>{numberWithCommas(item.compromisoDiario)}</td>
-                    <td data-porcent-format={isNegative(item.crecimientoDiario)}>{numberAbs(item.crecimientoDiario)}</td>
-                    <td className="priority-cell">{numberWithCommas(item.acumMensualActual)}</td>
-                    <td>{numberWithCommas(item.acumMensualAnterior)}</td>
-                    <td>{numberWithCommas(item.compromisoAcum)}</td>
-                    <td data-porcent-format={isNegative(item.diferencia)}>{numberWithCommas(numberAbs(item.diferencia))}</td>
-                    <td data-porcent-format={isNegative(item.crecimientoMensual)}>{numberAbs(item.crecimientoMensual)}</td>
-                    <td className="priority-cell">{numberWithCommas(item.acumAnualActual)}</td>
-                    <td>{numberWithCommas(item.acumAnualAnterior)}</td>
-                    <td>{numberWithCommas(item.compromisoAnual)}</td>
-                    <td data-porcent-format={isNegative(item.crecimientoAnual)}>{numberAbs(item.crecimientoAnual)}</td>
-                    <td className="priority-cell">{item.dia}</td>
+                    <td data-column-title="Dia">{item.dia}</td>
+                    <td data-column-title={getLastTwoNumbers(reportDate.year)} >{numberWithCommas(item.ventaActual)}</td>
+                    <td data-column-title={getLastTwoNumbers(reportDate.year) - 1}>{numberWithCommas(item.ventaAnterior)}</td>
+                    <td data-column-title="COMP">{numberWithCommas(item.compromisoDiario)}</td>
+                    <td data-column-title="%" data-porcent-format={isNegative(item.crecimientoDiario)}>{numberAbs(item.crecimientoDiario)}</td>
+                    <td data-column-title={getLastTwoNumbers(reportDate.year)}>{numberWithCommas(item.acumMensualActual)}</td>
+                    <td data-column-title={getLastTwoNumbers(reportDate.year) - 1}>{numberWithCommas(item.acumMensualAnterior)}</td>
+                    <td data-column-title="COMP">{numberWithCommas(item.compromisoAcum)}</td>
+                    <td data-column-title="(-)" data-porcent-format={isNegative(item.diferencia)}>{numberWithCommas(numberAbs(item.diferencia))}</td>
+                    <td data-column-title="%" data-porcent-format={isNegative(item.crecimientoMensual)}>{numberAbs(item.crecimientoMensual)}</td>
+                    <td data-column-title={getLastTwoNumbers(reportDate.year)}>{numberWithCommas(item.acumAnualActual)}</td>
+                    <td data-column-title={getLastTwoNumbers(reportDate.year) - 1}>{numberWithCommas(item.acumAnualAnterior)}</td>
+                    <td data-column-title="COMP">{numberWithCommas(item.compromisoAnual)}</td>
+                    <td data-column-title="%" data-porcent-format={isNegative(item.crecimientoAnual)}>{numberAbs(item.crecimientoAnual)}</td>
+                    <td>{item.dia}</td>
                   </tr>
                 ))
               }
