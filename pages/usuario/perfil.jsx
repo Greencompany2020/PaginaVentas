@@ -1,7 +1,6 @@
 import React from 'react'
 import { getBaseLayout } from "../../components/layout/BaseLayout";
 import withAuth from "../../components/withAuth";
-import { useAuth } from "../../context/AuthContext";
 import useToggle from "../../hooks/useToggle";
 import Dropzone from "../../components/dropzone";
 import Avatar from "../../components/commons/Avatar";
@@ -11,9 +10,16 @@ import ConfigurationItems from "../../containers/profile/ConfigurationItems";
 import userService from '../../services/userServices';
 import { useNotification } from '../../components/notifications/NotificationsProvider';
 import LoaderComponentBas from '../../components/LoaderComponentBas';
+import {useSelector, useDispatch} from 'react-redux';
+import { setUser } from '../../redux/reducers/userSlice';
+import { handleProgress } from '../../redux/actions/notificationSystem';
 
 const Perfil = () => {
-  const { user, refreshUser } = useAuth();
+  const user = useSelector(state => state.user)
+  const dispatch = useDispatch();
+  const progress = handleProgress();
+  
+
   const [visible, setVisible] = useToggle(false);
   const sendNotification = useNotification();
   const [isLoading, setLoading] = useToggle(false);
@@ -22,8 +28,8 @@ const Perfil = () => {
   const handleUploadImage = async (files) =>{
     setVisible();
     try {
-      const response =  await service.setUserAvatar(files);
-      if(response) await refreshUser();
+      const response =  await service.updateUserAvatar(files, progress.handle);
+      dispatch(setUser(response));
     } catch (error) {
       sendNotification({
         type:'ERROR',
@@ -57,7 +63,7 @@ const Perfil = () => {
             <div className="p-4">
               <div className="flex flex-col items-center md:justify-center space-y-2">
                 <figure className='w-[12rem] h-[12rem]'>
-                  <Avatar image={user?.ImgPerfil}/>
+                  <Avatar image={user.ImgPerfil}/>
                 </figure>
                 <button className="text-blue-400 font-bold" onClick={setVisible}>Cambiar imagen</button>
               </div>

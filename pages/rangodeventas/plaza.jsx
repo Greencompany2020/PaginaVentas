@@ -24,17 +24,17 @@ import { getRangoVentasPlaza } from "../../services/RangoVentasService";
 import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import { useSelector } from "react-redux";
 
 const Plaza = (props) => {
   const {config} = props;
   const sendNotification = useNotification();
-  const { plazas } = useAuth();
+  const {places} = useSelector(state => state);
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramPlaza, setParamPlaza] = useState({
-    plaza: getInitialPlaza(plazas),
+    plaza: getInitialPlaza(places),
     fechaInicio: getBeginEndMonth(true)[0],
     fechaFin: getBeginEndMonth(true)[1],
     rangos: "100,200,300,400,500,600",
@@ -42,18 +42,18 @@ const Plaza = (props) => {
   });
 
   useEffect(()=>{
-    if(plazas){
+    if(places){
       setParamPlaza(prev => ({
         ...prev, 
-        plaza:getInitialPlaza(plazas),
+        plaza:getInitialPlaza(places),
         conTiendasCerradas: config?.conTiendasCerradas || 0,
       }));
     }
-  },[plazas, config])
+  },[places, config])
 
   useEffect(() => {
     (async()=>{
-      if(validateInputDateRange(paramPlaza.fechaInicio, paramPlaza.fechaFin) && plazas){
+      if(validateInputDateRange(paramPlaza.fechaInicio, paramPlaza.fechaFin) && places){
         try {
           const response = await getRangoVentasPlaza(paramPlaza);
           createRangoVentasDataset(response, setLabels, setDatasets);

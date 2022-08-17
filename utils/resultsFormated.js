@@ -99,6 +99,20 @@ export const numberAbs = (num) => {
   return 0;
 }
 
+/**
+ * Retorna un numero absoluto con commas
+ * si no es numero retorna 0
+ * @param {*} num 
+ * @returns 
+ */
+export const numberAbsComma = num => {
+  if(!isNaN(num)){
+    const val = (num < 0) ? `(${Math.abs(num).toLocaleString('en-us')})` : `${Math.abs(num).toLocaleString()}`;
+    return val;
+  }
+  return 0;
+}
+
 export const isNegative = (num) => {
   if(isNaN(num)) return 'positive';
   return parseFloat(num) >= 0 ? 'positive' : 'negative';

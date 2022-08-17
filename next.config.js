@@ -10,7 +10,8 @@ module.exports = {
     outputStandalone: true,
   },
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'
+    API_CONFIGURADOR_URL: process.env.API_CONFIGURADOR_URL || 'http://localhost:4000',
+    API_VENTAS_URL: process.env.API_VENTAS_URL || 'http://localhost:4000'
   },
   images: {
     domains: ['localhost', 'next.officialstore.net']

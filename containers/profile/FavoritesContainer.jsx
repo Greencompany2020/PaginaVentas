@@ -1,36 +1,22 @@
-import { useState, useEffect} from 'react';
 import FavoriteList from '../../components/profile/FavoriteList';
 import userService from '../../services/userServices';
 import { useNotification } from '../../components/notifications/NotificationsProvider';
+import {useSelector, useDispatch} from 'react-redux';
+import { setAccess } from '../../redux/reducers/accessSlice';
 
 export default function FavoritesContainer(props) {
     const service = userService();
+    const { access } = useSelector(state => state);
+    const dispatch = useDispatch();
     const sendNotification = useNotification();
-    const [favorites, setFavorites] = useState(undefined);
 
-    useEffect(()=>{
-        (async()=>{
-           try {
-            const response = await service.getUserAccess();
-            setFavorites(response)
-           } catch (error) {
-            sendNotification({
-                type:'ERROR',
-                message:'Error al consultar sus accesos',
-            });
-           }
-        })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[]);
+
 
     const setFavorite = async(id, isFavorite) =>{
         try {
             const enabled = (isFavorite == 'Y') ? 'N' : 'Y'
-            const response = await service.setDirectAccess(id,enabled);
-            if(response){
-                const refreshFavorites = await service.getUserAccess();
-                setFavorites(refreshFavorites);
-            }
+            const response = await service.setFavoriteAccess(id,enabled);
+            dispatch(setAccess(response));
         } catch (error) {
             sendNotification({
                 type:'ERROR',
@@ -41,7 +27,7 @@ export default function FavoritesContainer(props) {
 
     return (
         <FavoriteList 
-            items={favorites}
+            items={access}
             setFavorite={setFavorite}
         /> 
     )

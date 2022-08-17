@@ -10,18 +10,21 @@ import useClickOutside from "../hooks/useClickOutside";
 import { XIcon } from "@heroicons/react/solid";
 import { LogoutIcon } from "@heroicons/react/outline";
 import Avatar from "./commons/Avatar";
-import { useAuth } from "../context/AuthContext";
-import authService from "../services/authService";
-import jsCookie from "js-cookie";
 import { useNotification } from "./notifications/NotificationsProvider";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import userLogout from "../redux/actions/userLogout";
+import { useRouter } from "next/router";
 
 const Navbar = () => {
-  const {user} = useAuth();
-  const service = authService();
+  const {user} = useSelector(state => state);
+  const router  = useRouter();
+  const dispatch = useDispatch();
   const userMenuRef = useRef(null);
   const sendNotification = useNotification();
   const [showDialog, setShowDialog] = useState(false);
   const handleToggle = () => setShowDialog(!showDialog);
+  
 
   useClickOutside(userMenuRef, () => {
     if (showDialog) {
@@ -31,10 +34,8 @@ const Navbar = () => {
 
   const handleLogout = async() => {
     try {
-        await service.logout();
-        jsCookie.remove('accessToken');
-        jsCookie.remove('jwt');
-        window.location.href = '/';
+        dispatch(userLogout());
+        router.push('/')
     } catch (error) {
       sendNotification({
         type:'ERROR',

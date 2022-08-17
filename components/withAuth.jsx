@@ -1,22 +1,23 @@
-import { useRouter } from "next/router";
-import cookie from "js-cookie";
 import { useEffect, useState } from "react";
-import LoaderComponent from "./Loader";
-import {useAuth} from '../context/AuthContext';
-import authService from "../services/authService";
+import { useRouter } from "next/router";
 import { urlExceptions } from "../utils/constants";
-
+import authService from "../services/authService";
+import jsCookie from 'js-cookie';
+import { useSelector } from "react-redux";
+import Loader from './Loader'
 
 const witAuth = (Component) => {
 
-  const AuthorizationComponent = () => {
-    const router = useRouter();
+  const AuthorizationComponent = (props) => {
     const service = authService();
-    const [loading, setLoading] = useState(true);
+    const router = useRouter();
+    const {asPath} = router;
+    const token = jsCookie.get('accessToken');
     const [config, setConfig] = useState({});
-    const {setAuth, getAllParameters} = useAuth();
+    const [loading, setLoading] = useState(true);
+    const {isAuth, system:{isFetching}} = useSelector(state => state);
 
-    const getConfiguration = (userParams) => {
+    const parseParams = (userParams) => {
       const configuration = {}
       if (userParams) {
         for (const item in userParams) {
@@ -39,45 +40,33 @@ const witAuth = (Component) => {
       }
       return configuration;
     }
-    /**
-     * si el usuario no esta autorizado remplaza la direccion
-     * si el usuario no tiene token lo redirecciona al login
-     * si el usuario tiene token y quiere ingresar al login lo redirige al dashboard
-     * @returns
-     */
-    const pathEvaluate = async () => {
-  
-        try {
-          const token = cookie.get('accessToken');
-          const {asPath} = router;
-          const exceptions = urlExceptions.find(path => path.pathname == asPath);
-
-          if(!exceptions && token){
-            const response = await service.getUserAuthorization(asPath);
-            if(!response.access) router.replace('/unauthorized');
-            setConfig(getConfiguration(response.config));
+    
+    useEffect(()=>{
+      (async()=> {
+        if(!isFetching && isAuth){
+          try {
+            const pathExeption = urlExceptions.find(url => url.pathname == asPath);
+            if(!pathExeption && token){
+              setLoading(true);
+              const {access, config} = await service.getUserAuthorization(asPath);
+              setConfig(parseParams(config));
+              setLoading(false);
+              if(!access) router.replace('/unauthorized')
+            }
+            else if(pathExeption.tokenRequired && !token){
+              router.push('/')
+            } 
+          } catch (error) {
+            console.error(error);
           }
-          else if(exceptions.tokenRequired && !token){
-            router.push('/')
-          }
-          if(token){
-           await setAuth(true);
-           await getAllParameters()
-          } 
-          
-          setLoading(false)
-        } catch (error) {
-          router.push('/')
         }
-      }
+      })()
+    },[isAuth])
 
-    useEffect(() => {
-      pathEvaluate();
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    return loading ? <LoaderComponent /> : <Component config={config} />;
+    return loading ? <Loader/> : <Component config={config}/>
   };
+
+  
 
    /**
    * Este procedimiento solo se ejecuta desde el servidor
@@ -86,28 +75,30 @@ const witAuth = (Component) => {
    * @returns
    */
 
-    AuthorizationComponent.getInitialProps = async ({ req, res }) => {
-      if (req && res) {
-        const { url } = req;
-        const { accessToken } = req.cookies;
-
-        if (url !== "/" && !accessToken) {
-          res.writeHead(302, {
-            location: "/",
-          });
-          res.end();
-        } else if (url == "/" && accessToken) {
-          res.writeHead(302, {
-            location: "/dashboard",
-          });
-          res.end();
-        }
+   
+  AuthorizationComponent.getInitialProps = async ({ req, res }) => {
+    let token = null;
+    let path = null
+    if (req && res) {
+      const { url } = req;
+      const { accessToken } = req.cookies;
+      token = accessToken;
+      path = url
+      if (url !== "/" && !accessToken) {
+        res.writeHead(302, {
+          location: "/",
+        });
+        res.end();
+      } else if (url == "/" && accessToken) {
+        res.writeHead(302, {
+          location: "/dashboard",
+        });
+        res.end();
       }
-      /**
-       * ¯\_(ツ)_/¯
-       */
-      return { nothingToseeHere: "yay" };
-};
+    }
+  
+    return {token, path};
+  };
 
   return AuthorizationComponent;
 };

@@ -23,29 +23,29 @@ import { formatLastDate, getBeginEndMonth } from "../../utils/dateFunctions";
 import { getPresupuestoFechas } from "../../services/PresupuestoService";
 import { MENSAJE_ERROR } from "../../utils/data";
 import withAuth from "../../components/withAuth";
-import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import { useSelector } from "react-redux";
 
 const Fechas = () => {
   const sendNotification = useNotification();
-  const { plazas } = useAuth();
+  const {places} = useSelector(state => state);
   const [prespuestos, setPrespuestos] = useState({});
   const [paramFechas, setParamFechas] = useState({
-    plaza: getInitialPlaza(plazas),
+    plaza: getInitialPlaza(places),
     fechaInicio: getBeginEndMonth()[0],
     fechaFin: getBeginEndMonth()[1],
   });
 
   useEffect(()=>{
-    if(plazas){
-      setParamFechas(prev => ({...prev, plaza:getInitialPlaza(plazas)}));
+    if(places){
+      setParamFechas(prev => ({...prev, plaza:getInitialPlaza(places)}));
     }
-  },[plazas])
+  },[places])
 
   useEffect(() => {
     (async()=>{
-      if(validateInputDateRange(paramFechas.fechaInicio, paramFechas.fechaFin) && plazas){
+      if(validateInputDateRange(paramFechas.fechaInicio, paramFechas.fechaFin) && places){
         try {
           const response = await getPresupuestoFechas(paramFechas);
           setPrespuestos(response);

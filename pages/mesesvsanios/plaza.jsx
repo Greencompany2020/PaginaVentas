@@ -33,17 +33,17 @@ import { handleChange } from "../../utils/handlers";
 import { getMesesAgnosPlazas } from "../../services/MesesAgnosService";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import { useSelector } from "react-redux";
 
 const Plaza = (props) => {
   const {config} = props;
   const sendNotification = useNotification();
-  const { plazas } = useAuth();
+  const {places} = useSelector(state => state)
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [parametrosPlazas, setParametrosPlazas] = useState({
-    plaza: getInitialPlaza(plazas),
+    plaza: getInitialPlaza(places),
     delMes: 1,
     alMes: getCurrentMonth() - 1,
     delAgno: getCurrentYear() - 5,
@@ -61,10 +61,10 @@ const Plaza = (props) => {
 
 
   useEffect(()=>{
-    if(plazas){
+    if(places){
       setParametrosPlazas(prev => ({
         ...prev, 
-        plaza:getInitialPlaza(plazas),
+        plaza:getInitialPlaza(places),
         incluirTotal: config?.incluirTotal || 0,
         ventasDiaMesActual: config?.ventasDiaMesActual || 0,
         conIva: config?.conIva || 0,
@@ -76,12 +76,12 @@ const Plaza = (props) => {
         resultadosPesos: config?.resultadosPesos || 0,
       }))
     }
-  },[plazas,config])
+  },[places,config])
 
   useEffect(() => {
     (async()=>{
       if(validateYearRange(parametrosPlazas.delAgno, parametrosPlazas.alAgno) &&
-        validateMonthRange(parametrosPlazas.delMes, parametrosPlazas.alMes) && plazas){
+        validateMonthRange(parametrosPlazas.delMes, parametrosPlazas.alMes) && places){
           try {
             const response = await getMesesAgnosPlazas(parametrosPlazas);
             createMesesAgnosPlazasDataset(

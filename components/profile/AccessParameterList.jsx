@@ -4,9 +4,9 @@ import { groupBykey } from '../../utils/functions';
 import { v4 } from 'uuid';
 
 export default function AccessParameterList(props) {
-    const {items} = props;
+    const {items, parameters, refreshParams} = props;
     const [selected, setSelected] = useState(undefined);
-    
+
     if(items){
         const groups = groupBykey(items, "Clase");
         const Items = Object.keys(groups).map((group)=>(
@@ -23,6 +23,8 @@ export default function AccessParameterList(props) {
                                 setSelected = {setSelected}
                                 isSelected= {selected == item.IdDashboardUsr}
                                 idAccess = {item.IdProyectAcceso}
+                                globalParameters = {parameters}
+                                refreshParams = {refreshParams}
                             />
                         ))}
                     </ul>

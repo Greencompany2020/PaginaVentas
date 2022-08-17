@@ -3,7 +3,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   Parameters,
   ParametersContainer,
-  SmallContainer,
 } from "../../components/containers";
 import {
   InputContainer,
@@ -20,17 +19,17 @@ import { getCurrentYear } from "../../utils/dateFunctions";
 import { handleChange } from "../../utils/handlers";
 import { getSemanaSantaPlazas } from "../../services/semanaSantaService";
 import withAuth from "../../components/withAuth";
-import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import { useSelector } from "react-redux";
 
 const Plaza = (props) => {
   const {config}  = props;
   const sendNotification = useNotification();
-  const { plazas } = useAuth();
+  const {places} = useSelector(state => state);
   const [semanaSantaPlazas, setSemanaSantaPlazas] = useState({});
   const [paramPlaza, setParamPlaza] = useState({
-    plaza: getInitialPlaza(plazas),
+    plaza: getInitialPlaza(places),
     tiendas: 0,
     delAgno: getCurrentYear(),
     conIva: 0,
@@ -41,9 +40,9 @@ const Plaza = (props) => {
   });
 
   useEffect(()=>{
-    if(plazas){
+    if(places){
       setParamPlaza(prev => ({
-        ...prev, plaza:getInitialPlaza(plazas),
+        ...prev, plaza:getInitialPlaza(places),
         conIva: config?.conIva || 0,
         conVentasEventos: config?.conVentasEventos || 0,
         conTiendasCerradas: config?.conTiendasCerradas || 0,
@@ -51,11 +50,11 @@ const Plaza = (props) => {
         resultadosPesos: config?.resultadosPesosa || 0,
       }));
     }
-  },[plazas, config])
+  },[places, config])
 
   useEffect(() => {
     (async()=>{
-      if(validateYear(paramPlaza.delAgno) && plazas){
+      if(validateYear(paramPlaza.delAgno) && places){
         try {
           const response = await getSemanaSantaPlazas(paramPlaza);
           setSemanaSantaPlazas(response);

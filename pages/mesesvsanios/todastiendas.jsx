@@ -28,17 +28,17 @@ import { handleChange } from "../../utils/handlers";
 import { getMesesAgnosTodasTiendas } from "../../services/MesesAgnosService";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import { useSelector } from "react-redux";
 
 const TodasTiendas = (props) => {
   const {config} = props;
   const sendNotification = useNotification();
-  const { plazas } = useAuth();
+  const {places} = useSelector(state => state);
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTiendas, setParamTiendas] = useState({
-    plaza: getInitialPlaza(plazas),
+    plaza: getInitialPlaza(places),
     delAgno: getCurrentYear(),
     conIva: 0,
     conTiendasCerradas: 0,
@@ -46,20 +46,20 @@ const TodasTiendas = (props) => {
   });
 
   useEffect(()=>{
-    if(plazas){
+    if(places){
       setParamTiendas(prev => ({
         ...prev, 
-        plaza:getInitialPlaza(plazas),
+        plaza:getInitialPlaza(places),
         conIva: config?.conIva || 0,
         conTiendasCerradas: config?.conTiendasCerradas || 0,
         resultadosPesos: config?.resultadosPesos || 0,
       }))
     }
-  },[plazas, config])
+  },[places, config])
 
   useEffect(() => {
     (async()=>{
-      if(validateYear(paramTiendas.delAgno) && plazas){
+      if(validateYear(paramTiendas.delAgno) && places){
         try {
           const response = await getMesesAgnosTodasTiendas(paramTiendas);
           createMesesAgnosTiendasDataset(response);

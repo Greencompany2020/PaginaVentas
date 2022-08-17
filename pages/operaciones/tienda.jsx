@@ -32,17 +32,17 @@ import {
 import { handleChange } from "../../utils/handlers";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import { useSelector } from "react-redux";
 
 const Tienda = (props) => {
   const {config} = props;
   const sendNotification = useNotification();
-  const { tiendas } = useAuth();
+  const {shops} = useSelector(state => state);
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTienda, setParamTienda] = useState({
-    tienda: getInitialTienda(tiendas),
+    tienda: getInitialTienda(shops),
     delMes: 1,
     alMes: getCurrentMonth() - 1,
     delAgno: getCurrentYear() - 1,
@@ -54,21 +54,21 @@ const Tienda = (props) => {
   });
 
   useEffect(()=>{
-    if(tiendas){
+    if(shops){
       setParamTienda(prev => ({
         ...prev, 
-        tienda:getInitialTienda(tiendas),
+        tienda:getInitialTienda(shops),
         promedio: config?.promedio || 0,
         acumulado: config?.acumulado || 0,
         conIva: config?.conIva || 0,
         resultadosPesos: config?.resultadosPesos || 0,
       }))
     }
-  },[tiendas, config])
+  },[shops, config])
 
   useEffect(() => {
     (async()=>{
-      if( validateYearRange(paramTienda.delAgno, paramTienda.alAgno) &&  validateMonthRange(paramTienda.delMes, paramTienda.alMes)  && tiendas ){
+      if( validateYearRange(paramTienda.delAgno, paramTienda.alAgno) &&  validateMonthRange(paramTienda.delMes, paramTienda.alMes)  && shops){
         try {
           const response = await getOperacionesTienda(paramTienda);
           createOperacionesDatasets(response);

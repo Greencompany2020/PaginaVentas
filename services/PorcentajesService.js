@@ -1,8 +1,8 @@
-import ApiProvider from "./ApiProvider";
+import { reporteProvider } from './apiProvider';
 
 export async function getPorcenatajesParticipacion(body) {
   try {
-    const { data } = await ApiProvider.post("/porcentajes/participacion", body);
+    const { data } = await reporteProvider.post("/porcentajes/participacion", body);
     return data.result;
   } catch (error) {
     return error;
@@ -11,7 +11,7 @@ export async function getPorcenatajesParticipacion(body) {
 
 export async function getPorcentajeCrecimiento(body) {
   try {
-    const { data } = await ApiProvider.post("/porcentajes/crecimiento", body);
+    const { data } = await reporteProvider.post("/porcentajes/crecimiento", body);
     return data.result;
   } catch (error) {
     return error;
@@ -20,7 +20,7 @@ export async function getPorcentajeCrecimiento(body) {
 
 export async function getPorcentajesMensuales(body) {
   try {
-    const { data } = await ApiProvider.post("/porcentajes/mensuales", body);
+    const { data } = await reporteProvider.post("/porcentajes/mensuales", body);
     return data.result;
   } catch (error) {
     throw error;
