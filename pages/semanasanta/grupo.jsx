@@ -30,29 +30,19 @@ const Grupo = (props) => {
   const sendNotification = useNotification()
   const [concentrado, setConcentrado] = useState(false);
   const [semanaSantaGrupo, setSemanaSantaGrupo] = useState({});
+  
   const [paramGrupo, setParamGrupo] = useState({
     delAgno: getCurrentYear(),
     versusAgno: getCurrentYear() - 1,
     tiendas: 0,
-    conIva: 0,
-    conVentasEventos: 0,
-    conTiendasCerradas: 0,
-    incluirFinSemanaAnterior: 1,
-    resultadosPesos: 1,
+    conIva: config?.conIva || 0,
+    conVentasEventos: config?.conVentasEventos || 0,
+    conTiendasCerradas: config?.conTiendasCerradasa || 0,
+    incluirFinSemanaAnterior: config?.incluirFinSemanaAnterior || 1,
+    resultadosPesos: config?.resultadosPesos || 1,
   });
+  setConcentrado(config?.concentrado ? true : false)
 
-  useEffect(()=>{
-    setParamGrupo(prev => ({
-      ...prev,
-      conIva: config?.conIva || 0,
-      conVentasEventos: config?.conVentasEventos || 0,
-      conTiendasCerradas: config?.conTiendasCerradasa || 0,
-      incluirFinSemanaAnterior: config?.incluirFinSemanaAnterior || 0,
-      resultadosPesos: config?.resultadosPesos || 0,
-    }));
-
-    setConcentrado(config?.concentrado ? true : false)
-  },[config])
 
   useEffect(() => {
     (async()=>{

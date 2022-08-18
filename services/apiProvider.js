@@ -57,7 +57,6 @@ configuradorProvider.interceptors.request.use(
                 })
                 .catch(({ response }) => {
                     isRefreshing = false;
-                    console.log(response);
                     expiredSession();
                 })
         }

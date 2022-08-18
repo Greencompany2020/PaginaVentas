@@ -31,23 +31,12 @@ const Concentrado = (props) => {
   const [concentrado, setConcentrado] = useState([]);
   const [concentradoParametros, setConcentradoParametros] = useState({
     delAgno: new Date(Date.now()).getFullYear(),
-    conIva: 0,
-    ventasMilesDlls: 1,
-    conVentasEventos: 0,
-    conTiendasCerradas: 0,
-    resultadosPesos: 0,
+    conIva: config?.conIva || 0,
+    ventasMilesDlls:config?.ventasMilesDlls || 0,
+    conVentasEventos: config?.conVentasEventos || 0,
+    conTiendasCerradas: config?.conTiendasCerradas || 0,
+    resultadosPesos: config?.resultadosPesos || 1,
   });
-
-  useEffect(()=>{
-    setConcentradoParametros(prev => ({
-      ...prev,
-      conIva: config?.conIva || 0,
-      ventasMilesDlls:config?.ventasMilesDlls || 0,
-      conVentasEventos: config?.conVentasEventos || 0,
-      conTiendasCerradas: config?.conTiendasCerradas || 0,
-      resultadosPesos: config?.resultadosPesos || 0,
-    }))
-  },[config])
 
   useEffect(() => {
     (async()=>{

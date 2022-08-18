@@ -37,11 +37,7 @@ const Fechas = () => {
     fechaFin: getBeginEndMonth()[1],
   });
 
-  useEffect(()=>{
-    if(places){
-      setParamFechas(prev => ({...prev, plaza:getInitialPlaza(places)}));
-    }
-  },[places])
+
 
   useEffect(() => {
     (async()=>{

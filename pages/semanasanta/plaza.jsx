@@ -32,25 +32,13 @@ const Plaza = (props) => {
     plaza: getInitialPlaza(places),
     tiendas: 0,
     delAgno: getCurrentYear(),
-    conIva: 0,
-    conVentasEventos: 0,
-    conTiendasCerradas: 0,
-    incluirFinSemanaAnterior: 1,
-    resultadosPesos: 1,
+    conIva: config?.conIva || 0,
+    conVentasEventos: config?.conVentasEventos || 0,
+    conTiendasCerradas: config?.conTiendasCerradas || 0,
+    incluirFinSemanaAnterior: config?.incluirFinSemanaAnterior || 0,
+    resultadosPesos: config?.resultadosPesos || 1,
   });
 
-  useEffect(()=>{
-    if(places){
-      setParamPlaza(prev => ({
-        ...prev, plaza:getInitialPlaza(places),
-        conIva: config?.conIva || 0,
-        conVentasEventos: config?.conVentasEventos || 0,
-        conTiendasCerradas: config?.conTiendasCerradas || 0,
-        incluirFinSemanaAnterior: config?.incluirFinSemanaAnterior || 0,
-        resultadosPesos: config?.resultadosPesosa || 0,
-      }));
-    }
-  },[places, config])
 
   useEffect(() => {
     (async()=>{

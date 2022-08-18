@@ -34,24 +34,13 @@ const Participacion = (props) => {
   const [parametrosParticipacion, setParametrosParticipacion] = useState({
     alAgno: getCurrentYear(),
     tiendas: 0,
-    conIva: 0,
-    conVentasEventos: 0,
-    conTiendasCerradas: 0,
-    sinTiendasSuspendidas: 1,
-    resultadosPesos: 0,
+    conIva: config?.conIva || 0,
+    conVentasEventos: config?.conVentasEventos || 0,
+    conTiendasCerradas: config?.conTiendasCerradas|| 0,
+    sinTiendasSuspendidas: config?.sinTiendasSuspendidas || 1,
+    resultadosPesos: config?.resultadosPesos || 1,
   });
 
-  useEffect(()=>{
-    setParametrosParticipacion(prev => ({
-      ...prev,
-      conIva: config?.conIva || 0,
-      conVentasEventos: config?.conVentasEventos || 0,
-      conTiendasCerradas: config?.conTiendasCerradas|| 0,
-      sinTiendasSuspendidas: config?.sinTiendasSuspendidas || 0,
-      resultadosPesos: config?.resultadosPesos || 0,
-    }));
-    
-  },[config])
 
   useEffect(() => {
     (async()=>{

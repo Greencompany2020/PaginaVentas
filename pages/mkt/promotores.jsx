@@ -47,15 +47,9 @@ const Promotores = (props) => {
     delMes: 1,
     alMes: getCurrentMonth() - 1,
     delAgno: getCurrentYear(),
-    conIva: 0,
+    conIva: config?.conIva || 0
   });
 
-  useEffect(()=>{
-    setParamPromotores(prev => ({
-      ...prev,
-      conIva: config?.conIva || 0
-    }))
-  },[config])
 
   useEffect(() => {
     (async()=>{

@@ -40,11 +40,6 @@ const Tienda = () => {
     rangos: "100,200,300,400,500,600",
   });
 
-  useEffect(()=>{
-    if(shops){
-      setParamTienda(prev => ({...prev,tienda: getInitialTienda(shops)}));
-    }
-  },[shops])
 
   useEffect(() => {
     (async()=>{

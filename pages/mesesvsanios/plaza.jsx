@@ -42,41 +42,24 @@ const Plaza = (props) => {
   const sendNotification = useNotification();
   const {places} = useSelector(state => state)
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
+  
   const [parametrosPlazas, setParametrosPlazas] = useState({
     plaza: getInitialPlaza(places),
     delMes: 1,
     alMes: getCurrentMonth() - 1,
     delAgno: getCurrentYear() - 5,
     alAgno: getCurrentYear(),
-    incluirTotal: 0,
-    ventasDiaMesActual: 0,
-    conIva: 0,
-    conVentasEventos: 0,
-    sinAgnoVenta: 0,
-    conTiendasCerradas: 0,
-    sinTiendasSuspendidas: 0,
-    detalladoTienda: 0,
-    resultadosPesos: 0,
+    incluirTotal: config?.incluirTotal || 0,
+    ventasDiaMesActual: config?.ventasDiaMesActual || 0,
+    conIva: config?.conIva || 0,
+    conVentasEventos: config?.conVentasEventos || 0,
+    sinAgnoVenta: config?.sinAgnoVenta || 0,
+    conTiendasCerradas: config?.conTiendasCerradas || 0,
+    sinTiendasSuspendidas: config?.sinTiendasSuspendidas || 0,
+    detalladoTienda: config?.detalladoTiendal || 0,
+    resultadosPesos: config?.resultadosPesos || 1,
   });
 
-
-  useEffect(()=>{
-    if(places){
-      setParametrosPlazas(prev => ({
-        ...prev, 
-        plaza:getInitialPlaza(places),
-        incluirTotal: config?.incluirTotal || 0,
-        ventasDiaMesActual: config?.ventasDiaMesActual || 0,
-        conIva: config?.conIva || 0,
-        conVentasEventos: config?.conVentasEventos || 0,
-        sinAgnoVenta: config?.sinAgnoVenta || 0,
-        conTiendasCerradas: config?.conTiendasCerradas || 0,
-        sinTiendasSuspendidas: config?.sinTiendasSuspendidas || 0,
-        detalladoTienda: config?.detalladoTiendal || 0,
-        resultadosPesos: config?.resultadosPesos || 0,
-      }))
-    }
-  },[places,config])
 
   useEffect(() => {
     (async()=>{

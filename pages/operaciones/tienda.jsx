@@ -47,24 +47,12 @@ const Tienda = (props) => {
     alMes: getCurrentMonth() - 1,
     delAgno: getCurrentYear() - 1,
     alAgno: getCurrentYear(),
-    promedio: 0,
-    acumulado: 0,
-    conIva: 0,
-    resultadosPesos: 0,
+    promedio: config?.promedio || 0,
+    acumulado: config?.acumulado || 0,
+    conIva: config?.conIva || 0,
+    resultadosPesos: config?.resultadosPesos || 1,
   });
 
-  useEffect(()=>{
-    if(shops){
-      setParamTienda(prev => ({
-        ...prev, 
-        tienda:getInitialTienda(shops),
-        promedio: config?.promedio || 0,
-        acumulado: config?.acumulado || 0,
-        conIva: config?.conIva || 0,
-        resultadosPesos: config?.resultadosPesos || 0,
-      }))
-    }
-  },[shops, config])
 
   useEffect(() => {
     (async()=>{

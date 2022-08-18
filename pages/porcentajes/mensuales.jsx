@@ -51,28 +51,15 @@ const Mensuales = (props) => {
     plaza: getInitialPlaza(places),
     delAgno: Number(getYearFromDate(formatedDate())) - 5,
     alAgno: Number(getYearFromDate(formatedDate())),
-    conIva: 0,
-    conVentasEventos: 0,
-    conTiendasCerradas: 0,
-    resultadosPesos: 0,
+    conIva: config?.conIva || 0,
+    conVentasEventos: config?.conVentasEventos || 0,
+    conTiendasCerradas: config?.conTiendasCerradas || 0,
+    resultadosPesos: config?.resultadosPesos || 1,
   });
   const [toggleTienda, setToggleTienda] = useState(true);
   const [togglePlaza, setTogglePlaza] = useState(false);
 
-  useEffect(()=>{
-    if(shops && places){
-      setParametrosMensuales(prev => ({
-        ...prev, 
-        tienda:getInitialTienda(shops), 
-        plaza:getInitialPlaza(places),
-        conIva: config?.conIva || 0,
-        conVentasEventos: config?.conVentasEventos || 0,
-        conTiendasCerradas: config?.conTiendasCerradas || 0,
-        resultadosPesos: config?.resultadosPesos || 0,
-      }));
-    }
-  },[shops, places, config])
-
+ 
   useEffect(() => {
     (async()=>{
       if(validateYearRange(parametrosMensuales.delAgno, parametrosMensuales.alAgno) && (shops && places)){

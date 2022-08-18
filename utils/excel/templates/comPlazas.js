@@ -131,7 +131,7 @@ export default function comPlazas(title, rows, years){
     }
 
     const style = {
-        format:{number: '#,##', decimal: '#.##'},
+        format:{number:  '#,##;-#,##', decimal: '#.##;-#.##'},
         cols:{
             F:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'},
             ...(!years[2]) && {K:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'}},

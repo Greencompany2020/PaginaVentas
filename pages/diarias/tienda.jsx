@@ -126,7 +126,7 @@ const Tienda = (props) => {
             <tbody>
               {
                 (dataReport && dataReport.length > 0) && dataReport.map(item =>(
-                  <tr>
+                  <tr key={v4()}>
                     <td className="priority-cell">{item.dia}</td>
                     <td>{item.dia}</td>
                     <td className="priority-cell">{numberWithCommas(item.ventaActual)}</td>

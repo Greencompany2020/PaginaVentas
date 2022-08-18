@@ -49,22 +49,11 @@ const Tiendas = (props) => {
     alMes: getCurrentMonth() - 1,
     delAgno: getCurrentYear() - 5,
     alAgno: getCurrentYear(),
-    incluirTotal: 0,
-    ventasDiaMesActual: 0,
-    conIva: 0,
+    incluirTotal: config?.incluirTotal || 0,
+    ventasDiaMesActual: config?.ventasDiaMesActual || 0,
+    conIva: config?.conIva || 0,
   });
 
-  useEffect(()=>{
-    if(shops){
-      setParametrosTiendas(prev => ({
-        ...prev, 
-        tienda:getInitialTienda(shops),
-        incluirTotal: config?.incluirTotal || 0,
-        ventasDiaMesActual: config?.ventasDiaMesActual || 0,
-        conIva: config?.conIva || 0,
-      }))
-    }
-  },[shops, config])
 
   useEffect(() => {
     (async()=>{

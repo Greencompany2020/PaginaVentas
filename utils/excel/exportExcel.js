@@ -99,8 +99,7 @@ const getTypeof = val => {
 
         //Si el tipo numero tiene un - al inicio es negativo y si tiene solo un . es decimal si no es entero
         case 'number':
-            if(String(val).includes('-')) return 'negative';
-            else if(String(val).includes('.')) return 'decimal'
+            if(String(val).includes('.')) return 'decimal'
             else return 'number'
         
         //si el tipo de dato no se encuantre especificado, retorna como valor general

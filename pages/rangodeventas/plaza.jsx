@@ -38,19 +38,10 @@ const Plaza = (props) => {
     fechaInicio: getBeginEndMonth(true)[0],
     fechaFin: getBeginEndMonth(true)[1],
     rangos: "100,200,300,400,500,600",
-    conTiendasCerradas: 0,
+    conTiendasCerradas: config?.conTiendasCerradas || 0,
   });
 
-  useEffect(()=>{
-    if(places){
-      setParamPlaza(prev => ({
-        ...prev, 
-        plaza:getInitialPlaza(places),
-        conTiendasCerradas: config?.conTiendasCerradas || 0,
-      }));
-    }
-  },[places, config])
-
+  
   useEffect(() => {
     (async()=>{
       if(validateInputDateRange(paramPlaza.fechaInicio, paramPlaza.fechaFin) && places){

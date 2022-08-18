@@ -36,26 +36,15 @@ const Grupo = (props) => {
     delMes: 1,
     alMes: getCurrentMonth() - 1,
     delAgno: getCurrentYear(),
-    conIva: 0,
-    tiendas: 0,
-    promedio: 0,
-    acumulado: 0,
-    conEventos: 0,
-    resultadosPesos: 0,
+    conIva: config?.conIva || 0,
+    tiendas: config?.tiendas || 0,
+    promedio: config?.promedio || 0,
+    acumulado: config?.acumulado || 0,
+    conEventos: config?.conEventos || 0,
+    resultadosPesos: config?.resultadosPesos || 1,
   });
 
-  useEffect(()=>{
-    setParamGrupo(prev => ({
-      ...prev,
-      conIva: config?.conIva || 0,
-      tiendas: config?.tiendas || 0,
-      promedio: config?.promedio || 0,
-      acumulado: config?.acumulado || 0,
-      conEventos: config?.conEventos || 0,
-      resultadosPesos: config?.resultadosPesos || 0,
-    }))
-  },[config])
-
+  
   useEffect(() => {
     (async()=>{
       if(validateMonthRange(paramGrupo.delMes, paramGrupo.alMes) &&  validateYear(paramGrupo.delAgno)){

@@ -40,22 +40,10 @@ const TodasTiendas = (props) => {
   const [paramTiendas, setParamTiendas] = useState({
     plaza: getInitialPlaza(places),
     delAgno: getCurrentYear(),
-    conIva: 0,
-    conTiendasCerradas: 0,
-    resultadosPesos: 1,
+    conIva: config?.conIva || 0,
+    conTiendasCerradas: config?.conTiendasCerradas || 0,
+    resultadosPesos: config?.resultadosPesos || 1,
   });
-
-  useEffect(()=>{
-    if(places){
-      setParamTiendas(prev => ({
-        ...prev, 
-        plaza:getInitialPlaza(places),
-        conIva: config?.conIva || 0,
-        conTiendasCerradas: config?.conTiendasCerradas || 0,
-        resultadosPesos: config?.resultadosPesos || 0,
-      }))
-    }
-  },[places, config])
 
   useEffect(() => {
     (async()=>{

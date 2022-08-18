@@ -40,22 +40,13 @@ const Tiendas = (props) => {
     delMes: getCurrentMonth(),
     alAgno: getCurrentYear(),
     tiendas: 0,
-    conIva: 0,
-    conVentasEventos: 0,
-    conTiendasCerradas: 0,
-    resultadosPesos: 1,
+    conIva: config?.conIva || 0,
+    conVentasEventos:  config?.conVentasEventos || 0,
+    conTiendasCerradas:  config?.conTiendasCerradas || 0,
+    resultadosPesos:  config?.resultadosPesos || 1,
   });
 
-  useEffect(()=>{
-    setTiendasParametros(prev => ({
-      ...prev,
-      conIva: config.conIva || 0,
-      conVentasEventos:  config.conVentasEventos || 0,
-      conTiendasCerradas:  config.conTiendasCerradas || 0,
-      resultadosPesos:  config.resultadosPesos || 0,
-    }))
-  },[config])
-
+  
   useEffect(() => {
     (async()=>{
       if(validateYear(tiendasParametros.alAgno)){

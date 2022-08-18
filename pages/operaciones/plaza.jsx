@@ -41,31 +41,16 @@ const Plaza = (props) => {
     delMes: 1,
     alMes: getCurrentMonth() - 1,
     delAgno: getCurrentYear(),
-    promedio: 0,
-    acumulado: 0,
-    conIva: 0,
-    ventasMilesDlls: 0,
-    conVentasEventos: 0,
-    conTiendasCerradas: 0,
-    resultadosPesos: 0,
+    promedio: config?.promedio || 0,
+    acumulado: config?.acumulado || 0,
+    conIva: config?.conIva || 0,
+    ventasMilesDlls: config?.ventasMilesDlls || 0,
+    conVentasEventos: config?.conVentasEventos || 0,
+    conTiendasCerradas: config?.conTiendasCerradas || 0,
+    resultadosPesos: config?.resultadosPesos || 1,
   });
 
-  useEffect(()=>{
-    if(places){
-      setParamPlaza(prev => ({
-        ...prev, 
-        plaza:getInitialPlaza(places),
-        promedio: config?.promedio || 0,
-        acumulado: config?.acumulado || 0,
-        conIva: config?.conIva || 0,
-        ventasMilesDlls: config?.ventasMilesDlls || 0,
-        conVentasEventos: config?.conVentasEventos || 0,
-        conTiendasCerradas: config?.conTiendasCerradas || 0,
-        resultadosPesos: config?.resultadosPesos || 0,
-      }))
-    }
-  },[places, config])
-
+ 
   useEffect(() => {
     (async()=>{
       if(validateMonthRange(paramPlaza.delMes, paramPlaza.alMes) && validateYear(paramPlaza.delAgno) && places){

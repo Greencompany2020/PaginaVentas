@@ -38,21 +38,12 @@ const Tienda = (props) => {
     alAgno: getCurrentYear(),
     alMes: getCurrentMonth(),
     tiendas: 0,
-    conIva: 0,
-    conVentasEventos: 0,
-    conTiendasCerradas: 0,
-    resultadosPesos: 1,
+    conIva: config?.conIva || 0,
+    conVentasEventos: config?.conVentasEventos || 0,
+    conTiendasCerradas: config?.conTiendasCerradas || 0,
+    resultadosPesos: config?.resultadosPesos || 1,
   });
 
-  useEffect(()=>{
-    setTiendasParametros(prev => ({
-      ...prev,
-      conIva: config?.conIva || 0,
-      conVentasEventos: config?.conVentasEventos || 0,
-      conTiendasCerradas: config?.conTiendasCerradas || 0,
-      resultadosPesos: config?.resultadosPesos || 1,
-    }))
-  },[config])
 
   useEffect(() => {
     (async()=>{
@@ -70,6 +61,7 @@ const Tienda = (props) => {
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tiendasParametros]);
+  
 
   return (
     <div className=" flex flex-col h-full">

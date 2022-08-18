@@ -99,7 +99,7 @@ const Plazas = (props) => {
       template.getColumns(), 
       template.getRows(), 
       template.style,
-      ['Tiendas frogs', 'Tienda en  linea']
+      ['Tiendas frogs', 'Tienda en linea']
     );
   }
 

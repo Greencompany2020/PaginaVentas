@@ -156,7 +156,7 @@ export default function semPlaza (title, rows, years) {
     }
   }
   const style = {
-    format:{number: '#,##', decimal: '#.##'},
+    format:{number: '#,##;-#,##', decimal: '#.##;-#.##'},
     cols:{
       L:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'},
       D:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'},

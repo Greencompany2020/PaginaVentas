@@ -41,27 +41,42 @@ const witAuth = (Component) => {
       return configuration;
     }
     
-    useEffect(()=>{
-      (async()=> {
-        if(!isFetching && isAuth){
-          try {
-            const pathExeption = urlExceptions.find(url => url.pathname == asPath);
-            if(!pathExeption && token){
-              setLoading(true);
-              const {access, config} = await service.getUserAuthorization(asPath);
-              setConfig(parseParams(config));
-              setLoading(false);
-              if(!access) router.replace('/unauthorized')
-            }
-            else if(pathExeption.tokenRequired && !token){
-              router.push('/')
-            } 
-          } catch (error) {
-            console.error(error);
+    useEffect(() => {
+      (async () => {
+        const pathExeption = urlExceptions.find(url => url.pathname == asPath);
+
+        if (!pathExeption) {
+          if(isAuth && !isFetching){
+            service.getUserAuthorization(asPath)
+            .then(({access, config}) =>{
+              if(access){
+                setConfig(parseParams(config));
+                setLoading(false);
+              }
+              else{
+                router.replace('/unauthorized')
+              }
+            })
+            .catch(error => {
+              console.error(error);
+            })
           }
         }
+
+        else if (pathExeption && pathExeption.tokenRequired) {
+          if(isAuth && !isFetching){
+             setLoading(false);
+          }
+        }
+
+        else {
+          setLoading(false);
+        }
+
+        
       })()
-    },[isAuth])
+    }, [isAuth])
+
 
     return loading ? <Loader/> : <Component config={config}/>
   };

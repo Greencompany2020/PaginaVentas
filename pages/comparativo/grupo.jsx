@@ -33,12 +33,15 @@ import { isMobile } from "react-device-detect";
 import { Select, Input,BeetWenYears, Checkbox } from "../../components/inputs/reportInputs";
 import {Formik ,Form} from 'formik';
 import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
+import ExcelButton from '../../components/buttons/ExcelButton';
+import exportExcel from '../../utils/excel/exportExcel';
+import comGrupo from "../../utils/excel/templates/comGrupo";
 
 
 function Grupo(props) {
   const {config} = props;
   const sendNotification = useNotification();
-  const [selectRegion, setRegion] = useState("REGION I");
+
 
   
   //Estados de los reportes
@@ -94,6 +97,26 @@ function Grupo(props) {
       setIncludeSem(acumuladoSemanal);
       return rest;
     }
+  }
+
+  const handleExport = () => {
+    const {dateRangeText} = getBeginCurrentWeekDateRange(reportDate.current)
+    const template = comGrupo(
+      [
+        `${getNameDay(reportDate.current)} ${getDayWeekName(reportDate.current)}`,
+        `Semana del ${dateRangeText}`,
+        `Acumulado ${getMonthByNumber(reportDate.current.split("-")[1])}`
+      ],
+      dataReport,
+      [getYearFromDate(reportDate.current), reportDate.dateRange].flat(1)
+    )
+    exportExcel(
+      `Comparativo Grupo ${reportDate.current}`,
+      template.getColumns(),
+      template.getRows(),
+      template.style,
+      ['Tiendas frogs', 'Tienda en linea']
+    )
   }
 
   return (
@@ -170,6 +193,7 @@ function Grupo(props) {
         </div>
         <div className="flex justify-between">
           <p className={`text-sm font-bold`}>{currentRegion}</p>
+          <ExcelButton handleClick={handleExport}/>
         </div>
       </section>
 
@@ -315,7 +339,11 @@ const Table = props => {
                       <td className="priority-cell">{ numberWithCommas(item['ventasMensualesActual' + getYearFromDate(date.current)])}</td>
                       <td>{ numberWithCommas(item['ventasMensualesActual' + date.dateRange[0]])}</td>
                       <td>{ numberWithCommas(item['presupuestoMensual' + getYearFromDate(date.current)])}</td>
-                      <td data-porcent-format={isNegative(item['diferenciaMensual' + date.dateRange[0]])}>{ numberAbsComma(item['diferenciaMensual' + date.dateRange[0]])}</td>
+                      <td 
+                        data-porcent-format={isNegative(item['diferenciaMensual' + date.dateRange[0]] || item['diferenciaMensual'])}
+                      >
+                        { numberAbsComma(item['diferenciaMensual' + date.dateRange[0]] || item['diferenciaMensual'])}
+                      </td>
                       <td data-porcent-format={isNegative(item['porcentajeMensual' + getYearFromDate(date.current)])}>{numberAbs(item['porcentajeMensual' + getYearFromDate(date.current)])}</td>
                       {
                         date.dateRange[1] &&
@@ -329,7 +357,11 @@ const Table = props => {
                       <td className="priority-cell">{numberWithCommas(item['ventasAnualActual' + getYearFromDate(date.current)])}</td>
                       <td>{numberWithCommas(item['ventasAnualActual' + date.dateRange[0]])}</td>
                       <td>{numberWithCommas(item['presupuestoAnual' + getYearFromDate(date.current)])}</td>
-                      <td data-porcent-format={isNegative(item['diferenciaAnual' + date.dateRange[0]])}>{numberAbsComma(item['diferenciaAnual' + date.dateRange[0]])}</td>
+                      <td 
+                        data-porcent-format={isNegative(item['diferenciaAnual' + date.dateRange[0]] || item['diferenciaAnual'])}
+                      >
+                        {numberAbsComma(item['diferenciaAnual' + date.dateRange[0]] || item['diferenciaAnual'])}
+                      </td>
                       <td data-porcent-format={isNegative(item['porcentajeAnual' + getYearFromDate(date.current)])}>{numberAbs(item['porcentajeAnual' + getYearFromDate(date.current)])}</td>
                       {
                         date.dateRange[1] &&
@@ -476,7 +508,11 @@ const TableMovil = props => {
                         <td className="priority-cell">{numberWithCommas(item['ventasMensualesActual' + getYearFromDate(date.current)])}</td>
                         <td>{numberWithCommas(item['ventasMensualesActual' + date.dateRange[0]])}</td>
                         <td>{numberWithCommas(item['presupuestoMensual' + getYearFromDate(date.current)])}</td>
-                        <td data-porcent-format={isNegative(item['diferenciaMensual' + date.dateRange[0]])}>{numberAbsComma(item['diferenciaMensual' + date.dateRange[0]])}</td>
+                        <td 
+                          data-porcent-format={isNegative(item['diferenciaMensual' + date.dateRange[0]] || item['diferenciaMensual'])}
+                        >
+                          {numberAbsComma(item['diferenciaMensual' + date.dateRange[0]] || item['diferenciaMensual'])}
+                        </td>
                         <td data-porcent-format={isNegative(item['porcentajeMensual' + getYearFromDate(date.current)])}>{numberAbs(item['porcentajeMensual' + getYearFromDate(date.current)])}</td>
                         {
                           date.dateRange[1] &&
@@ -520,7 +556,11 @@ const TableMovil = props => {
                         <td className="priority-cell">{numberWithCommas(item['ventasAnualActual' + getYearFromDate(date.current)])}</td>
                         <td>{numberWithCommas(item['ventasAnualActual' + date.dateRange[0]])}</td>
                         <td>{numberWithCommas(item['presupuestoAnual' + getYearFromDate(date.current)])}</td>
-                        <td data-porcent-format={isNegative(item['diferenciaAnual' + date.dateRange[0]])}>{numberAbsComma(item['diferenciaAnual' + date.dateRange[0]])}</td>
+                        <td 
+                          data-porcent-format={isNegative(item['diferenciaAnual' + date.dateRange[0]] || item['diferenciaAnual'])}
+                        >
+                          {numberAbsComma(item['diferenciaAnual' + date.dateRange[0]] || item['diferenciaAnual'])}
+                        </td>
                         <td data-porcent-format={isNegative(item['porcentajeAnual' + getYearFromDate(date.current)])}>{numberAbs(item['porcentajeAnual' + getYearFromDate(date.current)])}</td>
                         {
                           date.dateRange[1] &&
@@ -633,7 +673,7 @@ const Stat = props => {
                 },
                 {
                   caption:'(-)',
-                  value: stringFormatNumber(item['diferenciaMensual' + getYearFromDate(date.current)])
+                  value: stringFormatNumber(item['diferenciaMensual' + getYearFromDate(date.current)] || tem['diferenciaMensual'])
                 },
                 {
                   caption:'%',
@@ -673,7 +713,7 @@ const Stat = props => {
                 },
                 {
                   caption:'(-)',
-                  value: stringFormatNumber(item['diferenciaAnual' + getYearFromDate(date.current)])
+                  value: stringFormatNumber(item['diferenciaAnual' + getYearFromDate(date.current)] || item['diferenciaAnual'])
                 },
                 {
                   caption:'%',
@@ -815,7 +855,7 @@ const StatGroup = props => {
               },
               {
                 caption: '(-)',
-                value: stringFormatNumber(item['diferenciaMensual' + getYearFromDate(date.current)])
+                value: stringFormatNumber(item['diferenciaMensual' + getYearFromDate(date.current)] || item['diferenciaMensual'])
               },
               {
                 caption: '%',
@@ -857,7 +897,7 @@ const StatGroup = props => {
               },
               {
                 caption:'(-)',
-                value: stringFormatNumber(item['diferenciaAnual' + getYearFromDate(date.current)])
+                value: stringFormatNumber(item['diferenciaAnual' + getYearFromDate(date.current)] || item['diferenciaAnual'])
               },
               {
                 caption:'%',
@@ -992,7 +1032,7 @@ const StatGroup = props => {
             },
             {
               caption: '(-)',
-              value: stringFormatNumber(item['diferenciaMensual' + getYearFromDate(date.current)])
+              value: stringFormatNumber(item['diferenciaMensual' + getYearFromDate(date.current)] || item['diferenciaMensual'])
             },
             {
               caption: '%',
@@ -1032,7 +1072,7 @@ const StatGroup = props => {
             },
             {
               caption: '(-)',
-              value: stringFormatNumber(item['diferenciaAnual' + getYearFromDate(date.current)])
+              value: stringFormatNumber(item['diferenciaAnual' + getYearFromDate(date.current)] || item['diferenciaAnual'])
             },
             {
               caption: '%',
