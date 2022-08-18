@@ -1,6 +1,4 @@
-import ApiProvider from "./ApiProvider";
-// TODO: Modal de mensaje de error para minutas
-// TODO: posible respuesta en forma de objeto
+import { reporteProvider } from './apiProvider';
 
 export async function getListaArchivos(fileDir) {
   try {
@@ -12,7 +10,7 @@ export async function getListaArchivos(fileDir) {
       fileDir = listDirectorio.join("/");
     }
     
-    const { data } = await ApiProvider.get("/minutas/archivos", {
+    const { data } = await reporteProvider.get("/minutas/archivos", {
       params: {
         fileDir
       }
@@ -25,7 +23,7 @@ export async function getListaArchivos(fileDir) {
 
 export async function crearDirectorio(dirData) {
   try {
-    await ApiProvider.post("/minutas/directorio", dirData);
+    await reporteProvider.post("/minutas/directorio", dirData);
     return true;
   } catch (error) {
     return error;
@@ -34,7 +32,7 @@ export async function crearDirectorio(dirData) {
 
 export async function crearMinuta(minutaData, fileDir) {
   try {
-    await ApiProvider.post("/minutas/archivos", minutaData, {
+    await reporteProvider.post("/minutas/archivos", minutaData, {
       params: {
         fileDir
       }
@@ -47,7 +45,7 @@ export async function crearMinuta(minutaData, fileDir) {
 
 export async function eliminarDirectorio(fileDir) {
   try {
-    await ApiProvider.delete("/minutas/directorio", {
+    await reporteProvider.delete("/minutas/directorio", {
       data: {
         fileDir
       }
@@ -60,7 +58,7 @@ export async function eliminarDirectorio(fileDir) {
 
 export async function eliminarMinuta(fileDir) {
   try {
-    await ApiProvider.delete("/minutas/archivos", {
+    await reporteProvider.delete("/minutas/archivos", {
       data: {
         fileDir
       }

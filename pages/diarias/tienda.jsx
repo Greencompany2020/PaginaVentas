@@ -15,17 +15,18 @@ import {
   getLastTwoNumbers
 } from "../../utils/functions";
 import withAuth from "../../components/withAuth";
-import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 import { Form, Formik } from "formik";
 import { Select, SelectYear, SelectMonth, Checkbox } from "../../components/inputs/reportInputs";
 import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
 import { getMonthByNumber } from "../../utils/dateFunctions";
+import { useSelector } from "react-redux";
+import { v4 } from "uuid";
 
 const Tienda = (props) => {
   const {config} = props;
-  const { tiendas } = useAuth();
+  const { shops } = useSelector(state => state);
   const sendNotification = useNotification();
 
   const [reportDate, setReportDate] = useState({
@@ -33,13 +34,13 @@ const Tienda = (props) => {
     month: new Date(Date.now()).getMonth() + 1
   });
 
-  const [currentShop, setCurrentShop] = useState(getInitialTienda(tiendas));
+  const [currentShop, setCurrentShop] = useState(getInitialTienda(shops ));
   const [dataReport, setDataReport] = useState(null);
 
   const parameters = {
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
-    tienda: getInitialTienda(tiendas),
+    tienda: getInitialTienda(shops ),
     conIva: parseNumberToBoolean(config?.conIva || 0),
     semanaSanta: parseNumberToBoolean(config?.semanaSanta || 0),
     resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0)
@@ -65,14 +66,14 @@ const Tienda = (props) => {
       <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
-            <Formik initialValues={parameters} onSubmit={handleSubmit}>
+            <Formik initialValues={parameters} onSubmit={handleSubmit} enableReinitialize>
               <Form>
                 <AutoSubmitToken/>
                 <fieldset className="space-y-2 mb-3">
                   <Select id='tienda' name='tienda' label='Tienda'>
                     {
-                      tiendas && tiendas.map(tienda =>(
-                        <option value={`${tienda.EmpresaWeb}${tienda.NoTienda}`} key={tienda.Descrip}>{tienda.Descrip}</option>
+                     shops  && shops .map(tienda =>(
+                        <option value={`${tienda.EmpresaWeb}${tienda.NoTienda}`} key={v4()}>{tienda.Descrip}</option>
                       ))
                     }
                   </Select>
@@ -125,7 +126,7 @@ const Tienda = (props) => {
             <tbody>
               {
                 (dataReport && dataReport.length > 0) && dataReport.map(item =>(
-                  <tr>
+                  <tr key={v4()}>
                     <td className="priority-cell">{item.dia}</td>
                     <td>{item.dia}</td>
                     <td className="priority-cell">{numberWithCommas(item.ventaActual)}</td>

@@ -188,7 +188,7 @@ export default function semTiendas(title, rows, years){
     }
 
     const style = {
-        format:{number: '#,##', decimal: '#.##'},
+        format:{number: '#,##;-#,##', decimal: '#.##;-#.##'},
         cols:{
             D:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'},
             L:{numFmt:'[Color 10]#,##0;[Color 3]#,##0'},

@@ -6,25 +6,24 @@ import useToggle from "../hooks/useToggle";
 import useClickOutside from "../hooks/useClickOutside";
 import { enlaces as enlacesMenuLateral } from "../utils/data";
 import { isWindows, isAndroid, isChrome} from "react-device-detect";
-import authService from "../services/authService";
 import { useNotification } from "./notifications/NotificationsProvider";
-import jsCookie from 'js-cookie';
 import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
+import userLogout from "../redux/actions/userLogout";
 
 const SideMenu = () => {
   const router = useRouter();
   const menuRef = useRef(null);
+  const dispatch = useDispatch();
   const isFirst = router.pathname !== '/ventas'
   const [visible, toggleVisible] = useToggle(isFirst);
   const [showChevron, setShowChevron] = useState(false);
-  const service = authService();
   const sendNotification = useNotification();
+
 
   const handleLogout = async() => {
     try {
-        service.logout();
-        jsCookie.remove('accessToken');
-        jsCookie.remove('jwt');
+        dispatch(userLogout());
         router.push('/');
     } catch (error) {
       sendNotification({

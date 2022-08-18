@@ -34,42 +34,31 @@ import { getMesesAgnosTiendas } from "../../services/MesesAgnosService";
 import { handleChange } from "../../utils/handlers";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import { useSelector } from "react-redux";
 
 const Tiendas = (props) => {
   const {config} = props;
   const sendNotification = useNotification();
-  const { tiendas } = useAuth();
+  const {shops} = useSelector(state => state);
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [parametrosTiendas, setParametrosTiendas] = useState({
-    tienda: getInitialTienda(tiendas),
+    tienda: getInitialTienda(shops),
     delMes: 1,
     alMes: getCurrentMonth() - 1,
     delAgno: getCurrentYear() - 5,
     alAgno: getCurrentYear(),
-    incluirTotal: 0,
-    ventasDiaMesActual: 0,
-    conIva: 0,
+    incluirTotal: config?.incluirTotal || 0,
+    ventasDiaMesActual: config?.ventasDiaMesActual || 0,
+    conIva: config?.conIva || 0,
   });
 
-  useEffect(()=>{
-    if(tiendas){
-      setParametrosTiendas(prev => ({
-        ...prev, 
-        tienda:getInitialTienda(tiendas),
-        incluirTotal: config?.incluirTotal || 0,
-        ventasDiaMesActual: config?.ventasDiaMesActual || 0,
-        conIva: config?.conIva || 0,
-      }))
-    }
-  },[tiendas, config])
 
   useEffect(() => {
     (async()=>{
       if(validateMonthRange(parametrosTiendas.delMes, parametrosTiendas.alMes) &&
-        validateYearRange(parametrosTiendas.delAgno, parametrosTiendas.alAgno) && tiendas){
+        validateYearRange(parametrosTiendas.delAgno, parametrosTiendas.alAgno) && shops){
           try {
             const response = await getMesesAgnosTiendas(parametrosTiendas);
             createMesesAgnosTiendasDataset(

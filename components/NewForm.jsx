@@ -227,7 +227,6 @@ export default function NewForm({submit, userParams, dashbordParams}) {
     const temp = appliedRules(values);
     const params = validateValuesTypes(temp);
     await submit(params);
-    //console.log(params);
   }
 
 

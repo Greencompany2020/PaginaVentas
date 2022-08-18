@@ -1,13 +1,14 @@
-import { useAuth } from '../../context/AuthContext';
+import { useSelector } from 'react-redux';
+import { v4 } from 'uuid';
 
 const SelectPlazas = ({ onChange, value }) => {
   
-  const {plazas} = useAuth();
+  const {places} = useSelector(state => state);
 
-  const PlazasItem = ({plazas}) => {
-    if(!plazas) return <></>
-    const Item = plazas.map(plaza => (
-      <option value={plaza.NoEmpresa} key={plaza.DescCta}>{plaza.DescCta}</option>
+  const PlacesItem = ({places}) => {
+    if(!places) return <></>
+    const Item = places.map(plaza => (
+      <option value={plaza.NoEmpresa} key={v4()}>{plaza.DescCta}</option>
     ))
     return Item;
   }
@@ -16,7 +17,7 @@ const SelectPlazas = ({ onChange, value }) => {
     <label htmlFor="plaza" className='flex flex-col text-sm'>
       <span className='font-semibold'>Plaza</span> 
       <select name="plaza" value={value} className='h-8 border rounded-md pl-2 border-slate-400' onChange={onChange}>
-        <PlazasItem plazas={plazas}/>
+        <PlacesItem places={places}/>
       </select>
     </label>
   )

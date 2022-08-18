@@ -1,8 +1,8 @@
-import ApiProvider from "./ApiProvider.js"
+import { reporteProvider } from './apiProvider';
 
 export async function getComparativoGrupo(body) {
   try {
-    const { data } = await ApiProvider.post("/comparativo/grupo", body);
+    const { data } = await reporteProvider.post("/comparativo/grupo", body);
     return data.result;
   } catch (error) {
     return error;
@@ -11,7 +11,7 @@ export async function getComparativoGrupo(body) {
 
 export async function getComparativoPlazas(body) {
   try {
-    const { data } = await ApiProvider.post("/comparativo/plazas", body);
+    const { data } = await reporteProvider.post("/comparativo/plazas", body);
     return data.result;
   } catch (error) {
     return error;

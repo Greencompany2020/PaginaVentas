@@ -37,27 +37,14 @@ const Grupo = (props) => {
     alMes: getCurrentMonth() - 1,
     delAgno: getCurrentYear(),
     tiendas: 0,
-    acumulado: 0,
-    total: 0,
-    conIva: 0,
-    porcentajeVentasCompromiso: 0,
-    conVentasEventos: 0,
-    conTiendasCerradas: 0,
-    resultadosPesos: 0,
+    acumulado: config?.acumulado || 0,
+    total: config?.total || 0,
+    conIva: config?.conIva || 0,
+    porcentajeVentasCompromiso: config?.porcentajeVentasCompromiso || 0,
+    conVentasEventos: config?.conVentasEventos || 0,
+    conTiendasCerradas: config?.conTiendasCerradas || 0,
+    resultadosPesos: config?.resultadosPesos || 1,
   });
-
-  useEffect(()=>{
-    setParamGrupo(prev => ({
-      ...prev,
-      acumulado: config?.acumulado || 0,
-      total: config?.total || 0,
-      conIva: config?.conIva || 0,
-      porcentajeVentasCompromiso: config?.porcentajeVentasCompromiso || 0,
-      conVentasEventos: config?.conVentasEventos || 0,
-      conTiendasCerradas: config?.conTiendasCerradas || 0,
-      resultadosPesos: config?.resultadosPesos || 0,
-    }))
-  },[config])
 
   useEffect(() => {
     (async()=>{

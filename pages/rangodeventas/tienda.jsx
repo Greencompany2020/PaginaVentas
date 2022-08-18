@@ -25,30 +25,25 @@ import { getRangoVentasTienda } from "../../services/RangoVentasService";
 import useGraphData from "../../hooks/useGraphData";
 import { MENSAJE_ERROR } from "../../utils/data";
 import withAuth from "../../components/withAuth";
-import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import { useSelector } from "react-redux";
 
 const Tienda = () => {
   const sendNotification = useNotification();
-  const { tiendas } = useAuth();
+  const {shops} = useSelector(state => state);
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTienda, setParamTienda] = useState({
-    tienda: getInitialTienda(tiendas),
+    tienda: getInitialTienda(shops),
     fechaInicio: getBeginEndMonth(true)[0],
     fechaFin: getBeginEndMonth(true)[1],
     rangos: "100,200,300,400,500,600",
   });
 
-  useEffect(()=>{
-    if(tiendas){
-      setParamTienda(prev => ({...prev,tienda: getInitialTienda(tiendas)}));
-    }
-  },[tiendas])
 
   useEffect(() => {
     (async()=>{
-      if(validateInputDateRange(paramTienda.fechaInicio, paramTienda.fechaFin) && tiendas){
+      if(validateInputDateRange(paramTienda.fechaInicio, paramTienda.fechaFin) && shops){
         try {
           const response = await getRangoVentasTienda(paramTienda);
           createRangoVentasDataset(response, setLabels, setDatasets);

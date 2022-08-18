@@ -40,19 +40,11 @@ const Compromiso = (props) => {
     fechaInicio: beginDate,
     fechaFin: endDate,
     plaza: 3,
-    conIva: 0,
-    sinAgnoVenta: 0,
-    conTiendasCerradas: 0,
+    conIva:config.conIva || 0,
+    sinAgnoVenta:config.sinAgnoVenta || 0,
+    conTiendasCerradas:config.conTiendasCerradas || 0,
   });
 
-  useEffect(()=>{
-    setCompromisosParametros(prev => ({
-      ...prev,
-      conIva:config.conIva || 0,
-      sinAgnoVenta:config.sinAgnoVenta || 0,
-      conTiendasCerradas:config.conTiendasCerradas || 0,
-    }))
-  },[config])
 
   useEffect(() => {
     (async()=>{

@@ -1,9 +1,9 @@
-import ApiProvider from "./ApiProvider";
+import { reporteProvider, configuradorProvider } from "./apiProvider";
 
 export default function authService(){
     const login = async (body) => {
         try {
-            const {data} = await ApiProvider.post('/auth/login', body);
+            const {data} = await configuradorProvider.post('/auth/login', body);
             return data;
         } catch (error) {
             throw error;
@@ -12,7 +12,7 @@ export default function authService(){
 
     const logout = async () => {
         try {
-            const {data} = await ApiProvider.get('/auth/logout');
+            const {data} = await configuradorProvider.get('/auth/logout');
             return data;
         } catch (error) {
             throw error;
@@ -22,16 +22,31 @@ export default function authService(){
     const getUserAuthorization = async (point) => {
         const body = {point};
         try{
-            const {data} = await ApiProvider.post('/user/dashboards/acceso', body);
+            const {data} = await configuradorProvider.post('/user/dashboards/acceso', body);
             return data;
         }catch(err){
            throw err;
         }
     }
 
+    const getUserData = async () => {
+
+        return Promise.all([
+            configuradorProvider.get('/user/perfil'),
+            reporteProvider.get('/tiendasplazas/plazas'),
+            reporteProvider.get('/tiendasplazas/tiendas'),
+            configuradorProvider.get(`user/dashboards/parameters/globals/1`),
+        ])
+        .then(response => (response.map(res => res.data)))
+        .catch(error => {throw error});
+
+    }
+
+
     return{
         login,
         logout,
         getUserAuthorization,
+        getUserData,
     }
 }

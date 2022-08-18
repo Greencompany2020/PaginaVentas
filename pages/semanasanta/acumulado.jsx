@@ -86,7 +86,7 @@ const Acumulado = (props) => {
       <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
-          <Formik initialValues={parameters} onSubmit={handleSubmit}>
+          <Formik initialValues={parameters} onSubmit={handleSubmit} enableReinitialize>
             <Form>
               <AutoSubmitToken/>
               <fieldset className="space-y-2 mb-3">

@@ -5,15 +5,13 @@ import userService from '../../services/userServices';
 import {useNotification} from '../notifications/NotificationsProvider';
 import ParameterForm from '../ParameterForm';
 import configuratorService from '../../services/configuratorService';
-import { useAuth } from "../../context/AuthContext";
 import NewForm from '../NewForm';
 
 export default function ParameterAccesItem(props) {
     const service = userService();
     const configService = configuratorService();
     const sendNotification = useNotification();
-    const {id, name, linkTo, isSelected, setSelected, idAccess} = props;
-    const {globalParameters, refreshGlobalParameters} = useAuth();
+    const {id, name, linkTo, isSelected, setSelected, idAccess, globalParameters, refreshParameters} = props;
     const [parameters, setParameters] = useState({
         userParameters: undefined,
         accessParameters: undefined,
@@ -49,8 +47,8 @@ export default function ParameterAccesItem(props) {
 
     const handleSetFavorite = async () => {
         try {
-            await service.setGlobalParameters(idAccess);
-            await refreshGlobalParameters();
+            const response = await service.updateGlobalParameters(idAccess);
+            refreshParameters(response)
             sendNotification({
                 type: 'OK',
                 message: 'Establecido como favorito'

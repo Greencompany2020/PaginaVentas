@@ -36,46 +36,33 @@ import { numberWithCommas } from "../../utils/resultsFormated";
 import { handleChange } from "../../utils/handlers";
 import { getPorcentajesMensuales } from "../../services/PorcentajesService";
 import withAuth from "../../components/withAuth";
-import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import { useSelector } from "react-redux";
 
 const Mensuales = (props) => {
   const {config} = props;
   const sendNotification = useNotification();
-  const { tiendas, plazas } = useAuth();
+  const {places, shops} = useSelector(state => state);
   const [porcentajesMensuales, setPorcentajesMensuales] = useState([]);
   const [parametrosMensuales, setParametrosMensuales] = useState({
     queryTiendaPlaza: 0,
-    tienda: getInitialTienda(tiendas),
-    plaza: getInitialPlaza(plazas),
+    tienda: getInitialTienda(shops),
+    plaza: getInitialPlaza(places),
     delAgno: Number(getYearFromDate(formatedDate())) - 5,
     alAgno: Number(getYearFromDate(formatedDate())),
-    conIva: 0,
-    conVentasEventos: 0,
-    conTiendasCerradas: 0,
-    resultadosPesos: 0,
+    conIva: config?.conIva || 0,
+    conVentasEventos: config?.conVentasEventos || 0,
+    conTiendasCerradas: config?.conTiendasCerradas || 0,
+    resultadosPesos: config?.resultadosPesos || 1,
   });
   const [toggleTienda, setToggleTienda] = useState(true);
   const [togglePlaza, setTogglePlaza] = useState(false);
 
-  useEffect(()=>{
-    if(tiendas && plazas){
-      setParametrosMensuales(prev => ({
-        ...prev, 
-        tienda:getInitialTienda(tiendas), 
-        plaza:getInitialPlaza(plazas),
-        conIva: config?.conIva || 0,
-        conVentasEventos: config?.conVentasEventos || 0,
-        conTiendasCerradas: config?.conTiendasCerradas || 0,
-        resultadosPesos: config?.resultadosPesos || 0,
-      }));
-    }
-  },[tiendas, plazas, config])
-
+ 
   useEffect(() => {
     (async()=>{
-      if(validateYearRange(parametrosMensuales.delAgno, parametrosMensuales.alAgno) && (tiendas && plazas)){
+      if(validateYearRange(parametrosMensuales.delAgno, parametrosMensuales.alAgno) && (shops && places)){
         try {
           const response = await getPorcentajesMensuales(parametrosMensuales);
           setPorcentajesMensuales(response);

@@ -1,18 +1,19 @@
 import React from 'react';
-import { Formik, Form, Field } from "formik";
+import { Formik, Form} from "formik";
 import * as Yup from "yup";
 import authService from '../../services/authService';
 import jsCookie from "js-cookie";
 import { useRouter } from 'next/router';
-import {useAuth} from '../../context/AuthContext';
 import { useNotification } from '../../components/notifications/NotificationsProvider';
-import {LoginInput, ResetViewInput} from '../../components/FormInputs'
+import {LoginInput, ResetViewInput} from '../../components/FormInputs';
+import { useDispatch } from 'react-redux';
+import getInitialUserData from '../../redux/actions/getInitialUserData';
 
 export default function LoginContainer(props) {
     const {setLoading} =props
     const router = useRouter();
     const service = authService();
-    const {setAuth} = useAuth();
+    const dispatch = useDispatch();
     const sendNotification = useNotification();
     const validationSchema = Yup.object().shape({
         UserCode: Yup.string().required("Requerido"),
@@ -24,22 +25,22 @@ export default function LoginContainer(props) {
         password: "",
     };
 
-    const handleLogin = async (values) => {
-        setLoading();
-        try {
-          const response = await service.login(values);
-          const {accessToken} = response;
-          jsCookie.set('accessToken', accessToken);
-          setAuth(true);
-          router.push('/dashboard');
-        } catch (error) {
-         sendNotification({
-          type: 'ERROR',
-          message: 'Usuario no valido'
-         });
-        }
-        setLoading();
+  const handleLogin = async (values) => {
+    setLoading();
+    try {
+      const response = await service.login(values);
+      const { accessToken } = response;
+      jsCookie.set('accessToken', accessToken);
+      dispatch(getInitialUserData());
+      router.push('/dashboard');
+    } catch (error) {
+      sendNotification({
+        type: 'ERROR',
+        message: 'Usuario no valido'
+      });
     }
+    setLoading();
+  }
 
    return(
     <Formik initialValues={initialValues} validationSchema={validationSchema} onSubmit={handleLogin}>

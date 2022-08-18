@@ -14,7 +14,7 @@ export default function FavoriteList(props) {
                     <ul className='list-none space-y-2 mt-2'>
                         {groups[group].map((item) => (
                             <FavoriteItem 
-                                key={item.IdDashboardUsr}
+                                key={v4()}
                                 id={item.IdDashboardUsr}
                                 name={item.Nombre}
                                 isFavorite={item.Selected}

@@ -1,14 +1,14 @@
-import { useAuth } from '../../context/AuthContext';
-import { Flex } from '../containers';
+import { useSelector } from 'react-redux';
+import { v4 } from 'uuid';
 
-const SelectTiendas = ({ onChange, value }) => {
+const SelecTiendas = ({ onChange, value }) => {
 
-  const {tiendas} = useAuth();
+  const {shops} = useSelector(state => state);
   
-  const TiendasItem = ({tiendas}) => {
-    if(!tiendas) return <></>
-    const Item = tiendas.map(tienda => (
-      <option value={`${tienda.EmpresaWeb}${tienda.NoTienda}`} key={tienda.Descrip}>{tienda.Descrip}</option>
+  const ShopsItem = ({shops}) => {
+    if(!shops) return <></>
+    const Item = shops.map(tienda => (
+      <option value={`${tienda.EmpresaWeb}${tienda.NoTienda}`} key={v4()}>{tienda.Descrip}</option>
     ));
     return Item;
   }
@@ -17,10 +17,10 @@ const SelectTiendas = ({ onChange, value }) => {
     <label htmlFor="mes" className='flex flex-col text-sm'>
       <span className='font-semibold'>Tienda</span> 
       <select name="tienda" value={value} className='h-8 border rounded-md pl-2 border-slate-400' onChange={onChange}>
-        <TiendasItem tiendas={tiendas}/>
+        <ShopsItem shops={shops}/>
       </select>
     </label>
   )
 }
 
-export default SelectTiendas
+export default SelecTiendas

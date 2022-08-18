@@ -1,8 +1,8 @@
-import ApiProvider from "./ApiProvider";
+import { reporteProvider } from './apiProvider';
 
 export async function getSemanaSantaGrupo(body) {
   try {
-    const { data } = await ApiProvider.post("/semanasanta/grupo", body)
+    const { data } = await reporteProvider.post("/semanasanta/grupo", body)
     return data.result
   } catch (error) {
     return error;
@@ -11,7 +11,7 @@ export async function getSemanaSantaGrupo(body) {
 
 export async function getSemanaSantaGrupoConcentrado(body) {
   try {
-    const { data } = await ApiProvider.post("/semanasanta/grupo/concentrado", body);
+    const { data } = await reporteProvider.post("/semanasanta/grupo/concentrado", body);
     return data.result;
   } catch (error) {
     return error;
@@ -20,7 +20,7 @@ export async function getSemanaSantaGrupoConcentrado(body) {
 
 export async function getSemanaSantaPeriodos() {
   try {
-    const { data } = await ApiProvider.get("/semanasanta/periodos");
+    const { data } = await reporteProvider.get("/semanasanta/periodos");
     return data.result;
   } catch (error) {
     return error;
@@ -29,7 +29,7 @@ export async function getSemanaSantaPeriodos() {
 
 export async function getSemanaSantaPlazas(body) {
   try {
-    const { data } = await ApiProvider.post("/semanasanta/plazas", body);
+    const { data } = await reporteProvider.post("/semanasanta/plazas", body);
     return data.result;
   } catch (error) {
     return error;
@@ -38,7 +38,7 @@ export async function getSemanaSantaPlazas(body) {
 
 export async function getSemanaSantaAcumulado(body) {
   try {
-    const { data } = await ApiProvider.post("/semanasanta/acumulado", body);
+    const { data } = await reporteProvider.post("/semanasanta/acumulado", body);
     return data.result;
   } catch (error) {
     return error;

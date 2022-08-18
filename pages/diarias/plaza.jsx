@@ -10,7 +10,6 @@ import { numberWithCommas, selectRow, isNegative, numberAbs } from "../../utils/
 import { getInitialPlaza, getPlazaName, parseNumberToBoolean, parseParams, } from "../../utils/functions";
 import { inputNames } from "../../utils/data/checkboxLabels";
 import withAuth from "../../components/withAuth";
-import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 import { Formik, Form } from "formik";
@@ -19,11 +18,12 @@ import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
 import { getMonthByNumber } from "../../utils/dateFunctions";
 import { getLastTwoNumbers } from "../../utils/functions";
 import { v4 } from "uuid";
+import {useSelector} from 'react-redux'
 
 
 const Plaza = (props) => {
   const {config} = props;
-  const { plazas } =  useAuth();
+  const {places} = useSelector(state => state);
 
   const sendNotification = useNotification();
   const [reportDate, setReportDate] = useState({
@@ -31,13 +31,13 @@ const Plaza = (props) => {
     month: new Date(Date.now()).getMonth() + 1,
   });
   const [dataReport, setDataReport] = useState(null);
-  const [currentPlaza, setCurrentPlaza] = useState(getInitialPlaza(plazas));
+  const [currentPlaza, setCurrentPlaza] = useState(getInitialPlaza(places));
 
 
   const parameters = {
     delMes: new Date(Date.now()).getMonth() + 1,
     delAgno: new Date(Date.now()).getFullYear(),
-    plaza: getInitialPlaza(plazas),
+    plaza: getInitialPlaza(places),
     conIva: parseNumberToBoolean(config?.conIva || 0),
     semanaSanta: parseNumberToBoolean(config?.semanaSanta|| 0),
     conVentasEventos: parseNumberToBoolean(config?.conVentasEventos || 0),
@@ -70,14 +70,14 @@ const Plaza = (props) => {
       <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>
-            <Formik initialValues={parameters} onSubmit={handleSubmit}>
+            <Formik initialValues={parameters} onSubmit={handleSubmit} enableReinitialize>
               <Form>
                 <AutoSubmitToken/>
                 <fieldset className="space-y-2 mb-3">
                   <Select id='plaza' name='plaza' label='Plaza'>
                     {
-                      plazas && plazas.map(plaza =>(
-                        <option value={plaza.NoEmpresa} key={plaza.DescCta}>{plaza.DescCta}</option>
+                      places && places.map(plaza =>(
+                        <option value={plaza.NoEmpresa} key={v4()}>{plaza.DescCta}</option>
                       ))
                     }
                   </Select>

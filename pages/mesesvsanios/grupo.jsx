@@ -44,27 +44,15 @@ const Grupo = (props) => {
     delMes: 1,
     alMes: getCurrentMonth() - 1,
     tiendas: 0,
-    incluirTotal: 0,
-    ventasDiaMesActual: 0,
-    conIva: 0,
-    conVentasEventos: 0,
-    sinAgnoVenta: 0,
-    conTiendasCerradas: 0,
-    sinTiendasSuspendidas: 0,
+    incluirTotal: config?.incluirTotal || 0,
+    ventasDiaMesActual: config?.ventasDiaMesActual || 0,
+    conIva: config?.conIva || 0,
+    conVentasEventos: config?.conVentasEventos || 0,
+    sinAgnoVenta: config?.sinAgnoVenta || 0,
+    conTiendasCerradas: config?.conTiendasCerradas || 0,
+    sinTiendasSuspendidas: config?.sinTiendasSuspendidas || 0,
   });
 
-  useEffect(()=>{
-    setParametrosGrupo(prev => ({
-      ...prev,
-      incluirTotal: config?.incluirTotal || 0,
-      ventasDiaMesActual: config?.ventasDiaMesActual || 0,
-      conIva: config?.conIva || 0,
-      conVentasEventos: config?.conVentasEventos || 0,
-      sinAgnoVenta: config?.sinAgnoVenta || 0,
-      conTiendasCerradas: config?.conTiendasCerradas || 0,
-      sinTiendasSuspendidas: config?.sinTiendasSuspendidas || 0,
-    }));
-  },[config])
 
   useEffect(() => {
     (async()=>{

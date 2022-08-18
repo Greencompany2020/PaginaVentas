@@ -27,48 +27,33 @@ import { handleChange } from "../../utils/handlers";
 import { getPresupuestoPlazas } from "../../services/PresupuestoService";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
-import { useAuth } from "../../context/AuthContext";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import { useSelector } from "react-redux";
 
 const Plaza = (props) => {
   const {config} = props;
   const sendNotification = useNotification();
-  const { plazas } = useAuth();
+  const {places} = useSelector(state => state);
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramPlazas, setParamPlazas] = useState({
-    plaza: getInitialPlaza(plazas),
+    plaza: getInitialPlaza(places),
     delAgno: getCurrentYear(),
     delMes: 1,
     alMes: getCurrentMonth() - 1,
-    acumulado: 0,
-    total: 0,
-    conIva: 0,
-    porcentajeVentasCompromiso: 0,
-    conVentasEventos: 0,
-    conTiendasCerradas: 0,
-    resultadosPesos: 0,
+    acumulado: config?.acumulado || 0,
+    total: config?.total || 0,
+    conIva: config?.conIva || 0,
+    porcentajeVentasCompromiso: config?.porcentajeVentasCompromiso || 0,
+    conVentasEventos: config?.conVentasEventos || 0,
+    conTiendasCerradas: config?.conTiendasCerradas || 0,
+    resultadosPesos: config?.resultadosPesos || 1,
   });
 
-  useEffect(()=>{
-    if(plazas){
-      setParamPlazas(prev => ({
-        ...prev, 
-        plaza:getInitialPlaza(plazas),
-        acumulado: config?.acumulado || 0,
-        total: config?.total || 0,
-        conIva: config?.conIva || 0,
-        porcentajeVentasCompromiso: config?.porcentajeVentasCompromiso || 0,
-        conVentasEventos: config?.conVentasEventos || 0,
-        conTiendasCerradas: config?.conTiendasCerradas || 0,
-        resultadosPesos: config?.resultadosPesos || 0,
-      }))
-    }
-  },[plazas, config])
-
+  
   useEffect(() => {
     (async()=>{
-      if( validateYear(paramPlazas.delAgno) &&  validateMonthRange(paramPlazas.delMes, paramPlazas.alMes) && plazas){
+      if( validateYear(paramPlazas.delAgno) &&  validateMonthRange(paramPlazas.delMes, paramPlazas.alMes) && places){
         try {
           const response = await getPresupuestoPlazas(paramPlazas);
           createPresupuestoDatasets(

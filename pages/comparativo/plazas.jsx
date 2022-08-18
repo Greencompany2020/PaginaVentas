@@ -45,13 +45,13 @@ const Plazas = (props) => {
   const parameters = {
     fecha: getPrevDate(1),
     conIva: parseNumberToBoolean(config?.conIva || 0),
-    porcentajeVentasCompromiso: parseNumberToBoolean(config?.porcentajeVentasCompromiso || 0),
     conVentasEventos: parseNumberToBoolean(config?.conVentasEventos || 0),
     resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
     tipoCambioTiendas: parseNumberToBoolean(config?.tipoCambioTiendas || 0),
-    agnosComparar: spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1),
+    agnosComparar: spliteArrDate(config?.agnosComparativos, config?.cbAgnosComparar || 1),
     cbAgnosComparar: config?.cbAgnosComparar || 1, 
     mostrarTiendas: config?.cbMostrarTiendas || 'activas',
+    incremento: config?.cbIncremento || 'compromiso',
   }
 
 
@@ -99,7 +99,7 @@ const Plazas = (props) => {
       template.getColumns(), 
       template.getRows(), 
       template.style,
-      ['Tiendas frogs', 'Tienda en  linea']
+      ['Tiendas frogs', 'Tienda en linea']
     );
   }
 
@@ -124,6 +124,13 @@ const Plazas = (props) => {
                   <AutoSubmitToken/>
                   <fieldset className="space-y-2 mb-3">
                     <Input id='fecha' name='fecha' label='Fecha'/>
+                    <Select id='incremento' name='incremento' label='Formular % de incremento'>
+                      {
+                        comboValues.CBINCREMENTO.map((item, i) => (
+                          <option key={i} value={item.value}>{item.text}</option>
+                        ))
+                      }
+                    </Select>
                     <Select id='mostrarTiendas' name='mostrarTiendas' label='Mostrar tiendas'>
                       {
                         comboValues.CBMOSTRARTIENDAS.map((item, i) => (
@@ -151,7 +158,6 @@ const Plazas = (props) => {
                   </fieldset>
                   <fieldset className="space-y-1">
                       <Checkbox id='conIva' name='conIva' label={checkboxLabels.VENTAS_IVA}/>
-                      <Checkbox id='porcentajeVentasCompromiso' name='porcentajeVentasCompromiso' label={checkboxLabels.VENTAS_VS_COMPROMISO}/>
                       <Checkbox id='conVentasEventos' name='conVentasEventos' label={checkboxLabels.INCLUIR_VENTAS_EVENTOS}/>
                       <Checkbox id='tipoCambioTiendas' name='tipoCambioTiendas' label={checkboxLabels.TIPO_CAMBIO_TIENDAS}/>
                       <Checkbox id='resultadosPesos' name='resultadosPesos' label={checkboxLabels.RESULTADO_PESOS}/>
