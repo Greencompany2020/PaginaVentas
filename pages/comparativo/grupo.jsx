@@ -673,7 +673,7 @@ const Stat = props => {
                 },
                 {
                   caption:'(-)',
-                  value: stringFormatNumber(item['diferenciaMensual' + getYearFromDate(date.current)] || tem['diferenciaMensual'])
+                  value: stringFormatNumber(item['diferenciaMensual' + getYearFromDate(date.current)] || item['diferenciaMensual'])
                 },
                 {
                   caption:'%',
