@@ -1096,6 +1096,7 @@ const StatGroup = props => {
         }]
 
         return(
+          // eslint-disable-next-line react/jsx-key
           <div className="mb-8 space-y-4">
             {getTableName(key)}
             <div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
