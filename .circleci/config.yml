@@ -68,7 +68,8 @@ jobs:
                   --replicas 2 \
                   --publish ${PORT}:3000 \
                   --update-order start-first \
-                  --rollback-order start-first"
+                  --rollback-order start-first \
+                  ${DOCKERHUB_USERNAME}/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1}"
       - when:
           condition:
             equal: [update, << pipeline.parameters.deploy-update >>]
@@ -85,16 +86,13 @@ workflows:
   build-push-deploy:
     jobs:
       - build:
-          context: greencompany
           filters:
             branches:
               only: Desarrollo_productivo
       - push:
-          context: greencompany
           requires:
             - build
       - deploy:
-          context: greencompany
           requires:
             - push
 
