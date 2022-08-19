@@ -28,10 +28,12 @@ jobs:
           version: 20.10.14
       - run:
           name: Build Docker Image
-          command: docker build --tag "${DOCKERHUB_USERNAME}/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1}"
+          command: |
+            docker build --tag "${DOCKERHUB_USERNAME}/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1}" 
+            --build-arg API_CONFIGURADOR_URL=${API_CONFIGURADOR_URL} --build-arg API_VENTAS_URL=${API_VENTAS_URL} .
       - run:
           name: Archive Docker Image
-          command: docker save --output image.tar "${DOCKERHUB_USERNAME/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1}"
+          command: docker save --output image.tar "${DOCKERHUB_USERNAME}/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1}"
       - persist_to_workspace:
           root: .
           paths:
@@ -50,7 +52,7 @@ jobs:
           name: Publish Docker Image
           command: |
             echo "${DOCKERHUB_PASS}" | docker login --username "${DOCKERHUB_USERNAME}" --password-stdin
-            docker push "{DOCKERHUB_USERNAME}/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1}"
+            docker push "${DOCKERHUB_USERNAME}/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1}"
 
   deploy:
     executor: machine-executor
@@ -63,7 +65,7 @@ jobs:
             - run:
                 name: Deploy Over SSH
                 command: |
-                  ssh $SSH_USER@$SSH_HOST "docker create service --name << pipeline.parameters.service-name >> \
+                  ssh $SSH_USER@$SSH_HOST_FRONTEND "docker service create --name << pipeline.parameters.service-name >> \
                   --replicas 2 \
                   --publish ${PORT}:3000 \
                   --update-order start-first \
@@ -75,7 +77,7 @@ jobs:
             - run: 
                 name: Update Deployment
                 command: |
-                  ssh $USER_HOST@$SSH_HOST "docker service update \
+                  ssh $USER_USER@$SSH_HOST_FRONTEND "docker service update \
                   --image ${DOCKERHUB_USERNAME}/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1} \
                   << pipeline.parameters.service-name >>"
 

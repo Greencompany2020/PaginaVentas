@@ -9,8 +9,11 @@ FROM node:16-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-ARG BUILDCOMMAND=build:prod
-RUN npm run $BUILDCOMMAND && npm ci --quiet --only=production
+# ARG BUILDCOMMAND=build:prod
+# RUN npm ci --quiet --only=production
+ARG API_CONFIGURADOR_URL
+ARG API_VENTAS_URL
+RUN npm run build
 
 FROM node:16-alpine AS runner
 
