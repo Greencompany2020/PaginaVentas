@@ -9,7 +9,7 @@ parameters:
     default: ventas
   service-name:
     type: string
-    defaul: ventas-site
+    default: ventas-site
 
 executors:
   machine-executor:
