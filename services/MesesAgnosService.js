@@ -1,41 +1,37 @@
-import ApiProvider from "./ApiProvider";
+import {reporteProvider} from './apiProvider';
 
 export async function getMesesAgnosGrupo(body) {
   try {
-    const { data } = await ApiProvider.post("/mesesvsanios/grupo", body);
+    const { data } = await reporteProvider.post("/mesesvsanios/grupo", body);
     return data.result;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }
 
 export async function getMesesAgnosPlazas(body) {
   try {
-    const { data } = await ApiProvider.post("/mesesvsanios/plazas", body);
+    const { data } = await reporteProvider.post("/mesesvsanios/plazas", body);
     return data.result;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }
 
 export async function getMesesAgnosTiendas(body) {
   try {
-    const { data } = await ApiProvider.post("/mesesvsanios/tiendas", body);
+    const { data } = await reporteProvider.post("/mesesvsanios/tiendas", body);
     return data.result;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }
 
 export async function getMesesAgnosTodasTiendas(body) {
   try {
-    const { data } = await ApiProvider.post("/mesesvsanios/todastiendas", body);
+    const { data } = await reporteProvider.post("/mesesvsanios/todastiendas", body);
     return data.result;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }

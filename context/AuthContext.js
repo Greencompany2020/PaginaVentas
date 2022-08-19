@@ -1,14 +1,15 @@
-import {useContext, createContext} from "react";
-import useProvideAuth from "../hooks/useAuth";
+import { createContext, useContext} from "react";
+import useProviderAuth from "../hooks/useAuth";
 
 const AuthContext = createContext();
+
 const ProviderAuth = ({children}) => {
-    const auth = useProvideAuth();
-    return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>
+  const authHook = useProviderAuth();
+  return <AuthContext.Provider value={authHook}>{children}</AuthContext.Provider>
 }
 
 export const useAuth = () => {
-    return useContext(AuthContext);
+  return useContext(AuthContext);
 }
 
 export default ProviderAuth;

@@ -1,11 +1,10 @@
-import ApiProvider from "./ApiProvider";
+import { reporteProvider } from './apiProvider';
 
 export async function getPromotores(body) {
   try {
-    const { data } = await ApiProvider.post("/mkt/promotores", body);
+    const { data } = await reporteProvider.post("/mkt/promotores", body);
     return data.result;
   } catch (error) {
-    console.log(error?.response?.data);
     return error;
   }
 }

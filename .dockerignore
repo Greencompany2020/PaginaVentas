@@ -6,3 +6,5 @@ README.md
 .vscode
 nginx
 .env
+certs
+bin

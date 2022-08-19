@@ -1,41 +1,46 @@
-import { useState ,useEffect } from 'react';
-import { getVentasLayout } from '../../components/layout/VentasLayout';
-import { MessageModal } from '../../components/modals';
-import { VentasTableContainer, PeriodosSemanaSantaTable } from '../../components/table';
-import useMessageModal from '../../hooks/useMessageModal';
-import { getSemanaSantaPeriodos } from '../../services/semanaSantaService';
-import { MENSAJE_ERROR } from '../../utils/data';
-import { isError } from '../../utils/functions';
-import withAuth from '../../components/withAuth';
-
+import { useState, useEffect } from "react";
+import { getVentasLayout } from "../../components/layout/VentasLayout";
+import {
+  VentasTableContainer,
+  PeriodosSemanaSantaTable,
+} from "../../components/table";
+import { getSemanaSantaPeriodos } from "../../services/semanaSantaService";
+import { MENSAJE_ERROR } from "../../utils/data";
+import { isError } from "../../utils/functions";
+import withAuth from "../../components/withAuth";
+import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Periodos = () => {
-  const { message, modalOpen, setMessage, setModalOpen} = useMessageModal();
+  const sendNotification = useNotification();
   const [periodos, setPeriodos] = useState([]);
 
   useEffect(() => {
-    getSemanaSantaPeriodos()
-      .then(response => {
-
-        if (isError(response)) {
-          setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-          setModalOpen(true);
-        } else {
-          setPeriodos(response)
-        }
-      });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    (async()=>{
+      try {
+        const response = await  getSemanaSantaPeriodos();
+        setPeriodos(response);
+      } catch (error) {
+        sendNotification({
+          type:'ERROR',
+          message:response?.response?.data ?? MENSAJE_ERROR
+        });
+      }
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
-    <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
-      <VentasTableContainer title="PERIODOS DE SEMANA SANTA">
-        <PeriodosSemanaSantaTable  dates={periodos}/>
-      </VentasTableContainer>
-    </>
-  )
-}
+    <div className=" flex flex-col h-full">
+      <TitleReport title="PERIODOS DE SEMANA SANTA" />
+      <section className="p-4 overflow-y-auto ">
+        <VentasTableContainer title="PERIODOS DE SEMANA SANTA">
+          <PeriodosSemanaSantaTable dates={periodos} />
+        </VentasTableContainer>
+      </section>
+    </div>
+  );
+};
 
 const PeriodosWithAuth = withAuth(Periodos);
 PeriodosWithAuth.getLayout = getVentasLayout;

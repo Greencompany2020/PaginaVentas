@@ -3,16 +3,16 @@ import { meses } from '../../utils/data'
 
 const SelectMonth = ({ value, onChange }) => {
   return (
-    <Flex className='mb-3'>
-      <label htmlFor="delMes">Del Mes: </label>
-      <select name="delMes" value={value} className='select ml-2' onChange={onChange}>
+    <label htmlFor="delMes" className='flex flex-col text-sm'>
+      <span className='font-semibold'>Del mes</span>
+      <select name="delMes" value={value} className='h-8 border rounded-md pl-2 border-slate-400' onChange={onChange}>
         {
           meses.map(mes => (
             <option value={mes.value} key={mes.text}>{mes.text}</option>
           ))
         }
       </select>
-    </Flex>
+    </label>
   )
 }
 

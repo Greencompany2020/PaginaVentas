@@ -2,10 +2,10 @@ import { Flex } from "../containers"
 
 const InputRangos = ({ value, onChange }) => {
   return (
-    <Flex className="mb-3 mt-2">
-      <label htmlFor="rangos">Rangos: </label>
-      <input type="text" name="rangos" id="" className='outline-none border border-gray-300 w-full rounded-md h-7 ml-2' value={value} onChange={onChange} />
-    </Flex>
+    <label htmlFor="rangos" className="flex flex-col text-sm">
+      <span className="font-semibold">Rangos</span>
+      <input type="text" name="rangos" id="" className='h-8 border rounded-md pl-2 border-slate-400' value={value} onChange={onChange} />
+    </label>
   )
 }
 

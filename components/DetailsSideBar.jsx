@@ -1,33 +1,36 @@
-import { useRouter } from 'next/router';
-import Link from 'next/link';
-import Image from 'next/image';
-import Plus from '../public/icons/plus.svg';
+import { useRouter } from "next/router";
+import Image from "next/image";
+import Link from "next/link";
+import Plus from "../public/icons/plus.svg";
 
-const DetailsSideBar = ({ summaryText, links }) => {
+const DetailsSideBar = ({ summaryText, links, handleToggle, showChevron }) => {
   const router = useRouter();
-
   const activeLink = (link) => {
-    if (router.pathname === link) return "bg-gray-600 text-white"
-    return "hover:bg-gray-600 hover:text-white"
-  }
+    if (router.pathname === link) return "bg-sky-500 text-white";
+    return "hover:bg-sky-400 hover:text-white";
+  };
 
   return (
-    <details>
-      <summary className='cursor-pointer flex items-center'>
-        <Image src={Plus} alt='Plus' height={16} width={16} />
-        <span className='ml-1'>{summaryText}</span>
+    <details className="hover:block">
+      <summary className="cursor-pointer flex items-center pb-2 text-white">
+        {showChevron && <Image src={Plus} alt="Plus" height={16} width={16} />} 
+        <span className="ml-1">{summaryText}</span>
       </summary>
       <ul>
-        {
-          links.map(item => (
-            <li className={`pl-5 p-1 border-b-2 border-gray-300 ${activeLink(item.link)} rounded-md transition ease-in-out duration-200`} key={item.linkText}>
-              <Link href={item.link}><a>{item.linkText}</a></Link>
-            </li>
-          ))
-        }
+        {links.map((item) => (
+          <Link href={item.link} key={item.linkText}>
+              <li
+                className={`pl-10 p-1 text-white cursor-pointer  rounded-sm ${activeLink(
+                  item.link
+                )} transition-all ease-in-out duration-200`}
+              >
+                <a onClick={handleToggle}>{item.linkText}</a>
+              </li>
+          </Link>
+        ))}
       </ul>
     </details>
-  )
+  );
 };
 
 export default DetailsSideBar;

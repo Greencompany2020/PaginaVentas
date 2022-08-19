@@ -1,4 +1,5 @@
 import { Chart as CharJS, CategoryScale, LinearScale, ArcElement, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Pie } from 'react-chartjs-2';
 
 
@@ -9,7 +10,8 @@ CharJS.register(
   Title,
   Tooltip,
   Legend,
-  ArcElement
+  ArcElement,
+  ChartDataLabels
 );
 
 const PieChart = ({ text, data }) => {
@@ -25,7 +27,16 @@ const PieChart = ({ text, data }) => {
             display: true,
             text
           },
+          datalabels: {
+            anchor: 'center',
+            color: '#4b5563',
+            align: 'top',
+            font: {
+              weight: 'bold'
+            }
+          }
         },
+        maintainAspectRatio: false,
       }}
       data={data}
     />

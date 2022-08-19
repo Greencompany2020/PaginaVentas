@@ -148,40 +148,10 @@ export const formatedDate = (year = 0, month = 0) => {
  * @returns {string} Nombre del dia de la semana
  */
 export const getNameDay = (date) => {
-  const dateParts = date?.split("-");
-  const weekDays = [
-    {
-      name: "Lunes",
-      value: 1
-    },
-    {
-      name: "Martes",
-      value: 2
-    },
-    {
-      name: "Miercoles",
-      value: 3
-    },
-    {
-      name: "Jueves",
-      value: 4
-    },
-    {
-      name: "Viernes",
-      value: 5
-    },
-    {
-      name: "Sabado",
-      value: 6
-    },
-    {
-      name: "Lunes",
-      value: 0
-    },
-  ]
-  const currentDate = new Date(dateParts[0], dateParts[1], dateParts[2]);
-  const dayName = weekDays.find(day => day.value === getDay(currentDate))
-  return dayName.name;
+  const days = ['Domingo', 'Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado'];
+  const currentDate = new Date(date.toString().split('-'));
+  const dayName = days[currentDate.getDay()];
+  return dayName.toString();
 }
 /**
  * Resta los días indicados a partir de la fecha actual.
@@ -205,7 +175,7 @@ export const getPrevDate = (days, year = 0) => {
  * @param {number} year El año a obtener la semana santa
  * @returns {string[]} Un array con la fechas de inicio y de fin.
  */
-export const semanaSanta = (year, timestamp = false) => {
+export const semanaSanta = (year, timestamp = false, finSemanaAnterior = false) => {
   const pDig = parseInt(year / 100, 10);
   const pDec = year % 19;
 
@@ -255,7 +225,13 @@ export const semanaSanta = (year, timestamp = false) => {
   // y 7 delante para obtener los 14 dias a evaluar (Sem.Sta y Pascua)
   const domingo = new Date(year, mes - 1, dia);
 
-  let fechaInicio = sub(domingo, { days: 9 });
+  let fechaInicio = null;
+
+  if (finSemanaAnterior) {
+    fechaInicio = sub(domingo, { days: 9 }); // Sumamos 9 por el fin de semana a incluir
+  } else {
+    fechaInicio = sub(domingo, { days: 6 });
+  }
 
   if (timestamp) fechaInicio = fechaInicio.getTime();
   else fechaInicio = format(fechaInicio, "yyyy-MM-dd", { weekStartsOn: 1 });
@@ -301,4 +277,17 @@ export const getBeginEndMonth = (prevMonth = false, prevYear = false) => {
   const beginMonth = format(startOfMonth(today), "yyyy-MM-dd")
   const endMonth = format(endOfMonth(today), "yyyy-MM-dd");
   return [beginMonth, endMonth];
+}
+
+export const currentDate = () => {
+  const currentDate = new Date(Date.now());
+  const month = parseInt(currentDate.getMonth().toLocaleString("es-CA")) + 1;
+  const year = parseInt(currentDate.getFullYear().toLocaleString("es-CA"));
+  const day = parseInt(currentDate.getDate().toLocaleString("es-CA"));
+
+ return{
+   day,
+   month,
+   year
+ }
 }

@@ -1,126 +1,122 @@
-import { useRouter} from "next/router";
-import { useAuth } from "../context/AuthContext";
-import cookie from "js-cookie";
-import * as jose from 'jose';
-import dayjs from "dayjs";
-import { useEffect } from "react";
-
+import { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import { urlExceptions } from "../utils/constants";
+import authService from "../services/authService";
+import jsCookie from 'js-cookie';
+import { useSelector } from "react-redux";
+import Loader from './Loader'
 
 const witAuth = (Component) => {
 
-    const AuthorizationComponent = () => {
-        const auth = useAuth();
-        const router = useRouter();
+  const AuthorizationComponent = (props) => {
+    const service = authService();
+    const router = useRouter();
+    const {asPath} = router;
+    const token = jsCookie.get('accessToken');
+    const [config, setConfig] = useState({});
+    const [loading, setLoading] = useState(true);
+    const {isAuth, system:{isFetching}} = useSelector(state => state);
 
-        /**
-         * paginas con reglas expeciales
-         */
-        const exceptions = [
-            {
-                pathname: '/',
-                tokenRequired: false,
-            },
-            {
-                pathname: '/dashboard',
-                tokenRequired: true,
-            },
-            {
-                pathname: '/usuario/perfil',
-                tokenRequired: true,
-            },
-            {
-                pathname: '/ventas',
-                tokenRequired: true,
-            },
-        ]
+    const parseParams = (userParams) => {
+      const configuration = {}
+      if (userParams) {
+        for (const item in userParams) {
+          let value = null;
+          switch (typeof (userParams[item])) {
+            case 'string':
+              if (userParams[item] == 'Y' || userParams[item] == 'N') {
+                value = (userParams[item] == 'Y') ? 1 : 0;
+              } else {
+                value = userParams[item] || null
+              }
+              break;
 
-
-        /**
-         * callback que redirige la pagina
-         * @param {*} page 
-         * @param {*} opt 
-         */
-        const RedirecTo = (page, opt = 'push') => {
-            switch (opt){
-                case 'replace':
-                    router.replace(page);
-                    break;
-                case 'push':
-                    router.push(page);
-                    break;
-                default :
-                    router.push(page);
-                    break;
-            }
+            case 'number':
+              value = userParams[item] || null;
+              break;
+          }
+          Object.assign(configuration, { [item]: value });
         }
-
-
-        /**
-         * Evalua si el usuario tiene tiene un token de acceso
-         * Si lo tiene y esa expirado tratara de refrescarlo
-         * @returns boolean
-         */
-        const userHastoken = async () =>{
-            const token = cookie.get('accessToken');
-            const isTokenAvailable = token ? true : false;
-            if(!isTokenAvailable){ 
-                return false;
-            }
-            const decodeToken = jose.decodeJwt(token);
-            const isExpired = (dayjs.unix(decodeToken.exp).diff(dayjs()) < 1);
-            if(!isExpired){
-                return true
-            };
-            const isTokenRefresh = await auth.refreshToken();
-            return isTokenRefresh
-        }
-
-
-        /**
-         * Evalua si el usuario tiene permisos para ingresar al point
-         * @returns data
-         */
-        const getAuthToPath = async ()  => {
-            const data = await auth.getRoute(router.asPath);
-            return data;
-        }
-
-
-        /**
-         * evalua el pint al que se quiere ingresar
-         * recibe una callbacl que ejecuta el redirect o el push
-         * si el usuario no esta autorizado remplaza la direccion
-         * si el usuario no tiene token lo redirecciona al login
-         * si el usuario tiene token y quiere ingresar al login lo redirige al dashboard
-         * @param {*} cb 
-         * @returns 
-         */
-        const pathEvaluate = async (cb) => {
-            const attemptException = exceptions.find(paths => paths.pathname == router.asPath);
-            const userToken = await userHastoken();
-
-            if(attemptException){
-                if(attemptException.tokenRequired && !userToken) cb('/', 'push');
-                if(attemptException.pathname == '/' && userToken) cb('/dashboard', 'push');
-            }else{
-                if(!userToken) cb('/', 'push');
-                const userAccess = await getAuthToPath();
-                if(!userAccess.access)  return cb('/unauthorized', 'replace');
-            }
-            
-        }
-
-       
-
-        useEffect(() => {
-            pathEvaluate(RedirecTo);
-        },[eval]);
-
-        return <Component/> 
+      }
+      return configuration;
     }
-    return AuthorizationComponent;
-}
+    
+    useEffect(() => {
+      (async () => {
+        const pathExeption = urlExceptions.find(url => url.pathname == asPath);
+
+        if (!pathExeption) {
+          if(isAuth && !isFetching){
+            service.getUserAuthorization(asPath)
+            .then(({access, config}) =>{
+              if(access){
+                setConfig(parseParams(config));
+                setLoading(false);
+              }
+              else{
+                router.replace('/unauthorized')
+              }
+            })
+            .catch(error => {
+              console.error(error);
+            })
+          }
+        }
+
+        else if (pathExeption && pathExeption.tokenRequired) {
+          if(isAuth && !isFetching){
+             setLoading(false);
+          }
+        }
+
+        else {
+          setLoading(false);
+        }
+
+        
+      })()
+    }, [isAuth])
 
 
+    return loading ? <Loader/> : <Component config={config}/>
+  };
+
+  
+
+   /**
+   * Este procedimiento solo se ejecuta desde el servidor
+   * @param {*} req
+   * @param {*} res
+   * @returns
+   */
+
+   
+  AuthorizationComponent.getInitialProps = async ({ req, res }) => {
+    let token = null;
+    let path = null
+    if (req && res) {
+      const { url } = req;
+      const { accessToken } = req.cookies;
+      token = accessToken;
+      path = url
+      if (url !== "/" && !accessToken) {
+        res.writeHead(302, {
+          location: "/",
+        });
+        res.end();
+      } else if (url == "/" && accessToken) {
+        res.writeHead(302, {
+          location: "/dashboard",
+        });
+        res.end();
+      }
+    }
+  
+    return {token, path};
+  };
+
+  return AuthorizationComponent;
+};
 
 export default witAuth;
+

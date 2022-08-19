@@ -1,4 +1,5 @@
 import React, { useImperativeHandle, useState } from 'react'
+import { XIcon} from '@heroicons/react/outline';
 import Image from 'next/image'
 import { Flex } from '../containers'
 import Close from '../../public/icons/close.svg';
@@ -28,24 +29,32 @@ const ConfirmModal = React.forwardRef((props, ref) => {
   }
 
   return (
-    <div className={`bg-black border-2 border-gray-100 absolute w-4/5 sm:w-2/3 lg:w-1/3 ${showDialog ? 'top-1/4 transform scale-100 transition ease-in-out duration-200' : '-top-1/4 transform scale-0 transition ease-in-out duration-200'} h-20 flex justify-center items-center p-4 rounded-md`}>
-      <Flex className="justify-center items-center flex-col flex-grow">
-        <p className="text-white text-center">¿Seguro que desea continuar?</p>
-        <Flex>
-          <button className="bg-red-500 w-40 rounded-lg h-10 flex justify-center items-center ml-2 mt-1 hover:bg-red-400 transition-all ease-in-out duration-200"
-            onClick={() => handleResolve(false)}>
-            Cancelar
-          </button>
-          <button className="bg-green-500 w-40 rounded-lg h-10 flex justify-center items-center ml-2 mt-1 hover:bg-green-400 transition-all ease-in-out duration-200"
-            onClick={() => handleResolve(true)}>
-            Continuar
-          </button>
-        </Flex>
-      </Flex>
-      <span className="cursor-pointer ml-5" onClick={() => setShowDialog(false)}>
-        <Image src={Close} alt="close" height={25} width={25}/>
-      </span>
-    </div>
+    <>
+      <div className={`confirm-modal ${showDialog && 'active' }`} >
+        <div className="confirm-modal-header">
+          <span className='text-white font-semibold'>{props.title || 'Confirmar'}</span>
+          <XIcon width={28} className='cursor-pointer text-white'  onClick={() => setShowDialog(false)}/>
+        </div>
+        <p className='mt-4 p-2 text-lg text-center'>{props.message || '¿Seguro que desea continuar?'}</p>
+        <div className=' fixed bottom-0 w-full flex justify-end p-2'>
+            <button 
+              className="secondary-btn w-28 mr-2"
+              onClick={() => handleResolve(false)}
+            >
+              Cancelar
+            </button>
+            <button 
+              className="primary-btn w-28"
+              onClick={() => handleResolve(true)}
+            >
+              Continuar
+            </button>
+        </div>
+      </div>
+
+      <div className={`${!showDialog && 'hidden'}  fixed top-0 right-0 w-screen min-h-screen bg-gray-500 z-10 opacity-80`}/>
+    </>
+   
   )
 })
 

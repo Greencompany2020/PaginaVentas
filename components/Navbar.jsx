@@ -1,76 +1,140 @@
-import { useState, useRef } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Flex } from '../components/containers';
-import { ChevronDownIcon } from '@heroicons/react/solid';
-import Logo from '../public/images/green-company-logo.png';
-import Menu from '../public/images/dot-menu.png';
-import User from '../public/images/user-frogs.jpg';
-import Cancel from '../public/icons/cancel-18.png';
-import UserIcon from '../public/icons/icon_-users-4.png';
-import Password from '../public/icons/password-11.png'
-import Config from '../public/icons/config-5.png';
-import Close from '../public/icons/close-37.png';
-import useClickOutside from '../hooks/useClickOutside';
-import { useAuth } from '../context/AuthContext';
+import { useState, useRef } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { ChevronDownIcon } from "@heroicons/react/solid";
+import logo from "../public/images/logo.svg";
+import home from "../public/images/dot-menu.png";
+import UserIcon from "../public/icons/icon_-users-4.png";
+import Config from "../public/icons/config-5.png";
+import useClickOutside from "../hooks/useClickOutside";
+import { XIcon } from "@heroicons/react/solid";
+import { LogoutIcon } from "@heroicons/react/outline";
+import Avatar from "./commons/Avatar";
+import { useNotification } from "./notifications/NotificationsProvider";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import userLogout from "../redux/actions/userLogout";
+import { useRouter } from "next/router";
 
 const Navbar = () => {
+  const {user} = useSelector(state => state);
+  const router  = useRouter();
+  const dispatch = useDispatch();
   const userMenuRef = useRef(null);
+  const sendNotification = useNotification();
   const [showDialog, setShowDialog] = useState(false);
-  const auth = useAuth();
-  useClickOutside(userMenuRef, () => { setShowDialog(false) });
+  const handleToggle = () => setShowDialog(!showDialog);
+  
+
+  useClickOutside(userMenuRef, () => {
+    if (showDialog) {
+      handleToggle();
+    }
+  });
+
+  const handleLogout = async() => {
+    try {
+        dispatch(userLogout());
+        router.push('/')
+    } catch (error) {
+      sendNotification({
+        type:'ERROR',
+        message:error.message,
+      });
+    }
+  };
 
   return (
     <>
-      <nav className="w-full h-14 bg-black flex items-center justify-between pl-3 md:pl-7">
-        <Image src={Logo} alt="Logo Green Company" height={40} width={45}/>
-        <Flex>
-          <Link href="/dashboard"><a className='ml-3 md:mr-4'><Image src={Menu} alt="menu" height={35} width={35}/></a></Link>
-          <Flex>          
-            <Image src={User} alt="Arrow" className="rounded-full h-7 w-7" height={30} width={39}/>
-            <ChevronDownIcon className="text-white h-7 w-7 my-auto mx-2 cursor-pointer" onClick={() => setShowDialog(true)}/>
-          </Flex>
-        </Flex>
+      <nav className="w-full h-[3rem] bg-black-shape">
+        <div className="flex  h-full justify-between">
+            <Link href={'/dashboard'}>
+              <a>
+                <figure className="relative w-[3rem] h-[3rem]">
+                  <Image src={logo} layout='fill'  alt="logo" objectFit="cover" objectPosition="center"/>
+                </figure>
+              </a>
+            </Link>
+            <section className=" h-full flex items-center space-x-2 ">
+              <Link href={'/dashboard'}>
+                <a>
+                  <figure className="relative w-[3rem] h-[3rem]">
+                    <Image src={home} layout='fill' alt="home" objectFit="cover" objectPosition="center"/>
+                  </figure>
+                </a>
+              </Link>
+              <figure className=" w-[3rem] h-[3rem] p-1">
+                <Avatar image={user?.ImgPerfil}/>
+              </figure>
+              <figure>
+                <ChevronDownIcon
+                  className="text-white h-7 w-7 my-auto cursor-pointer"
+                  onClick={handleToggle}
+                />
+              </figure>
+            </section>
+        </div>
       </nav>
+
       {/* Menú Opciones Usuario */}
-      <div ref={userMenuRef} className={`bg-black opacity-80 border-2 border-gray-100 absolute w-[280px] h-[350px] z-10 ${showDialog ? 'right-0 transform scale-100 transition ease-in-out duration-200' : '-right-1/4 transform scale-0 transition ease-in-out duration-200'} h-20 flex justify-center items-start p-1 rounded-md`}>
-      <Flex className="flex-col w-full">
-        <Flex className='flex-grow justify-evenly border-b border-b-gray-100 p-2'>
-          <p className="text-white text-lg font-bold">Opciones de cuenta</p>
-          <Image src={Cancel} height={30} width={30} alt='Cerrar' className='invert cursor-pointer' onClick={() => setShowDialog(false)}/>
-        </Flex>
-        <Link href="/usuario/perfil">
-          <a className='hover:bg-sky-500 hover:bg-opacity-20 rounded-md transition ease-in-out duration-200'>
-            <Flex className='justify-start mx-2 border-b border-b-gray-100 p-2'>
-              <Image src={UserIcon} height={20} width={25} alt='Cerrar' className='invert' />
-              <p className="text-white text-base ml-5">Mi Perfil</p>
-            </Flex>
-          </a>
-        </Link>
-        <Link href="/dashboard">
-          <a className='hover:bg-sky-500 hover:bg-opacity-20 rounded-md transition ease-in-out duration-200'>
-            <Flex className='justify-start mx-2 border-b border-b-gray-100 p-2'>
-              <Image src={Password} height={20} width={25} alt='Cerrar' className='invert' />
-              <p className="text-white text-base ml-5">Cambiar contraseña</p>
-            </Flex>
-          </a>
-        </Link>
-        <Link href="/dashboard">
-          <a className='hover:bg-sky-500 hover:bg-opacity-20 rounded-md transition ease-in-out duration-200'>
-            <Flex className='justify-start mx-2 border-b border-b-gray-100 p-2'>
-              <Image src={Config} height={20} width={25} alt='Cerrar' className='invert' />
-              <p className="text-white text-base ml-5">Configuraciones</p>
-            </Flex>
-          </a>
-        </Link>
-        <a className='hover:bg-sky-500 hover:bg-opacity-20 rounded-md transition ease-in-out duration-200 cursor-pointer' onClick={()=> auth.logOut()}>
-            <Flex className='justify-start mx-2 border-b border-b-gray-100 p-2'>
-              <Image src={Close} height={20} width={25} alt='Cerrar' className='invert' />
-              <p className="text-white text-base ml-5">Cerrar Sesión</p>
-            </Flex>
-          </a>
-      </Flex>
-    </div>
+      <div
+        ref={userMenuRef}
+        className={`absolute w-[280px] h-[190px] z-50 right-0 transform bg-black-light ${
+          !showDialog && "translate-x-full"
+        }  transition duration-200 ease-in-out shadow-md`}
+      >
+        <div className="flex flex-col justify-between p-4 relative space-y-3">
+          <div className="flex items-center space-x-3">
+            <XIcon
+              width={24}
+              className=" text-white cursor-pointer"
+              onClick={handleToggle}
+            />
+             <h3 className=" text-white font-bold">Opciones de cuenta</h3>
+          </div>
+          <div className="space-y-1">
+            <Link href="/usuario/perfil">
+              <a 
+                className="hover:bg-sky-400 m-1 flex p-1 rounded-sm transition ease-in-out duration-200"
+                onClick={handleToggle}
+              >
+                <Image
+                  src={UserIcon}
+                  height={20}
+                  width={25}
+                  alt="Cerrar"
+                  className="invert"
+                />
+                <p className="text-white pl-1">Mi Perfil</p>
+              </a>
+            </Link>
+
+            <Link href="/configuracion/usuarios">
+              <a 
+                className="hover:bg-sky-400 m-1 flex  p-1 rounded-sm transition ease-in-out duration-200"
+                onClick={handleToggle}
+              >
+                <Image
+                  src={Config}
+                  height={20}
+                  width={25}
+                  alt="Cerrar"
+                  className="invert"
+                />
+                <p className="text-white pl-1">Configuraciones</p>
+              </a>
+            </Link>
+
+            <a
+              className="hover:bg-sky-400 m-1 flex rounded-sm  p-1 transition ease-in-out duration-200 cursor-pointer"
+              onClick={handleLogout}
+            >
+              <LogoutIcon width={25} className="text-white" />
+              <p className="text-white pl-1">Cerrar Sesión</p>
+            </a>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

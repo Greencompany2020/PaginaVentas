@@ -1,183 +1,256 @@
-import { useState, useEffect, Fragment } from 'react';
-import { SmallContainer, ParametersContainer, Parameters } from '../../components/containers';
-import { getVentasLayout} from '../../components/layout/VentasLayout';
-import { VentasTableContainer, VentasTable, TableHead } from '../../components/table';
-import { InputContainer, Checkbox, InputOfTheDate, InputVsYear } from '../../components/inputs';
-import { checkboxLabels, inputNames, MENSAJE_ERROR } from '../../utils/data';
-import { MessageModal } from '../../components/modals';
-import { getCurrentDate, getCurrentYear, getYearFromDate, semanaSanta } from '../../utils/dateFunctions';
-import { getDayName, rowColor, validateDate, validateYear, getTableName, dateRangeTitleSemanaSanta, isError } from '../../utils/functions';
-import { handleChange } from '../../utils/handlers';
-import { getSemanaSantaAcumulado } from '../../services/semanaSantaService';
-import { formatNumber, numberWithCommas } from '../../utils/resultsFormated';
-import useMessageModal from '../../hooks/useMessageModal';
-import withAuth from '../../components/withAuth';
+import React, { useState} from "react";
+import {
+  ParametersContainer,
+  Parameters,
+} from "../../components/containers";
+import { getVentasLayout } from "../../components/layout/VentasLayout";
+import { checkboxLabels, inputNames, comboValues } from "../../utils/data";
+import {
+  getCurrentDate,
+  getYearFromDate,
+  semanaSanta,
+} from "../../utils/dateFunctions";
+import {
+  getDayName,
+  getTableName,
+  dateRangeTitleSemanaSanta,
+  parseNumberToBoolean,
+  spliteArrDate,
+  parseParams
+} from "../../utils/functions";
+import { getSemanaSantaAcumulado } from "../../services/semanaSantaService";
+import {  numberWithCommas, isRegionOrPlaza, isNegative, selectRow, numberAbs } from "../../utils/resultsFormated";
+import withAuth from "../../components/withAuth";
+import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
+import { Form, Formik } from "formik";
+import { Checkbox, BeetWenYears, Select, Input } from "../../components/inputs/reportInputs";
+import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
+import { v4 } from "uuid";
 
+const Acumulado = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
 
-const Acumulado = () => {
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal();
-  const [fechaInicioSemana, setFechaInicioSemana] = useState(semanaSanta(getCurrentYear())[0]);
-  const [acumulado, setAcumulado] = useState([]);
-  const [paramAcumulado, setParamAcumulado] = useState({
+  const [dataReport, setDataReport] = useState(null);
+  const [reportDate, setReportDate] = useState({current:getCurrentDate(true) , dateRange:spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)});
+  const [endWeek, setEndWeek] = useState( parseNumberToBoolean(config?.incluirFinSemanaAnterior || 0));
+
+  const parameters = {
     fecha: getCurrentDate(true),
-    versusAgno: getCurrentYear() - 1,
-    conIva: 0,
-    porcentajeVentasCompromiso: 1,
-    conVentasEventos: 0,
-    conTiendasCerradas: 0,
-    incluirFinSemanaAnterior: 1,
-    resultadosPesos: 1
-  });
+    conIva: parseNumberToBoolean(config?.conIva || 0),
+    conVentasEventos: parseNumberToBoolean(config?.conVentasEventos,0),
+    incluirFinSemanaAnterior: parseNumberToBoolean(config?.incluirFinSemanaAnterior || 0),
+    resultadosPesos:parseNumberToBoolean(config?.resultadosPesos || 1),
+    incremento: config?.incremento || 'compromiso',
+    mostrarTiendas: config?.mostrarTiendas || 'activas',
+    tipoCambioTiendas: parseNumberToBoolean(config?.tipoCambioTiendas || 0),
+    agnosComparar: spliteArrDate(config?.agnosComparativos, config?.cbAgnosComparar || 1),
+  }
 
-  useEffect(() => {
-    if (validateDate(paramAcumulado.fecha) && validateYear(paramAcumulado.versusAgno)) {
-      getSemanaSantaAcumulado(paramAcumulado)
-        .then(response => {
-
-          if (isError(response)) {
-            setMessage(response?.response?.data?.message ?? MENSAJE_ERROR);
-            setModalOpen(true)
-          } else {
-            setAcumulado(response)
-          }
-        });
+  const handleSubmit = async values => {
+    try {
+      const params = removeParams(values);
+      const response = await getSemanaSantaAcumulado(parseParams(params));
+      setReportDate(prev => ({...prev, current:values.fecha}))
+      setEndWeek(values.incluirFinSemanaAnterior);
+      setDataReport(response);
+    } catch (error) {
+      sendNotification({
+        type:'ERROR',
+        message: error.message
+      });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramAcumulado]);
+  }
+
+  const removeParams = params => {
+    if(params.cbAgnosComparar == 1){
+      const {cbAgnosComparar, agnosComparar:[a], ...rest} = params;
+      setReportDate(prev => ({...prev, dateRange:[a]}));
+      return {...rest, agnosComparar:[a]}
+    }else{
+      const {cbAgnosComparar, ...rest} = params;
+      setReportDate(prev => ({...prev, dateRange:params.agnosComparar}));
+      return rest;
+    }
+  }
+
+  const weekDate = () => {
+    return semanaSanta(getYearFromDate(reportDate.current), false, endWeek)[0]
+
+  }
 
   return (
-    <>
-      <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
-      <ParametersContainer>
-        <Parameters>
-          <InputContainer>
-            <InputOfTheDate 
-              value={paramAcumulado.fecha}
-              onChange={(e) => {
-                handleChange(e, setParamAcumulado);
-                setFechaInicioSemana(semanaSanta(getYearFromDate(paramAcumulado.fecha))[0])
-              }}
-            />
-            <InputVsYear 
-              value={paramAcumulado.versusAgno}
-              onChange={(e) => handleChange(e, setParamAcumulado)}
-            />
-            <Checkbox 
-              className='mb-3'
-              labelText={checkboxLabels.VENTAS_IVA}
-              name={inputNames.CON_IVA}
-              onChange={(e) => handleChange(e, setParamAcumulado)}
-            />
-          </InputContainer>
-          <InputContainer>
-            <Checkbox 
-              className='mb-3'
-              labelText={checkboxLabels.PORCENTAJE_VENTAS_VS_LOGRO}
-              name={inputNames.PORCENTAJE_COMPROMISO}
-              onChange={(e) => handleChange(e, setParamAcumulado)}
-              checked={paramAcumulado.porcentajeVentasCompromiso}
-            />
-            <Checkbox 
-              className='mb-3'
-              labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
-              name={inputNames.CON_VENTAS_EVENTOS}
-              onChange={(e) => handleChange(e, setParamAcumulado)}
-            />
-            <Checkbox 
-              className='mb-3'
-              labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
-              name={inputNames.CON_TIENDAS_CERRADAS}
-              onChange={(e) => handleChange(e, setParamAcumulado)}
-            />
-          </InputContainer>
-          <InputContainer>
-            <Checkbox 
-              className='mb-3'
-              labelText={checkboxLabels.INCLUIR_FIN_DE_SEMANA_ANTERIOR}
-              name={inputNames.INCLUIR_FIN_SEMANA_ANTERIOR}
-              onChange={(e) => handleChange(e, setParamAcumulado)}
-              checked={paramAcumulado.incluirFinSemanaAnterior}
-            />
-            <Checkbox
-              labelText={checkboxLabels.RESULTADO_PESOS}
-              name={inputNames.RESULTADOS_PESOS}
-              onChange={(e) => handleChange(e, setParamAcumulado)}
-              checked={paramAcumulado.resultadosPesos}
-            />
-          </InputContainer>
-        </Parameters>
-        <SmallContainer>
-          Este reporte muestra la venta del dia y la venta acumulada de la semana santa en la fecha especificada.
-        </SmallContainer>
-      </ParametersContainer>
-
-      <VentasTableContainer title={`Ventas Semana Santa del año ${getYearFromDate(paramAcumulado.fecha)}`}>
-        {
-          Object.entries(acumulado).map(([key, value]) => (
-            <Fragment key={key}>
-              {getTableName(key)}
-              <VentasTable className='last-row-bg'>
-                <TableHead>
-                  <tr>
-                    <td rowSpan={3} className='border border-white'>Tienda</td>
-                    <td colSpan={10} className='border border-white'>{getDayName(paramAcumulado.fecha)}</td>
-                    <td colSpan={4} className='border border-white'>{dateRangeTitleSemanaSanta(fechaInicioSemana, paramAcumulado.fecha)}</td>
-                  </tr>
-                  <tr>
-                    <td colSpan={4} className='border border-white'>Venta</td>
-                    <td colSpan={3} className='border border-white'>Promedio</td>
-                    <td colSpan={3} className='border border-white'>Operaciones</td>
-                    <td colSpan={4} className='border border-white'>Venta</td>
-                  </tr>
-                  <tr>
-                    <td rowSpan={2} className='border border-white'>{getYearFromDate(paramAcumulado.fecha)}</td>
-                    <td rowSpan={2} className='border border-white'>{paramAcumulado.versusAgno}</td>
-                    <td rowSpan={2} className='border border-white'>PPTO.</td>
-                    <td rowSpan={2} className='border border-white'>%</td>
-                    <td rowSpan={2} className='border border-white'>{getYearFromDate(paramAcumulado.fecha)}</td>
-                    <td rowSpan={2} className='border border-white'>{paramAcumulado.versusAgno}</td>
-                    <td rowSpan={2} className='border border-white'>%</td>
-                    <td rowSpan={2} className='border border-white'>{getYearFromDate(paramAcumulado.fecha)}</td>
-                    <td rowSpan={2} className='border border-white'>{paramAcumulado.versusAgno}</td>
-                    <td rowSpan={2} className='border border-white'>%</td>
-                    <td rowSpan={2} className='border border-white'>{getYearFromDate(paramAcumulado.fecha)}</td>
-                    <td rowSpan={2} className='border border-white'>{paramAcumulado.versusAgno}</td>
-                    <td rowSpan={2} className='border border-white'>PPTO.</td>
-                    <td rowSpan={3} className='border border-white'>%</td>
-                  </tr>
-                </TableHead>
-                <tbody className='bg-white text-center'>
+    <div className=" flex flex-col h-full">
+      <TitleReport title={`Ventas Semana Santa del año ${getYearFromDate(reportDate.current || new Date().getFullYear)}`}/>
+      <section className="p-4 flex flex-row justify-between items-baseline">
+        <ParametersContainer>
+          <Parameters>
+          <Formik initialValues={parameters} onSubmit={handleSubmit} enableReinitialize>
+            <Form>
+              <AutoSubmitToken/>
+              <fieldset className="space-y-2 mb-3">
+                <Input type='date' id='fecha' name='fecha' label='Año' />
+                <BeetWenYears
+                  enabledDates={{
+                    id:'cbAgnosComparar',
+                    name:'cbAgnosComparar',
+                    label: 'Años a comparar'
+                  }}
+                  begindDate={{
+                    id:'agnosComparar[0]',
+                    name:'agnosComparar[0]',
+                    label:'Primer año'
+                  }}
+                  endDate={{
+                    id:'agnosComparar[1]',
+                    name:'agnosComparar[1]',
+                    label:'Segundo año'
+                  }}  
+                />
+                <Select id='incremento' name='incremento' label='Formular % de incremento'>
                   {
-                    value?.map((venta) => (
-                      <tr key={venta.tienda} className={rowColor(venta)}>
-                        <td>{venta.tienda}</td>
-                        <td>{numberWithCommas(venta.ventaActual)}</td>
-                        <td>{numberWithCommas(venta.ventaAnterior)}</td>
-                        <td>{numberWithCommas(venta.presupuesto)}</td>
-                        {formatNumber(venta.porcentaje)}
-                        <td>{numberWithCommas(venta.promedioActual)}</td>
-                        <td>{numberWithCommas(venta.promedioAnterior)}</td>
-                        {formatNumber(venta.porcentajePromedios)}
-                        <td>{numberWithCommas(venta.operacionesActual)}</td>
-                        <td>{numberWithCommas(venta.operacionesAnterior)}</td>
-                        {formatNumber(venta.porcentajeOperaciones)}
-                        <td>{numberWithCommas(venta.ventaAcumuladaActual)}</td>
-                        <td>{numberWithCommas(venta.ventaAcumuladaAnterior)}</td>
-                        <td>{numberWithCommas(venta.presupuestoAcumulado)}</td>
-                        {formatNumber(venta.porcentajeAcumulado)}
+                    comboValues.CBINCREMENTO.map((item, i) => (
+                      <option key={i} value={item.value}>{item.text}</option>
+                    ))
+                  }
+                </Select>
+                <Select id='mostrarTienda' name='mostrarTienda' label='Mostrar tiendas'>
+                  {
+                    comboValues.CBMOSTRARTIENDAS.map((item, i) => (
+                      <option key={i} value={item.value}>{item.text}</option>
+                    ))
+                  }
+                </Select>
+              </fieldset>
+              <fieldset>
+                <Checkbox id={inputNames.CON_IVA}  name={inputNames.CON_IVA} label={checkboxLabels.VENTAS_IVA}/>
+                <Checkbox id={inputNames.CON_VENTAS_EVENTOS}  name={inputNames.CON_VENTAS_EVENTOS} label={checkboxLabels.INCLUIR_VENTAS_EVENTOS}/>
+                <Checkbox id={inputNames.INCLUIR_FIN_SEMANA_ANTERIOR}  name={inputNames.INCLUIR_FIN_SEMANA_ANTERIOR} label={checkboxLabels.INCLUIR_FIN_DE_SEMANA_ANTERIOR}/>
+                <Checkbox id={inputNames.RESULTADOS_PESOS}  name={inputNames.RESULTADOS_PESOS} label={checkboxLabels.RESULTADO_PESOS}/>
+              </fieldset>
+            </Form>
+          </Formik>
+          </Parameters>
+        </ParametersContainer>
+      </section>
+      <section className="p-4 overflow-auto ">
+        <div className="overflow-y-auto space-y-8">
+          {
+           dataReport &&  Object.entries(dataReport).map(([key, value]) => (
+              <table key={v4()} className='table-report' onClick={selectRow}>
+                <caption>{getTableName(key)}</caption>
+                <thead>
+                  <tr>
+                    <th rowSpan={3} className='text-center'>Tienda</th>
+                    <th colSpan={10 + (reportDate.dateRange[1] ? 6 : 0)} className='text-center'> {getDayName(reportDate.current)}</th>
+                    <th colSpan={4 + (reportDate.dateRange[1] ? 2 : 0)} className='text-center'>{dateRangeTitleSemanaSanta(weekDate(),reportDate.current)}</th>
+                  </tr>
+                  <tr>
+                    <th colSpan={4 + (reportDate.dateRange[1] ? 2 : 0)}>Ventas</th>
+                    <th colSpan={3 + (reportDate.dateRange[1] ? 2 : 0)}>Promedio</th>
+                    <th colSpan={3 + (reportDate.dateRange[1] ? 2 : 0)}>Operaciones</th>
+                    <th colSpan={4 + (reportDate.dateRange[1] ? 2 : 0)}>Venta</th>
+                  </tr>
+                  <tr>
+                    <th>{getYearFromDate(reportDate.current)}</th>
+                    <th>{reportDate.dateRange[0]}</th>
+                    <th>PPTO.</th>
+                    <th>%</th>
+                    {reportDate.dateRange[1] &&
+                       <React.Fragment>
+                          <th>{reportDate.dateRange[1]}</th>
+                          <th>%</th>
+                       </React.Fragment>
+                    }
+                    <th>{getYearFromDate(reportDate.current)}</th>
+                    <th>{reportDate.dateRange[0]}</th>
+                    <th>%</th>
+                    {reportDate.dateRange[1] &&
+                       <React.Fragment>
+                          <th>{reportDate.dateRange[1]}</th>
+                          <th>%</th>
+                       </React.Fragment>
+                    }
+                    <th>{getYearFromDate(reportDate.current)}</th>
+                    <th>{reportDate.dateRange[0]}</th>
+                    <th>%</th>
+                    {reportDate.dateRange[1] &&
+                       <React.Fragment>
+                          <th>{reportDate.dateRange[1]}</th>
+                          <th>%</th>
+                       </React.Fragment>
+                    }
+                    <th>{getYearFromDate(reportDate.current)}</th>
+                    <th>{reportDate.dateRange[0]}</th>
+                    <th>PPTO.</th>
+                    <th>%</th>
+                    {reportDate.dateRange[1] &&
+                       <React.Fragment>
+                          <th>{reportDate.dateRange[1]}</th>
+                          <th>%</th>
+                       </React.Fragment>
+                    }
+                  </tr>
+                </thead>
+                <tbody>
+                  {
+                    (value && value.length > 0) && value.map(item => (
+                      <tr key={v4()} data-row-format={isRegionOrPlaza(item.tienda)}>
+                        <td data-type-format="text" className="priority-cell">{item.tienda}</td>
+                        <td>{numberWithCommas(item['ventaActual'+ getYearFromDate(reportDate.current)])}</td>
+                        <td>{numberWithCommas(item['ventaActual'+ reportDate.dateRange[0]])}</td>
+                        <td>{numberWithCommas(item['presupuesto'+ getYearFromDate(reportDate.current)])}</td>
+                        <td data-porcent-format={isNegative(item['porcentaje'+ getYearFromDate(reportDate.current)])}>{numberAbs(item['porcentaje'+ getYearFromDate(reportDate.current)])}</td>
+                        {reportDate.dateRange[1] &&
+                          <React.Fragment key={v4()}>
+                            <td>{numberWithCommas(item['ventaActual'+ reportDate.dateRange[1]])}</td>
+                            <td data-porcent-format={isNegative(item['porcentaje'+ reportDate.dateRange[1]])}>{numberAbs(item['porcentaje'+ reportDate.dateRange[1]])}</td>
+                          </React.Fragment>
+                        }
+
+                        <td>{numberWithCommas(item['promedioActual'+ getYearFromDate(reportDate.current)])}</td>
+                        <td>{numberWithCommas(item['promedioActual'+ reportDate.dateRange[0]])}</td>
+                        <td data-porcent-format={isNegative(item['porcentajePromedios'+ reportDate.dateRange[0]])}>{numberAbs(item['porcentajePromedios'+ reportDate.dateRange[0]])}</td>
+                        {reportDate.dateRange[1] &&
+                          <React.Fragment key={v4()}>
+                            <td>{numberWithCommas(item['promedioActual'+ reportDate.dateRange[1]])}</td>
+                            <td data-porcent-format={isNegative(item['porcentajePromedios'+ reportDate.dateRange[1]])}>{numberAbs(item['porcentajePromedios'+ reportDate.dateRange[1]])}</td>
+                          </React.Fragment>
+                        }
+
+                        <td>{numberWithCommas(item['operacionesActual'+ getYearFromDate(reportDate.current)])}</td>
+                        <td>{numberWithCommas(item['operacionesActual'+ reportDate.dateRange[0]])}</td>
+                        <td data-porcent-format={isNegative(item['porcentajeOperaciones'+ reportDate.dateRange[0]])}>{numberAbs(item['porcentajeOperaciones'+ reportDate.dateRange[0]])}</td>
+                        {reportDate.dateRange[1] &&
+                          <React.Fragment key={v4()}>
+                            <td>{numberWithCommas(item['operacionesActual'+ reportDate.dateRange[1]])}</td>
+                            <td data-porcent-format={isNegative(item['porcentajeOperaciones'+ reportDate.dateRange[1]])}>{numberAbs(item['porcentajeOperaciones'+ reportDate.dateRange[1]])}</td>
+                          </React.Fragment>
+                        }
+
+                        <td>{numberWithCommas(item['ventaAcumuladaActual'+ getYearFromDate(reportDate.current)])}</td>
+                        <td>{numberWithCommas(item['ventaAcumuladaActual'+ reportDate.dateRange[0]])}</td>
+                        <td>{numberWithCommas(item['presupuestoAcumulado'+ getYearFromDate(reportDate.current)])}</td>
+                        <td data-porcent-format={isNegative(item['porcentajeAcumulado'+ reportDate.dateRange[0]])}>{numberAbs(item['porcentajeAcumulado'+ reportDate.dateRange[0]])}</td>
+                        {reportDate.dateRange[1] &&
+                          <React.Fragment key={v4()}>
+                            <td>{numberWithCommas(item['ventaAcumuladaActual'+ reportDate.dateRange[1]])}</td>
+                            <td data-porcent-format={isNegative(item['porcentajeAcumulado'+ reportDate.dateRange[1]])}>{numberAbs(item['pporcentajeAcumulado'+ reportDate.dateRange[1]])}</td>
+                          </React.Fragment>
+                        }
                       </tr>
                     ))
                   }
                 </tbody>
-      
-              </VentasTable>
-            </Fragment>
-          ))
-        }
-      </VentasTableContainer>
-    </>
-  )
-}
+              </table>
+            ))
+          }
+        </div>
+      </section>
+    </div>
+  );
+};
 
 const AcumuladoWithAuth = withAuth(Acumulado);
 AcumuladoWithAuth.getLayout = getVentasLayout;

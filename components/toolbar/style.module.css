@@ -1,0 +1,54 @@
+
+.Toolbar{
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+    width: 2.8rem;
+    overflow: hidden;
+    background-color: #333333;
+    align-content: space-around;
+    justify-content: space-between;
+}
+
+.Header, .Body, .Footer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.4rem;
+    display: flex;
+    flex-flow: column;
+}
+
+.Header{
+    flex: 0.1;
+    justify-content: start;
+}
+
+.Body{
+    flex: 1;
+}
+
+.Footer{
+    flex: 0.1;
+    justify-content: end;
+}
+
+@media (max-width: 768px) {
+    .Toolbar{
+        background: none;
+        position: relative;
+        bottom: 4px;
+        right: 2px;
+        height: 46px;
+        justify-content: center;
+    }
+
+    .Body{
+        display: none;
+    }
+    
+    .Footer{
+        flex: 0.1;
+        display: none;
+    }
+}

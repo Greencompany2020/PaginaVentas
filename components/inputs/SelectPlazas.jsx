@@ -1,25 +1,25 @@
-import { useUser } from '../../context/UserContext';
-import { Flex } from '../containers';
+import { useSelector } from 'react-redux';
+import { v4 } from 'uuid';
 
-const SelectPlazas = ({ classLabel, onChange, value }) => {
+const SelectPlazas = ({ onChange, value }) => {
   
-  const {plazas} = useUser();
+  const {places} = useSelector(state => state);
 
-  const PlazasItem = ({plazas}) => {
-    if(!plazas) return <></>
-    const Item = plazas.map(plaza => (
-      <option value={plaza.NoEmpresa} key={plaza.DescCta}>{plaza.DescCta}</option>
+  const PlacesItem = ({places}) => {
+    if(!places) return <></>
+    const Item = places.map(plaza => (
+      <option value={plaza.NoEmpresa} key={v4()}>{plaza.DescCta}</option>
     ))
     return Item;
   }
 
   return (
-    <Flex className='mb-3'>
-      <label htmlFor="plaza" className={classLabel}>Plaza: </label>
-      <select name="plaza" value={value} className='select ml-2' onChange={onChange}>
-        <PlazasItem plazas={plazas}/>
+    <label htmlFor="plaza" className='flex flex-col text-sm'>
+      <span className='font-semibold'>Plaza</span> 
+      <select name="plaza" value={value} className='h-8 border rounded-md pl-2 border-slate-400' onChange={onChange}>
+        <PlacesItem places={places}/>
       </select>
-    </Flex>
+    </label>
   )
 }
 

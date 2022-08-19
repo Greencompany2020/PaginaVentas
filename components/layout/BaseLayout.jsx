@@ -2,10 +2,14 @@ import Navbar from '../Navbar'
 
 const BaseLayout = ({ children }) => {
   return (
-    <>
-      <Navbar />
+   <div className='layout-base'>
+    <section className='layout-base-navbar'>
+      <Navbar/>
+    </section>
+    <main className='layout-base-main'>
       {children}
-    </>
+    </main>
+   </div>
   )
 }
 
