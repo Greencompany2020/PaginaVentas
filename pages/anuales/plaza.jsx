@@ -1,71 +1,159 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { ParametersContainer, Parameters, SmallContainer } from '@components/containers';
-import { InputContainer, InputToYear, SelectMonth, SelectTiendasGeneral, Checkbox, InputYear } from '@components/inputs';
-import { VentasTableContainer } from '@components/table';
-import BarChart from '@components/BarChart';
-import { checkboxLabels } from 'utils/data';
+import { useState, useEffect } from "react";
+import { getVentasLayout } from "../../components/layout/VentasLayout";
+import {
+  ParametersContainer,
+  Parameters,
+} from "../../components/containers";
+import {
+  InputContainer,
+  InputToYear,
+  SelectTiendasGeneral,
+  Checkbox,
+  InputYear,
+  SelectToMonth,
+} from "../../components/inputs";
+import BarChart from "../../components/BarChart";
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
+import {
+  getCurrentMonth,
+  getCurrentYear,
+  getMonthByNumber,
+} from "../../utils/dateFunctions";
+import { handleChange } from "../../utils/handlers";
+import { getAnualesPlazas } from "../../services/AnualesServices";
+import {
+  createDatasets,
+  validateYearRange,
+} from "../../utils/functions";
+import useGraphData from "../../hooks/useGraphData";
+import withAuth from "../../components/withAuth";
+import TitleReport from "../../components/TitleReport";
+import ComparativoVentas from "../../components/table/ComparativoVentas";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const plazas = () => {
+const Plazas = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification
+  const { labels, setLabels, datasets, setDatasets } = useGraphData();
+  const [plazasParametros, setPlazasParametros] = useState({
+    delAgno: getCurrentYear(),
+    alAgno: getCurrentYear(),
+    alMes: getCurrentMonth(),
+    tiendas: 0,
+    conIva: config?.conIva || 0,
+    conVentasEventos: config?.conVentasEventos || 0,
+    conTiendasCerradas: config?.conTiendasCerradasa || 0,
+    resultadosPesos: config?.resultadosPesos || 1,
+  });
+
+
+  useEffect(() => {
+    (async()=>{
+      if(validateYearRange(plazasParametros.delAgno, plazasParametros.alAgno)){
+        try {
+          const response = await getAnualesPlazas(plazasParametros);
+          createDatasets(
+            response,
+            plazasParametros.delAgno,
+            plazasParametros.alAgno,
+            setLabels,
+            setDatasets
+          );
+        } catch (error) {
+          sendNotification({
+            type: 'ERROR',
+            message: MENSAJE_ERROR,
+          });
+        }
+      }
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [plazasParametros]);
+
   return (
-    <VentasLayout>
-      <ParametersContainer>
-        <Parameters>
-          <InputContainer>
-            <InputYear />
-            <InputToYear />
-          </InputContainer>
-          <InputContainer>
-            <SelectMonth />
-            <SelectTiendasGeneral />
-          </InputContainer>
-          <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.VENTAS_IVA} />
-            <Checkbox labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS} />
-          </InputContainer>
-          <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS} />
-            <Checkbox labelText={checkboxLabels.RESULTADO_PESOS} />
-          </InputContainer>
-        </Parameters>
-        <SmallContainer>
-          Esta gráfica muestra las ventas anuales por plaza seguna el rango de años especificado.
-        </SmallContainer>
-        <SmallContainer>
-          Recuerde que el rango de años debe ser capturado de el menor a el mayor, aunque en el reporte se mostraraa el orden descendiente.
-        </SmallContainer>
-      </ParametersContainer>
+    <div className=" flex flex-col h-full">
+      <TitleReport
+        title={`Ventas Plazas Acumuladas a ${getMonthByNumber(
+          plazasParametros.alMes
+        )} del año ${plazasParametros.delAgno} al año ${
+          plazasParametros.alAgno
+        }`}
+      />
 
-      <VentasTableContainer title='Ventas Plazas Acumuladas a Diciembre del año 2018 al año 2021'>
+      <section className="p-4 flex flex-row justify-between items-baseline">
+        <ParametersContainer>
+          <Parameters>
+            <InputContainer>
+              <SelectTiendasGeneral
+                value={plazasParametros.tiendas}
+                onChange={(e) => handleChange(e, setPlazasParametros)}
+              />
+              <SelectToMonth
+                value={plazasParametros.alMes}
+                onChange={(e) => handleChange(e, setPlazasParametros)}
+              />
+              <div className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <InputYear
+                    value={plazasParametros.delAgno}
+                    onChange={(e) => handleChange(e, setPlazasParametros)}
+                  />
+                </div>
+                <div className="flex-1">
+                  <InputToYear
+                    value={plazasParametros.alAgno}
+                    onChange={(e) => handleChange(e, setPlazasParametros)}
+                  />
+                </div>
+              </div>
+            
+            </InputContainer>
+            <InputContainer>
+              <Checkbox
+                className="mb-3"
+                labelText={checkboxLabels.VENTAS_IVA}
+                checked={plazasParametros.conIva ? true : false}
+                name={inputNames.CON_IVA}
+                onChange={(e) => handleChange(e, setPlazasParametros)}
+              />
+              <Checkbox
+                className="mb-3"
+                labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={plazasParametros.conVentasEventos ? true : false}
+                name={inputNames.CON_VENTAS_EVENTOS}
+                onChange={(e) => handleChange(e, setPlazasParametros)}
+              />
+               <Checkbox
+                className="mb-3"
+                labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={plazasParametros.conTiendasCerradas ? true : false}
+                name={inputNames.CON_TIENDAS_CERRADAS}
+                onChange={(e) => handleChange(e, setPlazasParametros)}
+              />
+              <Checkbox
+                labelText={checkboxLabels.RESULTADO_PESOS}
+                name={inputNames.RESULTADOS_PESOS}
+                checked={plazasParametros.resultadosPesos ? true : false}
+                onChange={(e) => handleChange(e, setPlazasParametros)}
+              />
+            </InputContainer>
+          </Parameters>
+        </ParametersContainer>
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 h-full overflow-y-auto ">
+        <ComparativoVentas>
         <BarChart
-          data={{
-            labels: ['MZT', 'CAN', 'PV', 'ACA', 'ISM', 'CAB', 'PC'],
-            datasets: [
-              {
-                label: '2021',
-                data: [7199, 2594, 2104, 3491, 602, 756, 1570],
-                backgroundColor: '#991b1b'
-              },
-              {
-                label: '2020',
-                data: [4285, 1154, 1168, 2339, 333, 394, 865],
-                backgroundColor: '#9a3412'
-              },
-              {
-                label: '2019',
-                data: [6881, 1642, 2183, 4272, 629, 659, 1394],
-                backgroundColor: '#3f6212'
-              },
-              {
-                label: '2018',
-                data: [5793, 1501, 2071, 3518, 605, 571, 1337],
-                backgroundColor: '#065f46'
-              },
-            ]
-          }}
-        />
-      </VentasTableContainer>
-    </VentasLayout>
-  )
-}
+            data={{
+              labels: labels,
+              datasets: datasets,
+            }}
+          />
+        </ComparativoVentas>
+      </section>
+    </div>
+  );
+};
 
-export default plazas
+const PlazasWithAuth = withAuth(Plazas);
+PlazasWithAuth.getLayout = getVentasLayout;
+export default PlazasWithAuth;

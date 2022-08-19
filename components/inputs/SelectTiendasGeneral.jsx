@@ -1,18 +1,17 @@
-import { Flex } from '@components/containers';
-import { tiendasGeneral } from 'utils/data'
+import { tiendasGeneral } from '../../utils/data'
 
-const SelectTiendasGeneral = () => {
+const SelectTiendasGeneral = ({ value, onChange }) => {
   return (
-    <Flex className='mb-3'>
-      <label htmlFor="mes">Tienda: </label>
-      <select name="mes" id="" className='select ml-2'>
+    <label htmlFor="tiendas" className='flex flex-col text-sm'>
+    <span className='font-semibold'>Tienda</span> 
+      <select name="tiendas" className='h-8 border rounded-md pl-2 border-slate-400' value={value} onChange={onChange}>
         {
           tiendasGeneral.map(tienda => (
             <option value={tienda.value} key={tienda.text}>{tienda.text}</option>
           ))
         }
       </select>
-    </Flex>
+    </label>
   )
 }
 

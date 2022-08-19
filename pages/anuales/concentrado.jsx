@@ -1,11 +1,13 @@
-import VentasLayout from '@components/layout/VentasLayout';
-
-const concentrado = () => {
+import { getVentasLayout } from "../../components/layout/VentasLayout";
+import withAuth from "../../components/withAuth";
+const Concentrado = () => {
   return (
-    <VentasLayout>
-      <h1 className='text-4xl m-auto'>Procedimiento en Construcción</h1>
-    </VentasLayout>
-  )
-}
+    <div className="grid place-items-center h-full">
+      <h1 className="text-4xl m-auto">Procedimiento en Construcción</h1>
+    </div>
+  );
+};
 
-export default concentrado
+const ConcentradoWithAuth = withAuth(Concentrado);
+ConcentradoWithAuth.getLayout = getVentasLayout;
+export default ConcentradoWithAuth;

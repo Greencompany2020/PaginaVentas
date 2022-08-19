@@ -1,221 +1,334 @@
 export const meses = [
   {
-    value: "Enero",
+    value: 1,
     text: "Enero"
   },
   {
-    value: "Febrero",
+    value: 2,
     text: "Febrero"
   },
   {
-    value: "Marzo",
+    value: 3,
     text: "Marzo"
   },
   {
-    value: "Abril",
+    value: 4,
     text: "Abril"
   },
   {
-    value: "Mayo",
+    value: 5,
     text: "Mayo"
   },
   {
-    value: "Junio",
+    value: 6,
     text: "Junio"
   },
   {
-    value: "Julio",
+    value: 7,
     text: "Julio"
   },
   {
-    value: "Agosto",
+    value: 8,
     text: "Agosto"
   },
   {
-    value: "Septiembre",
+    value: 9,
     text: "Septiembre"
   },
   {
-    value: "Octubre",
+    value: 10,
     text: "Octubre"
   },
   {
-    value: "Noviembre",
+    value: 11,
     text: "Noviembre"
   },
   {
-    value: "Diciembre",
+    value: 12,
     text: "Diciembre"
   },
 ]
 
+export const dias = [
+  {
+    value: 0,
+    text: 'Lunes'
+  },
+  {
+    value: 1,
+    text: 'Martes'
+  },
+  {
+    value: 2,
+    text: 'Miercoles'
+  },
+  {
+    value: 3,
+    text: 'Jueves'
+  },
+  {
+    value: 4,
+    text: 'Viernes'
+  },
+  {
+    value: 5,
+    text: 'Sabado'
+  },
+  {
+    value: 6,
+    text: 'Domingo'
+  }
+]
+
 export const tiendasGeneral = [
   {
-    value: "Frogs",
+    value: 0,
     text: "Frogs"
   },
   {
-    value: "Skoro",
+    value: 2,
     text: "Skoro"
   },
   {
-    value: "Web",
+    value: 3,
     text: "Web"
   }
 ]
 
 export const tiendas = [
   {
-    value: 'M1',
-    text: 'M1'
+    value: "0301",
+    text: "M1"
   },
   {
-    value: 'M2',
-    text: 'M2'
+    value: "0302",
+    text: "M2"
   },
   {
-    value: 'M3',
-    text: 'M3'
+    value: "0303",
+    text: "M3"
   },
   {
-    value: 'M4',
-    text: 'M4'
+    value: "0304",
+    text: "M4"
   },
   {
-    value: 'M5',
-    text: 'M5'
+    value: "0305",
+    text: "M5"
   },
   {
-    value: 'M6',
-    text: 'M6'
+    value: "0309",
+    text: "M6"
   },
   {
-    value: 'M9',
-    text: 'M9'
+    value: "0309",
+    text: "M9"
   },
   {
-    value: 'M10',
-    text: 'M10'
+    value: "0310",
+    text: "M10"
   },
   {
-    value: 'PV2',
-    text: 'PV2'
+    value: "0602",
+    text: "PV2"
   },
   {
-    value: 'PV4',
-    text: 'PV4'
+    value: "0604",
+    text: "PV4"
   },
   {
-    value: 'PV6',
-    text: 'PV6'
+    value: "0606",
+    text: "PV6"
   },
   {
-    value: 'ACA1',
-    text: 'ACA1'
+    value: "0701",
+    text: "ACA1"
   },
   {
-    value: 'ACA2',
-    text: 'ACA2'
+    value: "0702",
+    text: "ACA2"
   },
   {
-    value: 'ACA5',
-    text: 'ACA5'
+    value: "0705",
+    text: "ACA5"
   },
   {
-    value: 'IS-5',
-    text: 'IS-5'
+    value: "0505",
+    text: "IS-5"
   },
   {
-    value: 'OUTLET MCD',
-    text: 'OUTLET MCD'
+    value: "0506",
+    text: "OUTLET MCD"
   },
   {
-    value: 'FORUM',
-    text: 'FORUM'
+    value: "0507",
+    text: "FORUM"
   },
   {
-    value: 'PYA1',
-    text: 'PYA1'
+    value: "9950",
+    text: "PYA1"
   },
   {
-    value: 'PYA4',
-    text: 'PYA4'
+    value: "9954",
+    text: "PYA4"
   },
   {
-    value: 'ISM1',
-    text: 'ISM1'
+    value: "2601",
+    text: "ISM1"
   },
   {
-    value: 'CAB1',
-    text: 'CAB1'
+    value: "9631",
+    text: "CAB1"
   },
   {
-    value: 'CAB3',
-    text: 'CAB3'
+    value: "9633",
+    text: "CAB3"
   },
   {
-    value: 'WEB-SF',
-    text: 'WEB-SF'
+    value: "9502",
+    text: "WEB-SF"
   },
 ]
 
 export const plazas = [
   {
-    value: "MAZATLAN",
+    value: 3,
     text: "MAZATLAN"
   },
   {
-    value: "VALLARTA",
+    value: 6,
     text: "VALLARTA"
   },
   {
-    value: "ACAPULCO",
+    value: 7,
     text: "ACAPULCO"
   },
   {
-    value: "CANCUN",
+    value: 5,
     text: "CANCUN"
   },
   {
-    value: "PCARMEN",
+    value: 99,
     text: "PCARMEN"
   },
   {
-    value: "ISM",
+    value: 26,
     text: "ISM"
   },
   {
-    value: "CABOS",
+    value: 96,
     text: "CABOS"
   },
   {
-    value: "TULUM",
+    value: 11,
     text: "TULUM"
   },
   {
-    value: "SK MAZATLAN",
+    value: 94,
     text: "SK MAZATLAN"
   },
   {
-    value: "SK CULIACAN",
+    value: 97,
     text: "SK CULIACAN"
   },
   {
-    value: "SK MEXICALI",
+    value: "093",
     text: "SK MEXICALI"
   },
   {
-    value: "SK CHIHUAHUA",
+    value: "093",
     text: "SK CHIHUAHUA"
   },
   {
-    value: "COZUMEL",
+    value: 108,
     text: "COZUMEL"
   },
   {
-    value: "SK TIJUANA",
+    value: 92,
     text: "SK TIJUANA"
   }
 ]
 
-export const regiones = ['REGION I', 'REGION II', 'REGION III'];
+export const regiones = ['REGION I', 'REGION II', 'REGION III', 'WEB',];
+export const regionesTiendas = ['REGION I', 'REGION II', 'REGION III', 'WEB','GRUPO']
+
+export const concentradoPlazas = [
+  'MAZATLAN',
+  'CANCUN',
+  'VALLARTA',
+  'ACAPULCO',
+  'ISM',
+  'WEB',
+  'CABOS',
+  'PCARMEN'
+];
+
+export const tiendascon = [
+  {
+    nombre: 'Por tienda',
+    grupo: 'Diarias',
+    configuracion: {
+      iva: ['enabled', true],
+      eventos: ['enabled', true],
+      agnoSinVenta: ['enabled', true],
+      cerrada: ['enabled', false],
+      suspendida: ['enabled', true],
+      pesos: ['disabled', false]
+    }
+  },
+
+  {
+    nombre: 'Por plaza',
+    grupo: 'Diarias',
+    configuracion: {
+      iva: ['enabled', true],
+      eventos: ['disabled', true],
+      agnoSinVenta: ['enabled', true],
+      cerrada: ['enabled', false],
+      suspendida: ['enabled', true],
+      pesos: ['disabled', false]
+    }
+  },
+
+  {
+    nombre: 'Del grupo',
+    grupo: 'Diarias',
+    configuracion: {
+      iva: ['enabled', true],
+      eventos: ['enabled', true],
+      agnoSinVenta: ['enabled', true],
+      cerrada: ['enabled', false],
+      suspendida: ['enabled', true],
+      pesos: ['disabled', false]
+    }
+  },
+
+  {
+    nombre: 'Compromiso',
+    grupo: 'Semanales',
+    configuracion: {
+      iva: ['enabled', true],
+      eventos: ['enabled', true],
+      agnoSinVenta: ['enabled', true],
+      cerrada: ['enabled', false],
+      suspendida: ['enabled', true],
+      pesos: ['disabled', false]
+    }
+  },
+
+  {
+    nombre: 'Por tienda',
+    grupo: 'Semanales',
+    configuracion: {
+      iva: ['enabled', true],
+      eventos: ['enabled', true],
+      agnoSinVenta: ['enabled', true],
+      cerrada: ['enabled', false],
+      suspendida: ['enabled', true],
+      pesos: ['disabled', false]
+    }
+  },
+
+]
+
+export const MENSAJE_ERROR = "Ha ocurrido un error durante al consulta de datos."

@@ -1,11 +1,11 @@
-import { Flex } from '@components/containers'
+import { Flex } from "../containers"
 
 const InputDate = ({ value, onChange }) => {
   return (
-    <Flex className='mb-3 items-center'>
-      <label htmlFor="fecha">A la Fecha: </label>
-      <input type="date" name="fecha" id="" className='select ml-2' value={value} onChange={onChange} />
-    </Flex>
+    <label htmlFor="fecha" className="flex flex-col text-sm">
+      <span className="font-semibold">A la fecha</span>
+      <input type="date" name="fecha" id="" className='h-8 border rounded-md pl-2 border-slate-400' value={value} onChange={onChange} />
+    </label>
   )
 }
 

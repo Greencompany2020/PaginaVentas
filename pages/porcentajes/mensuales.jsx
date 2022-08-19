@@ -1,148 +1,376 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { ParametersContainer, Parameters, SmallContainer, Flex } from '@components/containers';
-import { InputContainer, InputYear, InputToYear, Checkbox, SelectTiendas, SelectPlazas } from '@components/inputs';
-import { VentasTableContainer, VentasTable, TableBody, TableHead } from '@components/table';
-import { useState } from 'react';
-import { checkboxLabels, porcentajesMensuales } from 'utils/data';
+import { useState, useEffect } from "react";
+import { getVentasLayout } from "../../components/layout/VentasLayout";
+import {
+  ParametersContainer,
+  Parameters,
+  Flex,
+} from "../../components/containers";
+import {
+  InputContainer,
+  InputYear,
+  InputToYear,
+  Checkbox,
+  SelectTiendas,
+  SelectPlazas,
+} from "../../components/inputs";
+import {
+  VentasTableContainer,
+  VentasTable,
+  TableBody,
+  TableHead,
+  TableRow,
+} from "../../components/table";
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
+import {
+  getInitialPlaza,
+  getInitialTienda,
+  validateYearRange,
+} from "../../utils/functions";
+import {
+  formatedDate,
+  formatLastDate,
+  getPrevDate,
+  getYearFromDate,
+} from "../../utils/dateFunctions";
+import { numberWithCommas } from "../../utils/resultsFormated";
+import { handleChange } from "../../utils/handlers";
+import { getPorcentajesMensuales } from "../../services/PorcentajesService";
+import withAuth from "../../components/withAuth";
+import TitleReport from "../../components/TitleReport";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
+import { useSelector } from "react-redux";
 
-const Mensuales = () => {
+const Mensuales = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
+  const {places, shops} = useSelector(state => state);
+  const [porcentajesMensuales, setPorcentajesMensuales] = useState([]);
+  const [parametrosMensuales, setParametrosMensuales] = useState({
+    queryTiendaPlaza: 0,
+    tienda: getInitialTienda(shops),
+    plaza: getInitialPlaza(places),
+    delAgno: Number(getYearFromDate(formatedDate())) - 5,
+    alAgno: Number(getYearFromDate(formatedDate())),
+    conIva: config?.conIva || 0,
+    conVentasEventos: config?.conVentasEventos || 0,
+    conTiendasCerradas: config?.conTiendasCerradas || 0,
+    resultadosPesos: config?.resultadosPesos || 1,
+  });
   const [toggleTienda, setToggleTienda] = useState(true);
   const [togglePlaza, setTogglePlaza] = useState(false);
 
+ 
+  useEffect(() => {
+    (async()=>{
+      if(validateYearRange(parametrosMensuales.delAgno, parametrosMensuales.alAgno) && (shops && places)){
+        try {
+          const response = await getPorcentajesMensuales(parametrosMensuales);
+          setPorcentajesMensuales(response);
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message: error.message ?? MENSAJE_ERROR
+          });
+        }
+      }
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [parametrosMensuales, parametrosMensuales.delAgno]);
+
   const handleVisibleTienda = () => {
     setToggleTienda(true);
+    setParametrosMensuales((prev) => ({
+      ...prev,
+      queryTiendaPlaza: 0,
+    }));
     setTogglePlaza(false);
-  }
+  };
 
   const handleVisiblePlaza = () => {
     setTogglePlaza(true);
+    setParametrosMensuales((prev) => ({
+      ...prev,
+      queryTiendaPlaza: 1,
+    }));
     setToggleTienda(false);
-  }
+  };
 
   return (
-    <VentasLayout>
-      <ParametersContainer>
-        <Parameters>
-          <InputContainer>
-            <Flex className='mb-3'>
-              <p className='mr-3'>Mostrar: </p>
-              <Flex>
-                <button onClick={handleVisibleTienda} className='buttonToggle mr-1'>Por Tienda</button>
-                <button onClick={handleVisiblePlaza} className='buttonToggle'>Por Plaza</button>
+    <div className=" flex flex-col h-full">
+      <TitleReport
+        title={`PROPORCION DE VENTAS MENSUALES VS. VENTA ANUAL - Ventas al ${formatLastDate(
+          getPrevDate(0, parametrosMensuales.alAgno)
+        )}`}
+      />
+
+      <section className="p-4 flex flex-row justify-between items-baseline">
+        <ParametersContainer>
+          <Parameters>
+            <InputContainer>
+              <Flex className="mb-3">
+                <p className="mr-3">Mostrar: </p>
+                <Flex>
+                  <button
+                    onClick={handleVisibleTienda}
+                    className="buttonToggle mr-1"
+                  >
+                    Por Tienda
+                  </button>
+                  <button onClick={handleVisiblePlaza} className="buttonToggle">
+                    Por Plaza
+                  </button>
+                </Flex>
               </Flex>
-            </Flex>
-            {
-              toggleTienda && <SelectTiendas />
-            }
-            {
-              togglePlaza && <SelectPlazas />
-            }
-          </InputContainer>
-          <InputContainer>
-            <InputYear />
-            <InputToYear />
-          </InputContainer>
-          <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.VENTAS_IVA} />
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS} />
-          </InputContainer>
-          <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS} />
-            <Checkbox className='mb-3' labelText={checkboxLabels.RESULTADO_PESOS} />
-          </InputContainer>
-        </Parameters>
-        <SmallContainer>
-          ESTA GRAFICA MUESTRA UN EL PORCENTAJE DE VENTA DEL MES EN RAZON DE LA VENTA ANUAL LA TIENDA SELECCIONADA EN EL RANGO DE AÑOS ESPECIFICADO.
-        </SmallContainer>
-        <SmallContainer>
-          RECUERDE QUE EL RANGO DE AÑOS DEBE SER CAPTURADO DE MENOR A EL MAYOR, AUNQUE EN EL REPORTE SE MOSTRARA EN ORDEN DESCENDENTE.
-        </SmallContainer>
-      </ParametersContainer>
+              {toggleTienda && (
+                <SelectTiendas
+                  value={parametrosMensuales.tienda}
+                  onChange={(e) => handleChange(e, setParametrosMensuales)}
+                />
+              )}
+              {togglePlaza && (
+                <SelectPlazas
+                  value={parametrosMensuales.plaza}
+                  onChange={(e) => handleChange(e, setParametrosMensuales)}
+                />
+              )}
+            </InputContainer>
+            <InputContainer>
+              <InputYear
+                value={parametrosMensuales.delAgno}
+                onChange={(e) => handleChange(e, setParametrosMensuales)}
+              />
+              <InputToYear
+                value={parametrosMensuales.alAgno}
+                onChange={(e) => handleChange(e, setParametrosMensuales)}
+              />
+            </InputContainer>
+            <InputContainer>
+              <Checkbox
+                className="mb-3"
+                labelText={checkboxLabels.VENTAS_IVA}
+                checked={parametrosMensuales.conIva ? true : false}
+                name={inputNames.CON_IVA}
+                onChange={(e) => handleChange(e, setParametrosMensuales)}
+              />
+              <Checkbox
+                className="mb-3"
+                labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={parametrosMensuales.conVentasEventos ? true : false}
+                name={inputNames.CON_VENTAS_EVENTOS}
+                onChange={(e) => handleChange(e, setParametrosMensuales)}
+              />
+              <Checkbox
+                className="mb-3"
+                labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={parametrosMensuales.conTiendasCerradas ? true : false}
+                name={inputNames.CON_TIENDAS_CERRADAS}
+                onChange={(e) => handleChange(e, setParametrosMensuales)}
+              />
+              <Checkbox
+                className="mb-3"
+                labelText={checkboxLabels.RESULTADO_PESOS}
+                checked={parametrosMensuales.resultadosPesos ? true : false}
+                name={inputNames.RESULTADOS_PESOS}
+                onChange={(e) => handleChange(e, setParametrosMensuales)}
+              />
+            </InputContainer>
+          </Parameters>
+        </ParametersContainer>
+      </section>
+      <section className="p-4 overflow-y-auto ">
+        <VentasTableContainer>
+          <VentasTable className="tfooter">
+            <TableHead>
+              <tr>
+                <th rowSpan={2}>Año</th>
+                <th colSpan={2}>ENE</th>
+                <th colSpan={2}>FEB</th>
+                <th colSpan={2}>MAR</th>
+                <th colSpan={2}>ABR</th>
+                <th colSpan={2}>MAY</th>
+                <th colSpan={2}>JUN</th>
+                <th colSpan={2}>JUL</th>
+                <th colSpan={2}>AGO</th>
+                <th colSpan={2}>SEP</th>
+                <th colSpan={2}>OCT</th>
+                <th colSpan={2}>NOV</th>
+                <th colSpan={2}>DIC</th>
+                <th rowSpan={2}>TOTAL ANUAL</th>
+              </tr>
+              <tr className="text-right">
+                <th>$</th>
+                <th>%</th>
+                <th>$</th>
+                <th>%</th>
+                <th>$</th>
+                <th>%</th>
+                <th>$</th>
+                <th>%</th>
+                <th>$</th>
+                <th>%</th>
+                <th>$</th>
+                <th>%</th>
+                <th>$</th>
+                <th>%</th>
+                <th>$</th>
+                <th>%</th>
+                <th>$</th>
+                <th>%</th>
+                <th>$</th>
+                <th>%</th>
+                <th>$</th>
+                <th>%</th>
+                <th>$</th>
+                <th>%</th>
+              </tr>
+            </TableHead>
+            <TableBody>
+              {
+                (()=>{
+                  if(Array.isArray(porcentajesMensuales)){
+                    const Items = porcentajesMensuales?.map((item, index) => (
+                      <TableRow
+                        key={item.agno}
+                        rowId={item.agno}
+                        className=" text-right text-xs"
+                      >
+                        <td>{item.agno}</td>
+                        <td>{numberWithCommas(item.enero)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeEnero}
+                        </td>
+                        <td>{numberWithCommas(item.febrero)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeFebrero}
+                        </td>
+                        <td>{numberWithCommas(item.marzo)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeMarzo}
+                        </td>
+                        <td>{numberWithCommas(item.abril)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeAbril}
+                        </td>
+                        <td>{numberWithCommas(item.mayo)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeMayo}
+                        </td>
+                        <td>{numberWithCommas(item.junio)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeJunio}
+                        </td>
+                        <td>{numberWithCommas(item.julio)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeJulio}
+                        </td>
+                        <td>{numberWithCommas(item.agosto)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeAgosto}
+                        </td>
+                        <td>{numberWithCommas(item.septiembre)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeSeptiembre}
+                        </td>
+                        <td>{numberWithCommas(item.octubre)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeOctubre}
+                        </td>
+                        <td>{numberWithCommas(item.noviembre)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeNoviembre}
+                        </td>
+                        <td>{numberWithCommas(item.diciembre)}</td>
+                        <td
+                          className={
+                            index !== porcentajesMensuales.length - 1
+                              ? "bg-gray-200"
+                              : ""
+                          }
+                        >
+                          {item.porcentajeDiciembre}
+                        </td>
+                        <td>{numberWithCommas(item.total)}</td>
+                      </TableRow>
+                    ));
+                    return Items;
+                  }
+                  return <></>
+                })()
+              }
+            </TableBody>
+          </VentasTable>
+        </VentasTableContainer>
+      </section>
+    </div>
+  );
+};
 
-      <VentasTableContainer title='PROPORCION DE VENTAS MENSUALES VS. VENTA ANUAL -iva no incluido'>
-        <VentasTable className='last-row-bg'>
-          <TableHead>
-            <tr>
-              <th rowSpan={2}>Año</th>
-              <th colSpan={2}>ENE</th>
-              <th colSpan={2}>FEB</th>
-              <th colSpan={2}>MAR</th>
-              <th colSpan={2}>ABR</th>
-              <th colSpan={2}>MAY</th>
-              <th colSpan={2}>JUN</th>
-              <th colSpan={2}>JUL</th>
-              <th colSpan={2}>AGO</th>
-              <th colSpan={2}>SEP</th>
-              <th colSpan={2}>OCT</th>
-              <th colSpan={2}>NOV</th>
-              <th colSpan={2}>DIC</th>
-              <th rowSpan={2}>TOTAL ANUAL</th>
-            </tr>
-            <tr>
-              <th>$</th>
-              <th>%</th>
-              <th>$</th>
-              <th>%</th>
-              <th>$</th>
-              <th>%</th>
-              <th>$</th>
-              <th>%</th>
-              <th>$</th>
-              <th>%</th>
-              <th>$</th>
-              <th>%</th>
-              <th>$</th>
-              <th>%</th>
-              <th>$</th>
-              <th>%</th>
-              <th>$</th>
-              <th>%</th>
-              <th>$</th>
-              <th>%</th>
-              <th>$</th>
-              <th>%</th>
-              <th>$</th>
-              <th>%</th>
-            </tr>
-          </TableHead>
-          <TableBody>
-            {
-              porcentajesMensuales.map(item => (
-                <tr className='text-center' key={item.fecha}>
-                  <td>{item.fecha}</td>
-                  <td>{item.totalEnero}</td>
-                  <td>{item.porcentajeEnero}</td>
-                  <td>{item.totalFebrero}</td>
-                  <td>{item.porcentajeFebrero}</td>
-                  <td>{item.totalMarzo}</td>
-                  <td>{item.porcentajeMarzo}</td>
-                  <td>{item.totalAbril}</td>
-                  <td>{item.porcentajeAbril}</td>
-                  <td>{item.totalMayo}</td>
-                  <td>{item.porcentajeMayo}</td>
-                  <td>{item.totalJunio}</td>
-                  <td>{item.porcentajeJunio}</td>
-                  <td>{item.totalJulio}</td>
-                  <td>{item.porcentajeJulio}</td>
-                  <td>{item.totalAgosto}</td>
-                  <td>{item.porcentajeAgosto}</td>
-                  <td>{item.totalSeptiembre}</td>
-                  <td>{item.porcentajeSeptiembre}</td>
-                  <td>{item.totalOctubre}</td>
-                  <td>{item.porcentajeOctubre}</td>
-                  <td>{item.totalNoviembre}</td>
-                  <td>{item.porcentajeNoviembre}</td>
-                  <td>{item.totalDiciembre}</td>
-                  <td>{item.porcentajeDiciembre}</td>
-                  <td>{item.total}</td>
-                </tr>
-              ))
-            }
-          </TableBody>
-        </VentasTable>
-      </VentasTableContainer>
-    </VentasLayout>
-  )
-}
-
-export default Mensuales
+const MensualesWithAuth = withAuth(Mensuales);
+MensualesWithAuth.getLayout = getVentasLayout;
+export default MensualesWithAuth;

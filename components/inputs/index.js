@@ -8,3 +8,11 @@ export { default as Checkbox } from './Checkbox';
 export { default as SelectTiendasGeneral } from './SelectTiendasGeneral';
 export { default as InputToYear } from './InputToYear';
 export { default as InputDate } from './InputDate';
+export { default as SelectToMonth} from './SelectToMonth';
+export { default as InputOfTheDate} from './InputOfTheDate';
+export { default as InputVsYear} from './InputVsYear';
+export { default as InputYearPresupuesto} from './InputYearPresupuesto';
+export { default as InputRangos } from './InputRangos';
+export {default as SelectTiendasCombo} from './SelectTiendasCombo';
+export {default as SelectCompromiso} from './SelectCompromiso';
+export {default as InputDateComparative} from './InputDateComparative'

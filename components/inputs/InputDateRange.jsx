@@ -1,17 +1,19 @@
-import { Flex } from '@components/containers';
-
-const InputDateRange = () => {
+const InputDateRange = ({ beginDate, endDate, onChange }) => {
   return (
-    <div className='flex flex-col pr-16'>
-      <Flex className='xl:justify-between mb-2'>
-        <label htmlFor="fechaInicio">Fecha inicial:</label>
-        <input type="date" name='fechaInicio' className='ml-3 outline-none border border-gray-300 rounded-md' />
-      </Flex>
-      <Flex className='xl:justify-between'>
-        <label htmlFor="fechaFinal">Fecha final:</label>
-        <input type="date" name='fechaFinal' className='ml-5 outline-none border border-gray-300 rounded-md' />
-      </Flex>
-    </div>
+    <label className='block text-sm border border-slate-400 p-2 rounded-md'>
+      <span className='block mb-1 font-semibold'>Rango de fecha</span>
+      <div className='flex justify-evenly items-center'>
+        <div className='flex-1' >
+          <span className='text-xs font-semibold'>Inicio</span>
+          <input name='fechaInicio' value={beginDate} onChange={onChange} type="date" className='w-full h-8 border rounded-md pl-2 border-slate-400 outline-none'/>
+        </div>
+        <span className='font-bold pl-1 pr-1 relative top-2'>:</span>
+        <div className='flex-1'>
+          <span className='text-xs font-semibold'>Fin</span>
+          <input name='fechaFin' value={endDate} onChange={onChange} type="date" className='w-full h-8 border rounded-md pl-2 border-slate-400 outline-none' />
+        </div>
+      </div>
+    </label>
   )
 }
 

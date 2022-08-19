@@ -1,10 +1,6 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": {
-      "@components/*": ["components/*"],
-      "@public/*": ["public/*"]
-    },
     "target": "ES6",
     "module": "ESNext"
   },

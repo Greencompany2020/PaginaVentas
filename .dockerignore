@@ -1,0 +1,10 @@
+.next
+node_modules
+.git
+.dockerignore
+README.md
+.vscode
+nginx
+.env
+certs
+bin

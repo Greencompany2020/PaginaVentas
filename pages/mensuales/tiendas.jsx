@@ -1,59 +1,149 @@
-import VentasLayout from '@components/layout/VentasLayout';
-import { InputContainer, SelectMonth, InputYear, SelectTiendasGeneral, Checkbox } from '@components/inputs';
-import { ParametersContainer, Parameters, SmallContainer } from '@components/containers';
-import { VentasTableContainer } from '@components/table';
-import BarChart from '@components/BarChart';
-import { checkboxLabels } from 'utils/data';
+import { useState, useEffect } from "react";
+import { getVentasLayout } from "../../components/layout/VentasLayout";
+import {
+  InputContainer,
+  SelectMonth,
+  InputToYear,
+  SelectTiendasGeneral,
+  Checkbox,
+} from "../../components/inputs";
+import {
+  ParametersContainer,
+  Parameters,
+} from "../../components/containers";
+import BarChart from "../../components/BarChart";
+import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
+import {
+  formatedDate,
+  formatLastDate,
+  getCurrentMonth,
+  getCurrentYear,
+  getMonthByNumber,
+} from "../../utils/dateFunctions";
+import { handleChange } from "../../utils/handlers";
+import { getMensualesTiendas } from "../../services/MensualesServices";
+import {
+  createSimpleDatasets,
+  validateYear,
+} from "../../utils/functions";
+import useGraphData from "../../hooks/useGraphData";
+import withAuth from "../../components/withAuth";
+import TitleReport from "../../components/TitleReport";
+import ComparativoVentas from "../../components/table/ComparativoVentas";
+import { useNotification } from "../../components/notifications/NotificationsProvider";
 
-const tiendas = () => {
+const Tiendas = (props) => {
+  const {config} = props;
+  const sendNotification = useNotification();
+  const { labels, setLabels, datasets, setDatasets } = useGraphData();
+  const [tiendasParametros, setTiendasParametros] = useState({
+    delMes: getCurrentMonth(),
+    alAgno: getCurrentYear(),
+    tiendas: 0,
+    conIva: config?.conIva || 0,
+    conVentasEventos:  config?.conVentasEventos || 0,
+    conTiendasCerradas:  config?.conTiendasCerradas || 0,
+    resultadosPesos:  config?.resultadosPesos || 1,
+  });
+
+  
+  useEffect(() => {
+    (async()=>{
+      if(validateYear(tiendasParametros.alAgno)){
+        try {
+          const response = await getMensualesTiendas(tiendasParametros)
+          createSimpleDatasets(response, setLabels, setDatasets);
+        } catch (error) {
+          sendNotification({
+            type:'ERROR',
+            message:response?.response?.data ?? MENSAJE_ERROR
+          });
+        }
+      }
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tiendasParametros, tiendasParametros.alAgno]);
+
   return (
-    <VentasLayout>
-      <ParametersContainer>
-        <Parameters>
-          <InputContainer>
-            <SelectMonth />
-            <InputYear />
-          </InputContainer>
-          <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.VENTAS_IVA} />
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS} />
-            <SelectTiendasGeneral />
-          </InputContainer>
-          <InputContainer>
-            <Checkbox className='mb-3' labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS} />
-            <Checkbox labelText={checkboxLabels.RESULTADO_PESOS} />
-          </InputContainer>
-        </Parameters>
-        <SmallContainer>
-          Esta grafica muestra las ventas de todas las tiendas del grupo del mes seleccionado en el año especificado.
-        </SmallContainer>
-      </ParametersContainer>
-
-      <VentasTableContainer title='Ventas del mes Enero del año 2020 al 2018'>
+    <div className=" flex flex-col h-full">
+      <TitleReport
+        title={`Ventas del mes de ${getMonthByNumber(
+          tiendasParametros.delMes
+        )} del año ${tiendasParametros.alAgno}`}
+      />
+      <section className="p-4 flex flex-row justify-between items-baseline">
+        <ParametersContainer>
+          <Parameters>
+            <InputContainer>
+              <SelectTiendasGeneral
+                value={tiendasParametros.tiendas}
+                onChange={(e) => handleChange(e, setTiendasParametros)}
+              />
+              <div className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <SelectMonth
+                    value={tiendasParametros.delMes}
+                    onChange={(e) => handleChange(e, setTiendasParametros)}
+                  />
+                </div>
+                <div className="flex-1">
+                  <InputToYear
+                    value={tiendasParametros.alAgno}
+                    onChange={(e) => handleChange(e, setTiendasParametros)}
+                  />
+                </div>
+              </div>
+              
+            </InputContainer>
+            <InputContainer>
+              <Checkbox
+                className="mb-3"
+                labelText={checkboxLabels.VENTAS_IVA}
+                checked={tiendasParametros.conIva ? true : false}
+                name={inputNames.CON_IVA}
+                onChange={(e) => handleChange(e, setTiendasParametros)}
+              />
+              <Checkbox
+                className="mb-3"
+                labelText={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+                checked={tiendasParametros.conVentasEventos ? true : false}
+                name={inputNames.CON_VENTAS_EVENTOS}
+                onChange={(e) => handleChange(e, setTiendasParametros)}
+              />
+              <Checkbox
+                className="mb-3"
+                labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
+                checked={tiendasParametros.conTiendasCerradas ? true : false}
+                name={inputNames.CON_TIENDAS_CERRADAS}
+                onChange={(e) => handleChange(e, setTiendasParametros)}
+              />
+              <Checkbox
+                labelText={checkboxLabels.RESULTADO_PESOS}
+                name={inputNames.RESULTADOS_PESOS}
+                onChange={(e) => handleChange(e, setTiendasParametros)}
+                checked={tiendasParametros.resultadosPesos ? true : false}
+              />
+            </InputContainer>
+          </Parameters>
+        </ParametersContainer>
+      </section>
+      <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 h-full overflow-y-auto ">
+        <ComparativoVentas>
         <BarChart
-          text='Ventas al 10-Ene-2022'
-          data={{
-            labels: [
-              'M1', 'M2', 'M3', 'M4', 'M5', 'M5', 'M6', 'M9', 'M10', 'IS-OUTLET',
-              'FORUM', 'PV2', 'PV4', 'PV6', 'ACA1', 'ACA2', 'ACA5', 'ISM1', 'CAB1',
-              'CAB3', 'PYA1', 'PYA4'
-            ],
-            datasets: [
-              {
-                id: 1,
-                label: '',
-                data: [
-                  883, 1240, 777, 417, 263, 221, 497, 781, 645, 177, 646, 716,
-                  298, 370, 977, 2871, 697, 349, 375, 59, 430, 451
-                ],
-                backgroundColor: '#155e75'
-              }
-            ]
-          }}
-        />
-      </VentasTableContainer>
-    </VentasLayout>
-  )
-}
+            text={`Ventas al ${formatLastDate(
+              formatedDate(tiendasParametros.alAgno, tiendasParametros.delMes)
+            )}`}
+            data={{
+              labels: labels,
+              datasets: datasets,
+            }}
+          />
+        </ComparativoVentas>
+      </section>
+    </div>
+  );
+};
 
-export default tiendas
+const TiendasWithAuth = withAuth(Tiendas);
+TiendasWithAuth.getLayout = getVentasLayout;
+export default TiendasWithAuth;
