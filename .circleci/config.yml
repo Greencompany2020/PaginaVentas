@@ -3,7 +3,7 @@ version: 2.1
 parameters:
   deploy-update:
     type: string
-    default: deploy
+    default: update
   image-name:
     type: string
     default: ventas
@@ -29,8 +29,7 @@ jobs:
       - run:
           name: Build Docker Image
           command: |
-            docker build --tag "${DOCKERHUB_USERNAME}/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1}" 
-            --build-arg API_CONFIGURADOR_URL=${API_CONFIGURADOR_URL} --build-arg API_VENTAS_URL=${API_VENTAS_URL} .
+            docker build --tag ${DOCKERHUB_USERNAME}/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1} --build-arg API_CONFIGURADOR_URL=${API_CONFIGURADOR_URL} --build-arg API_VENTAS_URL=${API_VENTAS_URL} .
       - run:
           name: Archive Docker Image
           command: docker save --output image.tar "${DOCKERHUB_USERNAME}/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1}"
@@ -69,7 +68,8 @@ jobs:
                   --replicas 2 \
                   --publish ${PORT}:3000 \
                   --update-order start-first \
-                  --rollback-order start-first"
+                  --rollback-order start-first \
+                  ${DOCKERHUB_USERNAME}/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1}"
       - when:
           condition:
             equal: [update, << pipeline.parameters.deploy-update >>]
@@ -77,7 +77,7 @@ jobs:
             - run: 
                 name: Update Deployment
                 command: |
-                  ssh $USER_USER@$SSH_HOST_FRONTEND "docker service update \
+                  ssh $SSH_USER@$SSH_HOST_FRONTEND "docker service update \
                   --image ${DOCKERHUB_USERNAME}/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1} \
                   << pipeline.parameters.service-name >>"
 
@@ -86,16 +86,13 @@ workflows:
   build-push-deploy:
     jobs:
       - build:
-          context: greencompany
           filters:
             branches:
               only: Desarrollo_productivo
       - push:
-          context: greencompany
           requires:
             - build
       - deploy:
-          context: greencompany
           requires:
             - push
 

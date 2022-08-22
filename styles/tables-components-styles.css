@@ -41,7 +41,7 @@
 
 /***************************************************************************************************************/
 /*HEADER TABLE STYLE*/
-.table-report{@apply w-[200rem] xl:w-full table-auto xl:table-fixed text-xs text-right}
+.table-report{@apply w-[100rem] xl:w-full table-auto xl:table-fixed text-xs text-right}
 .table-report thead{@apply text-white}
 .table-report caption{@apply  font-bold uppercase mb-1}
 .table-report thead tr th {@apply bg-black-shape border}
@@ -82,7 +82,7 @@
 
 /***************************************************************************************************************/
 /*HEADER TABLE STYLE*/
-.table-report-footer {@apply w-full table-fixed text-xs text-right sm:w-[calc(100vh_+_40rem)] sm:table xl:w-full }
+.table-report-footer{@apply w-[100rem] xl:w-full table-auto xl:table-fixed text-xs text-right}
 .table-report-footer thead{@apply text-white}
 .table-report-footer thead tr th {@apply bg-black-shape border}
 .table-report-footer thead tr th:last-child {@apply bg-black-shape border-r-0}

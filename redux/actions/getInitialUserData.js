@@ -27,6 +27,7 @@ const getInitialUserData = () => async dispatch => {
         }))
         dispatch(setIsFetching(true));
         dispatch(setAuth(false));
+        throw error;
     }
 }
 
