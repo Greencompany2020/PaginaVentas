@@ -77,7 +77,7 @@ jobs:
             - run: 
                 name: Update Deployment
                 command: |
-                  ssh $USER_USER@$SSH_HOST_FRONTEND "docker service update \
+                  ssh $SSH_USER@$SSH_HOST_FRONTEND "docker service update \
                   --image ${DOCKERHUB_USERNAME}/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1} \
                   << pipeline.parameters.service-name >>"
 
