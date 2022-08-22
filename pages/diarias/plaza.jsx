@@ -129,7 +129,7 @@ const Plaza = (props) => {
         </ParametersContainer>
       </section>
 
-      <section className="p-4 overflow-y-auto ">
+      <section className="p-4 overflow-auto ">
         <div className=" overflow-y-auto">
           <table className="table-report-footer" onClick={selectRow}>
             <thead className=" text-white text-center text-xs  rounded-md">
