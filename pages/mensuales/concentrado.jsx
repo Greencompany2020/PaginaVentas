@@ -57,7 +57,7 @@ const Concentrado = (props) => {
 
   return (
     <div className=" flex flex-col h-full">
-      <TitleReport title="Ventas Mensuales de tiendas en el año 2022" />
+      <TitleReport title={`Ventas Mensuales de tiendas en el año  ${concentradoParametros.delAgno}`} />
       <section className="p-4 flex flex-row justify-between items-baseline">
         <ParametersContainer>
           <Parameters>

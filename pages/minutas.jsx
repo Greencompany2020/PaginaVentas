@@ -17,6 +17,7 @@ import Menu from '../public/icons/dot-menu.svg';
 import Close from '../public/icons/close.svg';
 import { isError } from '../utils/functions';
 import withAuth from '../components/withAuth';
+import { getVentasLayout } from '../components/layout/VentasLayout';
 
 const Minutas = () => {
   const [carpetasArchivos, setcarpetasArchivos] = useState({
@@ -255,12 +256,11 @@ const Minutas = () => {
 
   return (
     <>
-      <Navbar />
       <Flex className="w-full h-full justify-center items-center py-10 relative">
-        <Flex className="bg-gray-100 p-1 w-full lg:w-3/5 h-full rounded-lg flex-col">
+        <Flex className="bg-gray-100 p-1 w-full lg:w-3/5 h-full rounded-lg flex-col overflow-hidden">
           <Flex className="justify-between p-4">
             <h1 className="font-bold text-2xl">Minutas GreenCompany</h1>
-            <Image src={Chat} alt='' className="w-9 h-9" height={36} width={36}/>
+            <Image src={Chat} alt='' className="w-9 h-9" height={36} width={36} />
           </Flex>
           <div className="h-5/6 w-full bg-white p-2">
             <Flex className="justify-center sm:justify-end mb-2 flex-wrap">
@@ -271,7 +271,7 @@ const Minutas = () => {
               </MinutasButton>
               {/* Botón Crear Carpeta */}
               <MinutasButton onClick={handleCarpetaButton}>
-                <Image src={Chat} alt='Dialog' height={28} width={28}/>
+                <Image src={Chat} alt='Dialog' height={28} width={28} />
                 <span className="text-white mr-2">+ Carpeta</span>
               </MinutasButton>
               {/* Botón Crear Minuta */}
@@ -284,9 +284,9 @@ const Minutas = () => {
                 <span className="text-white mr-2">Actualizar</span>
               </MinutasButton>
               {/* <MinutasButton>
-                <Image src={Menu} alt='' height={28} width={28} />
-                <span className="text-white mr-2">Actualizar</span>
-              </MinutasButton> */}
+                  <Image src={Menu} alt='' height={28} width={28} />
+                  <span className="text-white mr-2">Actualizar</span>
+                </MinutasButton> */}
             </Flex>
             <div className="bg-gray-100 w-full p-1 rounded-sm">
               <p><span className="font-bold">Directorio actual:</span> {directorioActual}</p>
@@ -317,14 +317,14 @@ const Minutas = () => {
                   minutas?.map(item => (
                     <tr className="text-center" key={item.name}>
                       <td className="w-10 p-2 border-2 text-yellow-500">
-                        {item.typeItem === "file" ? <Image src={Question} alt='Unknown' className="m-auto object-contain" height={28} width={28} /> : <Image src={Folder} alt='Dir' className="m-auto object-contain" height={28} width={28}/>}
+                        {item.typeItem === "file" ? <Image src={Question} alt='Unknown' className="m-auto object-contain" height={28} width={28} /> : <Image src={Folder} alt='Dir' className="m-auto object-contain" height={28} width={28} />}
                       </td>
                       <td className="border-2 text-left pl-1">
                         {
-                          item.typeItem === "directory" ? 
-                          (<p className="hover:underline hover:cursor-pointer hover:text-blue-600 w-3" onClick={() => { handleDirectorio(item.path) }}>{item.name}</p>)
-                          : 
-                          (<Link href={item.path}><a target="_blank">{item.name}</a></Link>)
+                          item.typeItem === "directory" ?
+                            (<p className="hover:underline hover:cursor-pointer hover:text-blue-600 w-3" onClick={() => { handleDirectorio(item.path) }}>{item.name}</p>)
+                            :
+                            (<Link href={item.path}><a target="_blank">{item.name}</a></Link>)
                         }
                       </td>
                       <td className="border-2">
@@ -334,10 +334,10 @@ const Minutas = () => {
                         ---
                       </td>
                       <td className="border-2 text-blue-600">
-                        <Image src={Trash} alt='Trash' 
-                          className="m-auto object-contain cursor-pointer" 
-                          height={28} 
-                          width={28} 
+                        <Image src={Trash} alt='Trash'
+                          className="m-auto object-contain cursor-pointer"
+                          height={28}
+                          width={28}
                           onClick={() => { handleDelete(item.filePath ?? item.path, item.typeItem) }}
                         />
                       </td>
@@ -358,24 +358,24 @@ const Minutas = () => {
             <form className="w-full flex justify-evenly items-center" onSubmit={submitHandler}>
               <Flex className="flex-col flex-grow mr-2">
                 <label htmlFor="carpeta" className="text-white">Nueva {tipo === "carpeta" ? "Carpeta" : "Minuta"}</label>
-                <input 
+                <input
                   type="text"
                   name="fileDir"
-                  className={`rounded-md outline-none h-8 ${ tipo === "minuta" && "hidden" }`}
+                  className={`rounded-md outline-none h-8 ${tipo === "minuta" && "hidden"}`}
                   value={fileDir}
                   onChange={(e) => { setFileDir(e.target.value) }}
                 />
                 {
                   tipo === "minuta" && (<input type="file" name="file" multiple className="rounded-md outline-none h-8 text-white" ref={fileInputRef} />)
                 }
-                
+
               </Flex>
               <button className="w-28 self-end text-white rounded-lg bg-sky-500 hover:bg-sky-400 h-8 transition-all ease-in-out duration-200">
                 Crear
               </button>
             </form>
             <span className="cursor-pointer ml-5" onClick={handleModal}>
-              <Image src={Close} alt="close" height={25} width={25}/>
+              <Image src={Close} alt="close" height={25} width={25} />
             </span>
           </div>
         </div>
@@ -388,4 +388,6 @@ const Minutas = () => {
   )
 }
 
-export default withAuth(Minutas);
+const MinutasWithAuth = withAuth(Minutas);
+MinutasWithAuth.getLayout = getVentasLayout;
+export default MinutasWithAuth;
