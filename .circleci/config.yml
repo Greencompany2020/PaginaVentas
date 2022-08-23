@@ -75,7 +75,7 @@ jobs:
             equal: [update, << pipeline.parameters.deploy-update >>]
           steps:
             - run: 
-                name: Update Deployment
+                name: Deploy (Update) Over SSH
                 command: |
                   ssh $SSH_USER@$SSH_HOST_FRONTEND "docker service update \
                   --image ${DOCKERHUB_USERNAME}/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1} \
