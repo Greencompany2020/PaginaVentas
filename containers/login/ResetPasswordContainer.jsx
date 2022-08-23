@@ -33,7 +33,7 @@ export default function ResetPasswordContainer(props) {
         } catch (error) {
           sendNotification({
             type:'ERROR',
-            message:error.message
+            message:'Correo no registrado'
           })
         }
         setLoading();

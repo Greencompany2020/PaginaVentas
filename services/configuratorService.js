@@ -125,10 +125,11 @@ export default function configuratorService(){
   }
 
   const createAccess = async (body) => {
+    const newBody = {...body, idProyect:1}
     try {
       const { data } = await  configuradorProvider.post(
         "/accesos/create",
-        body
+        newBody
       );
       return data;
     } catch (error) {

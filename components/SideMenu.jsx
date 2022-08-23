@@ -9,7 +9,9 @@ import { isWindows, isAndroid, isChrome} from "react-device-detect";
 import { useNotification } from "./notifications/NotificationsProvider";
 import { useRouter } from "next/router";
 import { useDispatch } from "react-redux";
-import userLogout from "../redux/actions/userLogout";
+import removeInitialData from "../redux/actions/removeInitialData";
+import authService from "../services/authService";
+import jsCookie from 'js-cookie'
 
 const SideMenu = () => {
   const router = useRouter();
@@ -19,11 +21,14 @@ const SideMenu = () => {
   const [visible, toggleVisible] = useToggle(isFirst);
   const [showChevron, setShowChevron] = useState(false);
   const sendNotification = useNotification();
-
+  const service = authService();
+  
 
   const handleLogout = async() => {
     try {
-        dispatch(userLogout());
+        await service.logout();
+        jsCookie.remove('accessToken');
+        dispatch(removeInitialData());
         router.push('/');
     } catch (error) {
       sendNotification({

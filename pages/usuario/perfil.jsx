@@ -27,15 +27,17 @@ const Perfil = () => {
 
   const handleUploadImage = async (files) =>{
     setVisible();
+    setLoading();
     try {
       const response =  await service.updateUserAvatar(files, progress.handle);
       dispatch(setUser(response));
     } catch (error) {
       sendNotification({
         type:'ERROR',
-        message:error.message
+        message:'Error al subir foto de perfil'
       });
     }
+    setLoading();
     return true
   }
 

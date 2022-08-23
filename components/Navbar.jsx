@@ -13,8 +13,10 @@ import Avatar from "./commons/Avatar";
 import { useNotification } from "./notifications/NotificationsProvider";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import userLogout from "../redux/actions/userLogout";
 import { useRouter } from "next/router";
+import jsCookie from 'js-cookie';
+import removeInitialData from "../redux/actions/removeInitialData";
+import authService from "../services/authService";
 
 const Navbar = () => {
   const {user} = useSelector(state => state);
@@ -23,6 +25,7 @@ const Navbar = () => {
   const userMenuRef = useRef(null);
   const sendNotification = useNotification();
   const [showDialog, setShowDialog] = useState(false);
+  const service = authService();
   const handleToggle = () => setShowDialog(!showDialog);
   
 
@@ -34,7 +37,9 @@ const Navbar = () => {
 
   const handleLogout = async() => {
     try {
-        dispatch(userLogout());
+        await service.logout();
+        jsCookie.remove('accessToken');
+        dispatch(removeInitialData());
         router.push('/')
     } catch (error) {
       sendNotification({

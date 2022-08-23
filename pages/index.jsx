@@ -1,8 +1,6 @@
-import Head from "next/head";
 import Image from "next/image";
 import logo from "../public/images/brand.svg";
 import { useState } from "react";
-import witAuth from "../components/withAuth";
 import LoaderComponentBas from "../components/LoaderComponentBas";
 import LoginContainer from "../containers/login/LoginContainer";
 import ResetPasswordContainer from "../containers/login/ResetPasswordContainer";
@@ -33,4 +31,4 @@ export const Home = () => {
   );
 };
 
-export default witAuth(Home);
+export default Home;
