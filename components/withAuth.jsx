@@ -33,6 +33,7 @@ export default function withAuth(Component){
       }
     }
 
+    console.log(newParams);
     return newParams;
   }
 
@@ -90,7 +91,7 @@ export default function withAuth(Component){
 
     return isLoading ?
     <Loader/> : 
-    <Component config={{config}}/>
+    <Component config={config}/>
   }
 
   AuthComponent.getInitialProps = async ({req, res, pathname}) => {

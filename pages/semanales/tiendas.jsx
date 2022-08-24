@@ -30,6 +30,7 @@ const Tiendas = (props) => {
   const {config} = props;
   const sendNotification = useNotification();
 
+
   //Estados de los reportes
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [reportDate, setReportDate] = useState({beginDate, endDate, dateRange:spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)});
@@ -49,7 +50,7 @@ const Tiendas = (props) => {
     tiendas: 0,
     conIva: parseNumberToBoolean(config?.conIva || 0),
     conVentasEventos:parseNumberToBoolean(config?.conVentasEventos || 0),
-    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
+    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 1),
     incremento: config?.cbIncremento || 'compromiso',
     mostrarTiendas: config?.cbMostrarTiendas || 'activas',
     agnosComparar: spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1),

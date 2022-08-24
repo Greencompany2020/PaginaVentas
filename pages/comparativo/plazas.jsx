@@ -46,7 +46,7 @@ const Plazas = (props) => {
     fecha: getPrevDate(1),
     conIva: parseNumberToBoolean(config?.conIva || 0),
     conVentasEventos: parseNumberToBoolean(config?.conVentasEventos || 0),
-    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
+    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 1),
     tipoCambioTiendas: parseNumberToBoolean(config?.tipoCambioTiendas || 0),
     agnosComparar: spliteArrDate(config?.agnosComparativos, config?.cbAgnosComparar || 1),
     cbAgnosComparar: config?.cbAgnosComparar || 1, 

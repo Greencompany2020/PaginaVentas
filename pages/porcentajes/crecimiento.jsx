@@ -46,7 +46,7 @@ const Crecimiento = (props) => {
     conVentasEventos: 0,
     conTiendasCerradas: 0,
     sinTiendasSuspendidas: 1,
-    resultadosPesos: 0,
+    resultadosPesos: 1,
   });
 
   const createDateRange = useCallback(() => {
@@ -65,7 +65,7 @@ const Crecimiento = (props) => {
       conVentasEventos: config?.conVentasEventos || 0,
       conTiendasCerradas: config?.conTiendasCerradas || 0,
       sinTiendasSuspendidas: config?.sinTiendasSuspendidas|| 0,
-      resultadosPesos: config?.resultadosPesos || 0,
+      resultadosPesos: config?.resultadosPesos || 1,
     }))
   },[config])
 
