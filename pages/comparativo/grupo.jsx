@@ -66,7 +66,7 @@ function Grupo(props) {
     tipoCambioTiendas: parseNumberToBoolean(config?.tipoCambioTiendas || 0),
     agnosComparar: spliteArrDate(config?.agnosComparativos,config?.agnosComparar || 1),
     cbAgnosComparar: config?.cbAgnosComparar || 1,
-    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
+    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 1),
     mostrarTiendas: 'activas'
   }
   Object.seal(parameters);

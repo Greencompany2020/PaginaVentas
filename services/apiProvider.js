@@ -52,10 +52,10 @@ configuradorProvider.interceptors.request.use(
             isRefreshing = true;
             refreshToken()
                 .then(({ data }) => {
-                    req.headers['Authorization'] = `Bearer ${data.accessToken}`;
                     jsCookie.remove('accessToken');
                     jsCookie.set('accessToken', data.accessToken)
-                    isRefreshing = false;
+                    req.headers['Authorization'] = `Bearer ${jsCookie.get('accessToken') || ''}`;
+                    isRefreshing = false;   
                 })
                 .catch(({ response }) => {
                     isRefreshing = false;
@@ -89,11 +89,10 @@ reporteProvider.interceptors.request.use(
             isRefreshing = true;
             refreshToken()
                 .then(({ data }) => {
-                    req.headers['Authorization'] = `Bearer ${data}`;
-                    req.headers['Authorization'] = `Bearer ${data.accessToken}`;
                     jsCookie.remove('accessToken');
                     jsCookie.set('accessToken', data.accessToken)
-                    isRefreshing = false;
+                    req.headers['Authorization'] = `Bearer ${jsCookie.get('accessToken') || ''}`;
+                    isRefreshing = false;   
                 })
                 .catch(({ response }) => {
                     isRefreshing = false;

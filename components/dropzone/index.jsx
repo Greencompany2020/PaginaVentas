@@ -30,8 +30,8 @@ export default function Dropzone(props) {
       new Compressor(file,{
         quality: 0.6,
         mimeType:'jpg',
-        convertSize:1000000,
-        convertTypes:['image/webp', 'image/png', 'image/jpg',],
+        convertSize:0,
+        convertTypes:['image/webp', 'image/png', 'image/jpg', 'image/jpge'],
 
         success(result){
           const formData = new FormData();
@@ -72,7 +72,7 @@ export default function Dropzone(props) {
     isDragAccept, 
     isDragReject,
     isFocused, 
-  } = useDropzone({ onDrop,accept: {'image/*': []}, maxFiles:allowFiles });
+  } = useDropzone({ onDrop,accept: {'image/jpeg': [''], 'image/png':[''], 'image/jpg':['']}, maxFiles:allowFiles });
 
   const style = useMemo(() => ({
     ...baseStyle,

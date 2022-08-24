@@ -246,7 +246,7 @@ export default function ParameterForm({submit, savedParameters, onlySelect = tru
 
                 </fieldset>
                 {
-                    ((onlySelect) && includedParameters?.[inputNames.VISTA_MOBILE]) &&
+                    ((!onlySelect) && includedParameters?.[inputNames.VISTA_MOBILE]) &&
                     <fieldset className='mt-4 flex justify-start space-y-1'>
                         <legend className='font-bold text-sm'>Visualizacion</legend>
                         <ViewOptions 

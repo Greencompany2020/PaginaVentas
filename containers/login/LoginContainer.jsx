@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import { useNotification } from '../../components/notifications/NotificationsProvider';
 import {LoginInput, ResetViewInput} from '../../components/FormInputs';
 import { useDispatch } from 'react-redux';
-import getInitialUserData from '../../redux/actions/getInitialUserData';
+import setInitialData from '../../redux/actions/setInitialData';
 
 export default function LoginContainer(props) {
     const {setLoading} =props
@@ -31,7 +31,8 @@ export default function LoginContainer(props) {
       const response = await service.login(values);
       const { accessToken } = response;
       jsCookie.set('accessToken', accessToken);
-      dispatch(getInitialUserData());
+      const data = await service.getUserData();
+      dispatch(setInitialData(data));
       router.push('/dashboard');
     } catch (error) {
       sendNotification({

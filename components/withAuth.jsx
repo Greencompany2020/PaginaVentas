@@ -1,122 +1,122 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { urlExceptions } from "../utils/constants";
 import authService from "../services/authService";
-import jsCookie from 'js-cookie';
-import { useSelector } from "react-redux";
-import Loader from './Loader'
+import {useSelector, useDispatch} from 'react-redux';
+import setInitialData from "../redux/actions/setInitialData";
+import {urlExceptions} from '../utils/constants';
+import { useNotification } from "./notifications/NotificationsProvider";
+import Loader from '../components/Loader';
 
-const witAuth = (Component) => {
+export default function withAuth(Component){
 
-  const AuthorizationComponent = (props) => {
-    const service = authService();
+  function parseParams(params){
+    const newParams = {};
+    if(params){
+      for(let item in params){
+        let value = null;
+        switch( typeof params[item]){
+
+          case 'string':
+            if(params[item] == 'Y' || params[item] == 'N'){
+              value = (params[item] == 'Y') ? 1 : 0;
+            }
+            else {
+              value = null;
+            }
+          break;
+
+          case 'number':
+            value = params[item] || null;
+          break;
+        }
+         Object.assign(newParams, {[item]: value});
+      }
+    }
+
+    console.log(newParams);
+    return newParams;
+  }
+
+
+  function AuthComponent({pathname, token}){
     const router = useRouter();
-    const {asPath} = router;
-    const token = jsCookie.get('accessToken');
+    const service = authService();
+    const {isAuth} = useSelector(state => state);
+    const dispatch = useDispatch();
+    const [isLoading, setIsLoading] = useState(true);
     const [config, setConfig] = useState({});
-    const [loading, setLoading] = useState(true);
-    const {isAuth, system:{isFetching}} = useSelector(state => state);
+    const sendNotification = useNotification();
 
-    const parseParams = (userParams) => {
-      const configuration = {}
-      if (userParams) {
-        for (const item in userParams) {
-          let value = null;
-          switch (typeof (userParams[item])) {
-            case 'string':
-              if (userParams[item] == 'Y' || userParams[item] == 'N') {
-                value = (userParams[item] == 'Y') ? 1 : 0;
-              } else {
-                value = userParams[item] || null
-              }
-              break;
-
-            case 'number':
-              value = userParams[item] || null;
-              break;
-          }
-          Object.assign(configuration, { [item]: value });
+    const initialData = useCallback(async () => {
+      if(token && !isAuth){
+        try {
+          const response = await service.getUserData();
+          dispatch(setInitialData(response));
+        } catch (error) {
+          sendNotification({
+            type: 'ERROR',
+            message: 'Error al consultar los datos del usuario'
+          });
         }
       }
-      return configuration;
-    }
-    
+    }, [])
+
+
+    const evaluatePathname = useCallback(async () => {
+      const pathException = urlExceptions.find(url => url.pathname == pathname);
+      if(!pathException){
+        try {
+          const {access, config} = await service.getUserAuthorization(pathname);
+          if(!access) router.replace('/unauthorized');
+          setConfig(parseParams(config));
+        } catch (error) {
+          sendNotification({
+            type: 'ERROR',
+            message: 'Error al consultar acceso de usuario'
+          });
+        }
+        
+      }
+    }, [pathname]);
+
+
     useEffect(() => {
       (async () => {
-        const pathExeption = urlExceptions.find(url => url.pathname == asPath);
-
-        if (!pathExeption) {
-          if(isAuth && !isFetching){
-            service.getUserAuthorization(asPath)
-            .then(({access, config}) =>{
-              if(access){
-                setConfig(parseParams(config));
-                setLoading(false);
-              }
-              else{
-                router.replace('/unauthorized')
-              }
-            })
-            .catch(error => {
-              console.error(error);
-            })
-          }
-        }
-
-        else if (pathExeption && pathExeption.tokenRequired) {
-          if(isAuth && !isFetching){
-             setLoading(false);
-          }
-        }
-
-        else {
-          setLoading(false);
-        }
-
-        
+        await initialData();
+        await evaluatePathname();
+        setIsLoading(false);
       })()
-    }, [isAuth])
+    }, [])
 
 
-    return loading ? <Loader/> : <Component config={config}/>
-  };
+    return isLoading ?
+    <Loader/> : 
+    <Component config={config}/>
+  }
 
-  
-
-   /**
-   * Este procedimiento solo se ejecuta desde el servidor
-   * @param {*} req
-   * @param {*} res
-   * @returns
-   */
-
-   
-  AuthorizationComponent.getInitialProps = async ({ req, res }) => {
+  AuthComponent.getInitialProps = async ({req, res, pathname}) => {
     let token = null;
-    let path = null
-    if (req && res) {
-      const { url } = req;
-      const { accessToken } = req.cookies;
+    if(req && res){
+
+      const {accessToken} = req.cookies;
       token = accessToken;
-      path = url
-      if (url !== "/" && !accessToken) {
-        res.writeHead(302, {
-          location: "/",
+      if(!accessToken && pathname !== '/'){
+        res.writeHead(302,{
+          location:'/'
         });
         res.end();
-      } else if (url == "/" && accessToken) {
-        res.writeHead(302, {
-          location: "/dashboard",
+      }
+      
+      else if(accessToken && pathname == '/'){
+        res.writeHead(302,{
+          location:'/dashboard'
         });
         res.end();
       }
     }
-  
-    return {token, path};
-  };
 
-  return AuthorizationComponent;
-};
+    return{pathname, token}
+  }
 
-export default witAuth;
-
+  return AuthComponent;
+}

@@ -27,15 +27,17 @@ const Perfil = () => {
 
   const handleUploadImage = async (files) =>{
     setVisible();
+    setLoading();
     try {
       const response =  await service.updateUserAvatar(files, progress.handle);
       dispatch(setUser(response));
     } catch (error) {
       sendNotification({
         type:'ERROR',
-        message:error.message
+        message:'Error al subir foto de perfil'
       });
     }
+    setLoading();
     return true
   }
 
@@ -166,6 +168,11 @@ const Perfil = () => {
 
       {/*Modals*/}
       <FormModal active={visible} handleToggle={setVisible} name="Subir imagenes">
+        <div className='pl-4'>
+          <p className=''>
+            Formatos aceptados: <span className='font-semibold'>jpg, jpeg y png</span>
+          </p>
+        </div>
         <div className=" p-4 h-[22rem] md:h-[22rem] md:w-[42rem]">
           <Dropzone uploadFunction={handleUploadImage} label='Arrastra la imagen o presiona aqui'/>
         </div>

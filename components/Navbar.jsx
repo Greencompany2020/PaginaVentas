@@ -13,8 +13,10 @@ import Avatar from "./commons/Avatar";
 import { useNotification } from "./notifications/NotificationsProvider";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
-import userLogout from "../redux/actions/userLogout";
 import { useRouter } from "next/router";
+import jsCookie from 'js-cookie';
+import removeInitialData from "../redux/actions/removeInitialData";
+import authService from "../services/authService";
 
 const Navbar = () => {
   const {user} = useSelector(state => state);
@@ -23,6 +25,7 @@ const Navbar = () => {
   const userMenuRef = useRef(null);
   const sendNotification = useNotification();
   const [showDialog, setShowDialog] = useState(false);
+  const service = authService();
   const handleToggle = () => setShowDialog(!showDialog);
   
 
@@ -34,7 +37,9 @@ const Navbar = () => {
 
   const handleLogout = async() => {
     try {
-        dispatch(userLogout());
+        await service.logout();
+        jsCookie.remove('accessToken');
+        dispatch(removeInitialData());
         router.push('/')
     } catch (error) {
       sendNotification({
@@ -79,7 +84,7 @@ const Navbar = () => {
       {/* Menú Opciones Usuario */}
       <div
         ref={userMenuRef}
-        className={`absolute w-[280px] h-[190px] z-50 right-0 transform bg-black-light ${
+        className={`absolute w-[280px] h-[150px] z-50 right-0 transform bg-black-light ${
           !showDialog && "translate-x-full"
         }  transition duration-200 ease-in-out shadow-md`}
       >
@@ -106,22 +111,6 @@ const Navbar = () => {
                   className="invert"
                 />
                 <p className="text-white pl-1">Mi Perfil</p>
-              </a>
-            </Link>
-
-            <Link href="/configuracion/usuarios">
-              <a 
-                className="hover:bg-sky-400 m-1 flex  p-1 rounded-sm transition ease-in-out duration-200"
-                onClick={handleToggle}
-              >
-                <Image
-                  src={Config}
-                  height={20}
-                  width={25}
-                  alt="Cerrar"
-                  className="invert"
-                />
-                <p className="text-white pl-1">Configuraciones</p>
               </a>
             </Link>
 
