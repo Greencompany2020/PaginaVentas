@@ -32,6 +32,8 @@ export default function withAuth(Component){
          Object.assign(newParams, {[item]: value});
       }
     }
+
+    return newParams;
   }
 
 
