@@ -42,8 +42,8 @@ const Tienda = (props) => {
     delAgno: new Date(Date.now()).getFullYear(),
     tienda: getInitialTienda(shops ),
     conIva: parseNumberToBoolean(config?.conIva || 0),
-    semanaSanta: parseNumberToBoolean(config?.semanaSanta || 0),
-    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0)
+    semanaSanta: parseNumberToBoolean(config?.semanaSanta || 1),
+    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 1)
   }
 
   const handleSubmit = async params => {
