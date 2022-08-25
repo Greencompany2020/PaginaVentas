@@ -44,7 +44,7 @@ const Simple = (props) => {
     } catch (error) {
       sendNotification({
         type:'ERROR',
-        message:'Error al consultar datos'
+        message:error.response.data.message || error.message
       });
     }
   }
@@ -100,8 +100,8 @@ const Simple = (props) => {
               {
                 (dataReport && dataReport.length > 0) && dataReport.map(item => (
                   <tr key={v4()}>
-                    <td  className="priority-cell">{item.dia}</td>
-                    <td>{item.dia}</td>
+                    <td  className="priority-cell">{item.diaActual}</td>
+                    <td>{item.diaAnterior}</td>
                     <td  className="priority-cell">{numberWithCommas(item.ventaActual)}</td>
                     <td>{numberWithCommas(item.ventaAnterior)}</td>
                     <td  className="priority-cell">{numberWithCommas(item.acumulado)}</td>

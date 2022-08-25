@@ -6,7 +6,7 @@ import {
 } from "../../components/containers";
 import { checkboxLabels } from "../../utils/data";
 import { getDiariasPlazas } from "../../services/DiariasServices";
-import { numberWithCommas, selectRow, isNegative, numberAbs } from "../../utils/resultsFormated";
+import { numberWithCommas, selectRow, isNegative, numberAbs, numberAbsComma } from "../../utils/resultsFormated";
 import { getInitialPlaza, getPlazaName, parseNumberToBoolean, parseParams, } from "../../utils/functions";
 import { inputNames } from "../../utils/data/checkboxLabels";
 import withAuth from "../../components/withAuth";
@@ -59,7 +59,7 @@ const Plaza = (props) => {
     } catch (error) {
       sendNotification({
         type:'ERROR',
-        message:'Error al consultar datos'
+        message:error.response.data.message || error.message
       })
     }
   }
@@ -172,7 +172,7 @@ const Plaza = (props) => {
                     <td className="priority-cell">{numberWithCommas(item.acumMensualActual)}</td>
                     <td>{numberWithCommas(item.acumMensualAnterior)}</td>
                     <td>{numberWithCommas(item.compromisoAcum)}</td>
-                    <td data-porcent-format={isNegative(item.diferencia)}>{numberWithCommas(numberAbs(item.diferencia))}</td>
+                    <td data-porcent-format={isNegative(item.diferencia)}>{numberAbsComma(item.diferencia)}</td>
                     <td data-porcent-format={isNegative(item.crecimientoMensual)}>{numberAbs(item.crecimientoMensual)}</td>
                     <td className="priority-cell">{numberWithCommas(item.acumAnualActual)}</td>
                     <td>{numberWithCommas(item.acumAnualAnterior)}</td>

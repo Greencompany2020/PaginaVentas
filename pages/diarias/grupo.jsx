@@ -3,7 +3,7 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {Parameters,ParametersContainer,} from "../../components/containers";
 import { checkboxLabels} from "../../utils/data";
 import { getDiariasGrupo } from "../../services/DiariasServices";
-import { numberWithCommas, selectRow, isNegative, numberAbs } from "../../utils/resultsFormated";
+import { numberWithCommas, selectRow, isNegative, numberAbs, numberAbsComma } from "../../utils/resultsFormated";
 import { inputNames } from "../../utils/data/checkboxLabels";
 import WithAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
@@ -51,7 +51,7 @@ const Grupo = (props) => {
     } catch (error) {
       sendNotification({
         type:'ERROR',
-        message:'Error al consultar datos'
+        message:error.response.data.message || error.message
       })
     }
   }
@@ -163,7 +163,7 @@ const Grupo = (props) => {
                     <td data-column-title={getLastTwoNumbers(reportDate.year)}>{numberWithCommas(item.acumMensualActual)}</td>
                     <td data-column-title={getLastTwoNumbers(reportDate.year) - 1}>{numberWithCommas(item.acumMensualAnterior)}</td>
                     <td data-column-title="COMP">{numberWithCommas(item.compromisoAcum)}</td>
-                    <td data-column-title="(-)" data-porcent-format={isNegative(item.diferencia)}>{numberWithCommas(numberAbs(item.diferencia))}</td>
+                    <td data-column-title="(-)" data-porcent-format={isNegative(item.diferencia)}>{numberAbsComma(item.diferencia)}</td>
                     <td data-column-title="%" data-porcent-format={isNegative(item.crecimientoMensual)}>{numberAbs(item.crecimientoMensual)}</td>
                     <td data-column-title={getLastTwoNumbers(reportDate.year)}>{numberWithCommas(item.acumAnualActual)}</td>
                     <td data-column-title={getLastTwoNumbers(reportDate.year) - 1}>{numberWithCommas(item.acumAnualAnterior)}</td>

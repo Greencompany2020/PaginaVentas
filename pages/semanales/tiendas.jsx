@@ -7,7 +7,8 @@ import {
   spliceData,
   spliteArrDate,
   parseParams,
-  parseNumberToBoolean
+  parseNumberToBoolean,
+  isSecondDateBlock
 } from "../../utils/functions";
 import { getSemanalesTiendas } from "../../services/SemanalesService";
 import { comboValues } from "../../utils/data/checkboxLabels";
@@ -35,6 +36,7 @@ const Tiendas = (props) => {
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [reportDate, setReportDate] = useState({beginDate, endDate, dateRange:spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)});
   const [dataReport, setDataReport] = useState(null);
+  const [isDisable, setIsDisable] = useState(isSecondDateBlock(config?.cbAgnosComparar || 1));
 
   //Estado del reporte por secciones;
   const [dataReportSeccions, setDataReportSeccions] = useState(null);
@@ -69,7 +71,7 @@ const Tiendas = (props) => {
     } catch (error) {
       sendNotification({
         type:'ERROR',
-        message: 'Error al consultar los datos'
+        message: error.response.data.message || error.message
       });
     }
   }
@@ -78,10 +80,12 @@ const Tiendas = (props) => {
     if(params.cbAgnosComparar == 1){
       const {cbAgnosComparar, agnosComparar:[a], ...rest} = params;
       setReportDate(prev => ({...prev, dateRange:[a]}));
+      setIsDisable(isSecondDateBlock(cbAgnosComparar));
       return {...rest, agnosComparar:[a]}
     }else{
       const {cbAgnosComparar, ...rest} = params;
       setReportDate(prev => ({...prev, dateRange:params.agnosComparar}));
+      setIsDisable(isSecondDateBlock(cbAgnosComparar));
       return rest;
     }
   }
@@ -159,7 +163,8 @@ const Tiendas = (props) => {
                       endDate={{
                         id:'agnosComparar[1]',
                         name:'agnosComparar[1]',
-                        label:'Segundo año'
+                        label:'Segundo año',
+                        disabled: isDisable
                       }}  
                     />
                     <Select id='incremento' name='incremento' label='Formular % de incremento'>

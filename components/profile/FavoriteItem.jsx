@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import {LockClosedIcon, LockOpenIcon, EyeIcon, EyeOffIcon} from '@heroicons/react/solid';
+import {LockClosedIcon, LockOpenIcon, HeartIcon} from '@heroicons/react/solid';
 
 export default function FavoriteItem(props) {
     const {id, name, isFavorite, hasAccess, linkTo, setFavorite} = props;
@@ -23,8 +23,8 @@ export default function FavoriteItem(props) {
                         }
                         {
                             isFavorite == 'Y' ? 
-                            <EyeIcon width={24} onClick={handleSetFavorite} className='text-blue-500 cursor-pointer'/> : 
-                            <EyeOffIcon width={24} onClick={handleSetFavorite} className={`text-gray-500 cursor-pointer ${hasAccess=='Y' && 'hover:text-blue-500'}`}/> 
+                            <HeartIcon width={24} onClick={handleSetFavorite} className='text-red-500 cursor-pointer'/> : 
+                            <HeartIcon width={24} onClick={handleSetFavorite} className={`text-gray-500 cursor-pointer ${hasAccess=='Y' && 'hover:text-blue-500'}`}/> 
                         }
                     </div>
                 </div>

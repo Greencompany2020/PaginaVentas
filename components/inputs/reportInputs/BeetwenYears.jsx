@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 export default function BeetwenYears(props) {
     const {begindDate,enabledDates, endDate, legend} = props;
     return (
-        <fieldset className='border border-slate-400 p-2 rounded-md'>
+        <fieldset className='border border-slate-400 p-2 rounded-md space-y-1'>
             <legend className='text-sm font-semibold text-slate-700'>{legend}</legend>
             <Select {...enabledDates}>
                 <option value="1">1</option>

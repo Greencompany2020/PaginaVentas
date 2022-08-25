@@ -75,7 +75,7 @@ const Plaza = (props) => {
           } catch (error) {
             sendNotification({
               type:'ERROR',
-              message:error.message ?? MENSAJE_ERROR
+              message:error.response.data.message || error.message
             });
           }
         }

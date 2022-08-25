@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import {CogIcon, HeartIcon} from '@heroicons/react/solid';
+import {CogIcon, HeartIcon ,EyeIcon, EyeOffIcon} from '@heroicons/react/solid';
 import userService from '../../services/userServices';
 import {useNotification} from '../notifications/NotificationsProvider';
 import ParameterForm from '../ParameterForm';
@@ -40,7 +40,7 @@ export default function ParameterAccesItem(props) {
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: 'Error al guardar preferencias'
+                message: error.response.data.message || error.message
             })
         }
     }
@@ -56,7 +56,7 @@ export default function ParameterAccesItem(props) {
         } catch (error) {
             sendNotification({
                 type: 'OK',
-                message: 'Error al guardar favorito'
+                message: error.response.data.message || error.message
             });
         }
     }
@@ -98,7 +98,7 @@ export default function ParameterAccesItem(props) {
                 } catch (error) {
                     sendNotification({
                         type:'ERROR',
-                        message:'Error al cargar sus preferencias'
+                        message:error.response.data.message || error.message
                     })
                 }
             }
@@ -115,7 +115,11 @@ export default function ParameterAccesItem(props) {
                             <a className='text-lg truncate text-blue-500'>{name}</a>
                         </Link>
                         <div className='flex items-center space-x-2'>
-                            <HeartIcon width={24} className={`text-gray-500 hover:text-red-500 ${isFavorite() && 'text-red-500'}`} onClick={handleSetFavorite} />
+                            {
+                                isFavorite() ?
+                                <EyeIcon width={24} className={'text-blue-500'}/> :
+                                <EyeOffIcon width={24} className={'text-gray-500 hover:text-blue-500'} />
+                            }
                             <CogIcon width={24} className='text-gray-500 hover:text-blue-500' onClick={hadleSelectedClose}/>
                         </div>
                     </div>

@@ -54,7 +54,7 @@ const TodasTiendas = (props) => {
         } catch (error) {
           sendNotification({
             type:'ERROR',
-            message:response?.response?.data ?? MENSAJE_ERROR
+            message:error.response.data.message || error.message
           });
         }
       }
