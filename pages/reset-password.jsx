@@ -46,7 +46,7 @@ export default function RestorePassword() {
       } catch (error) {
         sendNotification({
           type:'ERROR',
-          message:'upps no se ha podido restablecer su contraseña'
+          message:error.response.data.message || error.message
         });
       }
       setLoading();

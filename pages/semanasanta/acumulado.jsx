@@ -16,7 +16,8 @@ import {
   dateRangeTitleSemanaSanta,
   parseNumberToBoolean,
   spliteArrDate,
-  parseParams
+  parseParams,
+  isSecondDateBlock,
 } from "../../utils/functions";
 import { getSemanaSantaAcumulado } from "../../services/semanaSantaService";
 import {  numberWithCommas, isRegionOrPlaza, isNegative, selectRow, numberAbs } from "../../utils/resultsFormated";
@@ -35,6 +36,7 @@ const Acumulado = (props) => {
   const [dataReport, setDataReport] = useState(null);
   const [reportDate, setReportDate] = useState({current:getCurrentDate(true) , dateRange:spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)});
   const [endWeek, setEndWeek] = useState( parseNumberToBoolean(config?.incluirFinSemanaAnterior || 0));
+  const [isDisable, setIsDisable] = useState(isSecondDateBlock(config?.cbAgnosComparar || 1));
 
   const parameters = {
     fecha: getCurrentDate(true),
@@ -46,6 +48,7 @@ const Acumulado = (props) => {
     mostrarTiendas: config?.mostrarTiendas || 'activas',
     tipoCambioTiendas: parseNumberToBoolean(config?.tipoCambioTiendas || 0),
     agnosComparar: spliteArrDate(config?.agnosComparativos, config?.cbAgnosComparar || 1),
+    cbAgnosComparar: config?.cbAgnosComparar || 1, 
   }
 
   const handleSubmit = async values => {
@@ -58,7 +61,7 @@ const Acumulado = (props) => {
     } catch (error) {
       sendNotification({
         type:'ERROR',
-        message: error.message
+        message: error.response.data.message || error.message
       });
     }
   }
@@ -67,10 +70,12 @@ const Acumulado = (props) => {
     if(params.cbAgnosComparar == 1){
       const {cbAgnosComparar, agnosComparar:[a], ...rest} = params;
       setReportDate(prev => ({...prev, dateRange:[a]}));
+      setIsDisable(isSecondDateBlock(cbAgnosComparar));
       return {...rest, agnosComparar:[a]}
     }else{
       const {cbAgnosComparar, ...rest} = params;
       setReportDate(prev => ({...prev, dateRange:params.agnosComparar}));
+      setIsDisable(isSecondDateBlock(cbAgnosComparar));
       return rest;
     }
   }
@@ -105,7 +110,8 @@ const Acumulado = (props) => {
                   endDate={{
                     id:'agnosComparar[1]',
                     name:'agnosComparar[1]',
-                    label:'Segundo año'
+                    label:'Segundo año',
+                    disabled: isDisable
                   }}  
                 />
                 <Select id='incremento' name='incremento' label='Formular % de incremento'>

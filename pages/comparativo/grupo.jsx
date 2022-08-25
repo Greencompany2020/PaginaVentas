@@ -22,6 +22,7 @@ import {
   parseParams,
   parseNumberToBoolean,
   spliteArrDate,
+  isSecondDateBlock
 } from "../../utils/functions";
 import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
@@ -48,6 +49,7 @@ function Grupo(props) {
   const [dataReport, setDataReport] = useState(null);
   const [reportDate, setReportDate] = useState({current:getPrevDate(1),  dateRange:spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)});
   const [includeSem, setIncludeSem] = useState(false);
+  const [isDisable, setIsDisable] = useState(isSecondDateBlock(config?.cbAgnosComparar || 1));
 
   //Estado del reporte por secciones;
   const [dataReportSeccions, setDataReportSeccions] = useState(null);
@@ -80,7 +82,7 @@ function Grupo(props) {
     } catch (error) {
       sendNotification({
         type:'ERROR',
-        message: 'Error al consultar datos'
+        message: error.response.data.message || error.message
       })
     }
   }
@@ -90,11 +92,13 @@ function Grupo(props) {
       const {cbAgnosComparar, agnosComparar:[a], acumuladoSemanal,  ...rest} = params;
       setReportDate(({current: params.fecha, dateRange:[a]}));
       setIncludeSem(acumuladoSemanal);
+      setIsDisable(isSecondDateBlock(cbAgnosComparar));
       return {...rest, agnosComparar:[a]}
     }else{
       const {cbAgnosComparar, acumuladoSemanal, ...rest} = params;
       setReportDate(({current: params.fecha, dateRange:params.agnosComparar}));
       setIncludeSem(acumuladoSemanal);
+      setIsDisable(isSecondDateBlock(cbAgnosComparar));
       return rest;
     }
   }
@@ -153,7 +157,8 @@ function Grupo(props) {
                       endDate={{
                         id: 'agnosComparar[1]',
                         name: 'agnosComparar[1]',
-                        label: 'Segundo año'
+                        label: 'Segundo año',
+                        disabled: isDisable
                       }}
                     />
                     <Select id='incremento' name='incremento' label='Formular % de incremento'>
@@ -673,7 +678,7 @@ const Stat = props => {
                 },
                 {
                   caption:'(-)',
-                  value: stringFormatNumber(item['diferenciaMensual' + getYearFromDate(date.current)] || item['diferenciaMensual'])
+                  value: stringFormatNumber(item['diferenciaMensual' +  date.dateRange[0]] || item['diferenciaMensual'])
                 },
                 {
                   caption:'%',
@@ -713,7 +718,7 @@ const Stat = props => {
                 },
                 {
                   caption:'(-)',
-                  value: stringFormatNumber(item['diferenciaAnual' + getYearFromDate(date.current)] || item['diferenciaAnual'])
+                  value: stringFormatNumber(item['diferenciaAnual' +  date.dateRange[0]] || item['diferenciaAnual'])
                 },
                 {
                   caption:'%',
@@ -855,7 +860,7 @@ const StatGroup = props => {
               },
               {
                 caption: '(-)',
-                value: stringFormatNumber(item['diferenciaMensual' + getYearFromDate(date.current)] || item['diferenciaMensual'])
+                value: stringFormatNumber(item['diferenciaMensual' + date.dateRange[0]] || item['diferenciaMensual'])
               },
               {
                 caption: '%',
@@ -868,7 +873,7 @@ const StatGroup = props => {
                 },
                 {
                   caption: '(-)',
-                  value: stringFormatNumber(item['diferenciaMensual' + getYearFromDate(date.current)])
+                  value: stringFormatNumber(item['diferenciaMensual' + date.dateRange[1]])
                 },
                 {
                   caption: '%',
@@ -897,7 +902,7 @@ const StatGroup = props => {
               },
               {
                 caption:'(-)',
-                value: stringFormatNumber(item['diferenciaAnual' + getYearFromDate(date.current)] || item['diferenciaAnual'])
+                value: stringFormatNumber(item['diferenciaAnual' + date.dateRange[0]] || item['diferenciaAnual'])
               },
               {
                 caption:'%',
@@ -910,7 +915,7 @@ const StatGroup = props => {
                 },
                 {
                   caption:'(-)',
-                  value: stringFormatNumber(item['diferenciaAnual' + getYearFromDate(date.current)])
+                  value: stringFormatNumber(item['diferenciaAnual' + date.dateRange[1]])
                 },
                 {
                   caption:'%',

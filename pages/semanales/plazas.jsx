@@ -20,7 +20,7 @@ import { useNotification } from "../../components/notifications/NotificationsPro
 import Stats from "../../components/Stats";
 import ViewFilter from "../../components/ViewFilter";
 import { isMobile } from "react-device-detect";
-import {spliceData, parseParams, parseNumberToBoolean, spliteArrDate} from '../../utils/functions';
+import {spliceData, parseParams, parseNumberToBoolean, spliteArrDate, isSecondDateBlock} from '../../utils/functions';
 import { v4 } from "uuid";
 
 import { Formik, Form } from "formik";
@@ -38,6 +38,7 @@ const Plazas = (props) => {
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [dataReport, setDataReport] = useState(null);
   const [reportDate, setReportDate] = useState({beginDate, endDate, dateRange:spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)});
+  const [isDisable, setIsDisable] = useState(isSecondDateBlock(config?.cbAgnosComparar || 1));
 
   //Estado del reporte por secciones;
   const [dataReportSeccions, setDataReportSeccions] = useState(null);
@@ -66,10 +67,9 @@ const Plazas = (props) => {
       sliceForRegion(response, response.map(item => item.plaza))
       setDataReport(response);
     } catch (error) {
-      console.log(error);
       sendNotification({
         type:'ERROR',
-        message: 'Error al consultar los datos'
+        message: error.response.data.message || error.message
       });
     }
   }
@@ -84,10 +84,12 @@ const Plazas = (props) => {
     if(params.cbAgnosComparar == 1){
       const {cbAgnosComparar, agnosComparar:[a], ...rest} = params;
       setReportDate(prev => ({...prev, dateRange:[a]}));
+      setIsDisable(isSecondDateBlock(cbAgnosComparar));
       return {...rest, agnosComparar:[a]}
     }else{
       const {cbAgnosComparar, ...rest} = params;
       setReportDate(prev => ({...prev, dateRange:params.agnosComparar}));
+      setIsDisable(isSecondDateBlock(cbAgnosComparar));
       return rest;
     }
   }
@@ -139,7 +141,8 @@ const Plazas = (props) => {
                       endDate={{
                         id:'agnosComparar[1]',
                         name:'agnosComparar[1]',
-                        label:'Primer año'
+                        label:'Segundo año',
+                        disabled: isDisable
                       }}  
                     />
                     <Select id='incremento' name='incremento' label='Formular % de incremento'>

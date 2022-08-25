@@ -32,8 +32,6 @@ export default function withAuth(Component){
          Object.assign(newParams, {[item]: value});
       }
     }
-
-    console.log(newParams);
     return newParams;
   }
 
@@ -53,10 +51,7 @@ export default function withAuth(Component){
           const response = await service.getUserData();
           dispatch(setInitialData(response));
         } catch (error) {
-          sendNotification({
-            type: 'ERROR',
-            message: 'Error al consultar los datos del usuario'
-          });
+          throw error;
         }
       }
     }, [])
@@ -70,24 +65,29 @@ export default function withAuth(Component){
           if(!access) router.replace('/unauthorized');
           setConfig(parseParams(config));
         } catch (error) {
-          sendNotification({
-            type: 'ERROR',
-            message: 'Error al consultar acceso de usuario'
-          });
+          throw error;
         }
-        
       }
     }, [pathname]);
 
 
     useEffect(() => {
       (async () => {
-        await initialData();
-        await evaluatePathname();
-        setIsLoading(false);
+        try {
+          await initialData();
+          await evaluatePathname();
+        } catch (error) {
+          sendNotification({
+            type: 'ERROR',
+            message: error.response.data.message || error.message
+          });
+          router.replace('/unauthorized')
+        }
+        finally {
+          setIsLoading(false);
+        }
       })()
     }, [])
-
 
     return isLoading ?
     <Loader/> : 

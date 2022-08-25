@@ -649,7 +649,12 @@
   "resolved" "https://registry.npmjs.org/axe-core/-/axe-core-4.3.5.tgz"
   "version" "4.3.5"
 
-"axios@^0.26.0":
+"axios-auth-refresh@^3.3.3":
+  "integrity" "sha512-2IbDhJ/h6ddNBBnnzn1VFK/qx17pE9aVqiafB8rx5LVHsJ1HtFpUGkbXY7PzTG+8P9HJWcyA3fNZl9BikSuilg=="
+  "resolved" "https://registry.npmjs.org/axios-auth-refresh/-/axios-auth-refresh-3.3.3.tgz"
+  "version" "3.3.3"
+
+"axios@^0.26.0", "axios@>= 0.18 < 0.19.0 || >= 0.19.1":
   "integrity" "sha512-lKoGLMYtHvFrPVt3r+RBMp9nh34N0M8zEfCWqdWZx6phynIEhQqAdydpyBAAG211zlhX9Rgu08cOamy6XjE5Og=="
   "resolved" "https://registry.npmjs.org/axios/-/axios-0.26.0.tgz"
   "version" "0.26.0"

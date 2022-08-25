@@ -64,7 +64,7 @@ const PlazasVS = (props) => {
         } catch (error) {
           sendNotification({
             type:'ERROR',
-            message: MENSAJE_ERROR,
+            message: error.response.data.message || error.message
           });
         }
       }

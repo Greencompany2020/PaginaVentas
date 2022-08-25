@@ -747,6 +747,11 @@ export const spliteArrDate = (arr, cb = 1) => {
 
 }
 
+export const isSecondDateBlock = cb => {
+  if(cb == 1) return true
+  else return false;
+}
+
 /**
  * Convierte valores con Y a booleans
  * @param {*} val 

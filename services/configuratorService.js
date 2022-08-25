@@ -1,4 +1,4 @@
-import { configuradorProvider } from "./apiProvider";
+import configuradorProvider from "./providers/configuradorProvider";
 
 export default function configuratorService(){
   const getUsers = async () => {
@@ -139,9 +139,10 @@ export default function configuratorService(){
 
   const  updateAccess = async (id, body) =>  {
     try {
+      const newBody = {...body, idProyect:1}
       const { data } = await  configuradorProvider.put(
         `/accesos/update/${id}`,
-        body
+        newBody
       );
       return data;
     } catch (error) {

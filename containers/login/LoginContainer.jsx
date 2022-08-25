@@ -37,7 +37,7 @@ export default function LoginContainer(props) {
     } catch (error) {
       sendNotification({
         type: 'ERROR',
-        message: 'Usuario no valido'
+        message: error.response.data.message || error.message
       });
     }
     setLoading();

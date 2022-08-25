@@ -34,7 +34,7 @@ const Perfil = () => {
     } catch (error) {
       sendNotification({
         type:'ERROR',
-        message:'Error al subir foto de perfil'
+        message:error.response.data.message || error.message
       });
     }
     setLoading();
@@ -52,7 +52,7 @@ const Perfil = () => {
     } catch (error) {
       sendNotification({
         type:'OK',
-        message:'Error al enviar correo'
+        message:error.response.data.message || error.message
       })
     }
     setLoading();

@@ -1,4 +1,4 @@
-import { reporteProvider } from './apiProvider';
+import reporteProvider from "./providers/reporteProvider";
 
 export async function getAnualesPlazas(body) {
   try {
