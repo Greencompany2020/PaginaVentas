@@ -1,23 +1,21 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import Navbar from "../components/Navbar";
 import { MinutasButton } from '../components/buttons';
 import { Flex } from '../components/containers';
-import { ConfirmModal, MessageModal } from "../components/modals";
+import { ConfirmModal} from "../components/modals";
 import { crearDirectorio, crearMinuta, eliminarDirectorio, eliminarMinuta, getListaArchivos } from '../services/MinutasService';
-import useMessageModal from "../hooks/useMessageModal";
 import Chat from '../public/icons/chat.svg';
 import Refresh from '../public/icons/refresh.svg';
 import Home from '../public/icons/home.svg';
 import Folder from '../public/images/folder-icon.png';
 import Question from '../public/images/question.png';
 import Trash from '../public/images/trash-icon.png';
-import Menu from '../public/icons/dot-menu.svg';
 import Close from '../public/icons/close.svg';
 import { isError } from '../utils/functions';
 import withAuth from '../components/withAuth';
 import { getVentasLayout } from '../components/layout/VentasLayout';
+import { useNotification } from '../components/notifications/NotificationsProvider';
 
 const Minutas = () => {
   const [carpetasArchivos, setcarpetasArchivos] = useState({
@@ -32,7 +30,7 @@ const Minutas = () => {
   // Estados modal
   const confirmModalRef = useRef(null);
   const [showModal, setShowModal] = useState(false);
-  const { message, modalOpen, setMessage, setModalOpen } = useMessageModal()
+  const sendNotification = useNotification();
 
   const handleModal = () => {
     setFileDir("");
@@ -50,38 +48,41 @@ const Minutas = () => {
     setShowModal(!showModal);
     setTipo("minuta");
   }
+
   // Eliminar un directorio o archivo
   const handleDelete = async (dir, type) => {
     const confirm = await confirmModalRef.current?.show()
-    
+
     let result = null;
 
     if (type === "directory") {
-      setMessage("Se ha eliminado la carpeta");
+      sendNotification({
+        type:'OK',
+        message: "Se ha eliminado la carpeta"
+      });
       result = await eliminarDirectorio(dir);
     } else {
-      setMessage("Se ha eliminado la minuta");
+      sendNotification({
+        type:'OK',
+        message: "Se ha eliminado la minuta"
+      });
       result = await eliminarMinuta(dir);
     };
-    
+
 
     if (!confirm) return;
 
     if (result && !isError(result)) {
       const nuevasMinutas = await getListaArchivos(directorioActual);
-
-      setModalOpen(true);
-
       setTimeout(() => {
-        setMessage("");
-        setModalOpen(false);
-        
         setShowModal(false);
         setMinutas(nuevasMinutas);
       }, 2000);
     } else {
-      setMessage(result?.response?.data?.message ?? "No se pudo eliminar");
-      setModalOpen(true);
+      sendNotification({
+        type:'ERROR',
+        message: result?.response?.data?.message ?? "No se pudo eliminar"
+      })
     }
   }
 
@@ -90,15 +91,18 @@ const Minutas = () => {
     setDirectorioActual("minutas");
     getListaArchivos()
       .then(response => {
-
         if (isError(response)) {
-          setMessage(response?.response?.data?.message ?? "No se pudieron obtener las minutas. Consulte la consola (F12) para más detalles");
-          setModalOpen(true);
+          sendNotification({
+            type: 'ERROR',
+            message: response?.response?.data?.message ?? "No se pudieron obtener las minutas. Consulte la consola (F12) para más detalles"
+          })
         } else {
           setMinutas(response)
         }
       });
   }
+
+
   // Crear carpeta y añadir minuta
   const submitHandler = async (e) => {
     e.preventDefault();
@@ -113,8 +117,10 @@ const Minutas = () => {
       }
   
       if (!fileDir) {
-        setMessage("Ingrese un nombre para la carpeta");
-        setModalOpen(true);
+        sendNotification({
+          type: 'ERROR',
+          message: "Ingrese un nombre para la carpeta"
+        })
         return;
       }
 
@@ -131,25 +137,28 @@ const Minutas = () => {
       if (result && !isError(result)) {
         const nuevasMinutas = await getListaArchivos(directorioActual);
         
-        setMessage("Se ha creado la carpeta");
-        setModalOpen(true);
+        sendNotification({
+          type: 'OK',
+          message: "Se ha creado la carpeta"
+        })
       
         setTimeout(() => {
-          setMessage("");
-          setFileDir("");
-          setModalOpen(false);
-          
+          setFileDir("");         
           setShowModal(false);
           setMinutas(nuevasMinutas);
         }, 2000);
       } else {
-        setMessage(result?.response?.data?.message ?? "No se pudo crear la carpeta");
-        setModalOpen(true);
+        sendNotification({
+          type: 'ERROR',
+          message: result?.response?.data?.message ?? "No se pudo crear la carpeta"
+        })
       }
     } else {
       if (fileInputRef.current.files.length === 0) {
-        setMessage("Seleccione archivos a subir");
-        setModalOpen(true);
+        sendNotification({
+          type: 'ERROR',
+          message:"Seleccione archivos a subir"
+        })
         return;
       }
 
@@ -174,20 +183,21 @@ const Minutas = () => {
       
       if (result && !isError(result)) {
         const nuevasMinutas = await getListaArchivos(directorioActual);
-        setMessage("Se ha(n) añadido la(s) minuta(s)");
-        setModalOpen(true);
+        sendNotification({
+          type: 'OK',
+          message:"Se ha(n) añadido la(s) minuta(s)"
+        })
         
         setTimeout(() => {
-          setMessage("");
-          fileInputRef.current.value = "";
-          setModalOpen(false);
-          
+          fileInputRef.current.value = "";          
           setShowModal(false);
           setMinutas(nuevasMinutas);
         }, 2000);
       } else {
-        setMessage(result?.response?.data?.message ?? "No se pudo añadir la minuta");
-        setModalOpen(true);
+        sendNotification({
+          type: 'ERROR',
+          message: result?.response?.data?.message ?? "No se pudo añadir la minuta"
+        })
       }
     }
 
@@ -198,8 +208,10 @@ const Minutas = () => {
     const minutasActualizadas = await getListaArchivos(directorioActual);
 
     if (isError(minutasActualizadas)) {
-      setMessage(minutasActualizadas?.response?.data?.message ?? "No se pudieron obtener las minutas. Consulte la consola (F12) para más detalles");
-      setModalOpen(true);
+      sendNotification({
+        type: 'ERROR',
+        message: minutasActualizadas?.response?.data?.message ?? "No se pudieron obtener las minutas. Consulte la consola (F12) para más detalles"
+      })
     } else {
       setMinutas(minutasActualizadas);
     }
@@ -239,8 +251,10 @@ const Minutas = () => {
       .then(response => {
 
         if (isError(response)) {
-          setMessage(response?.response?.data?.message ?? "No se pudieron obtener las minutas. Consulte la consola (F12) para más detalles");
-          setModalOpen(true);
+          sendNotification({
+            type: 'ERROR',
+            message: response?.response?.data?.message ?? "No se pudieron obtener las minutas. Consulte la consola (F12) para más detalles"
+          })
         } else {
           setMinutas(response)
         }
@@ -379,11 +393,10 @@ const Minutas = () => {
             </span>
           </div>
         </div>
-        {/* ERROR MODAL */}
-        <MessageModal message={message} modalOpen={modalOpen} setModalOpen={setModalOpen} />
-        {/* CONFIRM MODAL */}
-        <ConfirmModal ref={confirmModalRef} />
+       
       </Flex>
+       {/* CONFIRM MODAL */}
+        <ConfirmModal ref={confirmModalRef} />
     </>
   )
 }
