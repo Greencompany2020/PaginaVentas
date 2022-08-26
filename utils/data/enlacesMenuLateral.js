@@ -62,10 +62,6 @@ export const enlaces = [
     summaryText: 'Anuales',
     links: [
       {
-        link: '/anuales/concentrado',
-        linkText: 'Concentrado'
-      },
-      {
         link: '/anuales/plaza',
         linkText: 'Por Plaza'
       },
@@ -85,32 +81,6 @@ export const enlaces = [
       {
         link: '/comparativo/plazas',
         linkText: 'Por Plazas'
-      }
-    ]
-  },
-  {
-    summaryText: 'Otros',
-    links: [
-      {
-        link: '/otros/powerbrand',
-        linkText: 'PowerBrand'
-      },
-      {
-        link: '/otros/proveduria',
-        linkText: 'Proveduria'
-      },
-      {
-        link: '/otros/tiendasweb',
-        linkText: 'Tiendas Web'
-      }
-    ]
-  },
-  {
-    summaryText: 'CEDIS',
-    links: [
-      {
-        link: '/cedis/acumulado',
-        linkText: 'Acumulado'
       }
     ]
   },
@@ -160,10 +130,6 @@ export const enlaces = [
         linkText: 'Acumulado'
       },
       {
-        link: '/semanasanta/grafica',
-        linkText: 'Grafica'
-      },
-      {
         link: '/semanasanta/grupo',
         linkText: 'Grupo'
       },
@@ -180,10 +146,6 @@ export const enlaces = [
   {
     summaryText: 'Presupuesto',
     links: [
-      {
-        link: '/presupuesto/bases',
-        linkText: 'Bases'
-      },
       {
         link: '/presupuesto/grupo',
         linkText: 'Grupo'
@@ -205,10 +167,6 @@ export const enlaces = [
   {
     summaryText: 'Operaciones',
     links: [
-      {
-        link: '/operaciones/comparativo',
-        linkText: 'Comparativo'
-      },
       {
         link: '/operaciones/grupo',
         linkText: 'Grupo'

@@ -132,7 +132,7 @@ function Grupo(props) {
                 <Form>
                   <AutoSubmitToken />
                   <fieldset className="space-y-2 mb-3">
-                    <Input type={'date'} id='fecha' name='fecha' label='Fecha' />
+                    <Input type={'date'} placeholder={reportDate.current} id='fecha' name='fecha' label='Fecha' />
                     <BeetWenYears
                       enabledDates={{
                         id: 'cbAgnosComparar',

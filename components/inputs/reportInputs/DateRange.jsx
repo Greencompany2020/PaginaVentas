@@ -23,12 +23,14 @@ DateRange.propTypes = {
         name: PropTypes.string.isRequired,
         label: PropTypes.string,
         disabled: PropTypes.bool,
+        placeholder: PropTypes.any,
     }),
     endDate: PropTypes.exact({
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         label: PropTypes.string,
         disabled: PropTypes.bool,
+        placeholder: PropTypes.any,
     }),
 }
 
@@ -39,12 +41,14 @@ DateRange.defaultProps = {
         name:'beginDate',
         label:'Fecha inicial',
         disabled: false,
+        placeholder: ''
     },
     endDate: {
         id:'endDate',
         name:'endDate',
         label:'Fecha final',
         disabled: false,
+        placeholder: ''
     },
 }
 

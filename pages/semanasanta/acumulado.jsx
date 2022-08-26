@@ -95,7 +95,7 @@ const Acumulado = (props) => {
             <Form>
               <AutoSubmitToken/>
               <fieldset className="space-y-2 mb-3">
-                <Input type='date' id='fecha' name='fecha' label='Año' />
+                <Input type='date' id='fecha' name='fecha' label='Año' placeholder={reportDate.current}/>
                 <BeetWenYears
                   enabledDates={{
                     id:'cbAgnosComparar',

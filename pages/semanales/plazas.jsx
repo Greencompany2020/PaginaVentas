@@ -119,12 +119,14 @@ const Plazas = (props) => {
                       begindDate={{
                         id:'fechaInicio',
                         name:'fechaInicio',
-                        label:'Fecha inicial'
+                        label:'Fecha inicial',
+                        placeholder : reportDate.beginDate,
                       }}
                       endDate={{
                         id:'fechaFin',
                         name:'fechaFin',
-                        label:'Fecha final'
+                        label:'Fecha final',
+                        placeholder: reportDate.endDate,
                       }}  
                     />
                     <BeetWenYears

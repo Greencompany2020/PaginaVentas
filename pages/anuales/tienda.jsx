@@ -8,7 +8,7 @@ import {
   InputContainer,
   SelectTiendasGeneral,
   Checkbox,
-  InputYear,
+  InputToYear,
   SelectMonth,
 } from "../../components/inputs";
 import BarChart from "../../components/BarChart";
@@ -48,8 +48,9 @@ const Tienda = (props) => {
   useEffect(() => {
     (async()=>{
       if(tiendasParametros.alAgno.toString().length === 4){
+        const {delAgno, ...rest} = tiendasParametros;
         try {
-          const response = await getAnualesTiendas(tiendasParametros);
+          const response = await getAnualesTiendas(rest);
           createSimpleDatasets(response, setLabels, setDatasets);
         } catch (error) {
           sendNotification({
@@ -86,7 +87,7 @@ const Tienda = (props) => {
                   />
                 </div>
                 <div className="flex-1">
-                  <InputYear
+                  <InputToYear
                     value={tiendasParametros.alAgno}
                     onChange={(e) => handleChange(e, setTiendasParametros)}
                   />
