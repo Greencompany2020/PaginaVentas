@@ -95,13 +95,13 @@ const Plazas = (props) => {
               <div className="flex items-center space-x-1">
                 <div className="flex-1">
                   <InputYear
-                    value={plazasParametros.delAgno}
+                    value={plazasParametros.alAgno}
                     onChange={(e) => handleChange(e, setPlazasParametros)}
                   />
                 </div>
                 <div className="flex-1">
                   <InputToYear
-                    value={plazasParametros.alAgno}
+                    value={plazasParametros.delAgno}
                     onChange={(e) => handleChange(e, setPlazasParametros)}
                   />
                 </div>
