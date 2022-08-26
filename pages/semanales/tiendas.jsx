@@ -45,7 +45,6 @@ const Tiendas = (props) => {
   const [displayMode, setDisplayMode] = useState((isMobile ? config?.mobileReportView : config?.desktopReportView));
   const [currentShop, setCurrentShop] = useState('Frogs');
 
-
   const parameters = {
     fechaInicio: beginDate,
     fechaFin: endDate,
@@ -322,7 +321,7 @@ const Table = props => {
                 date.dateRange.map(year => (
                   <React.Fragment key={v4()}>
                     <td data-porcent-format={isNegative(item['porcentajePromedios' + year])}>{ numberAbs(item['porcentajePromedios' + year])}</td>
-                    <td>{ numberAbs(item['promedioActual' + year])}</td>
+                    <td>{ numberWithCommas(item['promedioActual' + year])}</td>
                   </React.Fragment>
                 ))
               }
@@ -331,7 +330,7 @@ const Table = props => {
                 date.dateRange.map(year => (
                   <React.Fragment key={v4()}>
                     <td data-porcent-format={isNegative(item['articulosPorcentaje' + year])}>{ numberAbs(item['articulosPorcentaje' + year])}</td>
-                    <td>{item['articulosActual' + year]}</td>
+                    <td>{numberWithCommas(item['articulosActual' + year])}</td>
                   </React.Fragment>
                 ))
               }
@@ -453,7 +452,7 @@ const TableMobil = props =>{
                     date.dateRange.map(year => (
                       <React.Fragment key={v4()}>
                         <td data-porcent-format={isNegative(item['porcentajePromedios' + year])}>{numberAbs(item['porcentajePromedios' + year])}</td>
-                        <td>{numberAbs(item['promedioActual' + year])}</td>
+                        <td>{numberWithCommas(item['promedioActual' + year])}</td>
                       </React.Fragment>
                     ))
                   }
@@ -489,7 +488,7 @@ const TableMobil = props =>{
                     date.dateRange.map(year => (
                       <React.Fragment key={v4()}>
                         <td data-porcent-format={isNegative(item['articulosPorcentaje' + year])}>{numberAbs(item['articulosPorcentaje' + year])}</td>
-                        <td>{item['articulosActual' + year]}</td>
+                        <td>{numberWithCommas(item['articulosActual' + year])}</td>
                       </React.Fragment>
                     ))
                   }

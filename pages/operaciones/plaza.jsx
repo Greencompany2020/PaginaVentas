@@ -91,18 +91,26 @@ const Plaza = (props) => {
                   handleChange(e, setParamPlaza);
                 }}
               />
-              <SelectMonth
-                value={paramPlaza.delMes}
-                onChange={(e) => {
-                  handleChange(e, setParamPlaza);
-                }}
-              />
-              <SelectToMonth
-                value={paramPlaza.alMes}
-                onChange={(e) => {
-                  handleChange(e, setParamPlaza);
-                }}
-              />
+              <fieldset className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <SelectMonth
+                    value={paramPlaza.delMes}
+                    onChange={(e) => {
+                      handleChange(e, setParamPlaza);
+                    }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <SelectToMonth
+                    value={paramPlaza.alMes}
+                    onChange={(e) => {
+                      handleChange(e, setParamPlaza);
+                    }}
+                  />
+                </div>
+              </fieldset>
+
+
               <InputYear
                 value={paramPlaza.delAgno}
                 onChange={(e) => {

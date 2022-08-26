@@ -49,7 +49,7 @@ const Mensuales = (props) => {
     queryTiendaPlaza: 0,
     tienda: getInitialTienda(shops),
     plaza: getInitialPlaza(places),
-    delAgno: Number(getYearFromDate(formatedDate())) - 5,
+    delAgno: Number(getYearFromDate(formatedDate())) - 1,
     alAgno: Number(getYearFromDate(formatedDate())),
     conIva: config?.conIva || 0,
     conVentasEventos: config?.conVentasEventos || 0,
@@ -135,14 +135,21 @@ const Mensuales = (props) => {
               )}
             </InputContainer>
             <InputContainer>
-              <InputYear
-                value={parametrosMensuales.delAgno}
-                onChange={(e) => handleChange(e, setParametrosMensuales)}
-              />
-              <InputToYear
-                value={parametrosMensuales.alAgno}
-                onChange={(e) => handleChange(e, setParametrosMensuales)}
-              />
+              <fieldset className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <InputYear
+                    value={parametrosMensuales.delAgno}
+                    onChange={(e) => handleChange(e, setParametrosMensuales)}
+                  />
+                </div>
+                <div className="flex-1">
+                  <InputToYear
+                    value={parametrosMensuales.alAgno}
+                    onChange={(e) => handleChange(e, setParametrosMensuales)}
+                  />
+                </div>
+              </fieldset>
+              
             </InputContainer>
             <InputContainer>
               <Checkbox

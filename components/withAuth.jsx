@@ -21,12 +21,12 @@ export default function withAuth(Component){
               value = (params[item] == 'Y') ? 1 : 0;
             }
             else {
-              value = null;
+              value = params[item] || null
             }
           break;
 
-          case 'number':
-            value = params[item] || null;
+          default:
+            value = params[item] || null
           break;
         }
          Object.assign(newParams, {[item]: value});

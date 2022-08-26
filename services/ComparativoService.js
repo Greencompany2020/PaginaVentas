@@ -5,7 +5,7 @@ export async function getComparativoGrupo(body) {
     const { data } = await reporteProvider.post("/comparativo/grupo", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -14,6 +14,6 @@ export async function getComparativoPlazas(body) {
     const { data } = await reporteProvider.post("/comparativo/plazas", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }

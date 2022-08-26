@@ -36,7 +36,7 @@ const Plazas = (props) => {
   const sendNotification = useNotification
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
   const [plazasParametros, setPlazasParametros] = useState({
-    delAgno: getCurrentYear(),
+    delAgno: getCurrentYear() - 1,
     alAgno: getCurrentYear(),
     alMes: getCurrentMonth(),
     tiendas: 0,

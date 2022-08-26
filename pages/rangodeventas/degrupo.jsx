@@ -13,8 +13,9 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 
 const degrupo = () => {
-  return (
-    {/*
+  return <h1>En construccion</h1>
+  /*return (
+
     <div className=" flex flex-col h-full">
       <TitleReport title="Rangos de ventas de grupo" />
       <section className="p-4 flex flex-row justify-between items-baseline">
@@ -72,8 +73,8 @@ const degrupo = () => {
         </ComparativoVentas>
       </section>
     </div>
-    */}
-  );
+
+  );*/
 };
 
 const DeGrupoWithAuth = withAuth(degrupo);
