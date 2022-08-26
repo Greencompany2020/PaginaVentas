@@ -39,7 +39,7 @@ const Grupo = (props) => {
   const sendNotification  = useNotification();
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
   const [parametrosGrupo, setParametrosGrupo] = useState({
-    delAgno: getCurrentYear() - 5,
+    delAgno: getCurrentYear() - 1,
     alAgno: getCurrentYear(),
     delMes: 1,
     alMes: getCurrentMonth() - 1,
@@ -88,30 +88,45 @@ const Grupo = (props) => {
         <ParametersContainer>
           <Parameters>
             <InputContainer>
-              <InputYear
-                value={parametrosGrupo.delAgno}
-                onChange={(e) => {
-                  handleChange(e, setParametrosGrupo);
-                }}
-              />
-              <InputToYear
-                value={parametrosGrupo.alAgno}
-                onChange={(e) => {
-                  handleChange(e, setParametrosGrupo);
-                }}
-              />
-              <SelectMonth
-                value={parametrosGrupo.delMes}
-                onChange={(e) => {
-                  handleChange(e, setParametrosGrupo);
-                }}
-              />
-               <SelectToMonth
-                value={parametrosGrupo.alMes}
-                onChange={(e) => {
-                  handleChange(e, setParametrosGrupo);
-                }}
-              />
+              <fieldset className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <InputYear
+                    value={parametrosGrupo.delAgno}
+                    onChange={(e) => {
+                      handleChange(e, setParametrosGrupo);
+                    }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <InputToYear
+                    value={parametrosGrupo.alAgno}
+                    onChange={(e) => {
+                      handleChange(e, setParametrosGrupo);
+                    }}
+                  />
+                </div>
+              </fieldset>
+             
+              <fieldset className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <SelectMonth
+                    value={parametrosGrupo.delMes}
+                    onChange={(e) => {
+                    handleChange(e, setParametrosGrupo);
+                    }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <SelectToMonth
+                    value={parametrosGrupo.alMes}
+                    onChange={(e) => {
+                    handleChange(e, setParametrosGrupo);
+                    }}
+                  />
+                </div>
+              </fieldset>
+              
+               
               <SelectTiendasGeneral />
             </InputContainer>
             <InputContainer>

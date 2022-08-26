@@ -5,6 +5,6 @@ export async function getPromotores(body) {
     const { data } = await reporteProvider.post("/mkt/promotores", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }

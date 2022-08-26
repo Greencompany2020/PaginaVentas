@@ -5,7 +5,7 @@ export async function getPorcenatajesParticipacion(body) {
     const { data } = await reporteProvider.post("/porcentajes/participacion", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -14,7 +14,7 @@ export async function getPorcentajeCrecimiento(body) {
     const { data } = await reporteProvider.post("/porcentajes/crecimiento", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 

@@ -5,7 +5,7 @@ export async function getDiariasGrupo(body) {
     const { data } = await  reporteProvider.post("/diarias/grupo", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -14,7 +14,7 @@ export async function getDiariasPlazas(body) {
     const { data } = await  reporteProvider.post("/diarias/plazas", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -23,7 +23,7 @@ export async function getDiariasTienda(body) {
     const { data } = await  reporteProvider.post("/diarias/tienda", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -32,7 +32,7 @@ export async function getDiariasTiendaSimple(body) {
     const { data } = await  reporteProvider.post("/diarias/tiendasimple", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -41,6 +41,6 @@ export async function getDiariasFechas() {
     const { data } = await  reporteProvider.get("/diarias/fechas");
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }

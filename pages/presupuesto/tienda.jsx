@@ -88,18 +88,25 @@ const Tienda = (props) => {
                   handleChange(e, setParamTienda);
                 }}
               />
-              <SelectMonth
-                value={paramTienda.delMes}
-                onChange={(e) => {
-                  handleChange(e, setParamTienda);
-                }}
-              />
-              <SelectToMonth
-                value={paramTienda.alMes}
-                onChange={(e) => {
-                  handleChange(e, setParamTienda);
-                }}
-              />
+              <fieldset className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <SelectMonth
+                    value={paramTienda.delMes}
+                    onChange={(e) => {
+                      handleChange(e, setParamTienda);
+                    }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <SelectToMonth
+                    value={paramTienda.alMes}
+                    onChange={(e) => {
+                      handleChange(e, setParamTienda);
+                    }}
+                  />
+                </div>
+              </fieldset>
+                          
               <InputYear
                 value={paramTienda.delAgno}
                 onChange={(e) => {

@@ -36,7 +36,7 @@ const Plazas = (props) => {
   const sendNotification = useNotification
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
   const [plazasParametros, setPlazasParametros] = useState({
-    delAgno: getCurrentYear(),
+    delAgno: getCurrentYear() - 1,
     alAgno: getCurrentYear(),
     alMes: getCurrentMonth(),
     tiendas: 0,
@@ -95,13 +95,13 @@ const Plazas = (props) => {
               <div className="flex items-center space-x-1">
                 <div className="flex-1">
                   <InputYear
-                    value={plazasParametros.delAgno}
+                    value={plazasParametros.alAgno}
                     onChange={(e) => handleChange(e, setPlazasParametros)}
                   />
                 </div>
                 <div className="flex-1">
                   <InputToYear
-                    value={plazasParametros.alAgno}
+                    value={plazasParametros.delAgno}
                     onChange={(e) => handleChange(e, setPlazasParametros)}
                   />
                 </div>

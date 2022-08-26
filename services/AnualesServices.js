@@ -5,7 +5,7 @@ export async function getAnualesPlazas(body) {
     const { data } = await reporteProvider.post("/anuales/plazas", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -14,6 +14,6 @@ export async function getAnualesTiendas(body) {
     const { data } = await reporteProvider.post("/anuales/tiendas", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }

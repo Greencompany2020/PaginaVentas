@@ -37,7 +37,7 @@ export default function AccessForm(props) {
           <TextInput label='Direccion' name='point' />
         </div>
         <div className="flex flex-row justify-end space-x-2 mt-6">
-          <input type='reset' value='Cancelar' className="secondary-btn w-28"/>
+          <input type='reset' value='Cancelar' className="secondary-btn w-28" onClick={handleModal}/>
           <input type='submit' value='Guardar' className="primary-btn w-28"/>
         </div>
       </Form>

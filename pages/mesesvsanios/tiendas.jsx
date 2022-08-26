@@ -47,7 +47,7 @@ const Tiendas = (props) => {
     tienda: getInitialTienda(shops),
     delMes: 1,
     alMes: getCurrentMonth() - 1,
-    delAgno: getCurrentYear() - 5,
+    delAgno: getCurrentYear() - 1,
     alAgno: getCurrentYear(),
     incluirTotal: config?.incluirTotal || 0,
     ventasDiaMesActual: config?.ventasDiaMesActual || 0,
@@ -136,32 +136,44 @@ const Tiendas = (props) => {
                   handleChange(e, setParametrosTiendas);
                 }}
               />
-              <SelectMonth
-                value={parametrosTiendas.delMes}
-                onChange={(e) => {
-                  handleChange(e, setParametrosTiendas);
-                }}
-              />
-              <SelectToMonth
-                value={parametrosTiendas.alMes}
-                onChange={(e) => {
-                  handleChange(e, setParametrosTiendas);
-                }}
-              />
-            </InputContainer>
-            <InputContainer>
-              <InputYear
-                value={parametrosTiendas.delAgno}
-                onChange={(e) => {
-                  handleChange(e, setParametrosTiendas);
-                }}
-              />
-              <InputToYear
-                value={parametrosTiendas.alAgno}
-                onChange={(e) => {
-                  handleChange(e, setParametrosTiendas);
-                }}
-              />
+
+              <fieldset className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <InputYear
+                    value={parametrosTiendas.delAgno}
+                    onChange={(e) => {
+                      handleChange(e, setParametrosTiendas);
+                    }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <InputToYear
+                    value={parametrosTiendas.alAgno}
+                    onChange={(e) => {
+                      handleChange(e, setParametrosTiendas);
+                    }}
+                  />
+                </div>
+              </fieldset>
+              
+              <fieldset className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <SelectMonth
+                    value={parametrosTiendas.delMes}
+                    onChange={(e) => {
+                      handleChange(e, setParametrosTiendas);
+                    }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <SelectToMonth
+                    value={parametrosTiendas.alMes}
+                    onChange={(e) => {
+                      handleChange(e, setParametrosTiendas);
+                    }}
+                  />
+                </div>
+              </fieldset>
             </InputContainer>
             <InputContainer>
               <Checkbox

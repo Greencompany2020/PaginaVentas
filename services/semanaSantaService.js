@@ -5,7 +5,7 @@ export async function getSemanaSantaGrupo(body) {
     const { data } = await reporteProvider.post("/semanasanta/grupo", body)
     return data.result
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -14,7 +14,7 @@ export async function getSemanaSantaGrupoConcentrado(body) {
     const { data } = await reporteProvider.post("/semanasanta/grupo/concentrado", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -23,7 +23,7 @@ export async function getSemanaSantaPeriodos() {
     const { data } = await reporteProvider.get("/semanasanta/periodos");
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -32,7 +32,7 @@ export async function getSemanaSantaPlazas(body) {
     const { data } = await reporteProvider.post("/semanasanta/plazas", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -41,6 +41,6 @@ export async function getSemanaSantaAcumulado(body) {
     const { data } = await reporteProvider.post("/semanasanta/acumulado", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
