@@ -1,24 +1,25 @@
-import Input from "../components/inputs/reportInputs/Input";
-import Select from '../components/inputs/reportInputs/Select'
-import Checbox from '../components/inputs/reportInputs/Checkbox'
-import Radio from '../components/inputs/reportInputs/Radio';
-import DateRange from '../components/inputs/reportInputs/DateRange';
+import DateHelper from '../utils/dateHelper';
+import {Formik , Form} from 'formik';
+import { Input } from "../components/inputs/reportInputs";
 
-import { Form, Formik } from "formik"
 export default function Developer() {
+ 
+  const date = DateHelper();
+
+  date.getYesterdayDate();
+  console.log(date.getYesterdayDate());
+  console.log(date.getWeekDate(date.getYesterdayDate()));
+
+  const initial = {
+    dateRange: date.getYesterdayDate(),
+  }
+
   return(
-    <div>
-      <input type={'month'} />
-     <Formik>
+    <Formik initialValues={initial} enableReinitialize>
       <Form>
-        <fieldset className="p-8 w-12">
-          <DateRange
-          />
-        </fieldset>
-        
+        <Input type='date' name='dateRange' id='dateRange' label='Fecha'/>
       </Form>
-     </Formik>
-    </div>
+    </Formik>
   )
 }
 

@@ -1,4 +1,4 @@
-import { configuradorProvider } from "./apiProvider";
+import configuradorProvider from "./providers/configuradorProvider";
 
 export default function userService(){
 

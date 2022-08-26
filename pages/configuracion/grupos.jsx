@@ -35,7 +35,7 @@ const Groups = (props) => {
         } catch (error) {
             sendNotification({
                 type:'ERROR',
-                message:'Error al crear grupo'
+                message:error.response.data.message || error.message
             });
         }
     }
@@ -49,7 +49,7 @@ const Groups = (props) => {
         } catch (error) {
             sendNotification({
                 type:'ERROR',
-                message:'Error al actualizar grupo'
+                message:error.response.data.message || error.message
             });
         }
     }
@@ -65,7 +65,7 @@ const Groups = (props) => {
             } catch (error) {
                 sendNotification({
                     type:'ERROR',
-                    message:'Error al eliminar grupo'
+                    message:error.response.data.message || error.message
                 });
             }
         }
@@ -79,7 +79,7 @@ const Groups = (props) => {
             } catch (error) {
                 sendNotification({
                     type:'ERROR',
-                    message:'Error al consultar grupos'
+                    message:error.response.data.message || error.message
                 });
             }
         })()

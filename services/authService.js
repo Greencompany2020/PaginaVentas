@@ -1,4 +1,5 @@
-import { reporteProvider, configuradorProvider } from "./apiProvider";
+import reporteProvider from "./providers/reporteProvider";
+import configuradorProvider from "./providers/configuradorProvider";
 
 export default function authService(){
     const login = async (body) => {
@@ -6,6 +7,7 @@ export default function authService(){
             const {data} = await configuradorProvider.post('/auth/login', body);
             return data;
         } catch (error) {
+            console.log(error);
             throw error;
         }
     }

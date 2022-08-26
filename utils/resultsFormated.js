@@ -11,7 +11,7 @@ export const formatNumber = (num, isLast=false) => {
   let numberText = '';
   if (num < 0) {
     numberText = Math.abs(num).toLocaleString('en-US');
-    if(isNaN(numberText)) numberText = 0;
+    if(!isNaN(numberText)) numberText = 0;
     return (<td style={{
       color: isLast ? "white" : "rgb(220 38 38)",
       fontWeight: 700,
@@ -30,27 +30,39 @@ export const formatNumber = (num, isLast=false) => {
   }
 }
 
-export const stringFormatNumber = (num, isLast=false) => {
-  let numberText = '';
-  if (num < 0) {
-    numberText = Math.abs(num).toLocaleString('en-US');
-    if(isNaN(numberText)) numberText = 0;
-    return (<span style={{
-      color: isLast ? "black" : "rgb(220 38 38)",
-      fontWeight: 700,
-      textAlign: "right",
-      fontSize: 12
-    }}>{`(${numberText})`}</span>)
-  } else {
-    numberText = Math.abs(num).toLocaleString('en-US');
-    if(isNaN(numberText)) numberText = 0;
-    return (<span style={{
-      color: isLast ? "black" : "rgb(5 150 105)",
-      fontWeight: 700,
-      textAlign: "right",
-      fontSize: 12
-    }}>{numberText}</span>)
+export const stringFormatNumber = (num) => {
+  if(!isNaN(num)){
+  
+    if(num < 0){
+      return(
+        <span
+          style={{
+            color: "rgb(220 38 38)",
+            fontWeight: 700,
+            textAlign: "right",
+            fontSize: 12
+          }}
+        >
+          {`(${Math.abs(num).toLocaleString('en-US')})`}
+        </span>
+      )
+    }
+    else {
+      return(
+        <span
+          style={{
+            color: "rgb(5 150 105)",
+            fontWeight: 700,
+            textAlign: "right",
+            fontSize: 12
+          }}
+        >
+          {Math.abs(num).toLocaleString('en-US')}
+        </span>
+      )
+    }
   }
+  return 0
 }
 
 export const tdFormatNumber = (num, isLast=false, font=12) => {

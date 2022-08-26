@@ -41,7 +41,6 @@ const Grupo = (props) => {
     incluirFinSemanaAnterior: config?.incluirFinSemanaAnterior || 1,
     resultadosPesos: config?.resultadosPesos || 1,
   });
-  setConcentrado(config?.concentrado ? true : false)
 
 
   useEffect(() => {
@@ -54,7 +53,7 @@ const Grupo = (props) => {
           } catch (error) {
             sendNotification({
               type:'ERROR',
-              message: MENSAJE_ERROR
+              message: error.response.data.message || error.message
             });
           }
         }else{
@@ -64,14 +63,14 @@ const Grupo = (props) => {
           } catch (error) {
             sendNotification({
               type:'ERROR',
-              message: MENSAJE_ERROR
+              message: error.response.data.message || error.message
             });
           }
         }
       }
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [paramGrupo, concentrado]);
+  }, [paramGrupo]);
 
   return (
     <div className=" flex flex-col h-full">

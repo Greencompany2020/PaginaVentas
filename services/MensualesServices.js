@@ -1,11 +1,11 @@
-import { reporteProvider } from './apiProvider';
+import reporteProvider from "./providers/reporteProvider";
 
 export async function getMensualesConcentrado(body) {
   try {
     const { data } = await reporteProvider.post("/mensuales/concentrado", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -14,7 +14,7 @@ export async function getMensualesPlazasAgnos(body) {
     const { data } = await reporteProvider.post("/mensuales/plazasagnos", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -23,6 +23,6 @@ export async function getMensualesTiendas(body) {
     const { data } = await reporteProvider.post("/mensuales/tiendas", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }

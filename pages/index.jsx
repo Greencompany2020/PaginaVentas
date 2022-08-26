@@ -5,6 +5,7 @@ import LoaderComponentBas from "../components/LoaderComponentBas";
 import LoginContainer from "../containers/login/LoginContainer";
 import ResetPasswordContainer from "../containers/login/ResetPasswordContainer";
 import useToggle from "../hooks/useToggle";
+import withAuth from "../components/withAuth";
 
 export const Home = () => {
   const [attemptLogin, setAttemp] = useState(true);
@@ -31,4 +32,4 @@ export const Home = () => {
   );
 };
 
-export default Home;
+export default withAuth(Home);

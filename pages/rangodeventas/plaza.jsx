@@ -51,7 +51,7 @@ const Plaza = (props) => {
         } catch (error) {
           sendNotification({
             type:'ERROR',
-            message: MENSAJE_ERROR
+            message: error.response.data.message || error.message
           });
         }
       }
@@ -72,9 +72,9 @@ const Plaza = (props) => {
                   handleChange(e, setParamPlaza);
                 }}
               />
-              <h2 className="my-2 font-bold">
+              <h3 className="my-2">
                 Obtener Rangos de Ventas de las fechas:
-              </h2>
+              </h3>
               <InputDateRange
                 beginDate={paramPlaza.fechaInicio}
                 endDate={paramPlaza.fechaFin}
@@ -82,7 +82,7 @@ const Plaza = (props) => {
                   handleChange(e, setParamPlaza);
                 }}
               />
-              <h2 className="my-2 font-bold">Defina los rango requiridos:</h2>
+              <h3 className="my-2 ">Defina los rango requiridos:</h3>
               <InputRangos
                 value={paramPlaza.rangos}
                 onChange={(e) => {

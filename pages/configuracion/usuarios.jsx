@@ -32,7 +32,7 @@ const Users = (props) => {
         } catch (error) {
             sendNotification({
                 type:'ERROR',
-                message: 'Error al consultar usuario'
+                message: error.response.data.message || error.message
             })
         }
     }
@@ -50,7 +50,7 @@ const Users = (props) => {
         } catch (error) {
             sendNotification({
                 type:'ERROR',
-                message: 'Error al agregar usuario'
+                message: error.response.data.message || error.message
             })
         }
     }
@@ -63,7 +63,7 @@ const Users = (props) => {
         } catch (error) {
             sendNotification({
                 type:'ERROR',
-                message: 'Error al agregar usuario'
+                message: error.response.data.message || error.message
             })
         }
     }
@@ -80,7 +80,7 @@ const Users = (props) => {
            } catch (error) {
             sendNotification({
                 type:'ERROR',
-                message: 'Error al eliminar usuario'
+                message: error.response.data.message || error.message
             })
            }
         }
@@ -99,7 +99,7 @@ const Users = (props) => {
             } catch (error) {
                 sendNotification({
                     type:'ERROR',
-                    message: 'Error al asignar acceso al usuario'
+                    message: error.response.data.message || error.message
                 })
             }
         }
@@ -115,7 +115,7 @@ const Users = (props) => {
             } catch (error) {
                 sendNotification({
                     type:'ERROR',
-                    message: 'Error al consultar los usuarios'
+                    message: error.response.data.message || error.message
                 });
             }
         })()

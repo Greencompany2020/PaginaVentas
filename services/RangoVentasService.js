@@ -1,11 +1,11 @@
-import { reporteProvider } from './apiProvider';
+import reporteProvider from "./providers/reporteProvider";
 
 export async function getRangoVentasPlaza(body) {
   try {
     const { data } = await reporteProvider.post("/rangoventas/plaza", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -14,6 +14,6 @@ export async function getRangoVentasTienda(body) {
     const { data } = await reporteProvider.post("/rangoventas/tienda", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }

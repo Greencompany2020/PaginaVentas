@@ -44,7 +44,7 @@ const Navbar = () => {
     } catch (error) {
       sendNotification({
         type:'ERROR',
-        message:error.message,
+        message:error.response.data.message || error.message
       });
     }
   };

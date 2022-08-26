@@ -40,7 +40,7 @@ const PlazasVS = (props) => {
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
   const [plazasAgnosParametros, setPlazasAgnosParametros] = useState({
     delMes: getCurrentMonth(),
-    delAgno: getCurrentYear() - 4,
+    delAgno: getCurrentYear() - 1,
     alAgno: getCurrentYear(),
     tiendas: 0,
     conIva: config?.conIva || 0,
@@ -64,7 +64,7 @@ const PlazasVS = (props) => {
         } catch (error) {
           sendNotification({
             type:'ERROR',
-            message: MENSAJE_ERROR,
+            message: error.response.data.message || error.message
           });
         }
       }

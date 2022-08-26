@@ -1,4 +1,4 @@
-import { reporteProvider } from './apiProvider';
+import reporteProvider from "./providers/reporteProvider";
 
 export async function getTiendas(userLevel) {
   try {
@@ -7,7 +7,7 @@ export async function getTiendas(userLevel) {
     });
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -18,6 +18,6 @@ export async function getPlazas(userLevel) {
     });
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }

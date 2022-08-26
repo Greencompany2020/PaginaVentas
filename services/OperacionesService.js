@@ -1,11 +1,11 @@
-import { reporteProvider } from './apiProvider';
+import reporteProvider from "./providers/reporteProvider";
 
 export async function getOperacionesGrupo(body) {
   try {
     const { data } = await reporteProvider.post("/operaciones/grupo", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -14,7 +14,7 @@ export async function getOperacionesPlaza(body) {
     const { data } = await reporteProvider.post("/operaciones/plaza", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }
 
@@ -23,6 +23,6 @@ export async function getOperacionesTienda(body) {
     const { data } = await reporteProvider.post("/operaciones/tienda", body);
     return data.result;
   } catch (error) {
-    return error;
+    throw error;
   }
 }

@@ -65,7 +65,7 @@ const Plaza = (props) => {
         } catch (error) {
           sendNotification({
             type:'ERROR',
-            message: MENSAJE_ERROR
+            message: error.response.data.message || error.message
           });
         }
       }
@@ -84,30 +84,38 @@ const Plaza = (props) => {
         <ParametersContainer>
           <Parameters>
             <InputContainer>
-              <SelectMonth
-                value={paramPlazas.delMes}
+              <SelectPlazas
+                value={paramPlazas.plaza}
                 onChange={(e) => {
                   handleChange(e, setParamPlazas);
                 }}
               />
-              <SelectToMonth
-                value={paramPlazas.alMes}
-                onChange={(e) => {
-                  handleChange(e, setParamPlazas);
-                }}
-              />
+              <fieldset className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <SelectMonth
+                    value={paramPlazas.delMes}
+                    onChange={(e) => {
+                      handleChange(e, setParamPlazas);
+                    }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <SelectToMonth
+                    value={paramPlazas.alMes}
+                    onChange={(e) => {
+                      handleChange(e, setParamPlazas);
+                    }}
+                  />
+                </div>
+              </fieldset>
+
               <InputYear
                 value={paramPlazas.delAgno}
                 onChange={(e) => {
                   handleChange(e, setParamPlazas);
                 }}
               />
-               <SelectPlazas
-                value={paramPlazas.plaza}
-                onChange={(e) => {
-                  handleChange(e, setParamPlazas);
-                }}
-              />
+
             </InputContainer>
             <InputContainer>
               <Checkbox

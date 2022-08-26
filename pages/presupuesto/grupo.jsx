@@ -60,7 +60,7 @@ const Grupo = (props) => {
         } catch (error) {
           sendNotification({
             type:'ERROR',
-            message: MENSAJE_ERROR
+            message: error.response.data.message || error.message
           });
         }
       }
@@ -77,18 +77,25 @@ const Grupo = (props) => {
         <ParametersContainer>
           <Parameters>
             <InputContainer>
-              <SelectMonth
-                value={paramGrupo.delMes}
-                onChange={(e) => {
-                  handleChange(e, setParamGrupo);
-                }}
-              />
-              <SelectToMonth
-                value={paramGrupo.alMes}
-                onChange={(e) => {
-                  handleChange(e, setParamGrupo);
-                }}
-              />
+              <fieldset className="flex items-center space-x-1">
+                <div className="flex-1">
+                  <SelectMonth
+                    value={paramGrupo.delMes}
+                    onChange={(e) => {
+                      handleChange(e, setParamGrupo);
+                    }}
+                  />
+                </div>
+                <div className="flex-1">
+                  <SelectToMonth
+                    value={paramGrupo.alMes}
+                    onChange={(e) => {
+                      handleChange(e, setParamGrupo);
+                    }}
+                  />
+                </div>
+              </fieldset>
+              
               <InputYear
                 value={paramGrupo.delAgno}
                 onChange={(e) => {

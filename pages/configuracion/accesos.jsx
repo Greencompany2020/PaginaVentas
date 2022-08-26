@@ -50,7 +50,7 @@ const Access = (props) => {
         } catch (error) {
             sendNotification({
                 type:'ERROR',
-                message: 'Error al agregar acceso'
+                message: error.response.data.message || error.message
             });
         }
     }
@@ -63,7 +63,7 @@ const Access = (props) => {
         } catch (error) {
             sendNotification({
                 type:'ERROR',
-                message: 'Error al actualizar acceso'
+                message: error.response.data.message || error.message
             });
         }
     }
@@ -76,7 +76,7 @@ const Access = (props) => {
         } catch (error) {
             sendNotification({
                 type:'ERROR',
-                message: 'Error al actualizar parametros'
+                message: error.response.data.message || error.message
             });
         }
     }
@@ -92,7 +92,7 @@ const Access = (props) => {
             } catch (error) {
                 sendNotification({
                     type:'ERROR',
-                    message: 'Error al eliminar acceso'
+                    message: error.response.data.message || error.message
                 });
             }
         }
@@ -106,7 +106,7 @@ const Access = (props) => {
             } catch (error) {
                 sendNotification({
                     type:'ERROR',
-                    message: 'Error al consultar los accesos'
+                    message: error.response.data.message || error.message
                 });
             }
         })()
