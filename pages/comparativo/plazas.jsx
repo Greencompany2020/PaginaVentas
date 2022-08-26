@@ -6,11 +6,6 @@ import {
 } from "../../components/containers";
 
 import { checkboxLabels, comboValues } from "../../utils/data";
-import {
-  getMonthByNumber,
-  getPrevDate,
-  getYearFromDate,
-} from "../../utils/dateFunctions";
 import { getTableName, getValueFromObject, spliceDataObject, parseNumberToBoolean, parseParams, spliteArrDate, isSecondDateBlock} from "../../utils/functions";
 import { getComparativoPlazas } from "../../services/ComparativoService";
 import {  numberWithCommas, stringFormatNumber, numberAbs, isNegative, selectRow, numberAbsComma} from "../../utils/resultsFormated";
@@ -27,14 +22,16 @@ import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
 import ExcelButton from '../../components/buttons/ExcelButton';
 import exportExcel from '../../utils/excel/exportExcel';
 import comPlazas from "../../utils/excel/templates/comPlazas";
+import DateHelper from "../../utils/dateHelper";
 
 const Plazas = (props) => {
   const {config} = props;
   const sendNotification = useNotification();
+  const dateHelper = DateHelper();
 
   //Estados de los reportes
   const [dataReport, setDataReport] = useState(null);
-  const [reportDate, setReportDate] = useState({current: getPrevDate(1), dateRange:spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)})
+  const [reportDate, setReportDate] = useState({current: dateHelper.getYesterdayDate(), dateRange:spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)})
   const [isDisable, setIsDisable] = useState(isSecondDateBlock(config?.cbAgnosComparar || 1));
 
   //Estado del reporte por secciones;
@@ -44,7 +41,7 @@ const Plazas = (props) => {
   const [displayMode, setDisplayMode] = useState((isMobile ? config?.mobileReportView : config?.desktopReportView));
 
   const parameters = {
-    fecha: getPrevDate(1),
+    fecha:dateHelper.getYesterdayDate(),
     conIva: parseNumberToBoolean(config?.conIva || 0),
     conVentasEventos: parseNumberToBoolean(config?.conVentasEventos || 0),
     resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 1),
@@ -93,9 +90,9 @@ const Plazas = (props) => {
 
   const handleExport = () => {
     const template = comPlazas(
-      getMonthByNumber(reportDate.current.split("-")[1]), 
+      dateHelper.getMonthName(reportDate.current), 
       dataReport, 
-      [getYearFromDate(reportDate.current), reportDate.dateRange].flat(1)
+      [dateHelper.getCurrentYear(reportDate.current), reportDate.dateRange].flat(1)
     );
     exportExcel(
       `Comparativo plaza ${reportDate.current}`, 
@@ -109,12 +106,11 @@ const Plazas = (props) => {
   return (
     <div className=" flex flex-col h-full">
       <TitleReport
-        title={`COMPARATIVO VENTAS DEL AÑO 
-          ${reportDate.current.split("-")[0]} (AL ${
-            reportDate.current.split("-")[2]
-        } DE ${getMonthByNumber(
-          reportDate.current.split("-")[1]
-        ).toUpperCase()})`}
+         title={`
+         COMPARATIVO VENTAS DEL AÑO ${dateHelper.getCurrentYear(reportDate.current)} 
+         (AL ${dateHelper.getCurrentDate(reportDate.current)} 
+         DE ${dateHelper.getMonthName(reportDate.current).toUpperCase()})
+       `}
       />
 
 
@@ -126,7 +122,7 @@ const Plazas = (props) => {
                 <Form>
                   <AutoSubmitToken/>
                   <fieldset className="space-y-2 mb-3">
-                    <Input id='fecha' name='fecha' label='Fecha'/>
+                    <Input type={'date'} id='fecha' name='fecha' label='Fecha' placeholder={reportDate.current}/>
                     <Select id='incremento' name='incremento' label='Formular % de incremento'>
                       {
                         comboValues.CBINCREMENTO.map((item, i) => (
@@ -210,6 +206,7 @@ const Plazas = (props) => {
 
 const Table = props => {
   const {data, date} = props;
+  const dateHelper = DateHelper();
   return(
     <div className="space-y-8">
       {
@@ -219,11 +216,11 @@ const Table = props => {
             <thead>
               <tr>
                 <th rowSpan={2} className='text-center'>Plaza</th>
-                <th colSpan={5 + (date.dateRange[1] ? 3 : 0)}>{`Acumulado ${getMonthByNumber(date.current.split("-")[1])}`}</th>
+                <th colSpan={5 + (date.dateRange[1] ? 3 : 0)}>{`Acumulado ${dateHelper.getMonthName(date.current)}`}</th>
                 <th colSpan={5 + (date.dateRange[1] ? 3 : 0)}>Acumulado anual</th>
               </tr>
               <tr>
-                <th>{getYearFromDate(date.current)}</th>
+                <th>{dateHelper.getCurrentYear(date.current)}</th>
                 <th>{date.dateRange[0]}</th>
                 <th>PPTO.</th>
                 <th>(-)</th>
@@ -236,7 +233,7 @@ const Table = props => {
                     <th>%</th>
                   </React.Fragment>
                 }
-                <th>{getYearFromDate(date.current)}</th>
+                <th>{dateHelper.getCurrentYear(date.current)}</th>
                 <th>{date.dateRange[0]}</th>
                 <th>PPTO.</th>
                 <th>(-)</th>
@@ -256,18 +253,18 @@ const Table = props => {
                 (values && values.length > 0) && values.map(item => (
                   <tr key={v4()}>
                     <td data-type-format="text" className="priority-cell">{item.plaza}</td>
-                    <td className="priority-cell">{ numberWithCommas(item['ventasMensualesActual'+ getYearFromDate(date.current)])}</td>
+                    <td className="priority-cell">{ numberWithCommas(item['ventasMensualesActual'+ dateHelper.getCurrentYear(date.current)])}</td>
                     <td>{ numberWithCommas(item['ventasMensualesActual'+ date.dateRange[0]])}</td>
-                    <td>{ numberWithCommas(item['presupuestoMensual'+ getYearFromDate(date.current)])}</td>
+                    <td>{ numberWithCommas(item['presupuestoMensual'+ dateHelper.getCurrentYear(date.current)])}</td>
                     <td data-porcent-format={isNegative(item['diferenciaMensual' + date.dateRange[0]])}>{ numberAbsComma(item['diferenciaMensual' + date.dateRange[0]])}</td>
                     <td data-porcent-format={isNegative(item['porcentajeMensual' + date.dateRange[0]])}>{ numberAbs(item['porcentajeMensual' + date.dateRange[0]])}</td>
                     {date.dateRange[1] && <td>{ numberWithCommas(item['ventasMensualesActual'+ date.dateRange[1]])}</td>}
                     {date.dateRange[1] && <td data-porcent-format={isNegative(item['diferenciaMensual'+ date.dateRange[1]])}>{ numberAbsComma(item['diferenciaMensual'+ date.dateRange[1]])}</td>}
                     {date.dateRange[1] && <td data-porcent-format={isNegative(item['porcentajeMensual' + date.dateRange[1]])}>{ numberAbs(item['porcentajeMensual' + date.dateRange[1]])}</td>} 
 
-                    <td className="priority-cell">{ numberWithCommas(item['ventasAnualActual'+ getYearFromDate(date.current)])}</td>
+                    <td className="priority-cell">{ numberWithCommas(item['ventasAnualActual'+ dateHelper.getCurrentYear(date.current)])}</td>
                     <td>{ numberWithCommas(item['ventasAnualActual'+ date.dateRange[0]])}</td>
-                    <td>{ numberWithCommas(item['presupuestoAnual'+ getYearFromDate(date.current)])}</td>
+                    <td>{ numberWithCommas(item['presupuestoAnual'+ dateHelper.getCurrentYear(date.current)])}</td>
                     <td data-porcent-format={isNegative(item['diferenciaAnual' + date.dateRange[0]])}>{ numberAbsComma(item['diferenciaAnual' + date.dateRange[0]])}</td>
                     <td data-porcent-format={isNegative(item['porcentajeAnual' + date.dateRange[0]])}>{ numberAbs(item['porcentajeAnual' + date.dateRange[0]])}</td>
                     {date.dateRange[1] && <td>{ numberWithCommas(item['ventasAnualActual'+ date.dateRange[1]])}</td>}
@@ -286,6 +283,7 @@ const Table = props => {
 
 const TableMobil = props =>{
   const {data, date} = props;
+  const dateHelper = DateHelper();
   return(
     <div className="space-y-8">
       {
@@ -293,11 +291,11 @@ const TableMobil = props =>{
           <React.Fragment key={v4()}>
             {getTableName(key)}
             <table className="table-report-mobile" onClick={selectRow}>
-              <caption> Acumulado{" "}{getMonthByNumber(date.current.split("-")[1])}</caption>
+              <caption> Acumulado{" "}{dateHelper.getMonthName(date.current)}</caption>
               <thead>
                 <tr>
                   <th>Plaza</th>
-                  <th> {getYearFromDate(date.current)}</th>
+                  <th> {dateHelper.getCurrentYear(date.current)}</th>
                   <th> {date.dateRange[0]}</th>
                   <th>PPTO</th>
                   <th>(-)</th>
@@ -309,9 +307,9 @@ const TableMobil = props =>{
                   (values && values.length > 0) && values.map(item => (
                     <tr key={v4()}>
                       <td data-type-format="text" className="priority-cell">{item.plaza}</td>
-                      <td className="priority-cell">{ numberWithCommas(item['ventasMensualesActual'+ getYearFromDate(date.current)])}</td>
+                      <td className="priority-cell">{ numberWithCommas(item['ventasMensualesActual'+ dateHelper.getCurrentYear(date.current)])}</td>
                       <td>{ numberWithCommas(item['ventasMensualesActual'+ date.dateRange[0]])}</td>
-                      <td>{ numberWithCommas(item['presupuestoMensual'+ getYearFromDate(date.current)])}</td>
+                      <td>{ numberWithCommas(item['presupuestoMensual'+ dateHelper.getCurrentYear(date.current)])}</td>
                       <td data-porcent-format={isNegative(item['diferenciaMensual' + date.dateRange[0]])}>{ numberAbsComma(item['diferenciaMensual' + date.dateRange[0]])}</td>
                       <td data-porcent-format={isNegative(item['porcentajeMensual' + date.dateRange[0]])}>{ numberAbs(item['porcentajeMensual' + date.dateRange[0]])}</td>
                     </tr>
@@ -325,7 +323,7 @@ const TableMobil = props =>{
               <thead>
                 <tr>
                   <th>Plaza</th>
-                  <th> {getYearFromDate(date.current)}</th>
+                  <th> {dateHelper.getCurrentYear(date.current)}</th>
                   <th> {date.dateRange[0]}</th>
                   <th>PPTO</th>
                   <th>(-)</th>
@@ -337,9 +335,9 @@ const TableMobil = props =>{
                   (values && values.length > 0) && values.map(item =>(
                     <tr key={v4()}>
                       <td data-type-format="text" className="priority-cell">{item.plaza}</td>
-                      <td className="priority-cell">{ numberWithCommas(item['ventasAnualActual'+ getYearFromDate(date.current)])}</td>
+                      <td className="priority-cell">{ numberWithCommas(item['ventasAnualActual'+ dateHelper.getCurrentYear(date.current)])}</td>
                       <td>{ numberWithCommas(item['ventasAnualActual'+ date.dateRange[0]])}</td>
-                      <td>{ numberWithCommas(item['presupuestoAnual'+ getYearFromDate(date.current)])}</td>
+                      <td>{ numberWithCommas(item['presupuestoAnual'+ dateHelper.getCurrentYear(date.current)])}</td>
                       <td data-porcent-format={isNegative(item['diferenciaAnual' + date.dateRange[0]])}>{ numberAbsComma(item['diferenciaAnual' + date.dateRange[0]])}</td>
                       <td data-porcent-format={isNegative(item['porcentajeAnual' + date.dateRange[0]])}>{ numberAbs(item['porcentajeAnual' + date.dateRange[0]])}</td>
                     </tr>
@@ -354,7 +352,7 @@ const TableMobil = props =>{
                 <thead>
                   <tr>
                     <th>Plaza</th>
-                    <th> {getYearFromDate(date.current)}</th>
+                    <th> {dateHelper.getCurrentYear(date.current)}</th>
                     <th> {date.dateRange[1]}</th>
                     <th>PPTO</th>
                     <th>(-)</th>
@@ -366,9 +364,9 @@ const TableMobil = props =>{
                     (values && values.length > 0) && values.map(item =>(
                       <tr key={v4()}>
                         <td data-type-format="text" className="priority-cell">{item.plaza}</td>
-                        <td className="priority-cell">{ numberWithCommas(item['ventasMensualesActual'+ getYearFromDate(date.current)])}</td>
+                        <td className="priority-cell">{ numberWithCommas(item['ventasMensualesActual'+ dateHelper.getCurrentYear(date.current)])}</td>
                         <td>{ numberWithCommas(item['ventasMensualesActual'+ date.dateRange[1]])}</td>
-                        <td>{ numberWithCommas(item['presupuestoMensual'+ getYearFromDate(date.current)])}</td>
+                        <td>{ numberWithCommas(item['presupuestoMensual'+ dateHelper.getCurrentYear(date.current)])}</td>
                         <td data-porcent-format={isNegative(item['diferenciaMensual'+ date.dateRange[1]])}>{ numberAbsComma(item['diferenciaMensual'+ date.dateRange[1]])}</td>
                         <td data-porcent-format={isNegative(item['porcentajeMensual' + date.dateRange[1]])}>{ numberAbs(item['porcentajeMensual' + date.dateRange[1]])}</td>
                       </tr>
@@ -384,7 +382,7 @@ const TableMobil = props =>{
                 <thead>
                   <tr>
                     <th>Plaza</th>
-                    <th> {getYearFromDate(date.current)}</th>
+                    <th> {dateHelper.getCurrentYear(date.current)}</th>
                     <th> {date.dateRange[1]}</th>
                     <th>PPTO</th>
                     <th>(-)</th>
@@ -396,9 +394,9 @@ const TableMobil = props =>{
                     (values && values.length > 0) && values.map(item => (
                       <tr key={v4()}>
                         <td data-type-format="text" className="priority-cell">{item.plaza}</td>
-                        <td className="priority-cell">{ numberWithCommas(item['ventasAnualActual'+ getYearFromDate(date.current)])}</td>
+                        <td className="priority-cell">{ numberWithCommas(item['ventasAnualActual'+ dateHelper.getCurrentYear(date.current)])}</td>
                         <td>{ numberWithCommas(item['ventasAnualActual'+ date.dateRange[1]])}</td>
-                        <td>{ numberWithCommas(item['presupuestoAnual'+ getYearFromDate(date.current)])}</td>
+                        <td>{ numberWithCommas(item['presupuestoAnual'+ dateHelper.getCurrentYear(date.current)])}</td>
                         <td data-porcent-format={isNegative(item['diferenciaAnual'+ date.dateRange[1]])}>{ numberAbsComma(item['diferenciaAnual'+ date.dateRange[1]])}</td>
                         <td data-porcent-format={isNegative(item['porcentajeAnual' + date.dateRange[1]])}>{ numberAbs(item['porcentajeMensual' + date.dateRange[1]])}</td>
                       </tr>
@@ -416,6 +414,7 @@ const TableMobil = props =>{
 
 const Stat = props =>{
   const {data, date} = props;
+  const dateHelper = DateHelper();
   return(
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
       {
@@ -423,11 +422,11 @@ const Stat = props =>{
           if(val && val.length > 0) {
             const Items =  val.map(item => {
               const acumMes = {
-                columnTitle: `Acumulado ${getMonthByNumber(date.current.split("-")[1])}`,
+                columnTitle: `Acumulado ${dateHelper.getMonthName(date.current)}`,
                 values:[
                   {
-                    caption:getYearFromDate(date.current),
-                    value:numberWithCommas(item['ventasMensualesActual' + getYearFromDate(date.current)])
+                    caption:dateHelper.getCurrentYear(date.current),
+                    value:numberWithCommas(item['ventasMensualesActual' + dateHelper.getCurrentYear(date.current)])
                   },
                   {
                     caption:date.dateRange[0],
@@ -435,7 +434,7 @@ const Stat = props =>{
                   },
                   {
                     caption:'PPTO',
-                    value:numberWithCommas(item['presupuestoMensual'+ getYearFromDate(date.current)])
+                    value:numberWithCommas(item['presupuestoMensual'+ dateHelper.getCurrentYear(date.current)])
                   },
                   {
                     caption:'(-)',
@@ -449,11 +448,11 @@ const Stat = props =>{
               }
 
               const acumMesAnt = {
-                columnTitle: `Acumulado ${getMonthByNumber(date.current.split("-")[1])} ${date.dateRange[1]}`,
+                columnTitle: `Acumulado ${dateHelper.getMonthName(date.current)} ${date.dateRange[1]}`,
                 values:[
                   {
-                    caption:getYearFromDate(date.current),
-                    value:numberWithCommas(item['ventasMensualesActual' + getYearFromDate(date.current)])
+                    caption:dateHelper.getCurrentYear(date.current),
+                    value:numberWithCommas(item['ventasMensualesActual' + dateHelper.getCurrentYear(date.current)])
                   },
                   {
                     caption:date.dateRange[1],
@@ -461,7 +460,7 @@ const Stat = props =>{
                   },
                   {
                     caption:'PPTO',
-                    value:numberWithCommas(item['presupuestoMensual'+ getYearFromDate(date.current)])
+                    value:numberWithCommas(item['presupuestoMensual'+ dateHelper.getCurrentYear(date.current)])
                   },
                   {
                     caption:'(-)',
@@ -478,8 +477,8 @@ const Stat = props =>{
                 columnTitle: 'Acumulado Anual',
                 values:[
                   {
-                    caption:getYearFromDate(date.current),
-                    value:numberWithCommas(item['ventasAnualActual' + getYearFromDate(date.current)])
+                    caption:dateHelper.getCurrentYear(date.current),
+                    value:numberWithCommas(item['ventasAnualActual' + dateHelper.getCurrentYear(date.current)])
                   },
                   {
                     caption:date.dateRange[0],
@@ -487,7 +486,7 @@ const Stat = props =>{
                   },
                   {
                     caption:'PPTO',
-                    value:numberWithCommas(item['presupuestoAnual'+ getYearFromDate(date.current)])
+                    value:numberWithCommas(item['presupuestoAnual'+ dateHelper.getCurrentYear(date.current)])
                   },
                   {
                     caption:'(-)',
@@ -504,8 +503,8 @@ const Stat = props =>{
                 columnTitle: `Acumulado Anual ${date.dateRange[1]}`,
                 values:[
                   {
-                    caption:getYearFromDate(date.current),
-                    value:numberWithCommas(item['ventasAnualActual' + getYearFromDate(date.current)])
+                    caption:dateHelper.getCurrentYear(date.current),
+                    value:numberWithCommas(item['ventasAnualActual' + dateHelper.getCurrentYear(date.current)])
                   },
                   {
                     caption:date.dateRange[1],
@@ -513,7 +512,7 @@ const Stat = props =>{
                   },
                   {
                     caption:'PPTO',
-                    value:numberWithCommas(item['presupuestoAnual'+ getYearFromDate(date.current)])
+                    value:numberWithCommas(item['presupuestoAnual'+ dateHelper.getCurrentYear(date.current)])
                   },
                   {
                     caption:'(-)',
@@ -549,6 +548,7 @@ const Stat = props =>{
 
 const StatGroup = props =>{
   const {data, date, region} = props;
+  const dateHelper = DateHelper();
   return(
     <>
       {
@@ -561,8 +561,8 @@ const StatGroup = props =>{
                 columnTitle: item.plaza,
                 values: [
                   {
-                    caption: getYearFromDate(date.current),
-                    value: numberWithCommas(item['ventasMensualesActual' + getYearFromDate(date.current)])
+                    caption: dateHelper.getCurrentYear(date.current),
+                    value: numberWithCommas(item['ventasMensualesActual' + dateHelper.getCurrentYear(date.current)])
                   },
                   {
                     caption: date.dateRange[0],
@@ -570,7 +570,7 @@ const StatGroup = props =>{
                   },
                   {
                     caption: 'PPTO',
-                    value: numberWithCommas(item['presupuestoMensual' + getYearFromDate(date.current)])
+                    value: numberWithCommas(item['presupuestoMensual' + dateHelper.getCurrentYear(date.current)])
                   },
                   {
                     caption: '(-)',
@@ -587,8 +587,8 @@ const StatGroup = props =>{
                 columnTitle: item.plaza,
                 values: [
                   {
-                    caption: getYearFromDate(date.current),
-                    value: numberWithCommas(item['ventasMensualesActual' + getYearFromDate(date.current)])
+                    caption: dateHelper.getCurrentYear(date.current),
+                    value: numberWithCommas(item['ventasMensualesActual' + dateHelper.getCurrentYear(date.current)])
                   },
                   {
                     caption: date.dateRange[1],
@@ -596,7 +596,7 @@ const StatGroup = props =>{
                   },
                   {
                     caption: 'PPTO',
-                    value: numberWithCommas(item['presupuestoMensual' + getYearFromDate(date.current)])
+                    value: numberWithCommas(item['presupuestoMensual' + dateHelper.getCurrentYear(date.current)])
                   },
                   {
                     caption: '(-)',
@@ -613,8 +613,8 @@ const StatGroup = props =>{
                 columnTitle: item.plaza,
                 values: [
                   {
-                    caption: getYearFromDate(date.current),
-                    value: numberWithCommas(item['ventasAnualActual' + getYearFromDate(date.current)])
+                    caption: dateHelper.getCurrentYear(date.current),
+                    value: numberWithCommas(item['ventasAnualActual' + dateHelper.getCurrentYear(date.current)])
                   },
                   {
                     caption: date.dateRange[0],
@@ -622,7 +622,7 @@ const StatGroup = props =>{
                   },
                   {
                     caption: 'PPTO',
-                    value: numberWithCommas(item['presupuestoAnual' + getYearFromDate(date.current)])
+                    value: numberWithCommas(item['presupuestoAnual' + dateHelper.getCurrentYear(date.current)])
                   },
                   {
                     caption: '(-)',
@@ -639,8 +639,8 @@ const StatGroup = props =>{
                 columnTitle: item.plaza,
                 values: [
                   {
-                    caption: getYearFromDate(date.current),
-                    value: numberWithCommas(item['ventasAnualActual' + getYearFromDate(date.current)])
+                    caption: dateHelper.getCurrentYear(date.current),
+                    value: numberWithCommas(item['ventasAnualActual' + dateHelper.getCurrentYear(date.current)])
                   },
                   {
                     caption: date.dateRange[1],
@@ -648,7 +648,7 @@ const StatGroup = props =>{
                   },
                   {
                     caption: 'PPTO',
-                    value: numberWithCommas(item['presupuestoAnual' + getYearFromDate(date.current)])
+                    value: numberWithCommas(item['presupuestoAnual' + dateHelper.getCurrentYear(date.current)])
                   },
                   {
                     caption: '(-)',
@@ -670,8 +670,8 @@ const StatGroup = props =>{
                       columnTitle: item.plaza,
                       values: [
                         {
-                          caption: getYearFromDate(date.current),
-                          value: numberWithCommas(item['ventasMensualesActual' + getYearFromDate(date.current)])
+                          caption: dateHelper.getCurrentYear(date.current),
+                          value: numberWithCommas(item['ventasMensualesActual' + dateHelper.getCurrentYear(date.current)])
                         },
                         {
                           caption: date.dateRange[0],
@@ -679,7 +679,7 @@ const StatGroup = props =>{
                         },
                         {
                           caption: 'PPTO',
-                          value: numberWithCommas(item['presupuestoMensual' + getYearFromDate(date.current)])
+                          value: numberWithCommas(item['presupuestoMensual' + dateHelper.getCurrentYear(date.current)])
                         },
                         {
                           caption: '(-)',
@@ -696,8 +696,8 @@ const StatGroup = props =>{
                       columnTitle: item.plaza,
                       values: [
                         {
-                          caption: getYearFromDate(date.current),
-                          value: numberWithCommas(item['ventasMensualesActual' + getYearFromDate(date.current)])
+                          caption: dateHelper.getCurrentYear(date.current),
+                          value: numberWithCommas(item['ventasMensualesActual' + dateHelper.getCurrentYear(date.current)])
                         },
                         {
                           caption: date.dateRange[1],
@@ -705,7 +705,7 @@ const StatGroup = props =>{
                         },
                         {
                           caption: 'PPTO',
-                          value: numberWithCommas(item['presupuestoMensual' + getYearFromDate(date.current)])
+                          value: numberWithCommas(item['presupuestoMensual' + dateHelper.getCurrentYear(date.current)])
                         },
                         {
                           caption: '(-)',
@@ -722,8 +722,8 @@ const StatGroup = props =>{
                       columnTitle: item.plaza,
                       values: [
                         {
-                          caption: getYearFromDate(date.current),
-                          value: numberWithCommas(item['ventasAnualActual' + getYearFromDate(date.current)])
+                          caption: dateHelper.getCurrentYear(date.current),
+                          value: numberWithCommas(item['ventasAnualActual' + dateHelper.getCurrentYear(date.current)])
                         },
                         {
                           caption: date.dateRange[0],
@@ -731,7 +731,7 @@ const StatGroup = props =>{
                         },
                         {
                           caption: 'PPTO',
-                          value: numberWithCommas(item['presupuestoAnual' + getYearFromDate(date.current)])
+                          value: numberWithCommas(item['presupuestoAnual' + dateHelper.getCurrentYear(date.current)])
                         },
                         {
                           caption: '(-)',
@@ -748,8 +748,8 @@ const StatGroup = props =>{
                       columnTitle: item.plaza,
                       values: [
                         {
-                          caption: getYearFromDate(date.current),
-                          value: numberWithCommas(item['ventasAnualActual' + getYearFromDate(date.current)])
+                          caption: dateHelper.getCurrentYear(date.current),
+                          value: numberWithCommas(item['ventasAnualActual' + dateHelper.getCurrentYear(date.current)])
                         },
                         {
                           caption: date.dateRange[1],
@@ -757,7 +757,7 @@ const StatGroup = props =>{
                         },
                         {
                           caption: 'PPTO',
-                          value: numberWithCommas(item['presupuestoAnual' + getYearFromDate(date.current)])
+                          value: numberWithCommas(item['presupuestoAnual' + dateHelper.getCurrentYear(date.current)])
                         },
                         {
                           caption: '(-)',
@@ -787,7 +787,7 @@ const StatGroup = props =>{
               <React.Fragment key={v4()}>
                 <div className='grid grid-cols-1 xl:grid-cols-2 gap-4'>
                   <Stats
-                    title= {`Acumulado' ${getMonthByNumber(date.current.split("-")[1])}`}
+                    title= {`Acumulado ${dateHelper.getMonthName(date.current)}`}
                     expand={true}
                     columns={acumMesCol.flat(1)}
                   />
@@ -800,7 +800,7 @@ const StatGroup = props =>{
                     (date.dateRange[1] && region == 'GRUPO') && 
                     <React.Fragment key={v4()}>
                       <Stats
-                        title= {`Acumulado ${getMonthByNumber(date.current.split("-")[1])}  ${date.dateRange[1]}`}
+                        title= {`Acumulado ${dateHelper.getMonthName(date.current)}  ${date.dateRange[1]}`}
                         expand={true}
                         columns={acumMesCol.flat(1)}
                       />
