@@ -16,7 +16,6 @@ import { handleChange } from "../../utils/handlers";
 import {
   getInitialPlaza,
   getPlazaName,
-  isError,
   validateInputDateRange,
 } from "../../utils/functions";
 import { formatLastDate, getBeginEndMonth } from "../../utils/dateFunctions";
