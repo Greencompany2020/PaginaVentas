@@ -1,5 +1,3 @@
-import { Flex } from "../containers";
-
 const InputYear = ({ value, onChange }) => {
   const currentYear = new Date().getFullYear();
   return (
