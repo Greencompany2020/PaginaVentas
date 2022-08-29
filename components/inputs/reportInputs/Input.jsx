@@ -1,11 +1,11 @@
 import React from 'react';
 import { useField } from 'formik';
-import { isSafari } from 'react-device-detect';
+import { isSafari, isMobile } from 'react-device-detect';
 
 export default function Input(props) {
     const {label,...rest} = props;
     const [field, meta] = useField(props);
-    const isDateAndSafari = (type) => (isSafari && type === 'date');
+    const isDateAndSafari = (type) => (isSafari && !isMobile && type === 'date');
 
 
     return (
