@@ -1,4 +1,4 @@
-import { isSafari } from "react-device-detect";
+import { isSafari, isMobile } from "react-device-detect";
 
 const InputDateRange = ({ beginDate, endDate, onChange }) => {
 
@@ -10,7 +10,7 @@ const InputDateRange = ({ beginDate, endDate, onChange }) => {
           <span className='text-xs font-semibold'>Inicio</span>
           <div className={'relative flex items-center space-x-2'}>
             <input name='fechaInicio' value={beginDate} onChange={onChange} type="date" placeholder={beginDate} className={'w-full h-8 border rounded-md pl-2 border-slate-400 disabled:bg-gray-100 disabled:border-gray-100 outline-none'} />
-            {isSafari && <span className="absolute right-4">{beginDate}</span>}
+            {(isSafari && !isMobile) && <span className="absolute right-4">{beginDate}</span>}
           </div>
 
         </div>
@@ -19,7 +19,7 @@ const InputDateRange = ({ beginDate, endDate, onChange }) => {
           <span className='text-xs font-semibold'>Fin</span>
           <div className={'relative flex items-center space-x-2'}>
             <input name='fechaFin' value={endDate} onChange={onChange} type="date" placeholder={endDate} className={'w-full h-8 border rounded-md pl-2 border-slate-400 disabled:bg-gray-100 disabled:border-gray-100 outline-none'} />
-            {isSafari && <span className="absolute right-4">{endDate}</span>}
+            {(isSafari && !isMobile) && <span className="absolute right-4">{endDate}</span>}
           </div>
         </div>
       </div>
