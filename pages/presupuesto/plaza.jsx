@@ -186,14 +186,21 @@ const Plaza = (props) => {
         </ParametersContainer>
       </section>
       <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 h-full overflow-y-auto ">
-        <ComparativoVentas>
-          <BarChart
-            data={{
-              labels,
-              datasets,
-            }}
-          />
-        </ComparativoVentas>
+        {
+          datasets.length > 0 ?
+            <ComparativoVentas>
+              <BarChart
+                data={{
+                  labels,
+                  datasets,
+                }}
+              />
+            </ComparativoVentas>
+            :
+            <div className=" flex justify-center">
+              <h4 className="text-xl">Consulta sin resultados</h4>
+            </div>
+        }
       </section>
     </div>
   );

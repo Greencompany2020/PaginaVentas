@@ -32,7 +32,7 @@ import ComparativoVentas from "../../components/table/ComparativoVentas";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const Plazas = (props) => {
-  const {config} = props;
+  const { config } = props;
   const sendNotification = useNotification
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
   const [plazasParametros, setPlazasParametros] = useState({
@@ -48,8 +48,8 @@ const Plazas = (props) => {
 
 
   useEffect(() => {
-    (async()=>{
-      if(validateYearRange(plazasParametros.delAgno, plazasParametros.alAgno)){
+    (async () => {
+      if (validateYearRange(plazasParametros.delAgno, plazasParametros.alAgno)) {
         try {
           const response = await getAnualesPlazas(plazasParametros);
           createDatasets(
@@ -75,9 +75,8 @@ const Plazas = (props) => {
       <TitleReport
         title={`Ventas Plazas Acumuladas a ${getMonthByNumber(
           plazasParametros.alMes
-        )} del año ${plazasParametros.delAgno} al año ${
-          plazasParametros.alAgno
-        }`}
+        )} del año ${plazasParametros.delAgno} al año ${plazasParametros.alAgno
+          }`}
       />
 
       <section className="p-4 flex flex-row justify-between items-baseline">
@@ -106,7 +105,7 @@ const Plazas = (props) => {
                   />
                 </div>
               </div>
-            
+
             </InputContainer>
             <InputContainer>
               <Checkbox
@@ -123,7 +122,7 @@ const Plazas = (props) => {
                 name={inputNames.CON_VENTAS_EVENTOS}
                 onChange={(e) => handleChange(e, setPlazasParametros)}
               />
-               <Checkbox
+              <Checkbox
                 className="mb-3"
                 labelText={checkboxLabels.INCLUIR_TIENDAS_CERRADAS}
                 checked={plazasParametros.conTiendasCerradas ? true : false}
@@ -141,14 +140,21 @@ const Plazas = (props) => {
         </ParametersContainer>
       </section>
       <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 h-full overflow-y-auto ">
-        <ComparativoVentas>
-        <BarChart
-            data={{
-              labels: labels,
-              datasets: datasets,
-            }}
-          />
-        </ComparativoVentas>
+        {
+          datasets.length > 0 ?
+            <ComparativoVentas>
+              <BarChart
+                data={{
+                  labels: labels,
+                  datasets: datasets,
+                }}
+              />
+            </ComparativoVentas>
+            :
+            <div className=" flex justify-center">
+              <h4 className="text-xl">Consulta sin resultados</h4>
+            </div>
+        }
       </section>
     </div>
   );
