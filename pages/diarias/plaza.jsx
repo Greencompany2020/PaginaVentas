@@ -50,7 +50,7 @@ const Plaza = (props) => {
   const handleSubmit = async params => {
     try {
       const response = await getDiariasPlazas(parseParams(params));
-      setCurrentPlaza(getPlazaName(params.plaza));
+      setCurrentPlaza(getPlazaName(params.plaza, places));
       setReportDate({
         year: params.delAgno,
         month: params.delMes

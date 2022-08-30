@@ -114,7 +114,7 @@ const TodasTiendas = (props) => {
     <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas por Mes Tiendas Plaza ${getPlazaName(
-          paramTiendas.plaza
+          paramTiendas.plaza, places
         )} año ${paramTiendas.delAgno} (mls.${
           paramTiendas.resultadosPesos ? "pesos" : "dlls"
         })`}

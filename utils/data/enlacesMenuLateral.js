@@ -185,14 +185,6 @@ export const enlaces = [
     summaryText: 'Rango de ventas',
     links: [
       {
-        link: '/rangodeventas/degrupo',
-        linkText: 'De Grupo'
-      },
-      {
-        link: '/rangodeventas/detallado',
-        linkText: 'Detallado'
-      },
-      {
         link: '/rangodeventas/plaza',
         linkText: 'Por Plaza'
       },

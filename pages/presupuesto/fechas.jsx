@@ -59,7 +59,7 @@ const Fechas = () => {
     <div className=" flex flex-col h-full">
       <TitleReport
         title={`Compromisos plaza ${getPlazaName(
-          paramFechas.plaza
+          paramFechas.plaza, places
         )} del ${formatLastDate(paramFechas.fechaInicio)} al ${formatLastDate(
           paramFechas.fechaFin
         )}`}
@@ -88,7 +88,7 @@ const Fechas = () => {
       <section className="p-4 overflow-y-auto ">
         <VentasTableContainer
           title={`Compromisos plaza ${getPlazaName(
-            paramFechas.plaza
+            paramFechas.plaza, places
           )} del ${formatLastDate(paramFechas.fechaInicio)} al ${formatLastDate(
             paramFechas.fechaFin
           )}`}
