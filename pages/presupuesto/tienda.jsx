@@ -75,7 +75,7 @@ const Tienda = (props) => {
     <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas por Mes Tienda ${getTiendaName(
-          paramTienda.tienda
+          paramTienda.tienda, shops
         )} del año ${paramTienda.delAgno}`}
       />
       <section className="p-4 flex flex-row justify-between items-baseline">

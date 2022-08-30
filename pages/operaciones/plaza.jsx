@@ -77,7 +77,7 @@ const Plaza = (props) => {
     <div className=" flex flex-col h-full">
       <TitleReport
         title={`Operaciones realizadas Plaza ${getPlazaName(
-          paramPlaza.plaza
+          paramPlaza.plaza, places
         )} ${paramPlaza.delAgno}`}
       />
 

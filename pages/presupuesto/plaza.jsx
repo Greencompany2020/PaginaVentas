@@ -77,7 +77,7 @@ const Plaza = (props) => {
     <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas por Mes Tiendas Plaza ${getPlazaName(
-          paramPlazas.plaza
+          paramPlazas.plaza, places
         )} año ${paramPlazas.delAgno}`}
       />
       <section className="p-4 flex flex-row justify-between items-baseline">

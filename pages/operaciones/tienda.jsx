@@ -128,7 +128,7 @@ const Tienda = (props) => {
     <div className=" flex flex-col h-full">
       <TitleReport
         title={`Operaciones Realizadas Tienda ${getTiendaName(
-          paramTienda.tienda
+          paramTienda.tienda, shops
         )} ${paramTienda.alAgno} - ${paramTienda.delAgno}`}
       />
 

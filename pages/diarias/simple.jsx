@@ -39,7 +39,7 @@ const Simple = (props) => {
     try {
       const response = await getDiariasTiendaSimple(parseParams(params));
       setReportDate({year: params.delAgno, month:params.delMes});
-      setCurrentShop(getTiendaName(params.tienda));
+      setCurrentShop(getTiendaName(params.tienda, shops));
       setDataReport(response);
     } catch (error) {
       sendNotification({

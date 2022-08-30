@@ -121,7 +121,7 @@ const Tiendas = (props) => {
     <div className=" flex flex-col h-full">
       <TitleReport
         title={`Ventas de la Tienda ${getTiendaName(
-          parametrosTiendas.tienda
+          parametrosTiendas.tienda, shops
         )} del año ${parametrosTiendas.delAgno} al año ${
           parametrosTiendas.alAgno
         } (mls.dlls.)`}

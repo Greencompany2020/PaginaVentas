@@ -7,18 +7,25 @@ import { getMonthByNumber, getMonthChars } from "./dateFunctions";
  * @param {string} tiendaId 
  * @returns {string} El nombre de la tienda.
  */
-export const getTiendaName = (tiendaId) => {
-  const tienda = tiendas.find((tienda) => tienda.value == tiendaId);
-  return tienda?.text;
+export const getTiendaName = (tienda, shops = []) => {
+  if(shops.length > 0){
+    const current =  shops.find(item => (item.EmpresaWeb + item.NoTienda) == tienda );
+    return current.Descrip;
+  }
+  return 'No identificada';
+  
 }
 /**
  * Obtiene el nomber de la plaza en base al identificador de la misma.
  * @param {number} plazaId 
  * @returns {string} El nombre de la plaza.
  */
-export const getPlazaName = (plazaId) => {
-  const plaza = plazas.find((plaza) => plaza.value == plazaId);
-  return plaza?.text;
+export const getPlazaName = (plaza, places = []) => {
+  if(places.length > 0 ) {
+    const current = places.find(item => item.NoEmpresa == plaza);
+    return current.DescCta;
+  }
+  return 'Sin indentificar'
 }
 /**
  * Obtiene los 2 últimos dígitos del años. Ej.
