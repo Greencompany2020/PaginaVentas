@@ -127,7 +127,12 @@ const Grupo = (props) => {
               </fieldset>
               
                
-              <SelectTiendasGeneral />
+              <SelectTiendasGeneral 
+                value={parametrosGrupo.tiendas}
+                onChange={(e) => {
+                  handleChange(e, setParametrosGrupo)
+                }}
+              />
             </InputContainer>
             <InputContainer>
               <Checkbox
