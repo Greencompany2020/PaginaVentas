@@ -7,27 +7,25 @@ import { regionesTiendas, concentradoPlazas, regiones } from "./data";
  * @param {number} num El valor a formatear
  * @returns {JSX.Element} La etiqueta <td> con el valor formateado.
  */
-export const formatNumber = (num, isLast=false) => {
-  let numberText = '';
-  if (num < 0) {
-    numberText = Math.abs(num).toLocaleString('en-US');
-    if(!isNaN(numberText)) numberText = 0;
-    return (<td style={{
-      color: isLast ? "white" : "rgb(220 38 38)",
-      fontWeight: 700,
-      textAlign: "right",
-      fontSize: 12
-    }}>{`(${numberText})`}</td>)
-  } else {
-    numberText = Math.abs(num).toLocaleString('en-US');
-    if(isNaN(numberText)) numberText = 0;
-    return (<td style={{
-      color: isLast ? "white" : "rgb(5 150 105)",
-      fontWeight: 700,
-      textAlign: "right",
-      fontSize: 12
-    }}>{numberText}</td>)
+export const formatNumber = (num, isLast = false) => {
+  if (!isNaN(num)) {
+    if (num < 0) {
+      return (<td style={{
+        color: isLast ? "white" : "rgb(220 38 38)",
+        fontWeight: 700,
+        textAlign: "right",
+        fontSize: 12
+      }}>{`(${Math.abs(num).toLocaleString()})`}</td>)
+    } else {
+      return (<td style={{
+        color: isLast ? "white" : "rgb(5 150 105)",
+        fontWeight: 700,
+        textAlign: "right",
+        fontSize: 12
+      }}>{Math.abs(num).toLocaleString()}</td>)
+    }
   }
+  return <td>0</td>
 }
 
 export const stringFormatNumber = (num) => {

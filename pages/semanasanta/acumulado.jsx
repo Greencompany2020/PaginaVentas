@@ -121,7 +121,7 @@ const Acumulado = (props) => {
                     ))
                   }
                 </Select>
-                <Select id='mostrarTienda' name='mostrarTienda' label='Mostrar tiendas'>
+                <Select id='mostrarTiendas' name='mostrarTiendas' label='Mostrar tiendas'>
                   {
                     comboValues.CBMOSTRARTIENDAS.map((item, i) => (
                       <option key={i} value={item.value}>{item.text}</option>

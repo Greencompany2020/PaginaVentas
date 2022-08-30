@@ -204,34 +204,10 @@ export const enlaces = [
   },
   {
     summaryText: 'MKT',
-    links: [
-      {
-        link: '/mkt/clubfrogs',
-        linkText: 'Club Frogs'
-      },
-      {
-        link: '/mkt/descuentos',
-        linkText: 'Descuentos'
-      },
-      {
-        link: '/mkt/graficapromociones',
-        linkText: 'Gráfica Promociones'
-      },
-      {
-        link: '/mkt/ocupacionhotelera',
-        linkText: 'Ocupación Hotelera'
-      },
-      {
-        link: '/mkt/promociones',
-        linkText: 'Promociones'
-      },
+    links: [    
       {
         link: '/mkt/promotores',
         linkText: 'Promotores'
-      },
-      {
-        link: '/mkt/sugerencias',
-        linkText: 'Sugerencias'
       },
     ]
   },
