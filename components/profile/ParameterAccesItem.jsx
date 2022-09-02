@@ -11,7 +11,7 @@ export default function ParameterAccesItem(props) {
     const service = userService();
     const configService = configuratorService();
     const sendNotification = useNotification();
-    const {id, name, linkTo, isSelected, setSelected, idAccess, globalParameters, refreshParameters} = props;
+    const {id, name, linkTo, isSelected, setSelected, idAccess, globalParameters, refreshParams} = props;
     const [parameters, setParameters] = useState({
         userParameters: undefined,
         accessParameters: undefined,
@@ -40,7 +40,7 @@ export default function ParameterAccesItem(props) {
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error.response.data.message || error.message
+                message:error?.response?.data?.message || error.message
             })
         }
     }
@@ -48,7 +48,7 @@ export default function ParameterAccesItem(props) {
     const handleSetFavorite = async () => {
         try {
             const response = await service.updateGlobalParameters(idAccess);
-            refreshParameters(response)
+            refreshParams(response)
             sendNotification({
                 type: 'OK',
                 message: 'Establecido como favorito'
@@ -56,7 +56,7 @@ export default function ParameterAccesItem(props) {
         } catch (error) {
             sendNotification({
                 type: 'OK',
-                message: error.response.data.message || error.message
+                message:error?.response?.data?.message || error.message
             });
         }
     }
@@ -98,7 +98,7 @@ export default function ParameterAccesItem(props) {
                 } catch (error) {
                     sendNotification({
                         type:'ERROR',
-                        message:error.response.data.message || error.message
+                        message:error?.response?.data?.message || error.message
                     })
                 }
             }
@@ -118,7 +118,7 @@ export default function ParameterAccesItem(props) {
                             {
                                 isFavorite() ?
                                 <EyeIcon width={24} className={'text-blue-500'}/> :
-                                <EyeOffIcon width={24} className={'text-gray-500 hover:text-blue-500'} />
+                                <EyeOffIcon width={24} className={'text-gray-500 hover:text-blue-500'} onClick={handleSetFavorite}/>
                             }
                             <CogIcon width={24} className='text-gray-500 hover:text-blue-500' onClick={hadleSelectedClose}/>
                         </div>
