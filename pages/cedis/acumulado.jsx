@@ -12,7 +12,6 @@ import {
 import { checkboxLabels } from "../../utils/data";
 import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
-import { useNotification } from "../../components/notifications/NotificationsProvider";
 
 const acumulado = () => {
   return (

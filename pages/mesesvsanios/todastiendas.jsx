@@ -42,7 +42,7 @@ const TodasTiendas = (props) => {
     delAgno: getCurrentYear(),
     conIva: config?.conIva || 0,
     conTiendasCerradas: config?.conTiendasCerradas || 0,
-    resultadosPesos: config?.resultadosPesos || 1,
+    resultadosPesos: config?.resultadosPesos || 0,
   });
 
   useEffect(() => {
@@ -170,17 +170,24 @@ const TodasTiendas = (props) => {
         </ParametersContainer>
       </section>
       <section className="pl-4 pr-4 md:pl-8 md:pr-8 xl:pl-16 xl:pr-16 pb-4 h-full overflow-y-auto ">
-        <ComparativoVentas>
-          <BarChart
-            text={`Ventas al ${formatLastDate(
-              getPrevDate(0, paramTiendas.delAgno)
-            )}`}
-            data={{
-              labels,
-              datasets,
-            }}
-          />
-        </ComparativoVentas>
+        {
+          datasets.length > 0 ?
+            <ComparativoVentas>
+              <BarChart
+                text={`Ventas al ${formatLastDate(
+                  getPrevDate(0, paramTiendas.delAgno)
+                )}`}
+                data={{
+                  labels,
+                  datasets,
+                }}
+              />
+            </ComparativoVentas>
+            :
+            <div className=" flex justify-center">
+              <h4 className="text-xl">Consulta sin resultados</h4>
+            </div>
+        }
       </section>
     </div>
   );

@@ -43,7 +43,7 @@ const Acumulado = (props) => {
     conIva: parseNumberToBoolean(config?.conIva || 0),
     conVentasEventos: parseNumberToBoolean(config?.conVentasEventos,0),
     incluirFinSemanaAnterior: parseNumberToBoolean(config?.incluirFinSemanaAnterior || 0),
-    resultadosPesos:parseNumberToBoolean(config?.resultadosPesos || 1),
+    resultadosPesos:parseNumberToBoolean(config?.resultadosPesos || 0),
     incremento: config?.incremento || 'compromiso',
     mostrarTiendas: config?.mostrarTiendas || 'activas',
     tipoCambioTiendas: parseNumberToBoolean(config?.tipoCambioTiendas || 0),

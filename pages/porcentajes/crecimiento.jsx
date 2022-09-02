@@ -42,11 +42,11 @@ const Crecimiento = (props) => {
   const [paramCrecimiento, setParamCrecimiento] = useState({
     fecha: getPrevDate(1),
     tiendas: 0,
-    conIva: 0,
-    conVentasEventos: 0,
-    conTiendasCerradas: 0,
-    sinTiendasSuspendidas: 1,
-    resultadosPesos: 1,
+    conIva: config?.conIva || 0,
+    conVentasEventos: config?.conVentasEventos || 0,
+    conTiendasCerradas: config?.conTiendasCerradas || 0,
+    sinTiendasSuspendidas: config?.sinTiendasSuspendidas|| 0,
+    resultadosPesos: config?.resultadosPesos || 0,
   });
 
   const createDateRange = useCallback(() => {
@@ -57,17 +57,6 @@ const Crecimiento = (props) => {
     }
     setDateRange(dateRange);
   }, [paramCrecimiento.fecha]);
-
-  useEffect(()=>{
-    setParamCrecimiento(prev => ({
-      ...prev,
-      conIva: config?.conIva || 0,
-      conVentasEventos: config?.conVentasEventos || 0,
-      conTiendasCerradas: config?.conTiendasCerradas || 0,
-      sinTiendasSuspendidas: config?.sinTiendasSuspendidas|| 0,
-      resultadosPesos: config?.resultadosPesos || 1,
-    }))
-  },[config])
 
   useEffect(() => {
     (async()=>{

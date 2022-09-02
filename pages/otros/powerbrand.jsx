@@ -2,7 +2,6 @@ import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
   Parameters,
-  SmallContainer,
 } from "../../components/containers";
 import { InputContainer, InputDate } from "../../components/inputs";
 import {

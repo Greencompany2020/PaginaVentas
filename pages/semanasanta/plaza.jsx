@@ -36,7 +36,7 @@ const Plaza = (props) => {
     conVentasEventos: config?.conVentasEventos || 0,
     conTiendasCerradas: config?.conTiendasCerradas || 0,
     incluirFinSemanaAnterior: config?.incluirFinSemanaAnterior || 0,
-    resultadosPesos: config?.resultadosPesos || 1,
+    resultadosPesos: config?.resultadosPesos || 0,
   });
 
 

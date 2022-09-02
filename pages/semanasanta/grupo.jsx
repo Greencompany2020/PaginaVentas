@@ -38,8 +38,8 @@ const Grupo = (props) => {
     conIva: config?.conIva || 0,
     conVentasEventos: config?.conVentasEventos || 0,
     conTiendasCerradas: config?.conTiendasCerradasa || 0,
-    incluirFinSemanaAnterior: config?.incluirFinSemanaAnterior || 1,
-    resultadosPesos: config?.resultadosPesos || 1,
+    incluirFinSemanaAnterior: config?.incluirFinSemanaAnterior || 0,
+    resultadosPesos: config?.resultadosPesos || 0,
   });
 
 

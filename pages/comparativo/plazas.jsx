@@ -44,7 +44,7 @@ const Plazas = (props) => {
     fecha:dateHelper.getYesterdayDate(),
     conIva: parseNumberToBoolean(config?.conIva || 0),
     conVentasEventos: parseNumberToBoolean(config?.conVentasEventos || 0),
-    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 1),
+    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
     tipoCambioTiendas: parseNumberToBoolean(config?.tipoCambioTiendas || 0),
     agnosComparar: spliteArrDate(config?.agnosComparativos, config?.cbAgnosComparar || 1),
     cbAgnosComparar: config?.cbAgnosComparar || 1, 
