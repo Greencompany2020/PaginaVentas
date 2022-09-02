@@ -43,7 +43,7 @@ const Tiendas = (props) => {
     conIva: config?.conIva || 0,
     conVentasEventos:  config?.conVentasEventos || 0,
     conTiendasCerradas:  config?.conTiendasCerradas || 0,
-    resultadosPesos:  config?.resultadosPesos || 1,
+    resultadosPesos:  config?.resultadosPesos || 0,
   });
 
   

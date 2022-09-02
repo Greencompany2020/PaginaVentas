@@ -51,11 +51,11 @@ const Tiendas = (props) => {
     tiendas: 0,
     conIva: parseNumberToBoolean(config?.conIva || 0),
     conVentasEventos:parseNumberToBoolean(config?.conVentasEventos || 0),
-    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 1),
+    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
     incremento: config?.cbIncremento || 'compromiso',
     mostrarTiendas: config?.cbMostrarTiendas || 'activas',
     agnosComparar: spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1),
-    tipoCambioTiendas: 0,
+    tipoCambioTiendas: config?.tipoCambioTiendas || 0,
     cbAgnosComparar: config?.cbAgnosComparar || 1, 
   }
   Object.seal(parameters);

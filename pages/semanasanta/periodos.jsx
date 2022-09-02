@@ -5,8 +5,6 @@ import {
   PeriodosSemanaSantaTable,
 } from "../../components/table";
 import { getSemanaSantaPeriodos } from "../../services/semanaSantaService";
-import { MENSAJE_ERROR } from "../../utils/data";
-import { isError } from "../../utils/functions";
 import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";

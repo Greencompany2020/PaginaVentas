@@ -31,12 +31,12 @@ const Grupo = (props) => {
     delAgno: new Date(Date.now()).getFullYear(),
     tiendas: 0,
     conIva: parseNumberToBoolean(config?.conIva || 0),
-    semanaSanta: parseNumberToBoolean(config?.semanaSanta|| 1),
+    semanaSanta: parseNumberToBoolean(config?.semanaSanta|| 0),
     conVentasEventos: parseNumberToBoolean(config?.conVentasEventos || 0),
     conTiendasCerradas: parseNumberToBoolean(config?.conTiendasCerradas || 0),
     sinAgnoVenta: parseNumberToBoolean(config?.sinAgnoVenta || 0),
     sinTiendasSuspendidas: parseNumberToBoolean(config?.sinTiendasSuspendidas || 0),
-    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 1),
+    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
   }
   Object.seal(parameters);
 

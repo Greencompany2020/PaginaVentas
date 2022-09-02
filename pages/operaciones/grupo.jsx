@@ -41,7 +41,7 @@ const Grupo = (props) => {
     promedio: config?.promedio || 0,
     acumulado: config?.acumulado || 0,
     conEventos: config?.conEventos || 0,
-    resultadosPesos: config?.resultadosPesos || 1,
+    resultadosPesos: config?.resultadosPesos || 0,
   });
 
   

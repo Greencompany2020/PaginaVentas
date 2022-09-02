@@ -50,7 +50,7 @@ const Plazas = (props) => {
     fechaInicio: beginDate,
     fechaFin: endDate,
     conIva: parseNumberToBoolean(config?.conIva || 0),
-    resultadosPesos: parseNumberToBoolean(config?.conIva || 1),
+    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
     conVentasEventos:parseNumberToBoolean(config?.conVentasEventos || 0),
     incremento: config?.cbIncremento || 'compromiso',
     mostrarTienda: config?.cbMostrarTiendas || 'activas',

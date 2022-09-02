@@ -55,12 +55,12 @@ function Grupo(props) {
     fecha: dateHelper.getYesterdayDate(),
     conIva: parseNumberToBoolean(config?.conIva || 0),
     incremento: 'compromiso',
-    noHorasVentasParciales:parseNumberToBoolean(config?.noHorasVentasParciales || 1),
+    noHorasVentasParciales:parseNumberToBoolean(config?.noHorasVentasParciales || 0),
     conVentasEventos: parseNumberToBoolean(config?.conVentasEventos || 0),
     tipoCambioTiendas: parseNumberToBoolean(config?.tipoCambioTiendas || 0),
     agnosComparar: spliteArrDate(config?.agnosComparativos,config?.agnosComparar || 1),
     cbAgnosComparar: config?.cbAgnosComparar || 1,
-    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 1),
+    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
     mostrarTiendas: 'activas'
   }
   Object.seal(parameters);

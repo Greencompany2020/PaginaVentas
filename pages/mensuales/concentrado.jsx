@@ -14,13 +14,11 @@ import { InputContainer, InputYear, Checkbox } from "../../components/inputs";
 import {
   checkboxLabels,
   concentradoPlazas,
-  MENSAJE_ERROR,
 } from "../../utils/data";
 import { inputNames } from "../../utils/data/checkboxLabels";
 import { getMensualesConcentrado } from "../../services/MensualesServices";
 import { numberWithCommas } from "../../utils/resultsFormated";
 import { handleChange } from "../../utils/handlers";
-import { isError } from "../../utils/functions";
 import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
@@ -35,7 +33,7 @@ const Concentrado = (props) => {
     ventasMilesDlls:config?.ventasMilesDlls || 0,
     conVentasEventos: config?.conVentasEventos || 0,
     conTiendasCerradas: config?.conTiendasCerradas || 0,
-    resultadosPesos: config?.resultadosPesos || 1,
+    resultadosPesos: config?.resultadosPesos || 0,
   });
 
   useEffect(() => {

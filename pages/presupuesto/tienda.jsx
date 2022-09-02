@@ -45,7 +45,7 @@ const Tienda = (props) => {
     total: config?.total || 0,
     acumulado: config?.acumulado || 0,
     conIva: config?.conIva || 0,
-    resultadosPesos: config?.resultadosPesos || 1,
+    resultadosPesos: config?.resultadosPesos || 0,
   });
 
  
