@@ -8,7 +8,9 @@ import {
   endOfMonth,
   startOfMonth,
   subMonths,
-  subYears
+  subYears,
+  isMonday,
+  isSunday,
 } from "date-fns";
 import { meses } from "./data";
 import { getDayWeekName, validateDate } from "./functions";
@@ -46,8 +48,24 @@ export const getYearFromDate = (date) => {
  * @returns {string[]} Un array con el rango de fechas. El primer valor es la fecha de inicio y el segundo la de fin.
  */
 export const getCurrentWeekDateRange = () => {
-  const beginDate = format(previousMonday(new Date(Date.now())), "yyyy-MM-dd", { weekStartsOn: 1 });
-  const endDate = format(nextSunday(new Date(Date.now())), "yyyy-MM-dd", { weekStartsOn: 1 });
+  const current = new Date(Date.now());
+  let beginDate;
+  let endDate;
+
+  if(isMonday(current)){
+    beginDate = format(current, "yyyy-MM-dd", { weekStartsOn: 1 });
+  }
+  else{
+    beginDate = format(previousMonday(new Date(Date.now())), "yyyy-MM-dd", { weekStartsOn: 1 });
+  }
+
+  if(isSunday(current)){
+    endDate = format(current, "yyyy-MM-dd", { weekStartsOn: 1 });
+  }
+  else{
+    endDate = format(nextSunday(new Date(Date.now())), "yyyy-MM-dd", { weekStartsOn: 1 });
+  }
+ 
   return [beginDate, endDate];
 }
 
@@ -168,6 +186,12 @@ export const getPrevDate = (days, year = 0) => {
   }
   const prevDate = sub(currentDate, { days });
   return format(prevDate, "yyyy-MM-dd", { weekStartsOn: 1 });
+}
+
+/*Es una copia de la funcion dearriba */
+export const newGetPevDate = (days) => {
+  const current = new Date(Date.now());
+  return format(sub(current, {days}), "yyyy-MM-dd", { weekStartsOn: 1 } )
 }
 /**
  * Calcula la fechas de inicio y de fin de la semana santa del año ingresado.
