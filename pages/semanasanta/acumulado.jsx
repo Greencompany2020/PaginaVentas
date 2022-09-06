@@ -134,6 +134,7 @@ const Acumulado = (props) => {
                 <Checkbox id={inputNames.CON_VENTAS_EVENTOS}  name={inputNames.CON_VENTAS_EVENTOS} label={checkboxLabels.INCLUIR_VENTAS_EVENTOS}/>
                 <Checkbox id={inputNames.INCLUIR_FIN_SEMANA_ANTERIOR}  name={inputNames.INCLUIR_FIN_SEMANA_ANTERIOR} label={checkboxLabels.INCLUIR_FIN_DE_SEMANA_ANTERIOR}/>
                 <Checkbox id={inputNames.RESULTADOS_PESOS}  name={inputNames.RESULTADOS_PESOS} label={checkboxLabels.RESULTADO_PESOS}/>
+                <Checkbox id={inputNames.TIPO_CAMBIO_TIENDAS}  name={inputNames.TIPO_CAMBIO_TIENDAS} label={checkboxLabels.TIPO_CAMBIO_TIENDAS}/>
               </fieldset>
             </Form>
           </Formik>
