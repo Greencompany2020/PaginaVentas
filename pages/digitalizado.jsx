@@ -8,7 +8,7 @@ import Paginate from '../components/paginate';
 import digitalizadoService from '../services/digitalizadoService';
 import { useNotification } from '../components/notifications/NotificationsProvider';
 
-const digitalizado = () => {
+const Digitalizado = () => {
     const { user } = useSelector(state => state);
     const [data, setData] = useState(null);
     const [userGorups, setUserGroups] = useState(null);
@@ -29,6 +29,7 @@ const digitalizado = () => {
                 })
             }
         })()
+         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
@@ -74,7 +75,7 @@ const digitalizado = () => {
 
                     <div>
                         <Paginate
-                            data={data.politicas}
+                            data={data?.politicas}
                             showItems={5}
                             options={{
                                 labelSelector: "Mostrar",
@@ -90,6 +91,6 @@ const digitalizado = () => {
         </div>
     )
 }
-const DigitalizadoWithAuth = withAuth(digitalizado);
+const DigitalizadoWithAuth = withAuth(Digitalizado);
 DigitalizadoWithAuth.getLayout = getBaseLayout;
 export default DigitalizadoWithAuth;
