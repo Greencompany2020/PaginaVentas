@@ -3,7 +3,7 @@
 /*GLOBAL TABLE DATA ATTRIBUTES*/
 
 .priority-cell {@apply font-bold}
-.selected-row {@apply bg-yellow-200 font-bold !important} /*Mala practica, pero necesario en este caso unu*/
+.selected-row > td {@apply bg-yellow-200 font-bold !important} /*Mala practica, pero necesario en este caso unu*/
 
 .table-report tbody tr td[data-type-format="text" i],
 .table-report-footer tbody tr td[data-type-format="text" i],
@@ -21,27 +21,27 @@
 {@apply text-red-600 font-bold}
 
 
-.table-report tbody tr td[data-porcent-format="positive" i],
-.table-report-footer tbody tr td[data-porcent-format="positive" i],
-.table-report-mobile tbody tr td[data-porcent-format="positive" i]
+.table-report tbody tr td[data-porcent-format="positive" i] > td,
+.table-report-footer tbody tr td[data-porcent-format="positive" i] > td,
+.table-report-mobile tbody tr td[data-porcent-format="positive" i] > td
 {@apply text-green-600 font-bold}
 
-.table-report tbody tr[data-row-format="plaza" i],
-.table-report-footer tbody tr[data-row-format="plaza" i],
-.table-report-mobile tbody tr[data-row-format="plaza" i]
-{@apply bg-gray-300}
+.table-report tbody tr[data-row-format="plaza" i] > td,
+.table-report-footer tbody tr[data-row-format="plaza" i] > td,
+.table-report-mobile tbody tr[data-row-format="plaza" i] > td
+{@apply bg-gray-300 font-bold }
 
 
-.table-report tbody tr[data-row-format="region" i],
-.table-report-footer tbody tr[data-row-format="region" i],
-.table-report-mobile tbody tr[data-row-format="region" i]
-{@apply bg-gray-400}
+.table-report  tbody tr[data-row-format="region" i] > td,
+.table-report-footer  tbody tr[data-row-format="region" i] > td,
+.table-report-mobile tbody tr[data-row-format="region" i] > td
+{@apply bg-gray-400 font-bold}
 
 
 
 /***************************************************************************************************************/
 /*HEADER TABLE STYLE*/
-.table-report{@apply w-[100rem] xl:w-full table-auto xl:table-fixed text-xs text-right}
+.table-report{@apply text-xs text-right w-[100rem]  md:w-full xl:w-full}
 .table-report thead{@apply text-white}
 .table-report caption{@apply  font-bold uppercase mb-1}
 .table-report thead tr th {@apply bg-black-shape border}
@@ -49,6 +49,10 @@
 .table-report thead tr:first-child th:first-child{@apply  rounded-tl-lg border-l-0 border-t-0}
 .table-report thead tr:first-child th:last-child{@apply   rounded-tr-lg  border-r-0 border-t-0}
 
+/*BODY TABLE STYLE*/
+.table-report--sticky, 
+.table-report--sticky 
+{@apply sticky w-32 h-fit left-0 bg-white }
 
 /*FOOTER TABLE STYLE*/
 .table-report tbody tr:last-child td{@apply bg-black-shape text-white font-bold}
@@ -58,7 +62,6 @@
 .table-report tfoot tr:last-child td{@apply border-b-0}
 .table-report tfoot tr:last-child td:first-child{@apply  rounded-bl-lg border-l-0 border-b-0}
 .table-report tfoot tr:last-child td:last-child{@apply  rounded-br-lg border-r-0 border-b-0}
-
 
 
 
@@ -82,7 +85,7 @@
 
 /***************************************************************************************************************/
 /*HEADER TABLE STYLE*/
-.table-report-footer{@apply w-[100rem] xl:w-full table-auto xl:table-fixed text-xs text-right}
+.table-report-footer{@apply text-xs text-right w-[80rem] table-fixed md:w-full md:table-auto }
 .table-report-footer thead{@apply text-white}
 .table-report-footer thead tr th {@apply bg-black-shape border}
 .table-report-footer thead tr th:last-child {@apply bg-black-shape border-r-0}

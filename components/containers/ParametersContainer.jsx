@@ -51,7 +51,7 @@ const ParametersContainer = ({ children }) => {
 
         <div
           className={`
-            absolute w-[21.5rem] md:w-[23rem] h-min-fit h-max[28rem] top-9 border border-slate-400 bg-slate-200 rounded-md  ${!toggle && "hidden"}`}
+            absolute w-[21.5rem] md:w-[23rem] h-min-fit h-max[28rem] top-9 border border-slate-400 bg-slate-200 rounded-md z-20  ${!toggle && "hidden"}`}
           ref={container}
           onMouseLeave={handleLeave}
         >
