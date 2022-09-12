@@ -110,3 +110,9 @@
 .table-report-footer tfoot tr:last-child td{@apply border-b-0 text-center}
 .table-report-footer tfoot tr:last-child td:first-child{@apply  rounded-bl-lg border-l-0 border-b-0}
 .table-report-footer tfoot tr:last-child td:last-child{@apply  rounded-br-lg border-r-0 border-b-0}
+
+/*POLITICAS TABLE STYLE*/
+.table-politicas {@apply text-sm md:w-full text-left}
+.table-politicas thead tr th{@apply bg-black-shape text-white p-1}
+.table-politicas thead tr th:first-child{@apply rounded-l-md}
+.table-politicas thead tr th:last-child{@apply rounded-r-md}

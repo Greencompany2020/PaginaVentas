@@ -7,11 +7,12 @@ import { CogIcon } from '@heroicons/react/outline';
 import Paginate from '../components/paginate';
 import digitalizadoService from '../services/digitalizadoService';
 import { useNotification } from '../components/notifications/NotificationsProvider';
+import PoliticasTable from '../components/digitalizado/PoliticasTable';
 
 const Digitalizado = () => {
     const { user } = useSelector(state => state);
     const [data, setData] = useState(null);
-    const [userGorups, setUserGroups] = useState(null);
+    const [userGroups, setUserGroups] = useState(null);
     const service = digitalizadoService();
     const sendNotification = useNotification();
 
@@ -25,7 +26,7 @@ const Digitalizado = () => {
             } catch (error) {
                 sendNotification({
                     type: 'ERROR',
-                    messsage: error.response.message
+                    message: error?.response?.message || error.message
                 })
             }
         })()
@@ -35,8 +36,8 @@ const Digitalizado = () => {
     return (
         <div className="relative flex flex-col md:flex-row h-full">
             <section className={"bg-black-light h-24 order-2  md:order-1 md:w-14 md:h-full "}>
-                <div className=' flex w-full h-full justify-center'>
-                    <CogIcon width={32} className='text-white self-end' />
+                <div className=' flex w-full h-full items-center md:justify-center'>
+                    <CogIcon width={32} className='text-white md:self-end' />
                 </div>
             </section>
 
@@ -48,23 +49,29 @@ const Digitalizado = () => {
                         </figure>
                     </div>
                     <div className='mt-8'>
-                        <p>Colaborador</p>
-                        <p>{user.Nombre} {user.Apellidos}</p>
-
-                        <p>Usuario</p>
-                        <p>{user.UserCode}</p>
-
-                        <p>Email</p>
-                        <p>{user.Email}</p>
-
-                        <p>Grupo</p>
-                        <p>{user.NombreGrupo}</p>
+                        <dl>
+                            <dt className="font-semibold">Colaborador</dt>
+                            <dd className="mb-2">{user.Nombre} {user.Apellidos}</dd>
+                            <dt className="font-semibold">Usuario</dt>
+                            <dd className="mb-2">{user.UserCode}</dd>
+                            <dt className="font-semibold">Email</dt>
+                            <dd className="mb-2">{user.Email}</dd>
+                            <dt className="font-semibold">Grupo</dt>
+                            <dd className='mb-2'>{user.NombreGrupo}</dd>
+                            <dt className="font-semibold">Claves autorizadas</dt>
+                            <dd className="truncate">
+                                {
+                                    userGroups &&
+                                    userGroups?.claves.map(item=>(item.claves))
+                                }
+                            </dd>
+                        </dl>
                     </div>
                 </div>
             </section>
-            <section className='bg-red-200 order-3 h-full w-full'>
+            <section className='order-3 h-full w-full overflow-auto'>
                 <div className="p-4">
-                    <div>
+                    <div className="mb-8">
                         <h3 className="text-xl font-semibold mb-2">Politicas y procedimientos</h3>
                         <p>
                             Listado de politicas y procedimientos de The Green Company,
@@ -83,7 +90,7 @@ const Digitalizado = () => {
                                 searchBy: ["menu", "reporte", "nombreReporte"],
                             }}
                         >
-                           
+                           <PoliticasTable  />
                         </Paginate>
                     </div>
                 </div>
