@@ -36,7 +36,7 @@ const Dashboard = () => {
               <p className="text-right font-bold">Menu</p>
               <hr />
             </div>
-            <section className="grid grid-cols-2 xl:grid-cols-4 content-center gap-8">
+            <section className="grid grid-cols-2 xl:grid-cols-2 content-center gap-8">
               <DirectAccess link={parameters?.point || '/ventas'} name={'Estadisticas de ventas'} image={'/icons/sales-forecast.svg'} />
               <DirectAccess link={'/minutas'} name={'Minutas'} image={'/icons/chat.svg'} />
               <DirectAccess link={'/configuracion/usuarios'} name={'Configuracion'} image={'/icons/config-5.png'} />

@@ -174,7 +174,7 @@ table.last-row-bg tbody tr:last-child {
   }
 
   /* Renglones tablas hover y seleccionado */
-  tbody tr:hover {
+  table tbody tr:hover  > td{
     @apply bg-blue-200
   }
 

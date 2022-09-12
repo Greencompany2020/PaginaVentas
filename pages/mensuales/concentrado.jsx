@@ -6,46 +6,43 @@ import {
 } from "../../components/containers";
 import {
   VentasTableContainer,
-  VentasTable,
-  TableHead,
-  TableRow,
 } from "../../components/table";
 import { InputContainer, InputYear, Checkbox } from "../../components/inputs";
 import {
   checkboxLabels,
-  concentradoPlazas,
 } from "../../utils/data";
 import { inputNames } from "../../utils/data/checkboxLabels";
 import { getMensualesConcentrado } from "../../services/MensualesServices";
-import { numberWithCommas } from "../../utils/resultsFormated";
+import { numberWithCommas, isRegionOrPlaza, selectRow } from "../../utils/resultsFormated";
 import { handleChange } from "../../utils/handlers";
 import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import { v4 } from "uuid";
 
 const Concentrado = (props) => {
-  const {config} = props;
+  const { config } = props;
   const sendNotification = useNotification();
   const [concentrado, setConcentrado] = useState([]);
   const [concentradoParametros, setConcentradoParametros] = useState({
     delAgno: new Date(Date.now()).getFullYear(),
     conIva: config?.conIva || 0,
-    ventasMilesDlls:config?.ventasMilesDlls || 0,
+    ventasMilesDlls: config?.ventasMilesDlls || 0,
     conVentasEventos: config?.conVentasEventos || 0,
     conTiendasCerradas: config?.conTiendasCerradas || 0,
     resultadosPesos: config?.resultadosPesos || 0,
   });
 
   useEffect(() => {
-    (async()=>{
+    (async () => {
       if (concentradoParametros.delAgno.toString().length === 4) {
         try {
           const response = await getMensualesConcentrado(concentradoParametros);
           setConcentrado(response);
         } catch (error) {
           sendNotification({
-            type:'ERROR',
-            message:error.response.data.message || error.message
+            type: 'ERROR',
+            message: error.response.data.message || error.message
           });
         }
       }
@@ -105,72 +102,64 @@ const Concentrado = (props) => {
       </section>
       <section className="p-4 overflow-y-auto ">
         <VentasTableContainer>
-          <VentasTable className="tfooter">
-            <TableHead>
+          <table className="table-report" onClick={selectRow}>
+            <thead>
               <tr>
-                <th rowSpan={2} className=" bg-black-shape  rounded-tl-xl">
-                  TDA.
-                </th>
-                <th className=" bg-black-shape">ENE</th>
-                <th className=" bg-black-shape">FEB</th>
-                <th className=" bg-black-shape">MAR</th>
-                <th className=" bg-black-shape">ABR</th>
-                <th className=" bg-black-shape">MAY</th>
-                <th className=" bg-black-shape">JUN</th>
-                <th className=" bg-black-shape">JUL</th>
-                <th className=" bg-black-shape">AGO</th>
-                <th className=" bg-black-shape">SEP</th>
-                <th className=" bg-black-shape">OCT</th>
-                <th className=" bg-black-shape">NOV</th>
-                <th className=" bg-black-shape">DIC</th>
-                <th className=" bg-black-shape  rounded-tr-xl">TTAL</th>
+                <th rowSpan={2}  className={"text-left table-report--sticky w-16"}>TDA.</th>
+                <th>ENE</th>
+                <th>FEB</th>
+                <th>MAR</th>
+                <th>ABR</th>
+                <th>MAY</th>
+                <th>JUN</th>
+                <th>JUL</th>
+                <th>AGO</th>
+                <th>SEP</th>
+                <th>OCT</th>
+                <th>NOV</th>
+                <th>DIC</th>
+                <th>TOTAL</th>
               </tr>
-              <tr className="text-center">
-                <th className=" bg-black-shape">$</th>
-                <th className=" bg-black-shape">$</th>
-                <th className=" bg-black-shape">$</th>
-                <th className=" bg-black-shape">$</th>
-                <th className=" bg-black-shape">$</th>
-                <th className=" bg-black-shape">$</th>
-                <th className=" bg-black-shape">$</th>
-                <th className=" bg-black-shape">$</th>
-                <th className=" bg-black-shape">$</th>
-                <th className=" bg-black-shape">$</th>
-                <th className=" bg-black-shape">$</th>
-                <th className=" bg-black-shape">$</th>
-                <th className=" bg-black-shape">Año</th>
+              <tr className="text-right">
+                <th>$</th>
+                <th>$</th>
+                <th>$</th>
+                <th>$</th>
+                <th>$</th>
+                <th>$</th>
+                <th>$</th>
+                <th>$</th>
+                <th>$</th>
+                <th>$</th>
+                <th>$</th>
+                <th>$</th>
+                <th>Año</th>
               </tr>
-            </TableHead>
-            <tbody className="bg-white">
-              {concentrado?.map((items) => (
-                <TableRow
-                  key={items.tienda}
-                  rowId={items.tienda}
-                  className={`text-xs text-right ${
-                    concentradoPlazas.includes(items.tienda) &&
-                    "bg-gray-300 font-bold"
-                  }`}
-                >
-                  <td className="text-black font-bold text-left">
-                    {items.tienda}
-                  </td>
-                  <td>{numberWithCommas(items.enero)}</td>
-                  <td>{numberWithCommas(items.febrero)}</td>
-                  <td>{numberWithCommas(items.marzo)}</td>
-                  <td>{numberWithCommas(items.abril)}</td>
-                  <td>{numberWithCommas(items.mayo)}</td>
-                  <td>{numberWithCommas(items.junio)}</td>
-                  <td>{numberWithCommas(items.julio)}</td>
-                  <td>{numberWithCommas(items.agosto)}</td>
-                  <td>{numberWithCommas(items.septiembre)}</td>
-                  <td>{numberWithCommas(items.octubre)}</td>
-                  <td>{numberWithCommas(items.noviembre)}</td>
-                  <td>{numberWithCommas(items.diciembre)}</td>
-                  <td>{numberWithCommas(items.total)}</td>
-                </TableRow>
-              ))}
+            </thead>
+            <tbody>
+              {
+                concentrado &&
+                concentrado.map(item => (
+                  <tr data-row-format={isRegionOrPlaza(item.tienda)} key={v4()}>
+                    <td className="priority-cell table-report--sticky text-left ">{item.tienda}</td>
+                    <td>{numberWithCommas(item.enero)}</td>
+                    <td>{numberWithCommas(item.febrero)}</td>
+                    <td>{numberWithCommas(item.marzo)}</td>
+                    <td>{numberWithCommas(item.abril)}</td>
+                    <td>{numberWithCommas(item.mayo)}</td>
+                    <td>{numberWithCommas(item.junio)}</td>
+                    <td>{numberWithCommas(item.julio)}</td>
+                    <td>{numberWithCommas(item.agosto)}</td>
+                    <td>{numberWithCommas(item.septiembre)}</td>
+                    <td>{numberWithCommas(item.octubre)}</td>
+                    <td>{numberWithCommas(item.noviembre)}</td>
+                    <td>{numberWithCommas(item.diciembre)}</td>
+                    <td>{numberWithCommas(item.total)}</td>
+                  </tr>
+                ))
+              }
             </tbody>
-          </VentasTable>
+          </table>
         </VentasTableContainer>
       </section>
     </div>
