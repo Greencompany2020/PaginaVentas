@@ -2,8 +2,7 @@ import React from 'react';
 import { v4 } from 'uuid';
 import { PencilIcon, UserGroupIcon, TrashIcon } from '@heroicons/react/outline';
 
-export default function ClavesTable({items, handleEdit, editGroups}) {
-
+export default function ClavesTable({items, handleEdit, editGroups, deleteClave}) {
     return (
         <table className={"table-politicas table-auto"}>
             <thead>
@@ -24,7 +23,7 @@ export default function ClavesTable({items, handleEdit, editGroups}) {
                                 <div className="flex items-center space-x-2">
                                     <PencilIcon width={24} onClick={() => handleEdit(item)}/>
                                     <UserGroupIcon width={24} onClick={() => editGroups(item)}/>
-                                    <TrashIcon width={24} />
+                                    <TrashIcon width={24} onClick={() => deleteClave(item.id)}/>
                                 </div>
                             </td>
                         </tr>

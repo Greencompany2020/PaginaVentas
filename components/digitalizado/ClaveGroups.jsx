@@ -80,7 +80,7 @@ export default function ClaveGroups({ id ,handleToggle}) {
                     options={{
                         labelSelector: "Mostrar",
                         optionRange: [20, 50, 100],
-                        searchBy: ["menu", "reporte", "nombreReporte"],
+                        searchBy: ["nombre"],
                     }}>
                     <Table handleChange={handleChange} />
                 </Paginate>

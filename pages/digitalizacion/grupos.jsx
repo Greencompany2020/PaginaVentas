@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import withAuth from '../../components/withAuth';
-import {  PlusIcon} from '@heroicons/react/outline';
+import { PlusIcon } from '@heroicons/react/outline';
 import { UserGroupIcon } from '@heroicons/react/solid'
 import Paginate from '../../components/paginate';
 import digitalizadoService from '../../services/digitalizadoService';
@@ -11,6 +11,7 @@ import useToggle from '../../hooks/useToggle';
 import GroupForm from '../../components/digitalizado/GroupForm';
 import ClaveGroups from '../../components/digitalizado/ClaveGroups';
 import { getDigitalizadoLayout } from '../../components/layout/DigitalizadoLayout';
+import { ConfirmModal } from '../../components/modals';
 
 export const DigiGropus = () => {
     const [claves, setClaves] = useState(null);
@@ -19,6 +20,8 @@ export const DigiGropus = () => {
     const [visibleForm, setVisibleForm] = useToggle();
     const [visibleGroup, setVisibleGroup] = useToggle();
     const [selected, setSelected] = useState(null);
+    const confirModalRef = useRef(null);
+
 
     const getGroups = async () => {
         try {
@@ -59,6 +62,21 @@ export const DigiGropus = () => {
                 type: 'OK',
                 message: 'Clave modificada',
             });
+        } catch (error) {
+            sendNotification({
+                type: 'ERROR',
+                message: error?.response?.message || error.message,
+            })
+        }
+    }
+
+    const handleDeleteClave = async id => {
+        try {
+            const confirm = await confirModalRef.current.show();
+            if (confirm) {
+                await service.deleteClave(id);
+                await getGroups();
+            }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
@@ -113,16 +131,16 @@ export const DigiGropus = () => {
                                 searchBy: ["claves", "descripcion"],
                             }}
                         >
-                            <ClavesTable handleEdit={handleEdit} editGroups={handleEditGroups} />
+                            <ClavesTable handleEdit={handleEdit} editGroups={handleEditGroups} deleteClave={handleDeleteClave}/>
                         </Paginate>
                     </div>
                 </div>
             </section>
 
-             {/*MODALES*/}
-             <FormModal 
-                active={visibleForm} 
-                handleToggle={setVisibleForm} 
+            {/*MODALES*/}
+            <FormModal
+                active={visibleForm}
+                handleToggle={setVisibleForm}
                 name={selected ? "Edidar clave para documentos" : "Crear clave para documentos"}
             >
                 <GroupForm
@@ -135,6 +153,8 @@ export const DigiGropus = () => {
             <FormModal active={visibleGroup} handleToggle={setVisibleGroup} name={`Asignacion de grupos a clave ${selected?.claves}`}>
                 <ClaveGroups id={selected?.id} handleToggle={setVisibleGroup} />
             </FormModal>
+
+            <ConfirmModal ref={confirModalRef} title="Eliminar politica" message="¿ Eliminar seleccionado ?" />
         </>
     )
 };
