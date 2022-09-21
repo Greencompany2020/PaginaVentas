@@ -8,6 +8,9 @@ const BASE_URL_CONFIGURADOR = `${process.env.API_CONFIGURADOR_URL}/api/v1/config
 const digitalizadoProvider = axios.create({
     baseURL: BASE_URL_DIGITALIZADO,
     withCredentials: true,
+    headers:{
+        'Content-type' : 'application/json'
+    }
 });
 
 digitalizadoProvider.interceptors.request.use((request) =>{

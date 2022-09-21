@@ -8,12 +8,12 @@ const FormModal = ({name, active, handleToggle,children}) => {
                     <span className='font-semibold text-white'>{name || 'Modal'}</span>
                     <XIcon width={28} className='cursor-pointer text-white' onClick={handleToggle}/>
                 </div>
-                <div className='modal-main-body'>
+                <div className='p-2'>
                     {children}
                 </div>
             </div>
             {/*Overlay*/}
-            <div className={`${!active && 'hidden'}  fixed top-0 right-0 w-screen min-h-screen bg-gray-500 z-10 opacity-80`}/>
+            <div className={`${!active && 'hidden'}  fixed top-0 right-0 w-screen min-h-screen bg-gray-500 z-20 opacity-80`}/>
         </>
     )
 }

@@ -40,7 +40,7 @@ const Dashboard = () => {
               <DirectAccess link={parameters?.point || '/ventas'} name={'Estadisticas de ventas'} image={'/icons/sales-forecast.svg'} />
               <DirectAccess link={'/minutas'} name={'Minutas'} image={'/icons/chat.svg'} />
               <DirectAccess link={'/configuracion/usuarios'} name={'Configuracion'} image={'/icons/config-5.png'} />
-              
+              <DirectAccess link={'/digitalizacion/politicas'} name={'Politicas'} image={'/icons/politicas.svg'} />
             </section>
           </div>
 
