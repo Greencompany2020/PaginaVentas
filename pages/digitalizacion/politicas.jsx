@@ -16,6 +16,7 @@ import { getDigitalizadoLayout } from '../../components/layout/DigitalizadoLayou
 import { ConfirmModal } from '../../components/modals';
 import ContainerUpdateForm from '../../components/digitalizado/ContainerUpdateForm';
 import DrawerMenu from '../../components/commons/DrawerMenu';
+import LoaderComponentBas from '../../components/LoaderComponentBas';
 
 const Digitalizado = () => {
     const { user } = useSelector(state => state);
@@ -35,6 +36,7 @@ const Digitalizado = () => {
     const [visibleContainerUpdate, setVisibleContainerUpdate] = useToggle();
     const [selectedContainer, setSelectedContainer] = useState(null);
     const [visbleAddLog, setVisibleAddLog] = useToggle();
+    const [isLoading, setIsLoading] = useState(true);
 
     const handleSelectedItem = async id => {
         setSelectedItem(id);
@@ -44,6 +46,7 @@ const Digitalizado = () => {
 
     const getInitialData = async () => {
         try {
+            setIsLoading(true);
             const responseUserGroups = await service.getUserClave();
             setUserGroups(responseUserGroups);
             const responsePoliticas = await service.getPoliticas();
@@ -53,6 +56,9 @@ const Digitalizado = () => {
                 type: 'ERROR',
                 message: error?.response?.message || error.message
             })
+        }
+        finally {
+            setIsLoading(false);
         }
     }
 
@@ -111,7 +117,7 @@ const Digitalizado = () => {
         else setVarious(prev => (prev.filter(el => el != item)))
     }
 
- 
+
     const handleDeleteVarious = async () => {
         try {
             if (contents.length > 0) {
@@ -237,47 +243,57 @@ const Digitalizado = () => {
                 </section>
 
                 <section className="w-full">
-                    <div className="p-4">
-                        <div className="mb-8">
-                            <h3 className="text-xl font-semibold mb-2">Politicas y procedimientos</h3>
-                            <p>
-                                Listado de politicas y procedimientos de The Green Company,
-                                disponibles para tu usuario, segun perfi. si no encuentras alguna
-                                politica o procedimiento favor de informar a DH
-                            </p>
-                        </div>
+                    {
+                        isLoading ?
+                            <div className='w-full h-full overflow-auto'>
+                                <div className='w-full h-full grid place-items-center'>
+                                    <LoaderComponentBas isLoading={isLoading} />
+                                </div>
+                            </div>
+                            :
+                            <div className="p-4">
+                                <div className="mb-8">
+                                    <h3 className="text-xl font-semibold mb-2">Politicas y procedimientos</h3>
+                                    <p>
+                                        Listado de politicas y procedimientos de The Green Company,
+                                        disponibles para tu usuario, segun perfi. si no encuentras alguna
+                                        politica o procedimiento favor de informar a DH
+                                    </p>
+                                </div>
 
-                        <div className="mb-4">
-                            <button onClick={handleAddNew} className='primary-btn w-28 flex items-center'>
-                                <PlusIcon width={24} className='mr-2' />
-                                Agregar
-                            </button>
-                        </div>
+                                <div className="mb-4">
+                                    <button onClick={handleAddNew} className='primary-btn w-28 flex items-center'>
+                                        <PlusIcon width={24} className='mr-2' />
+                                        Agregar
+                                    </button>
+                                </div>
 
-                        <div className="mb-4 flex flex-col  overflow-auto">
-                            <Paginate
-                                data={data?.politicas}
-                                showItems={5}
-                                options={{
-                                    labelSelector: "Mostrar",
-                                    optionRange: [20, 50, 100],
-                                    searchBy: ["clave", "descripcion", "empresa"],
-                                }}
-                            >
-                                <PoliticasTable
-                                    handleSelectedItem={handleSelectedItem}
-                                    handleSetVarious={handleSetVarious}
-                                    handleSetContents={handleSetContents}
-                                    handleUpdateContainer={handleUpdatecontainer}
-                                />
-                            </Paginate>
-                        </div>
+                                <div className="mb-4 flex flex-col  overflow-auto">
 
-                        <div className="flex justify-end mb-12 space-x-2">
-                            <button className="secondary-btn w-44" onClick={handleDeleteVarious}>Eliminar seleccion</button>
-                            <button className="primary-btn w-32 self-end" onClick={handleOpenFew}>Abrir seleccion</button>
-                        </div>
-                    </div>
+                                    <Paginate
+                                        data={data?.politicas}
+                                        showItems={5}
+                                        options={{
+                                            labelSelector: "Mostrar",
+                                            optionRange: [20, 50, 100],
+                                            searchBy: ["clave", "descripcion", "empresa"],
+                                        }}
+                                    >
+                                        <PoliticasTable
+                                            handleSelectedItem={handleSelectedItem}
+                                            handleSetVarious={handleSetVarious}
+                                            handleSetContents={handleSetContents}
+                                            handleUpdateContainer={handleUpdatecontainer}
+                                        />
+                                    </Paginate>
+                                </div>
+
+                                <div className="flex justify-end mb-12 space-x-2">
+                                    <button className="secondary-btn w-44" onClick={handleDeleteVarious}>Eliminar seleccion</button>
+                                    <button className="primary-btn w-32 self-end" onClick={handleOpenFew}>Abrir seleccion</button>
+                                </div>
+                            </div>
+                    }
                 </section>
             </div>
 
