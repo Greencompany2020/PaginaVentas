@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Avatar from '../../components/commons/Avatar';
-import { useSelector } from 'react-redux';
 import withAuth from '../../components/withAuth';
 import Paginate from '../../components/paginate';
 import digitalizadoService from '../../services/digitalizadoService';
@@ -17,6 +16,8 @@ import { ConfirmModal } from '../../components/modals';
 import ContainerUpdateForm from '../../components/digitalizado/ContainerUpdateForm';
 import DrawerMenu from '../../components/commons/DrawerMenu';
 import LoaderComponentBas from '../../components/LoaderComponentBas';
+import { setAdmin } from '../../redux/reducers/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const Digitalizado = () => {
     const { user } = useSelector(state => state);
@@ -37,6 +38,7 @@ const Digitalizado = () => {
     const [selectedContainer, setSelectedContainer] = useState(null);
     const [visbleAddLog, setVisibleAddLog] = useToggle();
     const [isLoading, setIsLoading] = useState(true);
+    const dispatch = useDispatch();
 
     const handleSelectedItem = async id => {
         setSelectedItem(id);
@@ -51,6 +53,8 @@ const Digitalizado = () => {
             setUserGroups(responseUserGroups);
             const responsePoliticas = await service.getPoliticas();
             setData(responsePoliticas);
+            const res = (responseUserGroups?.isAdmin == 1) ? true : false;
+            dispatch(setAdmin(res));
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
@@ -65,9 +69,11 @@ const Digitalizado = () => {
 
     const handleAddNewPolitica = async body => {
         try {
-            await service.addNewPolitica(body);
-            await getInitialData();
-            setVisibleForm();
+            if (user?.isAdmin) {
+                await service.addNewPolitica(body);
+                await getInitialData();
+                setVisibleForm();
+            }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
@@ -120,13 +126,15 @@ const Digitalizado = () => {
 
     const handleDeleteVarious = async () => {
         try {
-            if (contents.length > 0) {
-                const confirm = await confirModalRef.current.show();
-                if (confirm) {
-                    const body = contents.toString();
-                    await service.deletePoliticas(body);
-                    await getInitialData();
-                    setContents([]);
+            if (user?.isAdmin) {
+                if (contents.length > 0) {
+                    const confirm = await confirModalRef.current.show();
+                    if (confirm) {
+                        const body = contents.toString();
+                        await service.deletePoliticas(body);
+                        await getInitialData();
+                        setContents([]);
+                    }
                 }
             }
         } catch (error) {
@@ -158,9 +166,11 @@ const Digitalizado = () => {
 
     const handleUpdatePoliticaFile = async (id, body) => {
         try {
-            await service.updatePoliticaFile(id, body);
-            await getInitialData();
-            setVisibleForm();
+            if (user?.isAdmin) {
+                await service.updatePoliticaFile(id, body);
+                await getInitialData();
+                setVisibleForm();
+            }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
@@ -171,9 +181,11 @@ const Digitalizado = () => {
 
     const handleUpdatePoliticaContainer = async (id, body) => {
         try {
-            await service.updatePoliticaContainer(id, body);
-            await getInitialData()
-            setVisibleContainerUpdate();
+            if (user?.isAdmin) {
+                await service.updatePoliticaContainer(id, body);
+                await getInitialData()
+                setVisibleContainerUpdate();
+            }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
@@ -184,9 +196,11 @@ const Digitalizado = () => {
 
     const handleAddNewLogToContainer = async (body) => {
         try {
-            await service.addPoliticaLog(body);
-            await getInitialData();
-            setVisibleAddLog();
+            if (user?.isAdmin) {
+                await service.addPoliticaLog(body);
+                await getInitialData();
+                setVisibleAddLog();
+            }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
@@ -261,12 +275,15 @@ const Digitalizado = () => {
                                     </p>
                                 </div>
 
-                                <div className="mb-4">
-                                    <button onClick={handleAddNew} className='primary-btn w-28 flex items-center'>
-                                        <PlusIcon width={24} className='mr-2' />
-                                        Agregar
-                                    </button>
-                                </div>
+                                {
+                                    user?.isAdmin &&
+                                    <div className="mb-4">
+                                        <button onClick={handleAddNew} className='primary-btn w-28 flex items-center'>
+                                            <PlusIcon width={24} className='mr-2' />
+                                            Agregar
+                                        </button>
+                                    </div>
+                                }
 
                                 <div className="mb-4 flex flex-col  overflow-auto">
 
@@ -280,6 +297,7 @@ const Digitalizado = () => {
                                         }}
                                     >
                                         <PoliticasTable
+                                            isAdmin={user?.isAdmin}
                                             handleSelectedItem={handleSelectedItem}
                                             handleSetVarious={handleSetVarious}
                                             handleSetContents={handleSetContents}
@@ -288,10 +306,13 @@ const Digitalizado = () => {
                                     </Paginate>
                                 </div>
 
-                                <div className="flex justify-end mb-12 space-x-2">
-                                    <button className="secondary-btn w-44" onClick={handleDeleteVarious}>Eliminar seleccion</button>
-                                    <button className="primary-btn w-32 self-end" onClick={handleOpenFew}>Abrir seleccion</button>
-                                </div>
+                                {
+                                    user?.isAdmin &&
+                                    <div className="flex justify-end mb-12 space-x-2">
+                                        <button className="secondary-btn w-44" onClick={handleDeleteVarious}>Eliminar seleccion</button>
+                                        <button className="primary-btn w-32 self-end" onClick={handleOpenFew}>Abrir seleccion</button>
+                                    </div>
+                                }
                             </div>
                     }
                 </section>
@@ -320,6 +341,7 @@ const Digitalizado = () => {
             {/*Este Modal muestra de forma detallada cada version de politica dentro del contenedor*/}
             <DrawerMenu expand={visibleDetail} handleExpand={setVisibleDetail}>
                 <PoliticasDetails
+                    isAdmin = {user?.isAdmin}
                     item={selectedItem}
                     handleOpenOne={handleOpenOne}
                     handleUpdate={handleSelectUpdate}

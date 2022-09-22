@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import digitalizadoService from '../../services/digitalizadoService';
 import { useNotification } from '../notifications/NotificationsProvider';
 import { ExternalLinkIcon, PencilIcon } from '@heroicons/react/outline';
-import {v4} from 'uuid';
+import { v4 } from 'uuid';
 import LoaderComponentBas from '../LoaderComponentBas';
 
-export default function PoliticasDetails({ item, handleOpenOne, handleUpdate, handleAddLog}) {
+export default function PoliticasDetails({ item, handleOpenOne, handleUpdate, handleAddLog, isAdmin }) {
     const service = digitalizadoService();
     const sendNotification = useNotification();
     const [data, setData] = useState(null);
@@ -23,18 +23,18 @@ export default function PoliticasDetails({ item, handleOpenOne, handleUpdate, ha
                         type: 'ERROR',
                         message: error?.response?.message || error.message,
                     });
-                } finally{
+                } finally {
                     setIsLoading(false);
                 }
             }
         })()
     }, [item]);
 
-    if(isLoading){
-        return(
+    if (isLoading) {
+        return (
             <div className='w-full overflow-auto'>
                 <div className='w-full h-full grid place-items-center'>
-                    <LoaderComponentBas isLoading={isLoading}/>
+                    <LoaderComponentBas isLoading={isLoading} />
                 </div>
             </div>
         )
@@ -42,9 +42,13 @@ export default function PoliticasDetails({ item, handleOpenOne, handleUpdate, ha
 
     return (
         <div className='w-full  overflow-auto'>
-            <div className="flex items-center justify-end space-x-3 mb-4">
-                <button className="primary-btn w-32" onClick={handleAddLog}>Nueva</button>
-            </div>
+            {
+                isAdmin &&
+                <div className="flex items-center justify-end space-x-3 mb-4">
+                    <button className="primary-btn w-32" onClick={handleAddLog}>Nueva</button>
+                </div>
+            }
+
             <div className='overflow-y-auto'>
                 <table className={"table-politicas w-full"}>
                     <thead>
@@ -65,8 +69,8 @@ export default function PoliticasDetails({ item, handleOpenOne, handleUpdate, ha
                                     <td>{item.fechaCarga}</td>
                                     <td>
                                         <div className="flex items-center space-x-2">
-                                            <ExternalLinkIcon width={24} onClick={() => handleOpenOne(item.id)}/>
-                                            <PencilIcon width={24} onClick={() => handleUpdate(item)} />
+                                            <ExternalLinkIcon width={24} onClick={() => handleOpenOne(item.id)} />
+                                            {isAdmin && <PencilIcon width={24} onClick={() => handleUpdate(item)} />}
                                         </div>
                                     </td>
                                 </tr>

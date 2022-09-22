@@ -7,7 +7,8 @@ export default function PoliticasTable({
     handleSelectedItem, 
     handleSetVarious,
     handleSetContents, 
-    handleUpdateContainer
+    handleUpdateContainer,
+    isAdmin
 }) {
   
     return (
@@ -43,7 +44,7 @@ export default function PoliticasTable({
                             <td className='hidden md:table-cell'>{item.empresa}</td> 
                             <td>
                                 <div className='flex items-center space-x-2'>
-                                    <PencilIcon width={24} onClick={() => handleUpdateContainer(item)}/>
+                                   { isAdmin && <PencilIcon width={24} onClick={() => handleUpdateContainer(item)}/> }
                                     <SearchIcon width={24} onClick={() => handleSelectedItem(item)}/>
                                 </div>
                             </td> 

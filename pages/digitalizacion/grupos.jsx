@@ -12,8 +12,12 @@ import GroupForm from '../../components/digitalizado/GroupForm';
 import ClaveGroups from '../../components/digitalizado/ClaveGroups';
 import { getDigitalizadoLayout } from '../../components/layout/DigitalizadoLayout';
 import { ConfirmModal } from '../../components/modals';
+import { setAdmin } from '../../redux/reducers/userSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { useRouter } from 'next/router';
 
 export const DigiGropus = () => {
+    const { user } = useSelector(state => state);
     const [claves, setClaves] = useState(null);
     const service = digitalizadoService();
     const sendNotification = useNotification();
@@ -21,12 +25,16 @@ export const DigiGropus = () => {
     const [visibleGroup, setVisibleGroup] = useToggle();
     const [selected, setSelected] = useState(null);
     const confirModalRef = useRef(null);
-
+    const dispatch = useDispatch();
+    const router = useRouter();
 
     const getGroups = async () => {
         try {
             const response = await service.getClaves();
+            const responseUserGroups = await service.getUserClave();
             setClaves(response);
+            const res = (responseUserGroups?.isAdmin == 1) ? true : false;
+            dispatch(setAdmin(res));
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
