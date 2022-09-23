@@ -43,4 +43,56 @@
     overflow-auto 
 }
 
+.modal-visor-pdf{
+    @apply
+    fixed 
+    bg-white
+    top-0
+    w-screen
+    h-screen
+    md:w-[100rem]
+    md:min-h-[40rem]
+    translate-x-[calc(50vw_-_50%)] 
+    translate-y-[calc(50vh_-_50%)]
+    z-30
+    rounded-md
+    box-content
+    transition-transform duration-300 ease-in-out
+    transform scale-0
+    shadow-sm
+    overflow-auto
+}
+.modal-visor-pdf-header{
+    @apply 
+    flex 
+    justify-between
+    items-center
+    h-12
+    p-2
+    top-0
+    bg-black-shape
+    w-full
+}
+.modal-visor-pdf.active{
+    @apply transform scale-100
+}
+
+.toolmenu{
+    @apply 
+    bg-black-light
+    flex
+    flex-row
+    h-full
+    w-[12rem]
+    rounded-md
+    justify-between
+    items-center
+    p-2
+
+    md:flex-col
+    md:w-[3rem]
+    md:rounded-none
+    
+}
+
 

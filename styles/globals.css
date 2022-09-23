@@ -293,24 +293,6 @@ table.last-row-bg tbody tr:last-child {
   overflow-y: auto;
 }
 
-@media (max-width: 768px) {
-  .layout-ventas{ 
-    grid-template-areas:
-      "Navbar Navbar"
-      "Main Main";
-  }
-  
-  .layout-ventas-toolbar{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: absolute;
-    height: 3rem;
-    top: 3.2rem;
-    left: 0.1rem;
-  }
-}
-
 .layout-base{
   display: grid;
   position: relative; 
@@ -333,3 +315,72 @@ table.last-row-bg tbody tr:last-child {
   grid-area:  Main;
   height: 100%;
 }
+
+
+.layout-digitalizado{
+  position: relative;
+  display: grid; 
+  grid-template-columns: 3rem 1fr; 
+  grid-template-rows: 3rem 1fr;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden; 
+  gap: 0px 0px; 
+  grid-template-areas: 
+    "Navbar Navbar"
+    "Toolbar Main"; 
+}
+
+.layout-digitalizado-navbar{
+  grid-area: Navbar;
+}
+.layout-digitalizado-toolmenu{
+  grid-area: Toolbar;
+}
+.layout-digitalizado-main{
+  grid-area: Main;
+  height: 100%;
+  overflow-y: auto;
+  overflow-x:  auto;
+}
+
+
+@media (max-width: 768px) {
+  .layout-ventas{ 
+    grid-template-areas:
+      "Navbar Navbar"
+      "Main Main";
+  }
+  
+  .layout-ventas-toolbar{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    height: 3rem;
+    top: 3.2rem;
+    left: 0.1rem;
+  }
+
+  .layout-digitalizado{ 
+    grid-template-areas:
+      "Navbar Navbar"
+      "Main Main";
+  }
+
+  .layout-digitalizado-toolmenu{
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 3rem;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+@media print {
+  .noprint{
+    background-color: black;
+  }
+}
+

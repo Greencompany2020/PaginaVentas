@@ -9,11 +9,18 @@ FROM node:16-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# ARG BUILDCOMMAND=build:prod
-# RUN npm ci --quiet --only=production
+
 ARG API_CONFIGURADOR_URL
 ARG API_VENTAS_URL
+ARG API_DIGITALIZADO_URL
 RUN npm run build
+
+FROM node:16-alpine AS prod-deps
+WORKDIR /app
+COPY --from=builder /app/node_modules ./node_modules
+COPY package.json .
+COPY package-lock.json .
+RUN npm prune --production
 
 FROM node:16-alpine AS runner
 
@@ -30,7 +37,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-COPY --from=builder /app/node_modules ./node_modules
+COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=builder /app/next.config.js ./
 
 USER nextjs

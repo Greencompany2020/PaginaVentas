@@ -7,7 +7,6 @@ export default function authService(){
             const {data} = await configuradorProvider.post('/auth/login', body);
             return data;
         } catch (error) {
-            console.log(error);
             throw error;
         }
     }
