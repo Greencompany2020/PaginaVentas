@@ -93,7 +93,7 @@ export const DigiGropus = () => {
         }
     }
 
-    const handleEdit = item => {
+    const handleEdit = item => { 1
         setSelected(item);
         setVisibleForm();
     }
