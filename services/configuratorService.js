@@ -193,6 +193,51 @@ export default function configuratorService(){
     return modified;
   };
 
+  const getGruposDigitalizacion = async () => {
+    try {
+      const {data}  = await configuradorProvider.get('/grupos-digitalizacion');
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const setUserToGrupoDigitalizacion = async body => {
+    try {
+      const response = await configuradorProvider.post('/grupos-digitalizacion/usuario', body);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const createDigitalizacionGrupo = async body => {
+    try {
+      const response = await configuradorProvider.post('/grupos-digitalizacion', body);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const updateDigitalizacionGrupo = async (id, body) => {
+    try {
+      const response = await configuradorProvider.put(`/grupos-digitalizacion/${id}`, body);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const deleteDigitalizacionGrupo = async id => {
+    try {
+      const response = await configuradorProvider.delete(`/grupos-digitalizacion/${id}`);
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   return {
     getUsers,
     getGroups,
@@ -210,7 +255,12 @@ export default function configuratorService(){
     assignAccess,
     configureParameters,
     getParameters,
-    replaceAccess
+    replaceAccess,
+    getGruposDigitalizacion,
+    setUserToGrupoDigitalizacion,
+    createDigitalizacionGrupo,
+    updateDigitalizacionGrupo,
+    deleteDigitalizacionGrupo
   };
 }
 
