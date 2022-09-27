@@ -23,6 +23,7 @@ const Users = (props) => {
     const [showModal, setShowModal] = useToggle();
     const [showRetrieve, setShowRetrieve] = useToggle();
     const confirmModalRef = useRef(null);
+    const [digitalGroups, setDigitalGroups] = useState([]);
 
     const handleSelect = async item => {
         setSelectedUser(item);
@@ -100,8 +101,21 @@ const Users = (props) => {
                 sendNotification({
                     type:'ERROR',
                     message: error.response.data.message || error.message
-                })
+                });
             }
+        }
+    }
+
+    const adduserToDigitalGroup = async body => {
+        try {
+            await service.setUserToGrupoDigitalizacion(body);
+            const response = await service.getUsers();
+            setUsers(response);
+        } catch (error) {
+            sendNotification({
+                type:'ERROR',
+                message: error.response.data.message || error.message
+            });
         }
     }
 
@@ -110,8 +124,10 @@ const Users = (props) => {
             try {
                 const userResponse = await service.getUsers();
                 const groupResponse = await service.getGroups();
+                const digitalGroupsResponse = await service.getGruposDigitalizacion();
                 setUsers(userResponse);
                 setGroups(groupResponse);
+                setDigitalGroups(digitalGroupsResponse)
             } catch (error) {
                 sendNotification({
                     type:'ERROR',
@@ -167,6 +183,8 @@ const Users = (props) => {
                         addNewUser = {addNewUser}
                         updateUser = {updateUser}
                         handleToggle = {setShowModal}
+                        digitalGroups = {digitalGroups}
+                        addUserToGroup = {adduserToDigitalGroup}
                     />
             </FormModal>
 

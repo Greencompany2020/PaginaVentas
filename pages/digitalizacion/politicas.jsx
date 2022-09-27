@@ -286,7 +286,6 @@ const Digitalizado = () => {
                                 }
 
                                 <div className="mb-4 flex flex-col  overflow-auto">
-
                                     <Paginate
                                         data={data?.politicas}
                                         showItems={5}
@@ -329,19 +328,17 @@ const Digitalizado = () => {
                 sobre el mismo modal
             */}
             <FormModal active={visibleForm} handleToggle={setVisibleForm} name={"Nuevas politicas"}>
-                <div className='w-[20rem] '>
-                    <PoliticasForm
-                        handleAdd={handleAddNewPolitica}
-                        item={itemUpdate}
-                        handleUpdate={handleUpdatePoliticaFile}
-                    />
-                </div>
+                <PoliticasForm
+                    handleAdd={handleAddNewPolitica}
+                    item={itemUpdate}
+                    handleUpdate={handleUpdatePoliticaFile}
+                />
             </FormModal>
 
             {/*Este Modal muestra de forma detallada cada version de politica dentro del contenedor*/}
             <DrawerMenu expand={visibleDetail} handleExpand={setVisibleDetail}>
                 <PoliticasDetails
-                    isAdmin = {user?.isAdmin}
+                    isAdmin={user?.isAdmin}
                     item={selectedItem}
                     handleOpenOne={handleOpenOne}
                     handleUpdate={handleSelectUpdate}

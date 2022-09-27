@@ -3,7 +3,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { TextInput, SelectInput } from "../../FormInputs";
 
-export default function UserForm({item, groups, addNewUser, updateUser, handleToggle}) {
+export default function UserForm({ item, groups, addNewUser, updateUser, handleToggle, digitalGroups, addUserToGroup}) {
 
   const initialValues = {
     UserCode: item?.UserCode || "",
@@ -15,6 +15,7 @@ export default function UserForm({item, groups, addNewUser, updateUser, handleTo
     Apellidos: item?.Apellidos || "",
     password: "",
     idGrupo: item?.IdGrupo || groups[0]?.Id,
+    idGrupoDigital: item?.IdGrupoDigitalizacion || digitalGroups[0]?.id,
   }
 
 
@@ -30,33 +31,38 @@ export default function UserForm({item, groups, addNewUser, updateUser, handleTo
     idGrupo: Yup.number().transform((v) => parseInt(v)),
   });
 
-  const handleOnSubmit = async (values, {resetForm}) => {
-    if(item){
-      const {password, ...body} = values;
+  const handleOnSubmit = async (values, { resetForm }) => {
+    if (item) {
+      const { password, idGrupoDigital,  ...body } = values;
       await updateUser(item?.Id, body);
+      await addUserToGroup({
+        idUser: item?.Id, 
+        idGrupo: idGrupoDigital
+      });
     }
-    else{
-      await addNewUser(values);
+    else {
+      const { idGrupoDigital, ...body} = values;
+      await addNewUser(body);
     }
     resetForm({})
     handleToggle();
   }
 
 
-  return(
-   <Formik validationSchema={validationSchema} initialValues={initialValues} onSubmit={handleOnSubmit} enableReinitialize>
+  return (
+    <Formik validationSchema={validationSchema} initialValues={initialValues} onSubmit={handleOnSubmit} enableReinitialize>
       <Form className="p-4">
         <div className="space-y-1">
-        <TextInput label='No. Empleado' name='NoEmpleado' type='number' elementwidth='w-36'/>
-        <TextInput label='Nombre' name='Nombre'/>
-        <TextInput label='Apellidos' name='Apellidos'/>
+          <TextInput label='No. Empleado' name='NoEmpleado' type='number' elementwidth='w-36' />
+          <TextInput label='Nombre' name='Nombre' />
+          <TextInput label='Apellidos' name='Apellidos' />
         </div>
 
         <div className="space-y-1 mt-4">
-          <TextInput label='Usuario' name='UserCode'/>
-          <TextInput label='Correo' name='Email' type='email'/>
-          { !item && <TextInput label='Password' name='password' type='password'/>}
-          <div className="flex flex-row justify-evenly">
+          <TextInput label='Usuario' name='UserCode' />
+          <TextInput label='Correo' name='Email' type='email' />
+          {!item && <TextInput label='Password' name='password' type='password' />}
+          <div className="flex flex-row space-x-1">
             <SelectInput label='Clase' name='Clase'>
               <option value={0}>0</option>
               <option value={1}>1</option>
@@ -71,22 +77,40 @@ export default function UserForm({item, groups, addNewUser, updateUser, handleTo
               <option value={20}>20</option>
             </SelectInput>
             <SelectInput label='Grupo' name='idGrupo'>
-             <Listgroups groups={groups}/>
+              <Listgroups groups={groups} />
             </SelectInput>
           </div>
         </div>
+
+        <fieldset className="mt-4">
+          <SelectInput label="Grupo digitalizado" name='idGrupoDigital' disabled={!item ? true : false}>
+           <DigitalGroups digitalGroups={digitalGroups}/>
+          </SelectInput>
+        </fieldset>
+
+
+
         <div className="flex flex-row justify-end space-x-2 mt-6">
-          <input type='reset' value='Cancelar' className="secondary-btn w-28" onClick={handleToggle}/>
-          <input type='submit' value='Guardar' className="primary-btn w-28"/>
+          <input type='reset' value='Cancelar' className="secondary-btn w-28" onClick={handleToggle} />
+          <input type='submit' value='Guardar' className="primary-btn w-28" />
         </div>
+
       </Form>
-   </Formik>
+    </Formik>
   )
 }
 
-function Listgroups({groups}) {
-  if(!groups) return <option value={0}>Sin grupos</option>
+function Listgroups({ groups }) {
+  if (!groups) return <option value={0}>Sin grupos</option>
   const Items = groups.map((item, index) => (
+    <option key={index} value={item.Id}>{item.Nombre}</option>
+  ));
+  return Items;
+}
+
+function DigitalGroups({ digitalGroups }) {
+  if (!digitalGroups) return <option value={0}>Sin grupo</option>
+  const Items = digitalGroups.map((item, index )=> (
     <option key={index} value={item.Id}>{item.Nombre}</option>
   ));
   return Items;
