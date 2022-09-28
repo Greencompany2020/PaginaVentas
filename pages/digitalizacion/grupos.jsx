@@ -208,7 +208,7 @@ export const DigiGropus = () => {
                                 <span>Claves de digitalizacion</span>
                             </button>
                             <button className="secondary-btn w-48" onClick={() => setOpc(2)}>
-                                <span>Grupos de digitalizacion</span>
+                                <span>Roles de digitalizacion</span>
                             </button>
                         </div>
                     </div>

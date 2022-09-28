@@ -104,15 +104,23 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1 }
                             <div className="flex flex-col md:flex-row md:space-x-4">
                                 <section className="md:flex-1">
                                     <fieldset className="space-y-2">
-                                        <SelectInput label={"Claves"} name={"clave"} id={"clave"} disabled={(item) ? true : false}>
-                                            {
-                                                claves &&
-                                                claves.map(item => (
-                                                    <option value={item.claves} key={v4()}>{item.claves}</option>
-                                                ))
-                                            }
-                                        </SelectInput>
-                                        <TextAreaInput label={"Descripcion"} name={"descripcion"} id={"descripcion"} disabled={(item && opt == 1) ? true : false} />
+                                        {
+                                            !item &&
+                                            <SelectInput label={"Claves"} name={"clave"} id={"clave"} disabled={(item) ? true : false}>
+                                                {
+                                                    claves &&
+                                                    claves.map(item => (
+                                                        <option value={item.claves} key={v4()}>{item.claves}</option>
+                                                    ))
+                                                }
+                                            </SelectInput>
+                                        }
+
+                                        {
+                                            (!item || opt == 2) &&
+                                            <TextAreaInput label={"Descripcion"} name={"descripcion"} id={"descripcion"} disabled={(item && opt == 1) ? true : false} />
+                                        }
+
                                         <TextInput label={"Fecha de Autorizacion"} type={"date"} name={"fechaAut"} id={"fechaAut"} />
                                         <TextInput label={"Inicio Vigencia"} type={"date"} name={"fechaVig"} id={"fechaVig"} />
                                     </fieldset>

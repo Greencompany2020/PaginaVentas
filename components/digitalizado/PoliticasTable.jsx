@@ -18,7 +18,8 @@ export default function PoliticasTable({
                     <th></th>
                     <th>Clave</th>
                     <th>Descripcion</th>
-                    <th className='hidden md:table-cell'>F.Actualizacion</th>
+                    <th className='hidden md:table-cell'>F.Autorizacion</th>
+                    <th className='hidden md:table-cell'>F.Vigencia</th>
                     <th className='hidden md:table-cell'>F.Carga</th>
                     <th className='hidden md:table-cell'>Empresa</th>
                     <th className="w-16">Opc</th>
@@ -39,6 +40,7 @@ export default function PoliticasTable({
                             </td>
                             <td>{item.clave}</td>
                             <td>{item.descripcion}</td>
+                            <td className='hidden md:table-cell'>{item.fechaAutorizacion}</td>
                             <td className='hidden md:table-cell'>{item.fechaVigencia}</td>
                             <td className='hidden md:table-cell'>{item.fechaCarga}</td> 
                             <td className='hidden md:table-cell'>{item.empresa}</td> 

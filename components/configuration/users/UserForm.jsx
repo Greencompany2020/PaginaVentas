@@ -18,8 +18,6 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
     idGrupoDigital: item?.IdGrupoDigitalizacion || digitalGroups[0]?.Id,
   }
 
-  console.log(digitalGroups);
-
   const validationSchema = Yup.object().shape({
     UserCode: Yup.string().required("Requerido"),
     Email: Yup.string().email("Ingrese un email con formato valido @example.com").required("Requerido"),
@@ -35,7 +33,6 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
   const handleOnSubmit = async (values, { resetForm }) => {
     if (item) {
       const { password, idGrupoDigital,  ...body } = values;
-      console.log(values);
       await updateUser(item?.Id, body);
       await addUserToGroup({
         idUser: item?.Id, 

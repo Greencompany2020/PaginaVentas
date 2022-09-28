@@ -103,8 +103,9 @@ function Table({ items, handleOpenOne, handleUpdate, isAdmin, handleDelete }) {
                 <tr>
                     <th>Version</th>
                     <th>Inicio Vigencia</th>
-                    <th>F.Actualizacion</th>
-                    <th>F.Carga</th>
+                    <th className='hidden md:table-cell'>F.Autorizacion</th>
+                    <th className='hidden md:table-cell'>F.Actualizacion</th>
+                    <th className='hidden md:table-cell'>F.Carga</th>
                     <th className="w-16">OPC</th>
                 </tr>
             </thead>
@@ -112,11 +113,12 @@ function Table({ items, handleOpenOne, handleUpdate, isAdmin, handleDelete }) {
                 {
                     items &&
                     items.map(item => (
-                        <tr key={v4()} className={item?.vigente && 'table-politicas--vigente'}>
+                        <tr key={v4()} className={` ${item?.vigente && 'table-politicas--vigente'}`}>
                             <td>{item.version}</td>
                             <td>{item.fechaVigencia}</td>
-                            <td>{item.fechaActualizacion}</td>
-                            <td>{item.fechaCarga}</td>
+                            <td className='hidden md:table-cell'>{item.fechaAutorizacion}</td>
+                            <td className='hidden md:table-cell'>{item.fechaActualizacion}</td>
+                            <td className='hidden md:table-cell'>{item.fechaCarga}</td>
                             <td>
                                 <div className="flex items-center space-x-2">
                                     <ExternalLinkIcon width={24} onClick={() => handleOpenOne(item.id)} />

@@ -260,7 +260,7 @@ const Digitalizado = () => {
     return (
         <>
             <div className="h-full flex flex-col md:flex-row">
-                <section className='w-full h-[550px] md:w-[300px] md:h-full bg-gray-200 '>
+                <section className=' hidden md:flex md:w-[300px] md:h-full bg-gray-200 '>
                     <div className='p-4'>
                         <div className="flex flex-col items-center md:justify-center space-y-2">
                             <figure className='w-[12rem] h-[12rem]'>
@@ -276,7 +276,7 @@ const Digitalizado = () => {
                                 <dt className="font-semibold">Email</dt>
                                 <dd className="mb-2">{user.Email}</dd>
                                 <dt className="font-semibold">Grupo</dt>
-                                <dd className='mb-2'>{user.NombreGrupo}</dd>
+                                <dd className='mb-2'>{ userGroups?.nombre}</dd>
                                 <dt className="font-semibold">Claves autorizadas</dt>
                                 <dd className="truncate ">
                                     <Claves />
@@ -356,7 +356,7 @@ const Digitalizado = () => {
                 decidi divivirlas por que los casos de uso no me permitian hacer todas los operaciones
                 sobre el mismo modal
             */}
-            <FormModal active={visibleForm} handleToggle={setVisibleForm} name={"Nuevas politicas"}>
+            <FormModal active={visibleForm} handleToggle={setVisibleForm} name={itemUpdate ? "Nuevas politicas" : "Editar politica"}>
                 <PoliticasForm
                     handleAdd={handleAddNewPolitica}
                     item={itemUpdate}
@@ -400,7 +400,7 @@ const Digitalizado = () => {
 
 
             {/*Modal para agregar nuevas politcas a un contenedor existente*/}
-            <FormModal active={visbleAddLog} handleToggle={setVisibleAddLog}>
+            <FormModal active={visbleAddLog} handleToggle={setVisibleAddLog} name="Nuevas politicas">
                 <PoliticasForm
                     item={selectedItem}
                     handleAdd={handleAddNewLogToContainer}
