@@ -113,8 +113,8 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1 }
                                             }
                                         </SelectInput>
                                         <TextAreaInput label={"Descripcion"} name={"descripcion"} id={"descripcion"} disabled={(item && opt == 1) ? true : false} />
-                                        <TextInput label={"Fecha de autorizacion"} type={"date"} name={"fechaAut"} id={"fechaAut"} />
-                                        <TextInput label={"Fecha de vigencia"} type={"date"} name={"fechaVig"} id={"fechaVig"} />
+                                        <TextInput label={"Fecha de Autorizacion"} type={"date"} name={"fechaAut"} id={"fechaAut"} />
+                                        <TextInput label={"Inicio Vigencia"} type={"date"} name={"fechaVig"} id={"fechaVig"} />
                                     </fieldset>
                                 </section>
 

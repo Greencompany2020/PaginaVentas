@@ -47,8 +47,8 @@ export default function PDFVisor({ items, visible, setVisible }) {
               </div>
             </section>
 
-            <section className='modal-visor-pdf-body'>
-              <Document file={selected?.url} onLoadSuccess={onDocumentLoadSuccess} className="bg-red-50">
+            <section className='w-full  grid place-items-center overflow-auto'>
+              <Document file={selected?.url} onLoadSuccess={onDocumentLoadSuccess}>
                 {Array.from({ length: numPages }, (_, index) => (
                   <Page
                     key={`page_${index + 1}`}

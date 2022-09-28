@@ -164,6 +164,15 @@ export default function digitalizadoService() {
         }
     }
 
+    const deletePoliticaFile = async id => {
+        try {
+            const response = await digitalizadoProvider.delete(`politicas/item/${id}`);
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+
     return {
         getUserClave,
         getPoliticas,
@@ -183,5 +192,6 @@ export default function digitalizadoService() {
         addPoliticaLog,
         updatePoliticaContainer,
         deleteClave,
+        deletePoliticaFile
     }
 }

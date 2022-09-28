@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import UserInfo from '../../components/configuration/users/UserInfo';
 import configuratorService from '../../services/configuratorService';
 import { useNotification } from '../../components/notifications/NotificationsProvider';
@@ -9,7 +9,7 @@ import UserForm from '../../components/configuration/users/UserForm';
 import { getBaseLayout } from '../../components/layout/BaseLayout';
 import useToggle from '../../hooks/useToggle';
 import UserAccessTable from '../../components/configuration/users/UserAccessTable';
-import {ConfirmModal} from '../../components/modals/';
+import { ConfirmModal } from '../../components/modals/';
 import witAuth from '../../components/withAuth';
 import TabButton from '../../components/configuration/TabButton';
 
@@ -32,14 +32,14 @@ const Users = (props) => {
             setUserDetail(response)
         } catch (error) {
             sendNotification({
-                type:'ERROR',
+                type: 'ERROR',
                 message: error.response.data.message || error.message
             })
         }
     }
 
-    const handleAddButton = () =>{
-        if(selectedUser) setSelectedUser(undefined)
+    const handleAddButton = () => {
+        if (selectedUser) setSelectedUser(undefined)
         setShowModal();
     }
 
@@ -50,7 +50,7 @@ const Users = (props) => {
             setUsers(response);
         } catch (error) {
             sendNotification({
-                type:'ERROR',
+                type: 'ERROR',
                 message: error.response.data.message || error.message
             })
         }
@@ -63,7 +63,7 @@ const Users = (props) => {
             setUsers(response);
         } catch (error) {
             sendNotification({
-                type:'ERROR',
+                type: 'ERROR',
                 message: error.response.data.message || error.message
             })
         }
@@ -71,35 +71,35 @@ const Users = (props) => {
 
     const deleteUser = async id => {
         const confirm = await confirmModalRef.current.show();
-        if(confirm){
-           try {
-            await service.deleteUser(id);
-            const response = await service.getUsers();
-            setUsers(response);
-            setUserDetail(undefined);
-            setSelectedUser(undefined);
-           } catch (error) {
-            sendNotification({
-                type:'ERROR',
-                message: error.response.data.message || error.message
-            })
-           }
+        if (confirm) {
+            try {
+                await service.deleteUser(id);
+                const response = await service.getUsers();
+                setUsers(response);
+                setUserDetail(undefined);
+                setSelectedUser(undefined);
+            } catch (error) {
+                sendNotification({
+                    type: 'ERROR',
+                    message: error.response.data.message || error.message
+                })
+            }
         }
     }
 
-    const assignAccessToUser = async item =>{
-        if(selectedUser && item){
+    const assignAccessToUser = async item => {
+        if (selectedUser && item) {
             try {
                 const idUser = selectedUser.Id;
                 const enabled = item.acceso ? 'N' : 'Y';
                 const idDashboard = item.idDashboard;
-                const body = {idDashboard, idUser, enabled};
+                const body = { idDashboard, idUser, enabled };
                 await service.assignAccess(body);
                 const response = await service.getUserDetail(selectedUser.Id);
                 setUserDetail(response);
             } catch (error) {
                 sendNotification({
-                    type:'ERROR',
+                    type: 'ERROR',
                     message: error.response.data.message || error.message
                 });
             }
@@ -113,14 +113,14 @@ const Users = (props) => {
             setUsers(response);
         } catch (error) {
             sendNotification({
-                type:'ERROR',
+                type: 'ERROR',
                 message: error.response.data.message || error.message
             });
         }
     }
 
-    useEffect(()=>{
-        (async()=>{
+    useEffect(() => {
+        (async () => {
             try {
                 const userResponse = await service.getUsers();
                 const groupResponse = await service.getGroups();
@@ -130,13 +130,13 @@ const Users = (props) => {
                 setDigitalGroups(digitalGroupsResponse)
             } catch (error) {
                 sendNotification({
-                    type:'ERROR',
+                    type: 'ERROR',
                     message: error.response.data.message || error.message
                 });
             }
         })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
         <>
@@ -146,30 +146,30 @@ const Users = (props) => {
             </div>
 
             <div className='p-4'>
-                <TabButton/>
+                <TabButton />
             </div>
 
             <section>
                 <div className='p-4 md:p-8' >
-                    <UserInfo item={selectedUser}/>
+                    <UserInfo item={selectedUser} />
                 </div>
                 <div className='p-4 md:p-8 space-y-4'>
                     <div className="flex justify-start">
                         <button className="primary-btn w-20" onClick={handleAddButton}>Agregar</button>
                     </div>
                     <Paginate
-                    data={users}
-                    showItems={5}
-                    options={{
-                    labelSelector: "Mostrar",
-                    optionRange: [20, 50, 100],
-                    searchBy: ["Nombre", "UserCode", "NoEmpleado"],
-                    }}>
+                        data={users}
+                        showItems={5}
+                        options={{
+                            labelSelector: "Mostrar",
+                            optionRange: [20, 50, 100],
+                            searchBy: ["Nombre", "UserCode", "NoEmpleado"],
+                        }}>
                         <UserTable
-                            handleSelect = {handleSelect}
-                            handleShowModal = {setShowModal}
-                            handleShowAccess = {setShowRetrieve}
-                            deleteUser = {deleteUser}
+                            handleSelect={handleSelect}
+                            handleShowModal={setShowModal}
+                            handleShowAccess={setShowRetrieve}
+                            deleteUser={deleteUser}
                         />
                     </Paginate>
                 </div>
@@ -177,15 +177,15 @@ const Users = (props) => {
 
             {/* MODALS */}
             <FormModal key={1} active={showModal} handleToggle={setShowModal} name={selectedUser ? 'Editar usuario' : 'Agregar usuario'}>
-                    <UserForm
-                        item = {selectedUser}
-                        groups={groups}
-                        addNewUser = {addNewUser}
-                        updateUser = {updateUser}
-                        handleToggle = {setShowModal}
-                        digitalGroups = {digitalGroups}
-                        addUserToGroup = {adduserToDigitalGroup}
-                    />
+                <UserForm
+                    item={selectedUser}
+                    groups={groups}
+                    addNewUser={addNewUser}
+                    updateUser={updateUser}
+                    handleToggle={setShowModal}
+                    digitalGroups={digitalGroups}
+                    addUserToGroup={adduserToDigitalGroup}
+                />
             </FormModal>
 
             <FormModal key={2} active={showRetrieve} handleToggle={setShowRetrieve} name='Asignar acceso'>
@@ -194,16 +194,16 @@ const Users = (props) => {
                         data={userDetails?.accesos}
                         showItems={5}
                         options={{
-                        labelSelector: "Mostrar",
-                        optionRange: [20, 50, 100],
-                        searchBy: ["menu", "reporte", "nombreReporte"],
+                            labelSelector: "Mostrar",
+                            optionRange: [20, 50, 100],
+                            searchBy: ["menu", "reporte", "nombreReporte"],
                         }}
                     >
-                       <UserAccessTable assignAccessToUser={assignAccessToUser}/>
+                        <UserAccessTable assignAccessToUser={assignAccessToUser} />
                     </Paginate>
                 </div>
             </FormModal>
-            <ConfirmModal ref={confirmModalRef} title='Eliminar usuario' message={`Eliminar al usuario usuario ${selectedUser?.Nombre}`}/>
+            <ConfirmModal ref={confirmModalRef} title='Eliminar usuario' message={`Eliminar al usuario usuario ${selectedUser?.Nombre}`} />
         </>
     )
 }

@@ -116,3 +116,6 @@
 .table-politicas thead tr th{@apply bg-black-shape text-white p-1}
 .table-politicas thead tr th:first-child{@apply rounded-l-md}
 .table-politicas thead tr th:last-child{@apply rounded-r-md}
+.table-politicas--vigente td{@apply bg-blue-400 text-white font-bold}
+.table-politicas--vigente td:first-child{@apply rounded-l-md}
+.table-politicas--vigente td:last-child{@apply rounded-r-md}
