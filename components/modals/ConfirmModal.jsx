@@ -35,7 +35,14 @@ const ConfirmModal = React.forwardRef((props, ref) => {
           <span className='text-white font-semibold'>{props.title || 'Confirmar'}</span>
           <XIcon width={28} className='cursor-pointer text-white'  onClick={() => setShowDialog(false)}/>
         </div>
-        <p className='mt-4 p-2 text-lg text-center'>{props.message || '¿Seguro que desea continuar?'}</p>
+        <div>
+            {
+              props?.children ?
+              props.children
+              :
+              <p className='mt-4 p-2 text-lg text-center'>{props.message || '¿Seguro que desea continuar?'}</p>
+            }
+        </div>
         <div className=' fixed bottom-0 w-full flex justify-end p-2'>
             <button 
               className="secondary-btn w-28 mr-2"

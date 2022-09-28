@@ -49,9 +49,8 @@
     bg-white
     top-0
     w-screen
-    md:w-[45rem]
+    md:w-[60rem]
     h-screen
-    md:h-[50rem]
     translate-x-[calc(50vw_-_50%)] 
     translate-y-[calc(50vh_-_50%)]
     z-30
@@ -60,7 +59,6 @@
     transition-transform duration-300 ease-in-out
     transform scale-0
     shadow-sm
-    overflow-hidden
 }
 .modal-visor-pdf-header{
     @apply 

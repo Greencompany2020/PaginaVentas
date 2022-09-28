@@ -8,7 +8,7 @@ import PoliticasTable from '../../components/digitalizado/PoliticasTable';
 import PoliticasForm from '../../components/digitalizado/PoliticasForm';
 import { FormModal } from '../../components/modals';
 import useToggle from '../../hooks/useToggle';
-import { PlusIcon } from '@heroicons/react/outline';
+import { PlusIcon, TrashIcon } from '@heroicons/react/outline';
 import PoliticasDetails from '../../components/digitalizado/PoliticasDetails';
 import PDFVisor from '../../components/digitalizado/PDFVisor';
 import { getDigitalizadoLayout } from '../../components/layout/DigitalizadoLayout';
@@ -34,6 +34,7 @@ const Digitalizado = () => {
     const [contents, setContents] = useState([]);
     const [itemUpdate, setItemUpdate] = useState(null)
     const confirModalRef = useRef(null);
+    const confirFileRef = useRef(null);
     const [visibleContainerUpdate, setVisibleContainerUpdate] = useToggle();
     const [selectedContainer, setSelectedContainer] = useState(null);
     const [visbleAddLog, setVisibleAddLog] = useToggle();
@@ -134,6 +135,10 @@ const Digitalizado = () => {
                         await service.deletePoliticas(body);
                         await getInitialData();
                         setContents([]);
+                        sendNotification({
+                            type: 'OK',
+                            message: 'Politica eliminada correctamente'
+                        })
                     }
                 }
             }
@@ -167,15 +172,17 @@ const Digitalizado = () => {
     const handleUpdatePoliticaFile = async (id, body) => {
         try {
             if (user?.isAdmin) {
-                await service.updatePoliticaFile(id, body);
+                const response = await service.updatePoliticaFile(id, body);
                 await getInitialData();
                 setVisibleForm();
+                return response;
             }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
                 message: error?.response?.message || error.message
             });
+            return error;
         }
     }
 
@@ -197,15 +204,41 @@ const Digitalizado = () => {
     const handleAddNewLogToContainer = async (body) => {
         try {
             if (user?.isAdmin) {
-                await service.addPoliticaLog(body);
+                const response = await service.addPoliticaLog(body);
                 await getInitialData();
                 setVisibleAddLog();
+                return response
             }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
                 message: error?.response?.message || error.message
             });
+            return error;
+        }
+    }
+
+    const Claves = () => {
+        if (!userGroups) return null;
+        const items = userGroups?.claves.map(item => (item.claves));
+
+        return <p className="truncate font-semibold">{items.toString().replaceAll(',', '/')}</p>
+    }
+
+    const handleDeleteFile = async id => {
+        try {
+            const confirm = await confirFileRef.current.show();
+            if (confirm) {
+                const response = await service.deletePoliticaFile(id);
+                await getInitialData();
+                return response;
+            }
+        } catch (error) {
+            sendNotification({
+                type: 'ERROR',
+                message: error?.response?.message || error.message
+            });
+            return error;
         }
     }
 
@@ -245,11 +278,8 @@ const Digitalizado = () => {
                                 <dt className="font-semibold">Grupo</dt>
                                 <dd className='mb-2'>{user.NombreGrupo}</dd>
                                 <dt className="font-semibold">Claves autorizadas</dt>
-                                <dd className="truncate">
-                                    {
-                                        userGroups &&
-                                        userGroups?.claves.map(item => (item.claves))
-                                    }
+                                <dd className="truncate ">
+                                    <Claves />
                                 </dd>
                             </dl>
                         </div>
@@ -318,7 +348,6 @@ const Digitalizado = () => {
             </div>
 
 
-
             {/* MODALES */}
 
             {/*
@@ -335,6 +364,7 @@ const Digitalizado = () => {
                 />
             </FormModal>
 
+
             {/*Este Modal muestra de forma detallada cada version de politica dentro del contenedor*/}
             <DrawerMenu expand={visibleDetail} handleExpand={setVisibleDetail}>
                 <PoliticasDetails
@@ -343,30 +373,52 @@ const Digitalizado = () => {
                     handleOpenOne={handleOpenOne}
                     handleUpdate={handleSelectUpdate}
                     handleAddLog={handleAddLog}
+                    handleDelete={handleDeleteFile}
                 />
             </DrawerMenu >
 
             {/*Visor pdf*/}
             <PDFVisor visible={visibleVisor} setVisible={setVisibleVisor} items={files} />
 
+
             {/*Modal de confimarcion*/}
-            <ConfirmModal ref={confirModalRef} title="Eliminar politica" message="¿ Eliminar seleccionado ?" />
+            <ConfirmModal ref={confirModalRef} title="Eliminar Registros" message=" " >
+                <div className="p-2 flex flex-col">
+                    <TrashIcon width={32} className="self-end text-red-500" />
+                    <p>
+                        Esta accion eliminara los registros seleccionados
+                        <span className="block">¿Deseas continuar?</span>
+                    </p>
+                </div>
+            </ConfirmModal>
+
 
             {/*Modal para actualzar la descripcion del contenedor*/}
             <FormModal name={"Modificar descripcion"} active={visibleContainerUpdate} handleToggle={setVisibleContainerUpdate}>
                 <ContainerUpdateForm item={selectedContainer} handleUpdate={handleUpdatePoliticaContainer} />
             </FormModal>
 
+
             {/*Modal para agregar nuevas politcas a un contenedor existente*/}
             <FormModal active={visbleAddLog} handleToggle={setVisibleAddLog}>
-                <div className='w-[20rem] '>
-                    <PoliticasForm
-                        item={selectedItem}
-                        handleAdd={handleAddNewLogToContainer}
-                        opt={2}
-                    />
-                </div>
+                <PoliticasForm
+                    item={selectedItem}
+                    handleAdd={handleAddNewLogToContainer}
+                    opt={2}
+                />
             </FormModal>
+
+
+            {/*Modal para la eliminacion de archivos de politicas */}
+            <ConfirmModal ref={confirFileRef} title="Eliminar Politica">
+                <div className="p-2 flex flex-col">
+                    <TrashIcon width={32} className="self-end text-red-500" />
+                    <p>
+                        Esta accion eliminara el siguiente archivo
+                        <span className="block">¿Deseas continuar?</span>
+                    </p>
+                </div>
+            </ConfirmModal>
         </>
     )
 }

@@ -15,9 +15,10 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
     Apellidos: item?.Apellidos || "",
     password: "",
     idGrupo: item?.IdGrupo || groups[0]?.Id,
-    idGrupoDigital: item?.IdGrupoDigitalizacion || digitalGroups[0]?.id,
+    idGrupoDigital: item?.IdGrupoDigitalizacion || digitalGroups[0]?.Id,
   }
 
+  console.log(digitalGroups);
 
   const validationSchema = Yup.object().shape({
     UserCode: Yup.string().required("Requerido"),
@@ -34,6 +35,7 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
   const handleOnSubmit = async (values, { resetForm }) => {
     if (item) {
       const { password, idGrupoDigital,  ...body } = values;
+      console.log(values);
       await updateUser(item?.Id, body);
       await addUserToGroup({
         idUser: item?.Id, 
@@ -83,7 +85,7 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
         </div>
 
         <fieldset className="mt-4">
-          <SelectInput label="Grupo digitalizado" name='idGrupoDigital' disabled={!item ? true : false}>
+          <SelectInput label="Rol digitalizado" name='idGrupoDigital' disabled={!item ? true : false}>
            <DigitalGroups digitalGroups={digitalGroups}/>
           </SelectInput>
         </fieldset>
