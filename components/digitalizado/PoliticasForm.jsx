@@ -117,7 +117,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1 }
                                         }
 
                                         {
-                                            (item && opt == 2) &&
+                                            (!item || opt == 2) &&
                                             <TextAreaInput label={"Descripcion"} name={"descripcion"} id={"descripcion"} disabled={(item && opt == 1) ? true : false} />
                                         }
 
