@@ -164,9 +164,7 @@ export default function Paginate(props) {
           }
         });
       });
-      if (Object.keys(filtered).length > 0) {
-        dispatch({ type: REPLACE_SLICE, payload: filtered });
-      }
+      dispatch({ type: REPLACE_SLICE, payload: filtered });
     } else {
       const definedSlice = calculateSlice(data, showItems, currentPage);
       dispatch({ type: CALCULATE_SLICE, payload: definedSlice });

@@ -4,7 +4,7 @@ import { PencilIcon, UserGroupIcon, TrashIcon } from '@heroicons/react/outline';
 
 export default function ClavesTable({items, handleEdit, editGroups, deleteClave}) {
     return (
-        <table className={"table-politicas table-auto"}>
+        <table className={"table-politicas table-auto w-full mt-4 mb-4"}>
             <thead>
                 <tr>
                     <th>Clave</th>

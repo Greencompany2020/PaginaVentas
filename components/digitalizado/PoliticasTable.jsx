@@ -12,7 +12,7 @@ export default function PoliticasTable({
 }) {
   
     return (
-        <table className={"table-politicas w-full"}>
+        <table className={"table-politicas w-full mt-4 mb-4"}>
             <thead>
                 <tr>
                     <th></th>

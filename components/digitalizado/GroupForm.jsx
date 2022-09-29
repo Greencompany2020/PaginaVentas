@@ -2,15 +2,16 @@ import React from 'react';
 import { Formik, Form } from 'formik';
 import { TextInput } from '../FormInputs';
 
-export default function GroupForm({item, updateClave, createClave}) {
+export default function GroupForm({item, updateClave, createClave, handleClose}) {
     const initialValues = {
         claves: item?.claves || "",
         descripcion: item?.descripcion || "",
     }
 
-    const handleOnSubmit = async values => {
+    const handleOnSubmit = async (values,actions) => {
         if(item) await updateClave(item.id, values);
         else await createClave(values);
+        actions.resetForm();
     }
 
     return (
@@ -21,7 +22,7 @@ export default function GroupForm({item, updateClave, createClave}) {
                     <TextInput label="Descripcion" type="text" id="descripcion" name="descripcion" />
                 </fieldset>
                 <div className="flex items-center justify-end space-x-2 mt-4">
-                    <input type="reset" className="secondary-btn w-28" value="Cancelar"/>
+                    <input type="reset" className="secondary-btn w-28" value="Cancelar" onClick={handleClose}/>
                     <input type="submit" className="primary-btn  w-28" value="Guardar"/>
                 </div>
             </Form>

@@ -85,7 +85,7 @@ export default function ClaveGroups({ id ,handleToggle}) {
                     <Table handleChange={handleChange} />
                 </Paginate>
             </div>
-            <div className="flex items-center justify-end h-[10%]">
+            <div className="flex items-center justify-end h-[10%] mt-8">
                 <button className="secondary-btn w-24" onClick={handleToggle}>Salir</button>
             </div>
         </div>
@@ -95,7 +95,7 @@ export default function ClaveGroups({ id ,handleToggle}) {
 
 function Table({ items, handleChange }) {
     return (
-        <table className={"table-politicas table-auto"}>
+        <table className={"table-politicas table-auto w-full mb-4 mt-4"}>
             <thead>
                 <tr>
                     <th>Clave</th>
