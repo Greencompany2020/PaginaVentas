@@ -4,7 +4,7 @@ import { PencilIcon, TrashIcon } from '@heroicons/react/outline';
 
 export default function DigitalGroupsTable({ items, handleEdit, handleDelete }) {
     return (
-        <table className="table-politicas table-fixed">
+        <table className="table-politicas table-fixed w-full mt-4 mb-4">
             <thead>
                 <tr>
                     <th>Nombre</th>

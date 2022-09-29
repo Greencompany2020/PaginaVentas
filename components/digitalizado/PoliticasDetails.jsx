@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import digitalizadoService from '../../services/digitalizadoService';
 import { useNotification } from '../notifications/NotificationsProvider';
-import { ArrowNarrowDownIcon, ExternalLinkIcon, PencilIcon, TrashIcon } from '@heroicons/react/outline';
+import { ExternalLinkIcon, PencilIcon, TrashIcon, PlusIcon } from '@heroicons/react/outline';
 import { v4 } from 'uuid';
 import LoaderComponentBas from '../LoaderComponentBas';
 import Paginate from '../paginate';
@@ -21,7 +21,7 @@ export default function PoliticasDetails({ item, handleOpenOne, handleUpdate, ha
             } catch (error) {
                 sendNotification({
                     type: 'ERROR',
-                    message: error?.response?.message || error.message,
+                    message:error.response?.data?.message,
                 });
             }
             finally {
@@ -32,18 +32,18 @@ export default function PoliticasDetails({ item, handleOpenOne, handleUpdate, ha
     }
 
     const handleAdd = async () => {
-        const response =  await handleAddLog();
-        if(response) await getInitialData();
+        const response = await handleAddLog();
+        if (response) await getInitialData();
     }
 
     const handleEdit = async id => {
-        const response =  await handleUpdate(id);
-        if(response) await getInitialData();
+        const response = await handleUpdate(id);
+        if (response) await getInitialData();
     }
 
     const handleDel = async id => {
-        const response =  await handleDelete(id);
-        if(response) await getInitialData();
+        const response = await handleDelete(id);
+        if (response) await getInitialData();
     }
 
     useEffect(() => {
@@ -73,8 +73,11 @@ export default function PoliticasDetails({ item, handleOpenOne, handleUpdate, ha
             </div>
             {
                 isAdmin &&
-                <div className="flex items-center mb-2">
-                    <button className="primary-btn w-32" onClick={handleAdd}>Nueva</button>
+                <div className="flex items-center mb-8">
+                    <button className="primary-btn w-32 flex items-center" onClick={handleAdd}>
+                        <PlusIcon width={24} className='mr-2'/>
+                        <span>Agregar</span>
+                    </button>
                 </div>
             }
 
@@ -85,7 +88,7 @@ export default function PoliticasDetails({ item, handleOpenOne, handleUpdate, ha
                     options={{
                         labelSelector: "Mostrar",
                         optionRange: [20, 50, 100],
-                        searchBy: ["clave", "descripcion", "empresa"],
+                        searchBy: ["version", "fechaVigencia", "fechaActualizacion", "fechaAutorizacion", "fechaCarga"],
                     }}
                 >
                     <Table handleOpenOne={handleOpenOne} handleUpdate={handleEdit} isAdmin={isAdmin} handleDelete={handleDel} />
@@ -98,7 +101,7 @@ export default function PoliticasDetails({ item, handleOpenOne, handleUpdate, ha
 function Table({ items, handleOpenOne, handleUpdate, isAdmin, handleDelete }) {
 
     return (
-        <table className={"table-politicas w-full"}>
+        <table className={"table-politicas w-full mt-4 mb-4"}>
             <thead>
                 <tr>
                     <th>Version</th>

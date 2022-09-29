@@ -7,7 +7,7 @@ import Select from 'react-select';
 import { v4 } from 'uuid';
 import * as Yup from 'yup';
 
-export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1 }) {
+export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, handleClose }) {
 
     const service = digitalizadoService();
     const [claves, setClaves] = useState(null);
@@ -27,7 +27,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1 }
             } catch (error) {
                 sendNotification({
                     type: 'ERROR',
-                    message: error?.response?.message || error?.message
+                    message: error.response?.data?.message || error?.message
                 });
             }
         })()
@@ -35,10 +35,15 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1 }
 
     const SUPPORTED_FORMAT = 'application/pdf'
 
+    const hasAutDate = (val) => {
+        if(!val || val === 'No Fecha Autorización') return '';
+        return val;
+    }
+
     const initialValues = {
         clave: item?.clave || claves ? claves[0].claves : '',
         descripcion: (opt == 1) ? item?.descripcion || '' : '',
-        fechaAut: (opt == 1) ? item?.fechaCarga || '' : '',
+        fechaAut: hasAutDate(item?.fechaAutorizacion),
         fechaVig: (opt == 1) ? item?.fechaVigencia || '' : '',
         empresa: '',
         file: ''
@@ -48,7 +53,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1 }
     const validationSchema = Yup.object().shape({
         clave: !item && Yup.string().required("Requerido"),
         descripcion: !item && Yup.string().required("Requerido"),
-        fechaAut: Yup.date("formato no valido").required("Requerido"),
+        fechaAut: Yup.date("formato no valido"),
         fechaVig: Yup.date("formato no valido").required("Requerido"),
         empresa: !item && Yup.array().required("Requerido"),
         file: Yup.mixed().required("Requerido").test("fileFormat", "El archivo tiene que ser pdf", value => value && SUPPORTED_FORMAT.includes(value.type))
@@ -59,14 +64,14 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1 }
             const formData = new FormData();
             if (item && opt == 1) {
                 formData.append("files", values.file, values.file.name);
-                formData.append("fechaAut", values.fechaAut);
+                if(values.fechaAut !== "") formData.append("fechaAut", values.fechaAut);
                 formData.append("fechaVig", values.fechaVig);
                 await handleUpdate(item.id, formData);
             }
             else if (item && opt == 2) {
                 formData.append("clave", item.clave);
                 formData.append("files", values.file, values.file.name);
-                formData.append("fechaAut", values.fechaAut);
+                if(values.fechaAut !== "") formData.append("fechaAut", values.fechaAut);
                 formData.append("fechaVig", values.fechaVig);
                 formData.append("empresa", values.empresa.toString());
                 await handleAdd(formData);
@@ -74,7 +79,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1 }
             else {
                 formData.append("clave", values.clave);
                 formData.append("descripcion", values.descripcion);
-                formData.append("fechaAut", values.fechaAut);
+                if(values.fechaAut !== "") formData.append("fechaAut", values.fechaAut);
                 formData.append("fechaVig", values.fechaVig);
                 formData.append("files", values.file, values.file.name);
                 formData.append("empresa", values.empresa.toString());
@@ -85,14 +90,14 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1 }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error?.response?.message || error?.message
+                message: error.response?.data?.message || error?.message
             });
         }
     }
 
 
     return (
-        <div className="w-[20rem] h-[35rem] md:w-[50rem] md:h-fit relative">
+        <div className="w-[20rem] h-[35rem] md:w-[50rem] md:h-[22rem]">
             <Formik
                 initialValues={initialValues}
                 onSubmit={handleOnSubmit}
@@ -100,7 +105,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1 }
                 enableReinitialize
                 render={({ handleSubmit, setFieldValue, errors, touched, }) => {
                     return (
-                        <form onSubmit={handleSubmit}>
+                        <form onSubmit={handleSubmit} className="h-full relative">
                             <div className="flex flex-col md:flex-row md:space-x-4">
                                 <section className="md:flex-1">
                                     <fieldset className="space-y-2">
@@ -127,7 +132,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1 }
                                 </section>
 
 
-                                <section className="mt-4 md:flex-1">
+                                <section className="mt-4 md:flex-1 md:mt-0">
                                     <fieldset className="space-y-2">
                                         <label className='flex flex-col font-semibold text-sm  text-gray-600'>
                                             <span>Archivos</span>
@@ -147,14 +152,14 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1 }
                                                 } isMulti
                                                 name='empresa'
                                                 onChange={option => setFieldValue("empresa", option.map(item => (item.value)))}
-                                                isDisabled={(item && opt == 1) ? true : false}
+                                                
                                             />
                                         </label>
                                     </fieldset>
                                 </section>
                             </div>
-                            <div className="fixed bottom-2 right-2 md:static md:mt-8 space-x-2 flex justify-end">
-                                <input type="reset" value="Cancelar" className="secondary-btn w-24" />
+                            <div className="fixed bottom-2 right-2  space-x-2 flex justify-end">
+                                <input type="reset" value="Cancelar" className="secondary-btn w-24" onClick={handleClose}/>
                                 <input type="submit" value="Guardar" className="primary-btn w-24" />
                             </div>
                         </form>

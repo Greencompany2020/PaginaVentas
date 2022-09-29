@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import withAuth from '../../components/withAuth';
-import { PlusIcon } from '@heroicons/react/outline';
+import { PlusIcon, TrashIcon } from '@heroicons/react/outline';
 import { UserGroupIcon } from '@heroicons/react/solid'
 import Paginate from '../../components/paginate';
 import digitalizadoService from '../../services/digitalizadoService';
@@ -48,7 +48,7 @@ export const DigiGropus = () => {
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error?.response?.message || error.message,
+                message:error.response?.data?.message,
             });
         }
     }
@@ -65,7 +65,7 @@ export const DigiGropus = () => {
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error?.response?.message || error.message,
+                message: error.response?.data?.message,
             });
         }
     }
@@ -83,7 +83,7 @@ export const DigiGropus = () => {
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error?.response?.message || error.message,
+                message:error.response?.data?.message,
             })
         }
     }
@@ -94,11 +94,15 @@ export const DigiGropus = () => {
             if (confirm) {
                 await service.deleteClave(id);
                 await getGroups();
+                sendNotification({
+                    type:"OK",
+                    message:"Clave eliminada correctamente"
+                })
             }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error?.response?.message || error.message,
+                message:error.response?.data?.message,
             })
         }
     }
@@ -128,7 +132,7 @@ export const DigiGropus = () => {
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error?.response?.message || error.message,
+                message:error.response?.data?.message,
             })
         }
     }
@@ -138,10 +142,14 @@ export const DigiGropus = () => {
             await configurator.createDigitalizacionGrupo(body);
             await getDigitalGropus();
             setVisibleGroupsForm();
+            sendNotification({
+                type:"OK",
+                message: "Rol creado"
+            })
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error?.response?.message || error.message,
+                message:error.response?.data?.message,
             })
         }
     }
@@ -151,24 +159,32 @@ export const DigiGropus = () => {
             await configurator.updateDigitalizacionGrupo(selectedGroup?.Id, body);
             await getDigitalGropus();
             setVisibleGroupsForm();
+            sendNotification({
+                type:"OK",
+                message: "Rol modificado"
+            })
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error?.response?.message || error.message,
+                message:error.response?.data?.message,
             });
         }
     }
 
     const deleteDigitalGroup = async id => {
         const confirm = await confirmModalGroup.current.show();
-        if(confirm){
+        if (confirm) {
             try {
                 await configurator.deleteDigitalizacionGrupo(id);
                 await getDigitalGropus();
+                sendNotification({
+                    type:"OK",
+                    message: "Rol eliminado correctamente"
+                })
             } catch (error) {
                 sendNotification({
                     type: 'ERROR',
-                    message: error?.response?.message || error.message,
+                    message:error.response?.data?.message,
                 })
             }
         }
@@ -179,7 +195,7 @@ export const DigiGropus = () => {
         setVisibleGroupsForm();
     }
 
-    const handleUpdateGroup = item =>{
+    const handleUpdateGroup = item => {
         setSelectedGroup(item);
         setVisibleGroupsForm();
     }
@@ -216,7 +232,7 @@ export const DigiGropus = () => {
                     {
                         (opc == 1) ?
                             <>
-                                <div className="mb-4">
+                                <div className="mb-8">
                                     <button className='primary-btn w-28 flex items-center' onClick={handleCreate}>
                                         <PlusIcon width={24} className='mr-2' />
                                         Agregar
@@ -240,7 +256,7 @@ export const DigiGropus = () => {
                             </>
                             :
                             <>
-                                <div className="mb-4">
+                                <div className="mb-8">
                                     <button className='primary-btn w-28 flex items-center' onClick={handleAddGroup}>
                                         <PlusIcon width={24} className='mr-2' />
                                         Agregar
@@ -257,7 +273,7 @@ export const DigiGropus = () => {
                                             searchBy: ["Nombre"],
                                         }}
                                     >
-                                        <DigitalGroupsTable handleEdit={handleUpdateGroup} handleDelete={deleteDigitalGroup}/>
+                                        <DigitalGroupsTable handleEdit={handleUpdateGroup} handleDelete={deleteDigitalGroup} />
                                     </Paginate>
                                 </div>
                             </>
@@ -276,6 +292,7 @@ export const DigiGropus = () => {
                     item={selected}
                     updateClave={handleUpdateClave}
                     createClave={handleCreateClave}
+                    handleClose={setVisibleForm}
                 />
             </FormModal>
 
@@ -283,7 +300,15 @@ export const DigiGropus = () => {
                 <ClaveGroups id={selected?.id} handleToggle={setVisibleGroup} />
             </FormModal>
 
-            <ConfirmModal ref={confirModalRef} title="Eliminar politica" message="¿ Eliminar seleccionado ?" />
+            <ConfirmModal ref={confirModalRef} title="Eliminar clave">
+                <div className="p-2 flex flex-col">
+                    <TrashIcon width={32} className="self-end text-red-500" />
+                    <p>
+                        Esta accion eliminara la siguiente clave de politicas
+                        <span className="block">¿Deseas continuar?</span>
+                    </p>
+                </div>
+            </ConfirmModal>
 
             {/*MODALES PARA USUARIOS*/}
             <FormModal
@@ -295,9 +320,19 @@ export const DigiGropus = () => {
                     item={selectedGroup}
                     createGroup={addNewDigitalGroup}
                     updateGroup={updateDigitalGroup}
+                    handleClose={setVisibleGroupsForm}
                 />
             </FormModal>
-            <ConfirmModal ref={confirmModalGroup} title="Eliminar grupo" message="¿ Eliminar el grupo seleecionado ?"/>
+
+            <ConfirmModal ref={confirmModalGroup} title="Eliminar rol">
+            <div className="p-2 flex flex-col">
+                    <TrashIcon width={32} className="self-end text-red-500" />
+                    <p>
+                        Esta accion eliminara el siguiente rol
+                        <span className="block">¿Deseas continuar?</span>
+                    </p>
+                </div>
+            </ConfirmModal>
         </>
     )
 };

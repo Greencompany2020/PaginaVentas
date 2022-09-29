@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { XIcon } from '@heroicons/react/outline';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { v4 } from 'uuid';
+import { isMobile } from 'react-device-detect';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 
@@ -48,13 +49,15 @@ export default function PDFVisor({ items, visible, setVisible }) {
             </section>
 
             <section className='w-full  grid place-items-center overflow-auto'>
-              <Document file={selected?.url} onLoadSuccess={onDocumentLoadSuccess}>
+              <Document file={selected?.url} onLoadSuccess={onDocumentLoadSuccess} className='w-full flex flex-col items-center'>
                 {Array.from({ length: numPages }, (_, index) => (
                   <Page
                     key={`page_${index + 1}`}
                     pageNumber={index + 1}
                     renderAnnotationLayer={false}
                     renderTextLayer={false}
+                    scale={1}
+                    width={isMobile ? 450 : 0}
                   />
                 ))}
               </Document>

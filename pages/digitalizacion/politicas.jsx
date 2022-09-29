@@ -59,7 +59,7 @@ const Digitalizado = () => {
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error?.response?.message || error.message
+                message:error.response?.data?.message
             })
         }
         finally {
@@ -74,11 +74,15 @@ const Digitalizado = () => {
                 await service.addNewPolitica(body);
                 await getInitialData();
                 setVisibleForm();
+                sendNotification({
+                    type:"OK",
+                    message: "Nueva politica agregada"
+                })
             }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error?.response?.message || error.message
+                message:error.response?.data?.message
             })
         }
     }
@@ -91,7 +95,7 @@ const Digitalizado = () => {
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error?.response?.message || error.message
+                message:error.response?.data?.message
             })
         }
     }
@@ -107,7 +111,7 @@ const Digitalizado = () => {
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error?.response?.message || error.message
+                message:error.response?.data?.message
             })
         }
     }
@@ -145,7 +149,7 @@ const Digitalizado = () => {
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error?.response?.message || error.message
+                message:error.response?.data?.message
             })
         }
     }
@@ -175,12 +179,16 @@ const Digitalizado = () => {
                 const response = await service.updatePoliticaFile(id, body);
                 await getInitialData();
                 setVisibleForm();
+                sendNotification({
+                    type:"OK",
+                    message:"Politica modificada"
+                })
                 return response;
             }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error?.response?.message || error.message
+                message:error.response?.data?.message
             });
             return error;
         }
@@ -192,11 +200,15 @@ const Digitalizado = () => {
                 await service.updatePoliticaContainer(id, body);
                 await getInitialData()
                 setVisibleContainerUpdate();
+                sendNotification({
+                    type:"OK",
+                    message:"Descripcion actualizada"
+                })
             }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error?.response?.message || error.message
+                message:error.response?.data?.message
             });
         }
     }
@@ -207,12 +219,16 @@ const Digitalizado = () => {
                 const response = await service.addPoliticaLog(body);
                 await getInitialData();
                 setVisibleAddLog();
+                sendNotification({
+                    type:"OK",
+                    message:"Nueva politica agregada"
+                })
                 return response
             }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error?.response?.message || error.message
+                message:error.response?.data?.message
             });
             return error;
         }
@@ -231,12 +247,16 @@ const Digitalizado = () => {
             if (confirm) {
                 const response = await service.deletePoliticaFile(id);
                 await getInitialData();
+                sendNotification({
+                    type:"OK",
+                    message:"Politica eliminada correctamente"
+                })
                 return response;
             }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message: error?.response?.message || error.message
+                message:error.response?.data?.message
             });
             return error;
         }
@@ -249,7 +269,7 @@ const Digitalizado = () => {
             } catch (error) {
                 sendNotification({
                     type: 'ERROR',
-                    message: error?.response?.message || error.message
+                    message:error.response?.data?.message
                 })
             }
         })()
@@ -307,7 +327,7 @@ const Digitalizado = () => {
 
                                 {
                                     user?.isAdmin &&
-                                    <div className="mb-4">
+                                    <div className="mb-8">
                                         <button onClick={handleAddNew} className='primary-btn w-28 flex items-center'>
                                             <PlusIcon width={24} className='mr-2' />
                                             Agregar
@@ -315,14 +335,14 @@ const Digitalizado = () => {
                                     </div>
                                 }
 
-                                <div className="mb-4 flex flex-col  overflow-auto">
+                                <div className="mb-8 flex flex-col  overflow-auto">
                                     <Paginate
                                         data={data?.politicas}
                                         showItems={5}
                                         options={{
                                             labelSelector: "Mostrar",
                                             optionRange: [20, 50, 100],
-                                            searchBy: ["clave", "descripcion", "empresa"],
+                                            searchBy: ["clave", "descripcion", "empresa", "fechaVigencia", "fechaAutorizacion", "fechaCarga"],
                                         }}
                                     >
                                         <PoliticasTable
@@ -337,9 +357,9 @@ const Digitalizado = () => {
 
                                 {
                                     user?.isAdmin &&
-                                    <div className="flex justify-end mb-12 space-x-2">
+                                    <div className="flex justify-center md:justify-end mb-12 space-x-2">
                                         <button className="secondary-btn w-44" onClick={handleDeleteVarious}>Eliminar seleccion</button>
-                                        <button className="primary-btn w-32 self-end" onClick={handleOpenFew}>Abrir seleccion</button>
+                                        <button className="primary-btn w-44 " onClick={handleOpenFew}>Abrir seleccion</button>
                                     </div>
                                 }
                             </div>
@@ -361,6 +381,7 @@ const Digitalizado = () => {
                     handleAdd={handleAddNewPolitica}
                     item={itemUpdate}
                     handleUpdate={handleUpdatePoliticaFile}
+                    handleClose={setVisibleForm}
                 />
             </FormModal>
 
@@ -395,7 +416,11 @@ const Digitalizado = () => {
 
             {/*Modal para actualzar la descripcion del contenedor*/}
             <FormModal name={"Modificar descripcion"} active={visibleContainerUpdate} handleToggle={setVisibleContainerUpdate}>
-                <ContainerUpdateForm item={selectedContainer} handleUpdate={handleUpdatePoliticaContainer} />
+                <ContainerUpdateForm 
+                    item={selectedContainer} 
+                    handleUpdate={handleUpdatePoliticaContainer}
+                    handleClose={setVisibleContainerUpdate} 
+                />
             </FormModal>
 
 
@@ -405,6 +430,7 @@ const Digitalizado = () => {
                     item={selectedItem}
                     handleAdd={handleAddNewLogToContainer}
                     opt={2}
+                    handleClose={setVisibleAddLog}
                 />
             </FormModal>
 

@@ -4,7 +4,7 @@ import React from 'react';
 import * as Yup from 'yup';
 
 
-export default function DigitalGroupsForm({ item, createGroup, updateGroup }) {
+export default function DigitalGroupsForm({ item, createGroup, updateGroup, handleClose }) {
 
 
     const parseBol = value => {
@@ -53,7 +53,7 @@ export default function DigitalGroupsForm({ item, createGroup, updateGroup }) {
                     <CheckBoxInput label={"Grupo administrador"} name={"isAdmin"} id={"isAdmin"} />
                 </fieldset>
                 <div className="mt-4 flex items-center justify-end space-x-2">
-                    <input type={"reset"} value={"Cancelar"} className="secondary-btn w-32" />
+                    <input type={"reset"} value={"Cancelar"} className="secondary-btn w-32" onClick={handleClose} />
                     <input type={"submit"} value={"Guardar"} className="primary-btn w-32" />
                 </div>
             </Form>
