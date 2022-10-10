@@ -40,8 +40,14 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
         return val;
     }
 
+    const validateClave = () => {
+        if(item) return item?.clave
+        else if(claves && claves.length > 0) return claves[0].claves;
+        else return ''
+    }
+
     const initialValues = {
-        clave: item?.clave || claves ? claves[0].claves : '',
+        clave: validateClave(),
         descripcion: (opt == 1) ? item?.descripcion || '' : '',
         fechaAut: hasAutDate(item?.fechaAutorizacion),
         fechaVig: (opt == 1) ? item?.fechaVigencia || '' : '',
