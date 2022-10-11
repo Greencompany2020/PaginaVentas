@@ -6,7 +6,7 @@ import { v4 } from 'uuid';
 import LoaderComponentBas from '../LoaderComponentBas';
 import Paginate from '../paginate';
 
-export default function PoliticasDetails({ item, handleOpenOne, handleUpdate, handleAddLog, isAdmin, handleDelete }) {
+export default function PoliticasDetails({ item, handleOpenOne, handleUpdate, handleAddLog, isAdmin, handleDelete, getDetails }) {
     const service = digitalizadoService();
     const sendNotification = useNotification();
     const [data, setData] = useState(null);
@@ -16,7 +16,7 @@ export default function PoliticasDetails({ item, handleOpenOne, handleUpdate, ha
         if (item) {
             try {
                 setIsLoading(true);
-                const response = await service.getPoliticasLog(item.clave);
+                const response = await getDetails();
                 setData(response);
             } catch (error) {
                 sendNotification({

@@ -43,6 +43,7 @@ const Digitalizado = () => {
 
     const handleSelectedItem = async id => {
         setSelectedItem(id);
+        await getDetails();
         setVisibleDetail();
     }
 
@@ -59,11 +60,22 @@ const Digitalizado = () => {
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message:error.response?.data?.message
+                message: error.response?.data?.message
             })
         }
         finally {
             setIsLoading(false);
+        }
+    }
+
+    const getDetails = async () => {
+        if (selectedItem) {
+            try {
+                const response = await service.getPoliticasLog(selectedItem.clave);
+                return response
+            } catch (error) {
+                throw error
+            }
         }
     }
 
@@ -75,14 +87,14 @@ const Digitalizado = () => {
                 await getInitialData();
                 setVisibleForm();
                 sendNotification({
-                    type:"OK",
+                    type: "OK",
                     message: "Nueva politica agregada"
                 })
             }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message:error.response?.data?.message
+                message: error.response?.data?.message
             })
         }
     }
@@ -95,7 +107,7 @@ const Digitalizado = () => {
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message:error.response?.data?.message
+                message: error.response?.data?.message
             })
         }
     }
@@ -111,7 +123,7 @@ const Digitalizado = () => {
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message:error.response?.data?.message
+                message: error.response?.data?.message
             })
         }
     }
@@ -149,7 +161,7 @@ const Digitalizado = () => {
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message:error.response?.data?.message
+                message: error.response?.data?.message
             })
         }
     }
@@ -180,15 +192,15 @@ const Digitalizado = () => {
                 await getInitialData();
                 setVisibleForm();
                 sendNotification({
-                    type:"OK",
-                    message:"Politica modificada"
-                })
+                    type: "OK",
+                    message: "Politica modificada"
+                });
                 return response;
             }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message:error.response?.data?.message
+                message: error.response?.data?.message
             });
             return error;
         }
@@ -201,14 +213,14 @@ const Digitalizado = () => {
                 await getInitialData()
                 setVisibleContainerUpdate();
                 sendNotification({
-                    type:"OK",
-                    message:"Descripcion actualizada"
-                })
+                    type: "OK",
+                    message: "Descripcion actualizada"
+                });
             }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message:error.response?.data?.message
+                message: error.response?.data?.message
             });
         }
     }
@@ -220,15 +232,16 @@ const Digitalizado = () => {
                 await getInitialData();
                 setVisibleAddLog();
                 sendNotification({
-                    type:"OK",
-                    message:"Nueva politica agregada"
-                })
+                    type: "OK",
+                    message: "Nueva politica agregada"
+                });
+                await getDetails();
                 return response
             }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message:error.response?.data?.message
+                message: error.response?.data?.message
             });
             return error;
         }
@@ -248,15 +261,16 @@ const Digitalizado = () => {
                 const response = await service.deletePoliticaFile(id);
                 await getInitialData();
                 sendNotification({
-                    type:"OK",
-                    message:"Politica eliminada correctamente"
-                })
+                    type: "OK",
+                    message: "Politica eliminada correctamente"
+                });
+                await getDetails()
                 return response;
             }
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
-                message:error.response?.data?.message
+                message: error.response?.data?.message
             });
             return error;
         }
@@ -269,7 +283,7 @@ const Digitalizado = () => {
             } catch (error) {
                 sendNotification({
                     type: 'ERROR',
-                    message:error.response?.data?.message
+                    message: error.response?.data?.message
                 })
             }
         })()
@@ -296,7 +310,7 @@ const Digitalizado = () => {
                                 <dt className="font-semibold">Email</dt>
                                 <dd className="mb-2">{user.Email}</dd>
                                 <dt className="font-semibold">Grupo</dt>
-                                <dd className='mb-2'>{ userGroups?.nombre}</dd>
+                                <dd className='mb-2'>{userGroups?.nombre}</dd>
                                 <dt className="font-semibold">Claves autorizadas</dt>
                                 <dd className="truncate ">
                                     <Claves />
@@ -391,6 +405,7 @@ const Digitalizado = () => {
                 <PoliticasDetails
                     isAdmin={user?.isAdmin}
                     item={selectedItem}
+                    getDetails={getDetails}
                     handleOpenOne={handleOpenOne}
                     handleUpdate={handleSelectUpdate}
                     handleAddLog={handleAddLog}
@@ -416,10 +431,10 @@ const Digitalizado = () => {
 
             {/*Modal para actualzar la descripcion del contenedor*/}
             <FormModal name={"Modificar descripcion"} active={visibleContainerUpdate} handleToggle={setVisibleContainerUpdate}>
-                <ContainerUpdateForm 
-                    item={selectedContainer} 
+                <ContainerUpdateForm
+                    item={selectedContainer}
                     handleUpdate={handleUpdatePoliticaContainer}
-                    handleClose={setVisibleContainerUpdate} 
+                    handleClose={setVisibleContainerUpdate}
                 />
             </FormModal>
 

@@ -16,7 +16,6 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
     const selectRef = useRef(null);
     const fileRef = useRef(null);
 
-
     useEffect(() => {
         (async () => {
             try {
@@ -47,15 +46,6 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
         else return ''
     }
 
-    const initialValues = {
-        clave: validateClave(),
-        descripcion: (opt == 1) ? item?.descripcion || '' : '',
-        fechaAut: hasAutDate(item?.fechaAutorizacion),
-        fechaVig: (opt == 1) ? item?.fechaVigencia || '' : '',
-        empresa: '',
-        file: ''
-    }
-
     const getEmpresas = () =>{
         const brands = []
         if(item && item.hasOwnProperty('empresas') && item.empresas.length > 0 && empresas && empresas.length > 0){
@@ -67,6 +57,16 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
         return brands;
     }
 
+    const initialValues = {
+        clave: validateClave(),
+        descripcion: (opt == 1) ? item?.descripcion || '' : '',
+        fechaAut: hasAutDate(item?.fechaAutorizacion),
+        fechaVig: (opt == 1) ? item?.fechaVigencia || '' : '',
+        empresa: getEmpresas(),
+        file: ''
+    }
+
+
 
     const validationSchema = Yup.object().shape({
         clave: !item && Yup.string().required("Requerido"),
@@ -75,7 +75,15 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
         fechaVig: Yup.date("formato no valido").required("Requerido"),
         empresa: !item && Yup.array().required("Requerido"),
         file: Yup.mixed().required("Requerido").test("fileFormat", "El archivo tiene que ser pdf", value => value && SUPPORTED_FORMAT.includes(value.type))
-    })
+    });
+
+    const getEmpresaValues = values => {
+        if(values.hasOwnProperty('empresa') && values.empresa.length > 0){
+            const elements = values.empresa.map(item => item.value);
+            return elements.toString()
+        }
+        return ''
+    }
 
     const handleOnSubmit = async (values, actions) => {
         try {
@@ -91,7 +99,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
                 formData.append("files", values.file, values.file.name);
                 if(values.fechaAut !== "") formData.append("fechaAut", values.fechaAut);
                 formData.append("fechaVig", values.fechaVig);
-                formData.append("empresa", values.empresa.toString());
+                formData.append("empresa",  getEmpresaValues(values));
                 await handleAdd(formData);
             }
             else {
@@ -100,7 +108,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
                 if(values.fechaAut !== "") formData.append("fechaAut", values.fechaAut);
                 formData.append("fechaVig", values.fechaVig);
                 formData.append("files", values.file, values.file.name);
-                formData.append("empresa", values.empresa.toString());
+                formData.append("empresa",  getEmpresaValues(values));
                 await handleAdd(formData);
             }
             actions.resetForm();
@@ -121,7 +129,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
                 onSubmit={handleOnSubmit}
                 validationSchema={validationSchema}
                 enableReinitialize
-                render={({ handleSubmit, setFieldValue, errors, touched, }) => {
+                render={({ handleSubmit, setFieldValue, errors, touched,values, field}) => {
                     return (
                         <form onSubmit={handleSubmit} className="h-full relative">
                             <div className="flex flex-col md:flex-row md:space-x-4">
@@ -159,7 +167,6 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
                                             }} />
                                             {(errors.file && touched.file) && <span className='font-semibold text-red-500 text-right'>{errors.file}</span>}
                                         </label>
-
                                         <label className='flex flex-col font-semibold text-sm  text-gray-600' htmlFor='empresa'>
                                             <span>Empresas</span>
                                             <Select
@@ -168,9 +175,8 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
                                                     empresas &&
                                                     empresas.map(item => ({ value: item.id, label: item.nombre }))
                                                 } isMulti
-                                                name='empresa'
-                                                onChange={option => setFieldValue("empresa", option.map(item => (item.value)))}
-                                                value={getEmpresas()}
+                                                value={ values.empresa}
+                                                onChange={value => setFieldValue("empresa", value)}
                                             />
                                         </label>
                                     </fieldset>
