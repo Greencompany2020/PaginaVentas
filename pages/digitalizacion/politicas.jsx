@@ -376,7 +376,7 @@ const Digitalizado = () => {
                 decidi divivirlas por que los casos de uso no me permitian hacer todas los operaciones
                 sobre el mismo modal
             */}
-            <FormModal active={visibleForm} handleToggle={setVisibleForm} name={itemUpdate ? "Nuevas politicas" : "Editar politica"}>
+            <FormModal active={visibleForm} handleToggle={setVisibleForm} name={itemUpdate ? "Editar politica" : "Nuevas politicas"}>
                 <PoliticasForm
                     handleAdd={handleAddNewPolitica}
                     item={itemUpdate}
