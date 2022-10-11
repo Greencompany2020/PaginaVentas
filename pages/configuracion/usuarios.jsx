@@ -176,9 +176,9 @@ const Users = (props) => {
             </section>
 
             {/* MODALS */}
-            <FormModal key={1} active={showModal} handleToggle={setShowModal} name={selectedUser ? 'Editar usuario' : 'Agregar usuario'}>
+            <FormModal key={1} active={showModal} handleToggle={setShowModal} name={userDetails ? 'Editar usuario' : 'Agregar usuario'}>
                 <UserForm
-                    item={selectedUser}
+                    item={userDetails?.usuario}
                     groups={groups}
                     addNewUser={addNewUser}
                     updateUser={updateUser}

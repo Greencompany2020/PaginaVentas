@@ -20,6 +20,7 @@ export default function UserTable(props) {
             </th>
             <th className="bg-slate-300 p-1  hidden  lg:table-cell">Usuario</th>
             <th className="bg-slate-300 p-1 hidden  lg:table-cell">Grupo</th>
+            <th className="bg-slate-300 p-1 hidden  lg:table-cell">Rol</th>
             <th className="bg-slate-300 text-center rounded-r-md p-1">
               Acciones
             </th>
@@ -37,6 +38,7 @@ export default function UserTable(props) {
               <td className="hidden lg:table-cell">{item.Apellidos}</td>
               <td className="hidden lg:table-cell">{item.UserCode}</td>
               <td className="hidden lg:table-cell">{item.NombreGrupo}</td>
+              <td className="hidden lg:table-cell">{(item.Rol !== null) ? item.Rol : 'Sin rol'}</td>
               <td className="flex justify-center space-x-1">
                 <LockOpenIcon
                   width={26}

@@ -36,7 +36,8 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
     const SUPPORTED_FORMAT = 'application/pdf'
 
     const hasAutDate = (val) => {
-        if(!val || val === 'No Fecha Autorización') return '';
+        if(opt == 2) return ''
+        else if(!val || val === 'No Fecha Autorización') return '';
         return val;
     }
 
@@ -53,6 +54,17 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
         fechaVig: (opt == 1) ? item?.fechaVigencia || '' : '',
         empresa: '',
         file: ''
+    }
+
+    const getEmpresas = () =>{
+        const brands = []
+        if(item && item.hasOwnProperty('empresas') && item.empresas.length > 0 && empresas && empresas.length > 0){
+            empresas.forEach(el => {
+              const temp = item.empresas.find(m => m == el.id);
+              if(temp) brands.push({value: el.id, label:el.nombre})
+            });
+        }
+        return brands;
     }
 
 
@@ -158,7 +170,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
                                                 } isMulti
                                                 name='empresa'
                                                 onChange={option => setFieldValue("empresa", option.map(item => (item.value)))}
-                                                
+                                                value={getEmpresas()}
                                             />
                                         </label>
                                     </fieldset>

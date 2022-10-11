@@ -5,6 +5,7 @@ import { TextInput, SelectInput } from "../../FormInputs";
 
 export default function UserForm({ item, groups, addNewUser, updateUser, handleToggle, digitalGroups, addUserToGroup}) {
 
+
   const initialValues = {
     UserCode: item?.UserCode || "",
     Email: item?.Email || "",
