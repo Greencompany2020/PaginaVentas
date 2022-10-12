@@ -16,7 +16,6 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
     const selectRef = useRef(null);
     const fileRef = useRef(null);
 
-    console.log(item);
 
     useEffect(() => {
         (async () => {
