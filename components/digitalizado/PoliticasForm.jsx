@@ -36,23 +36,23 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
     const SUPPORTED_FORMAT = 'application/pdf'
 
     const hasAutDate = (val) => {
-        if(opt == 2) return ''
-        else if(!val || val === 'No Fecha Autorización') return '';
+        if (opt == 2) return ''
+        else if (!val || val === 'No Fecha Autorización') return '';
         return val;
     }
 
     const validateClave = () => {
-        if(item) return item?.clave
-        else if(claves && claves.length > 0) return claves[0].claves;
+        if (item) return item?.clave
+        else if (claves && claves.length > 0) return claves[0].claves;
         else return ''
     }
 
-    const getEmpresas = () =>{
+    const getEmpresas = () => {
         const brands = []
-        if(item && item.hasOwnProperty('empresas') && item.empresas.length > 0 && empresas && empresas.length > 0){
+        if (item && item.hasOwnProperty('empresas') && item.empresas.length > 0 && empresas && empresas.length > 0) {
             empresas.forEach(el => {
-              const temp = item.empresas.find(m => m == el.id);
-              if(temp) brands.push({value: el.id, label:el.nombre})
+                const temp = item.empresas.find(m => m == el.id);
+                if (temp) brands.push({ value: el.id, label: el.nombre })
             });
         }
         return brands;
@@ -81,7 +81,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
     });
 
     const getEmpresaValues = values => {
-        if(values.hasOwnProperty('empresa') && values.empresa.length > 0){
+        if (values.hasOwnProperty('empresa') && values.empresa.length > 0) {
             const elements = values.empresa.map(item => item.value);
             return elements.toString()
         }
@@ -93,7 +93,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
             const formData = new FormData();
             if (item && opt == 1) {
                 formData.append("files", values.file, values.file.name);
-                if(values.fechaAut !== "") formData.append("fechaAut", values.fechaAut);
+                if (values.fechaAut !== "") formData.append("fechaAut", values.fechaAut);
                 formData.append("fechaVig", values.fechaVig);
                 formData.append("fechaMod", values.fechaMod);
                 await handleUpdate(item.id, formData);
@@ -101,20 +101,20 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
             else if (item && opt == 2) {
                 formData.append("clave", item.clave);
                 formData.append("files", values.file, values.file.name);
-                if(values.fechaAut !== "") formData.append("fechaAut", values.fechaAut);
+                if (values.fechaAut !== "") formData.append("fechaAut", values.fechaAut);
                 formData.append("fechaVig", values.fechaVig);
                 formData.append("fechaMod", values.fechaMod);
-                formData.append("empresa",  getEmpresaValues(values));
+                formData.append("empresa", getEmpresaValues(values));
                 await handleAdd(formData);
             }
             else {
                 formData.append("clave", values.clave);
                 formData.append("descripcion", values.descripcion);
-                if(values.fechaAut !== "") formData.append("fechaAut", values.fechaAut);
+                if (values.fechaAut !== "") formData.append("fechaAut", values.fechaAut);
                 formData.append("fechaVig", values.fechaVig);
                 formData.append("fechaMod", values.fechaMod);
                 formData.append("files", values.file, values.file.name);
-                formData.append("empresa",  getEmpresaValues(values));
+                formData.append("empresa", getEmpresaValues(values));
                 await handleAdd(formData);
             }
             actions.resetForm();
@@ -135,7 +135,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
                 onSubmit={handleOnSubmit}
                 validationSchema={validationSchema}
                 enableReinitialize
-                render={({ handleSubmit, setFieldValue, errors, touched,values}) => {
+                render={({ handleSubmit, setFieldValue, errors, touched, values }) => {
                     return (
                         <form onSubmit={handleSubmit} className="h-full relative">
                             <div className="flex flex-col md:flex-row md:space-x-4">
@@ -157,10 +157,9 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
                                             (!item || opt == 2) &&
                                             <TextAreaInput label={"Descripcion"} name={"descripcion"} id={"descripcion"} disabled={(item && opt == 1) ? true : false} />
                                         }
-
-                                        <TextInput label={"Fecha de Autorizacion"} type={"date"} name={"fechaAut"} id={"fechaAut"} />
-                                        <TextInput label={"Inicio Vigencia"} type={"date"} name={"fechaVig"} id={"fechaVig"} />
                                         <TextInput label={"Fecha de Modificacion"} type={"date"} name={"fechaMod"} id={"fechaMod"} />
+                                        <TextInput label={"Inicio Vigencia"} type={"date"} name={"fechaVig"} id={"fechaVig"} />
+                                        <TextInput label={"Fecha de Autorizacion"} type={"date"} name={"fechaAut"} id={"fechaAut"} />
                                     </fieldset>
                                 </section>
 
@@ -182,7 +181,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
                                                     empresas &&
                                                     empresas.map(item => ({ value: item.id, label: item.nombre }))
                                                 } isMulti
-                                                value={ values.empresa}
+                                                value={values.empresa}
                                                 onChange={value => setFieldValue("empresa", value)}
                                             />
                                         </label>
@@ -190,7 +189,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
                                 </section>
                             </div>
                             <div className="fixed bottom-2 right-2  space-x-2 flex justify-end">
-                                <input type="reset" value="Cancelar" className="secondary-btn w-24" onClick={handleClose}/>
+                                <input type="reset" value="Cancelar" className="secondary-btn w-24" onClick={handleClose} />
                                 <input type="submit" value="Guardar" className="primary-btn w-24" />
                             </div>
                         </form>
