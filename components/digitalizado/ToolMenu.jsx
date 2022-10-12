@@ -8,8 +8,8 @@ export default function ToolMenu() {
     const { user } = useSelector(state => state);
     return (
         <aside className="toolmenu">
-            <DocumentTextIcon width={32} className='text-white' onClick={() => router.push("/digitalizacion/politicas")}/>
-            {user.isAdmin && <CogIcon width={32} className='text-white' onClick={() => router.push("/digitalizacion/grupos")}/>}
+            <DocumentTextIcon width={32} className='text-white cursor-pointer' onClick={() => router.push("/digitalizacion/politicas")}/>
+            {user.isAdmin && <CogIcon width={32} className='text-white cursor-pointer' onClick={() => router.push("/digitalizacion/grupos")}/>}
         </aside>
     )
 }

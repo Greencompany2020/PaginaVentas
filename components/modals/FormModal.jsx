@@ -1,6 +1,24 @@
 
+import { useEffect } from 'react';
 import { XIcon} from '@heroicons/react/outline';
 const FormModal = ({name, active, handleToggle,children}) => {
+
+    const handleKeyDown = e => {
+        if (active && (e.key == 'Escape' || e.key == 'Esc')){
+            handleToggle();
+        } 
+    }
+
+    useEffect(() => {
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        }
+    }, [active])
+
+
+
     return(
         <>
             <div className={`modal-main ${active && 'active'}`} >
