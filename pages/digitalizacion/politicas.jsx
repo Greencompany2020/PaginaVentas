@@ -92,10 +92,7 @@ const Digitalizado = () => {
                 })
             }
         } catch (error) {
-            sendNotification({
-                type: 'ERROR',
-                message: error.response?.data?.message
-            })
+           throw error;
         }
     }
 
@@ -198,11 +195,7 @@ const Digitalizado = () => {
                 return response;
             }
         } catch (error) {
-            sendNotification({
-                type: 'ERROR',
-                message: error.response?.data?.message
-            });
-            return error;
+           throw error;
         }
     }
 
@@ -239,11 +232,7 @@ const Digitalizado = () => {
                 return response
             }
         } catch (error) {
-            sendNotification({
-                type: 'ERROR',
-                message: error.response?.data?.message
-            });
-            return error;
+          throw error;
         }
     }
 

@@ -16,6 +16,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
     const selectRef = useRef(null);
     const fileRef = useRef(null);
 
+
     useEffect(() => {
         (async () => {
             try {
@@ -62,6 +63,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
         descripcion: (opt == 1) ? item?.descripcion || '' : '',
         fechaAut: hasAutDate(item?.fechaAutorizacion),
         fechaVig: (opt == 1) ? item?.fechaVigencia || '' : '',
+        fechaMod: (opt == 1) ? item?.fechaModificacion || '' : '',
         empresa: getEmpresas(),
         file: ''
     }
@@ -73,6 +75,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
         descripcion: !item && Yup.string().required("Requerido"),
         fechaAut: Yup.date("formato no valido"),
         fechaVig: Yup.date("formato no valido").required("Requerido"),
+        fechaMod: Yup.date("formato no valido").required("Requerido"),
         empresa: !item && Yup.array().required("Requerido"),
         file: Yup.mixed().required("Requerido").test("fileFormat", "El archivo tiene que ser pdf", value => value && SUPPORTED_FORMAT.includes(value.type))
     });
@@ -92,6 +95,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
                 formData.append("files", values.file, values.file.name);
                 if(values.fechaAut !== "") formData.append("fechaAut", values.fechaAut);
                 formData.append("fechaVig", values.fechaVig);
+                formData.append("fechaMod", values.fechaMod);
                 await handleUpdate(item.id, formData);
             }
             else if (item && opt == 2) {
@@ -99,6 +103,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
                 formData.append("files", values.file, values.file.name);
                 if(values.fechaAut !== "") formData.append("fechaAut", values.fechaAut);
                 formData.append("fechaVig", values.fechaVig);
+                formData.append("fechaMod", values.fechaMod);
                 formData.append("empresa",  getEmpresaValues(values));
                 await handleAdd(formData);
             }
@@ -107,12 +112,13 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
                 formData.append("descripcion", values.descripcion);
                 if(values.fechaAut !== "") formData.append("fechaAut", values.fechaAut);
                 formData.append("fechaVig", values.fechaVig);
+                formData.append("fechaMod", values.fechaMod);
                 formData.append("files", values.file, values.file.name);
                 formData.append("empresa",  getEmpresaValues(values));
                 await handleAdd(formData);
             }
             actions.resetForm();
-            selectRef.current.clearValue()
+            selectRef.current.clearValue();
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
@@ -123,13 +129,13 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
 
 
     return (
-        <div className="w-[20rem] h-[35rem] md:w-[50rem] md:h-[22rem]">
+        <div className="w-[20rem] h-[44rem] md:w-[50rem] md:h-[26rem]">
             <Formik
                 initialValues={initialValues}
                 onSubmit={handleOnSubmit}
                 validationSchema={validationSchema}
                 enableReinitialize
-                render={({ handleSubmit, setFieldValue, errors, touched,values, field}) => {
+                render={({ handleSubmit, setFieldValue, errors, touched,values}) => {
                     return (
                         <form onSubmit={handleSubmit} className="h-full relative">
                             <div className="flex flex-col md:flex-row md:space-x-4">
@@ -154,6 +160,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
 
                                         <TextInput label={"Fecha de Autorizacion"} type={"date"} name={"fechaAut"} id={"fechaAut"} />
                                         <TextInput label={"Inicio Vigencia"} type={"date"} name={"fechaVig"} id={"fechaVig"} />
+                                        <TextInput label={"Fecha de Modificacion"} type={"date"} name={"fechaMod"} id={"fechaMod"} />
                                     </fieldset>
                                 </section>
 
