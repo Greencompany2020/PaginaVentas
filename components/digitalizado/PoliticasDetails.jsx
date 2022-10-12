@@ -108,6 +108,7 @@ function Table({ items, handleOpenOne, handleUpdate, isAdmin, handleDelete }) {
                     <th>Inicio Vigencia</th>
                     <th className='hidden md:table-cell'>F.Autorizacion</th>
                     <th className='hidden md:table-cell'>F.Actualizacion</th>
+                    <th className='hidden md:table-cell'>F.Modificacion</th>
                     <th className='hidden md:table-cell'>F.Carga</th>
                     <th className="w-16">OPC</th>
                 </tr>
@@ -121,6 +122,7 @@ function Table({ items, handleOpenOne, handleUpdate, isAdmin, handleDelete }) {
                             <td>{item.fechaVigencia}</td>
                             <td className='hidden md:table-cell'>{item.fechaAutorizacion}</td>
                             <td className='hidden md:table-cell'>{item.fechaActualizacion}</td>
+                            <td className='hidden md:table-cell'>{item.fechaModificacion}</td>
                             <td className='hidden md:table-cell'>{item.fechaCarga}</td>
                             <td>
                                 <div className="flex items-center space-x-2">
