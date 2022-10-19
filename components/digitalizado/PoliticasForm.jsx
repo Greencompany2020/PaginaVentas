@@ -155,7 +155,7 @@ export default function PoliticasForm({ item, handleAdd, handleUpdate, opt = 1, 
 
                                         {
                                             (!item || opt == 2) &&
-                                            <TextAreaInput label={"Descripcion"} name={"descripcion"} id={"descripcion"} disabled={(item && opt == 1) ? true : false} />
+                                            <TextAreaInput label={opt == 2 ? "Comentario" : "Descripcion" } name={"descripcion"} id={"descripcion"} disabled={(item && opt == 1) ? true : false} />
                                         }
                                         <TextInput label={"Fecha de Modificacion"} type={"date"} name={"fechaMod"} id={"fechaMod"} />
                                         <TextInput label={"Fecha de Autorizacion"} type={"date"} name={"fechaAut"} id={"fechaAut"} />
