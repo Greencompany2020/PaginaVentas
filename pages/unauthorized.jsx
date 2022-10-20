@@ -20,7 +20,7 @@ const Unauthorized = () => {
                 <p className='text-center mt-2'>Contacta a su administrador de TI</p>
             </div>
             <Link href="/dashboard">
-                <a class="grid place-items-center mt-5 border-2 bg-black-light text-white w-32 h-12  rounded-md hover:bg-blue-400 shadow-md">
+                <a className="grid place-items-center mt-5 border-2 bg-black-light text-white w-32 h-12  rounded-md hover:bg-blue-400 shadow-md">
                     <span className='text-center'>Regresar</span>
                 </a>
             </Link>
