@@ -163,7 +163,7 @@ const Users = (props) => {
                         options={{
                             labelSelector: "Mostrar",
                             optionRange: [20, 50, 100],
-                            searchBy: ["Nombre", "UserCode", "NoEmpleado"],
+                            searchBy: ["Nombre", "UserCode", "NoEmpleado", "Rol", "NombreGrupo"],
                         }}>
                         <UserTable
                             handleSelect={handleSelect}
