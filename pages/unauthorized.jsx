@@ -1,11 +1,10 @@
 import witAuth from '../components/withAuth';
 import { getVentasLayout } from '../components/layout/VentasLayout';
-import { useRouter } from 'next/router';
 import Link from 'next/link';
 
 const Unauthorized = () => {
     return (
-        <div class="h-full w-full flex flex-col justify-center items-center bg-gray-100">
+        <div className="h-full w-full flex flex-col justify-center items-center bg-gray-100">
 
             <div className='relative'>
                 <h1 className="text-9xl font-extrabold text-gray-600 tracking-widest">403</h1>
