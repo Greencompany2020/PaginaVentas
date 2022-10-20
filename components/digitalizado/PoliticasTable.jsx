@@ -8,7 +8,8 @@ export default function PoliticasTable({
     handleSetVarious,
     handleSetContents, 
     handleUpdateContainer,
-    isAdmin
+    isAdmin,
+    handleOpeLast
 }) {
   
     return (
@@ -47,7 +48,7 @@ export default function PoliticasTable({
                             <td>
                                 <div className='flex items-center space-x-2'>
                                    { isAdmin && <PencilIcon width={24} onClick={() => handleUpdateContainer(item)}/> }
-                                    <SearchIcon width={24} onClick={() => handleSelectedItem(item)}/>
+                                    <SearchIcon width={24} onClick={ isAdmin ? () => handleSelectedItem(item) : () => handleOpeLast(item.idArchivo)}/>
                                 </div>
                             </td> 
                         </tr>

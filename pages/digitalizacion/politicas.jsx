@@ -125,6 +125,21 @@ const Digitalizado = () => {
         }
     }
 
+    const handleOpeLast = async (item) => {
+        try {
+            const body = { files: [item] };
+            const response = await service.getPoliticasList(body);
+            setFiles(response[0]);
+            setVisibleVisor();
+
+        } catch (error) {
+            sendNotification({
+                type: 'ERROR',
+                message: error.response?.data?.message
+            })
+        }
+    }
+
     const handleSetVarious = item => {
         const inList = various.find(el => el === item);
         if (!inList) setVarious(prev => ([...prev, item]));
@@ -354,6 +369,7 @@ const Digitalizado = () => {
                                             handleSetVarious={handleSetVarious}
                                             handleSetContents={handleSetContents}
                                             handleUpdateContainer={handleUpdatecontainer}
+                                            handleOpeLast={handleOpeLast}
                                         />
                                     </Paginate>
                                 </div>
