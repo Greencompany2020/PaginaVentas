@@ -8,8 +8,8 @@ const Unauthorized = () => {
         <div class="h-full w-full flex flex-col justify-center items-center bg-gray-100">
 
             <div className='relative'>
-                <h1 class="text-9xl font-extrabold text-gray-600 tracking-widest">403</h1>
-                <div class="bg-blue-400 text-gray-100 px-2 text-sm rounded rotate-12 absolute top-16 right-16">
+                <h1 className="text-9xl font-extrabold text-gray-600 tracking-widest">403</h1>
+                <div className="bg-blue-400 text-gray-100 px-2 text-sm rounded rotate-12 absolute top-16 right-16">
                     Pagina no autorizada
                 </div>
             </div>
