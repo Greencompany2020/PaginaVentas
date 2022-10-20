@@ -92,7 +92,7 @@ const Digitalizado = () => {
                 })
             }
         } catch (error) {
-           throw error;
+            throw error;
         }
     }
 
@@ -195,7 +195,7 @@ const Digitalizado = () => {
                 return response;
             }
         } catch (error) {
-           throw error;
+            throw error;
         }
     }
 
@@ -232,7 +232,7 @@ const Digitalizado = () => {
                 return response
             }
         } catch (error) {
-          throw error;
+            throw error;
         }
     }
 
@@ -358,13 +358,11 @@ const Digitalizado = () => {
                                     </Paginate>
                                 </div>
 
-                                {
-                                    user?.isAdmin &&
-                                    <div className="flex justify-center md:justify-end mb-12 space-x-2">
-                                        <button className="secondary-btn w-44" onClick={handleDeleteVarious}>Eliminar seleccion</button>
-                                        <button className="primary-btn w-44 " onClick={handleOpenFew}>Abrir seleccion</button>
-                                    </div>
-                                }
+                                <div className="flex justify-center md:justify-end mb-12 space-x-2">
+                                    {user?.isAdmin && <button className="secondary-btn w-44" onClick={handleDeleteVarious}>Eliminar seleccion</button>}
+                                    <button className="primary-btn w-44 " onClick={handleOpenFew}>Abrir seleccion</button>
+                                </div>
+
                             </div>
                     }
                 </section>
