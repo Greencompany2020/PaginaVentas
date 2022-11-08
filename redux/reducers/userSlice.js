@@ -3,6 +3,7 @@ const userSlice = createSlice({
     name: 'user',
     initialState: {
         isAdmin: false,
+        seeHistory: false
     },
     reducers: {
         setUser(state, action){
@@ -13,11 +14,14 @@ const userSlice = createSlice({
         },
         setAdmin(state, action){
             return {...state, isAdmin:action.payload}
+        },
+        setHistory(state, action){
+            return {...state, seeHistory:action.payload}
         }
     }
 });
 
 
 const {actions, reducer} = userSlice;
-export const { setUser, removeUser, setAdmin} = actions;
+export const { setUser, removeUser, setAdmin, setHistory} = actions;
 export default reducer;
