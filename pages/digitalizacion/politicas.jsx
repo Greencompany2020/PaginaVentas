@@ -16,7 +16,7 @@ import { ConfirmModal } from '../../components/modals';
 import ContainerUpdateForm from '../../components/digitalizado/ContainerUpdateForm';
 import DrawerMenu from '../../components/commons/DrawerMenu';
 import LoaderComponentBas from '../../components/LoaderComponentBas';
-import { setAdmin } from '../../redux/reducers/userSlice';
+import { setAdmin, setHistory } from '../../redux/reducers/userSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 const Digitalizado = () => {
@@ -47,6 +47,10 @@ const Digitalizado = () => {
         setVisibleDetail();
     }
 
+    const setHistoryUser = (claves = []) => {
+        const isHistory = claves.find(item => item.mostrarHistoria === 1);
+        if(isHistory) dispatch(setHistory(true));
+    }
 
     const getInitialData = async () => {
         try {
@@ -57,6 +61,7 @@ const Digitalizado = () => {
             setData(responsePoliticas);
             const res = (responseUserGroups?.isAdmin == 1) ? true : false;
             dispatch(setAdmin(res));
+            setHistoryUser(responseUserGroups?.claves)
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
@@ -324,7 +329,7 @@ const Digitalizado = () => {
                     </div>
                 </section>
 
-                <section className="w-full">
+                <section className="w-full overflow-auto">
                     {
                         isLoading ?
                             <div className='w-full h-full overflow-auto'>
@@ -338,7 +343,7 @@ const Digitalizado = () => {
                                     <h3 className="text-xl font-semibold mb-2">Politicas y procedimientos</h3>
                                     <p>
                                         Listado de politicas y procedimientos de The Green Company,
-                                        disponibles para tu usuario, segun perfi. si no encuentras alguna
+                                        disponibles para tu usuario, segun perfil. si no encuentras alguna
                                         politica o procedimiento favor de informar a DH
                                     </p>
                                 </div>
@@ -365,6 +370,7 @@ const Digitalizado = () => {
                                     >
                                         <PoliticasTable
                                             isAdmin={user?.isAdmin}
+                                            seeHistory={user?.seeHistory}
                                             handleSelectedItem={handleSelectedItem}
                                             handleSetVarious={handleSetVarious}
                                             handleSetContents={handleSetContents}

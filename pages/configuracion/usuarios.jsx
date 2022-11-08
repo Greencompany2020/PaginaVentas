@@ -39,7 +39,8 @@ const Users = (props) => {
     }
 
     const handleAddButton = () => {
-        if (selectedUser) setSelectedUser(undefined)
+        setSelectedUser({});
+        setUserDetail({});
         setShowModal();
     }
 

@@ -1,17 +1,18 @@
 import React from 'react';
-import {PencilIcon, SearchIcon} from '@heroicons/react/outline';
+import { PencilIcon, SearchIcon, CollectionIcon } from '@heroicons/react/outline';
 import { useState } from 'react';
 
-export default function PoliticasTable({ 
-    items, 
-    handleSelectedItem, 
+export default function PoliticasTable({
+    items,
+    handleSelectedItem,
     handleSetVarious,
-    handleSetContents, 
+    handleSetContents,
     handleUpdateContainer,
     isAdmin,
-    handleOpeLast
+    handleOpeLast,
+    seeHistory
 }) {
-  
+
     return (
         <table className={"table-politicas w-full mt-4 mb-4"}>
             <thead>
@@ -28,14 +29,14 @@ export default function PoliticasTable({
             </thead>
             <tbody>
                 {
-                    items && 
+                    items &&
                     items.map((item, index) => (
                         <tr key={index + item.clave}>
                             <td>
-                                <CheckTable 
+                                <CheckTable
                                     item={item.idArchivo}
-                                    id={item.id} 
-                                    handleSetVarious={handleSetVarious} 
+                                    id={item.id}
+                                    handleSetVarious={handleSetVarious}
                                     handleSetContents={handleSetContents}
                                 />
                             </td>
@@ -43,14 +44,15 @@ export default function PoliticasTable({
                             <td>{item.descripcion}</td>
                             <td className='hidden md:table-cell'>{item.fechaAutorizacion}</td>
                             <td className='hidden md:table-cell'>{item.fechaVigencia}</td>
-                            <td className='hidden md:table-cell'>{item.fechaCarga}</td> 
-                            <td className='hidden md:table-cell'>{item.empresa}</td> 
+                            <td className='hidden md:table-cell'>{item.fechaCarga}</td>
+                            <td className='hidden md:table-cell'>{item.empresa}</td>
                             <td>
                                 <div className='flex items-center space-x-2'>
-                                   { isAdmin && <PencilIcon width={24} onClick={() => handleUpdateContainer(item)}/> }
-                                    <SearchIcon width={24} onClick={ isAdmin ? () => handleSelectedItem(item) : () => handleOpeLast(item.idArchivo)}/>
+                                    {isAdmin && <PencilIcon width={24} onClick={() => handleUpdateContainer(item)} />}
+                                    <SearchIcon width={24} onClick={() => handleOpeLast(item.idArchivo)} />
+                                    {(isAdmin || seeHistory) && <CollectionIcon width={24} onClick={() => handleSelectedItem(item)} />}
                                 </div>
-                            </td> 
+                            </td>
                         </tr>
                     ))
                 }
@@ -59,13 +61,13 @@ export default function PoliticasTable({
     )
 }
 
-const CheckTable = ({item, handleSetVarious, handleSetContents, id}) => {
+const CheckTable = ({ item, handleSetVarious, handleSetContents, id }) => {
     const [sel, setSel] = useState(false);
     const handleChange = e => {
         setSel(!sel);
         handleSetVarious(item);
         handleSetContents(id);
     }
-    return <input type={"checkbox"} onChange={handleChange} value={sel} checked={sel}/>
+    return <input type={"checkbox"} onChange={handleChange} value={sel} checked={sel} />
 }
 
