@@ -3,7 +3,7 @@ const userSlice = createSlice({
     name: 'user',
     initialState: {
         isAdmin: false,
-        seeHistory: false
+        seeHistory: []
     },
     reducers: {
         setUser(state, action){
