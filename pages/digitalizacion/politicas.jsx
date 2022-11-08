@@ -48,8 +48,13 @@ const Digitalizado = () => {
     }
 
     const setHistoryUser = (claves = []) => {
-        const isHistory = claves.find(item => item.mostrarHistoria === 1);
-        if(isHistory) dispatch(setHistory(true));
+        const isHistory = claves.filter(item => item.mostrarHistoria === 1);
+        if (isHistory) {
+            const claves = isHistory.map(item => item.claves);
+            dispatch(setHistory(claves));
+        }
+
+
     }
 
     const getInitialData = async () => {

@@ -13,6 +13,15 @@ export default function PoliticasTable({
     seeHistory
 }) {
 
+    const isSeeHistory = clave => {
+        if(seeHistory){
+            const isClave = seeHistory.find(item => item === clave);
+            return isClave ? true : false;
+        }
+        return false;
+    }
+    
+
     return (
         <table className={"table-politicas w-full mt-4 mb-4"}>
             <thead>
@@ -50,7 +59,7 @@ export default function PoliticasTable({
                                 <div className='flex items-center space-x-2'>
                                     {isAdmin && <PencilIcon width={24} onClick={() => handleUpdateContainer(item)} />}
                                     <SearchIcon width={24} onClick={() => handleOpeLast(item.idArchivo)} />
-                                    {(isAdmin || seeHistory) && <CollectionIcon width={24} onClick={() => handleSelectedItem(item)} />}
+                                    {(isAdmin || isSeeHistory(item?.clavePolitica)) && <CollectionIcon width={24} onClick={() => handleSelectedItem(item)} />}
                                 </div>
                             </td>
                         </tr>
