@@ -1,6 +1,8 @@
 import React from 'react';
-import { PencilIcon, SearchIcon, CollectionIcon } from '@heroicons/react/outline';
+import { PencilIcon, SearchIcon} from '@heroicons/react/outline';
 import { useState } from 'react';
+import Image from 'next/image';
+import archivoLogo from '../../public/images/archivo.svg'
 
 export default function PoliticasTable({
     items,
@@ -33,7 +35,7 @@ export default function PoliticasTable({
                     <th className='hidden md:table-cell'>F.Vigencia</th>
                     <th className='hidden md:table-cell'>F.Carga</th>
                     <th className='hidden md:table-cell'>Empresa</th>
-                    <th className="w-16">Opc</th>
+                    <th className="w-32 text-center">Opc</th>
                 </tr>
             </thead>
             <tbody>
@@ -56,10 +58,12 @@ export default function PoliticasTable({
                             <td className='hidden md:table-cell'>{item.fechaCarga}</td>
                             <td className='hidden md:table-cell'>{item.empresa}</td>
                             <td>
-                                <div className='flex items-center space-x-2'>
-                                    {isAdmin && <PencilIcon width={24} onClick={() => handleUpdateContainer(item)} />}
-                                    <SearchIcon width={24} onClick={() => handleOpeLast(item.idArchivo)} />
-                                    {(isAdmin || isSeeHistory(item?.clavePolitica)) && <CollectionIcon width={24} onClick={() => handleSelectedItem(item)} />}
+                                <div className='flex items-center justify-end space-x-2 w-32'>
+                                    <SearchIcon width={24} onClick={() => handleOpeLast(item.idArchivo)} className=' cursor-pointer'/>
+                                    <span className=' cursor-pointer'>
+                                       {(isAdmin || isSeeHistory(item?.clavePolitica)) && <Image src={archivoLogo} width={24} height={24} alt="archivo" onClick={() => handleSelectedItem(item)}/>}  
+                                    </span>
+                                    {isAdmin && <PencilIcon width={24} onClick={() => handleUpdateContainer(item)} className=' cursor-pointer'/>}
                                 </div>
                             </td>
                         </tr>
