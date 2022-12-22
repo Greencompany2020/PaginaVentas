@@ -168,6 +168,10 @@ export const enlaces = [
     summaryText: 'Operaciones',
     links: [
       {
+        link: '/operaciones/comparativo',
+        linkText: 'Comparativo'
+      },
+      {
         link: '/operaciones/grupo',
         linkText: 'Grupo'
       },

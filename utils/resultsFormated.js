@@ -109,6 +109,7 @@ export const numberAbs = (num) => {
   return 0;
 }
 
+
 /**
  * Retorna un numero absoluto con commas
  * si no es numero retorna 0

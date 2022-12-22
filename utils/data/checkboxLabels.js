@@ -38,7 +38,8 @@ export const checkboxLabels = {
   },
   CBINCREMENTO: 'Formular % de incremento',
   CBMOSTRARTIENDAS: 'Mostrar tiendas',
-  VISUALIZACION_DISPOSITIVOS: 'Visualizacion en dispositivos'
+  VISUALIZACION_DISPOSITIVOS: 'Visualizacion en dispositivos',
+  PRESUPUESTO_EXTRAORDINARIO: 'Presupuesto Extraordinario'
 }
 
 export const inputNames = {
@@ -65,6 +66,7 @@ export const inputNames = {
   CON_EVENTOS: 'conEventos',
   VISTA_DESKTOP: 'desktopReportView',
   VISTA_MOBILE: 'mobileReportView',
+  PRESUPUESTO_EXTRAORDINARIO:'presupuestoExtraordinario'
 }
 
 export const comboNames = {
