@@ -1,4 +1,3 @@
-import { data } from 'autoprefixer';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc'
 import weekday from 'dayjs/plugin/weekday';
@@ -43,12 +42,12 @@ export default function DateHelper(){
      */
     const validDate = date => {
         if (dayjs(date, 'YYYY-MM-DD', true).isValid()) return dayjs(date).utc();
-        else return dayjs().utc();
+        else return dayjs().utc().local().format('YYYY-MM-DD');
     }
 
     const getYesterdayDate = () => (dayjs.utc().subtract(1, 'day').format('YYYY-MM-DD'));
 
-    const getToday = () => (dayjs.utc().format('YYYY-MM-DD'));
+    const getToday = () => (dayjs.utc().local().format('YYYY-MM-DD'));
 
     const getWeekDate = date => {
         const current = validDate(date);
@@ -84,6 +83,10 @@ export default function DateHelper(){
         const current = validDate(date);
         const begin = current.weekday(1).utc();
         return `SEMANA DEL ${begin.date()}-${MONTHS[begin.month()]} AL ${current.date()}-${MONTHS[current.month()]}`;
+    }
+
+    const getYesterday = () => {
+        return dayjs().utc().local().subtract(1,'day').format('YYYY-MM-DD')
     }
 
     return{

@@ -17,24 +17,28 @@
 
 .table-report tbody tr td[data-porcent-format="negative" i],
 .table-report-footer tbody tr td[data-porcent-format="negative" i],
-.table-report-mobile tbody tr td[data-porcent-format="negative" i]
+.table-report-mobile tbody tr td[data-porcent-format="negative" i],
+.table-report-comparative tbody tr td[data-porcent-format="negative" i]
 {@apply text-red-600 font-bold}
 
 
-.table-report tbody tr td[data-porcent-format="positive" i] > td,
-.table-report-footer tbody tr td[data-porcent-format="positive" i] > td,
-.table-report-mobile tbody tr td[data-porcent-format="positive" i] > td
+.table-report tbody tr td[data-porcent-format="positive" i],
+.table-report-footer tbody tr td[data-porcent-format="positive" i],
+.table-report-mobile tbody tr td[data-porcent-format="positive" i],
+.table-report-comparative tbody tr td[data-porcent-format="positive" i]
 {@apply text-green-600 font-bold}
 
 .table-report tbody tr[data-row-format="plaza" i] > td,
 .table-report-footer tbody tr[data-row-format="plaza" i] > td,
-.table-report-mobile tbody tr[data-row-format="plaza" i] > td
+.table-report-mobile tbody tr[data-row-format="plaza" i] > td,
+.table-report-comparative tbody tr[data-row-format="plaza" i] > td
 {@apply bg-gray-300 font-bold }
 
 
 .table-report  tbody tr[data-row-format="region" i] > td,
 .table-report-footer  tbody tr[data-row-format="region" i] > td,
-.table-report-mobile tbody tr[data-row-format="region" i] > td
+.table-report-mobile tbody tr[data-row-format="region" i] > td,
+.table-report-comparative  tbody tr[data-row-format="region" i] > td
 {@apply bg-gray-400 font-bold}
 
 
@@ -119,3 +123,25 @@
 .table-politicas--vigente td{@apply bg-blue-400 text-white font-bold}
 .table-politicas--vigente td:first-child{@apply rounded-l-md}
 .table-politicas--vigente td:last-child{@apply rounded-r-md}
+
+/***************************************************************************************************************/
+/*HEADER TABLE STYLE*/
+.table-report-comparative{@apply text-xs text-right w-[100rem]  md:w-full xl:w-full}
+.table-report-comparative thead{@apply text-white}
+.table-report-comparative caption{@apply  font-bold uppercase mb-1}
+.table-report-comparative thead tr th {@apply bg-black-shape border}
+.table-report-comparative thead tr th:last-child {@apply bg-black-shape border-r-0}
+.table-report-comparative thead tr:first-child th:first-child{@apply  rounded-tl-lg border-l-0 border-t-0}
+.table-report-comparative thead tr:first-child th:last-child{@apply   rounded-tr-lg  border-r-0 border-t-0}
+
+/*BODY TABLE STYLE*/
+.table-report-comparative--sticky, 
+.table-report-comparative--sticky 
+{@apply sticky w-32 h-fit left-0 bg-white }
+
+/*FOOTER TABLE STYLE*/
+.table-report-comparative tfoot {@apply text-white uppercase}
+.table-report-comparative tfoot tr th {@apply bg-black-shape border}
+.table-report-comparative tfoot tr th:last-child {@apply bg-black-shape border-r-0}
+.table-report-comparative tfoot tr:first-child th:first-child{@apply  rounded-bl-lg border-l-0 border-t-0}
+.table-report-comparative tfoot tr:first-child th:last-child{@apply   rounded-br-lg  border-r-0 border-t-0}

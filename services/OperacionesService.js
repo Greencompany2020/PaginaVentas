@@ -26,3 +26,12 @@ export async function getOperacionesTienda(body) {
     throw error;
   }
 }
+
+export async function getOperacionesComparativo(body) {
+  try {
+    const {data} = await reporteProvider.post("/operaciones/comparativo", body);
+    return data.result;
+  } catch (error) {
+    throw error;
+  }
+}
