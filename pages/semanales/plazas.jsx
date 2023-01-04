@@ -81,6 +81,7 @@ const Plazas = (props) => {
   }
 
   const removeParams = params => {
+    setReportDate(prev => ({...prev, beginDate:params.fechaInicio, endDate:params.fechaFin}));
     if(params.cbAgnosComparar == 1){
       const {cbAgnosComparar, agnosComparar:[a], ...rest} = params;
       setReportDate(prev => ({...prev, dateRange:[a]}));
@@ -211,7 +212,6 @@ const Plazas = (props) => {
 
 const Table = (props) => {
   const {data, date} = props;
-
   return(
     <table className="table-report" onClick={selectRow}>
       <thead>
