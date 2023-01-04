@@ -20,13 +20,10 @@ import {
 import {
   checkboxLabels,
   inputNames,
-  MENSAJE_ERROR,
   meses,
 } from "../../utils/data";
 import { handleChange } from "../../utils/handlers";
 import {
-  getCurrentMonth,
-  getCurrentYear,
   getMonthChars,
 } from "../../utils/dateFunctions";
 import {
@@ -38,15 +35,17 @@ import { getPromotores } from "../../services/MKTService";
 import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import DateHelper from "../../utils/dateHelper";
 
 const Promotores = (props) => {
   const {config} = props;
+  const date = DateHelper();
   const sendNotification = useNotification();
   const [promotores, setPromotores] = useState({});
   const [paramPromotores, setParamPromotores] = useState({
     delMes: 1,
-    alMes: getCurrentMonth() - 1,
-    delAgno: getCurrentYear(),
+    alMes: date.getcurrentMonth(),
+    delAgno: date.getCurrentYear(),
     conIva: config?.conIva || 0
   });
 

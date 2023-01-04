@@ -14,8 +14,7 @@ import {
 } from "../../components/inputs";
 import ComparativoVentas from "../../components/table/ComparativoVentas";
 import BarChart from "../../components/BarChart";
-import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
-import { getCurrentMonth, getCurrentYear } from "../../utils/dateFunctions";
+import { checkboxLabels, inputNames} from "../../utils/data";
 import { handleChange } from "../../utils/handlers";
 import {
   createOperacionesDatasets,
@@ -27,15 +26,17 @@ import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import DateHelper from "../../utils/dateHelper";
 
 const Grupo = (props) => {
   const {config} = props;
+  const date = DateHelper();
   const sendNotification = useNotification();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramGrupo, setParamGrupo] = useState({
     delMes: 1,
-    alMes: getCurrentMonth() - 1,
-    delAgno: getCurrentYear(),
+    alMes: date.getcurrentMonth(),
+    delAgno: date.getCurrentYear(),
     conIva: config?.conIva || 0,
     tiendas: config?.tiendas || 0,
     promedio: config?.promedio || 0,

@@ -21,7 +21,6 @@ export const handleChange = (evt, updateState) => {
     value = ( !isNaN(evt.target.value)) ? Number(evt.target.value) : String(evt.target.value);
   }
 
-
   updateState(prev => ({
     ...prev,
     [evt.target.name]: value

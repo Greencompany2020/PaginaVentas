@@ -19,10 +19,8 @@ import BarChart from "../../components/BarChart";
 import {
   checkboxLabels,
   inputNames,
-  MENSAJE_ERROR,
   meses,
 } from "../../utils/data";
-import { getCurrentMonth, getCurrentYear } from "../../utils/dateFunctions";
 import {
   getInitialTienda,
   getTiendaName,
@@ -35,18 +33,20 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 import { useSelector } from "react-redux";
+import DateHelper from "../../utils/dateHelper";
 
 const Tienda = (props) => {
   const {config} = props;
+  const date = DateHelper();
   const sendNotification = useNotification();
   const {shops} = useSelector(state => state);
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramTienda, setParamTienda] = useState({
     tienda: getInitialTienda(shops),
     delMes: 1,
-    alMes: getCurrentMonth() - 1,
-    delAgno: getCurrentYear() - 1,
-    alAgno: getCurrentYear(),
+    alMes: date.getcurrentMonth(),
+    delAgno: date.getCurrentYear() - 1,
+    alAgno: date.getCurrentYear(),
     promedio: config?.promedio || 0,
     acumulado: config?.acumulado || 0,
     conIva: config?.conIva || 0,
