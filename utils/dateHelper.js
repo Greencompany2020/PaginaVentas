@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc'
 import weekday from 'dayjs/plugin/weekday';
+import duration from 'dayjs/plugin/duration'
 
 
 const WEEK_DAYS = Object.freeze({
@@ -33,6 +34,7 @@ export default function DateHelper(){
     
     dayjs.extend(utc);
     dayjs.extend(weekday);
+    dayjs.extend(duration)
 
     /**
      * Esta funcion se encarga de validar si el formato de fecha es valido y regresar la fecha
@@ -71,7 +73,17 @@ export default function DateHelper(){
 
     const getcurrentMonth = date => {
         const current = validDate(date);
-        return current.month();
+        return current.month() + 1;
+    }
+
+    const getNextMonth = date => {
+        const current = validDate(date);
+        return current.add(1, 'month').month() + 1;
+    }
+
+    const getPreviousMonth = date => {
+        const current = validDate(date);
+        return current.subtract(1, 'month').month() + 1;
     }
 
     const getCurrentDate = date => {
@@ -98,6 +110,8 @@ export default function DateHelper(){
         getCurrentYear,
         getcurrentMonth,
         getCurrentDate,
-        getweekRange
+        getweekRange,
+        getPreviousMonth,
+        getNextMonth
     }
 }

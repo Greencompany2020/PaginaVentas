@@ -9,34 +9,34 @@ import {
   SelectTiendasGeneral,
   Checkbox,
   InputToYear,
-  SelectMonth,
+  SelectToMonth
 } from "../../components/inputs";
 import BarChart from "../../components/BarChart";
-import { checkboxLabels, MENSAJE_ERROR } from "../../utils/data";
+import { checkboxLabels } from "../../utils/data";
 import {
   formatedDate,
   formatLastDate,
-  getCurrentMonth,
-  getCurrentYear,
   getMonthByNumber,
 } from "../../utils/dateFunctions";
 import { handleChange } from "../../utils/handlers";
 import { inputNames } from "../../utils/data";
 import { getAnualesTiendas } from "../../services/AnualesServices";
-import { createSimpleDatasets, isError } from "../../utils/functions";
+import { createSimpleDatasets} from "../../utils/functions";
 import useGraphData from "../../hooks/useGraphData";
 import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import ComparativoVentas from "../../components/table/ComparativoVentas";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import DateHelper from "../../utils/dateHelper";
 
 const Tienda = (props) => {
   const {config} = props;
+  const date = DateHelper();
   const sendNotification = useNotification();
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [tiendasParametros, setTiendasParametros] = useState({
-    alAgno: getCurrentYear(),
-    alMes: getCurrentMonth(),
+    alAgno: date.getCurrentYear(),
+    alMes: date.getcurrentMonth(),
     tiendas: 0,
     conIva: config?.conIva || 0,
     conVentasEventos: config?.conVentasEventos || 0,
@@ -81,7 +81,7 @@ const Tienda = (props) => {
               />
               <div className="flex items-center space-x-1">
                 <div className="flex-1">
-                  <SelectMonth
+                  <SelectToMonth
                     value={tiendasParametros.alMes}
                     onChange={(e) => handleChange(e, setTiendasParametros)}
                   />

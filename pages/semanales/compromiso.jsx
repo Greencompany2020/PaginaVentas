@@ -30,16 +30,19 @@ import { handleChange } from "../../utils/handlers";
 import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import { getInitialPlaza } from "../../utils/functions";
+import { useSelector } from "react-redux";
 
 const Compromiso = (props) => {
   const {config} = props;
+  const {places} = useSelector(state => state);
   const sendNotification = useNotification();
   const [beginDate, endDate] = getCurrentWeekDateRange();
   const [semanalesCompromisos, setSemanalesCompromisos] = useState([]);
   const [compromisosParametros, setCompromisosParametros] = useState({
     fechaInicio: beginDate,
     fechaFin: endDate,
-    plaza: 3,
+    plaza:getInitialPlaza(places),
     conIva:config.conIva || 0,
     sinAgnoVenta:config.sinAgnoVenta || 0,
     conTiendasCerradas:config.conTiendasCerradas || 0,
@@ -123,6 +126,7 @@ const Compromiso = (props) => {
           <Parameters>
             <InputContainer>
               <SelectPlazas
+                value={compromisosParametros.plaza}
                 classLabel="xl:text-center"
                 onChange={(e) => handleChange(e, setCompromisosParametros)}
               />

@@ -14,7 +14,7 @@ import {
 } from "../../components/inputs";
 import BarChart from "../../components/BarChart";
 import ComparativoVentas from "../../components/table/ComparativoVentas";
-import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
+import { checkboxLabels, inputNames} from "../../utils/data";
 import {
   createOperacionesDatasets,
   getInitialPlaza,
@@ -22,7 +22,6 @@ import {
   validateMonthRange,
   validateYear,
 } from "../../utils/functions";
-import { getCurrentMonth, getCurrentYear } from "../../utils/dateFunctions";
 import { handleChange } from "../../utils/handlers";
 import { getOperacionesPlaza } from "../../services/OperacionesService";
 import useGraphData from "../../hooks/useGraphData";
@@ -30,17 +29,19 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 import { useSelector } from "react-redux";
+import DateHelper from "../../utils/dateHelper";
 
 const Plaza = (props) => {
   const {config} = props;
+  const date = DateHelper();
   const sendNotification = useNotification();
   const {places} = useSelector(state => state);
   const { datasets, labels, setDatasets, setLabels } = useGraphData();
   const [paramPlaza, setParamPlaza] = useState({
     plaza: getInitialPlaza(places),
     delMes: 1,
-    alMes: getCurrentMonth() - 1,
-    delAgno: getCurrentYear(),
+    alMes: date.getcurrentMonth(),
+    delAgno: date.getCurrentYear(),
     promedio: config?.promedio || 0,
     acumulado: config?.acumulado || 0,
     conIva: config?.conIva || 0,

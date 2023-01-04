@@ -13,10 +13,8 @@ import {
   SelectToMonth,
 } from "../../components/inputs";
 import BarChart from "../../components/BarChart";
-import { checkboxLabels, inputNames, MENSAJE_ERROR } from "../../utils/data";
+import { checkboxLabels, inputNames } from "../../utils/data";
 import {
-  getCurrentMonth,
-  getCurrentYear,
   getMonthByNumber,
 } from "../../utils/dateFunctions";
 import { handleChange } from "../../utils/handlers";
@@ -30,15 +28,17 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import ComparativoVentas from "../../components/table/ComparativoVentas";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import DateHelper from "../../utils/dateHelper";
 
 const Plazas = (props) => {
   const { config } = props;
   const sendNotification = useNotification
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
+  const date = DateHelper();
   const [plazasParametros, setPlazasParametros] = useState({
-    delAgno: getCurrentYear() - 1,
-    alAgno: getCurrentYear(),
-    alMes: getCurrentMonth(),
+    delAgno: date.getCurrentYear() -  1,
+    alAgno: date.getCurrentYear(),
+    alMes: date.getcurrentMonth(),
     tiendas: 0,
     conIva: config?.conIva || 0,
     conVentasEventos: config?.conVentasEventos || 0,
@@ -94,13 +94,13 @@ const Plazas = (props) => {
               <div className="flex items-center space-x-1">
                 <div className="flex-1">
                   <InputYear
-                    value={plazasParametros.alAgno}
+                    value={plazasParametros.delAgno}
                     onChange={(e) => handleChange(e, setPlazasParametros)}
                   />
                 </div>
                 <div className="flex-1">
                   <InputToYear
-                    value={plazasParametros.delAgno}
+                    value={plazasParametros.alAgno}
                     onChange={(e) => handleChange(e, setPlazasParametros)}
                   />
                 </div>

@@ -75,6 +75,7 @@ const Plazas = (props) => {
   }
 
   const removeParams = params => {
+    setReportDate(prev => ({...prev, current:params.fecha}));
     if(params.cbAgnosComparar == 1){
       const {cbAgnosComparar, agnosComparar:[a], ...rest} = params;
       setReportDate(prev => ({...prev, dateRange:[a]}));

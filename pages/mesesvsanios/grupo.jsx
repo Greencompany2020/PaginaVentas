@@ -33,16 +33,18 @@ import {
 import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
+import DateHelper from "../../utils/dateHelper";
 
 const Grupo = (props) => {
   const {config} = props;
   const sendNotification  = useNotification();
   const { labels, setLabels, datasets, setDatasets } = useGraphData();
+  const date = DateHelper();
   const [parametrosGrupo, setParametrosGrupo] = useState({
-    delAgno: getCurrentYear() - 1,
-    alAgno: getCurrentYear(),
-    delMes: 1,
-    alMes: getCurrentMonth() - 1,
+    delAgno: date.getCurrentYear() - 1,
+    alAgno: date.getCurrentYear(),
+    delMes: date.getcurrentMonth(),
+    alMes: date.getNextMonth(),
     tiendas: 0,
     incluirTotal: config?.incluirTotal || 0,
     ventasDiaMesActual: config?.ventasDiaMesActual || 0,
