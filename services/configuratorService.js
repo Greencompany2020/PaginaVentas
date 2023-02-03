@@ -238,6 +238,15 @@ export default function configuratorService(){
     }
   }
 
+  const getLocalities = async() => {
+    try {
+      const {data} = await configuradorProvider.get('/localidades');
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   return {
     getUsers,
     getGroups,
@@ -260,7 +269,8 @@ export default function configuratorService(){
     setUserToGrupoDigitalizacion,
     createDigitalizacionGrupo,
     updateDigitalizacionGrupo,
-    deleteDigitalizacionGrupo
+    deleteDigitalizacionGrupo,
+    getLocalities
   };
 }
 

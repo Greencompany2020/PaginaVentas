@@ -24,6 +24,7 @@ const Users = (props) => {
     const [showRetrieve, setShowRetrieve] = useToggle();
     const confirmModalRef = useRef(null);
     const [digitalGroups, setDigitalGroups] = useState([]);
+    const [locatities, setLocatities] = useState([]);
 
     const handleSelect = async item => {
         setSelectedUser(item);
@@ -126,9 +127,11 @@ const Users = (props) => {
                 const userResponse = await service.getUsers();
                 const groupResponse = await service.getGroups();
                 const digitalGroupsResponse = await service.getGruposDigitalizacion();
+                const locatitiesRespose = await service.getLocalities();
                 setUsers(userResponse);
                 setGroups(groupResponse);
-                setDigitalGroups(digitalGroupsResponse)
+                setDigitalGroups(digitalGroupsResponse);
+                setLocatities(locatitiesRespose)
             } catch (error) {
                 sendNotification({
                     type: 'ERROR',
@@ -186,7 +189,9 @@ const Users = (props) => {
                     handleToggle={setShowModal}
                     digitalGroups={digitalGroups}
                     addUserToGroup={adduserToDigitalGroup}
+                    locatities={locatities}
                 />
+
             </FormModal>
 
             <FormModal key={2} active={showRetrieve} handleToggle={setShowRetrieve} name='Asignar acceso'>
