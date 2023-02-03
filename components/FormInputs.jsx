@@ -103,7 +103,7 @@ export const CheckBoxInput = ({ label, ...props }) => {
     const { type, ...rest } = props;
     return (
         <label className={`flex items-center space-x-1 font-semibold  text-gray-600 text-sm ${props.disabled && 'text-gray-100'}`} htmlFor={props?.id || props?.name}>
-            <input type='checkbox' checked={meta?.value || false} {...field} {...rest} />
+            <input type='checkbox' value={props.value} checked={meta?.value || false} {...field} {...rest} />
             <span className='normal-case'>{label}</span>
         </label>
     )
