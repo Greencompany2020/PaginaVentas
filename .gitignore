@@ -45,3 +45,6 @@ docker-compose.balancer.yml
 certs
 bin
 /nginx
+
+# IDE
+.idea

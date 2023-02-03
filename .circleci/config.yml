@@ -67,7 +67,7 @@ jobs:
             - run:
                 name: Deploy Over SSH
                 command: |
-                  ssh $SSH_USER@$SSH_HOST_FRONTEND "docker service create --name << pipeline.parameters.service-name >> \
+                  ssh $SSH_USER@$SSH_HOST_FRONTEND "echo ${DOCKERHUB_REGISTRY_TOKEN} | docker login --username ${DOCKERHUB_USERNAME} --password-stdin && docker service create --name << pipeline.parameters.service-name >> \
                   --replicas 2 \
                   --publish ${PORT}:3000 \
                   --update-order start-first \
@@ -77,10 +77,10 @@ jobs:
           condition:
             equal: [update, << pipeline.parameters.deploy-update >>]
           steps:
-            - run: 
+            - run:
                 name: Deploy (Update) Over SSH
                 command: |
-                  ssh $SSH_USER@$SSH_HOST_FRONTEND "docker service update \
+                  ssh $SSH_USER@$SSH_HOST_FRONTEND "echo ${DOCKERHUB_REGISTRY_TOKEN} | docker login --username ${DOCKERHUB_USERNAME} --password-stdin && docker service update \
                   --image ${DOCKERHUB_USERNAME}/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1} \
                   << pipeline.parameters.service-name >>"
 
