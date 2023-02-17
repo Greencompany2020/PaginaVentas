@@ -3,7 +3,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { TextInput, SelectInput, CheckBoxInput } from "../../FormInputs";
 
-export default function UserForm({ item, groups, addNewUser, updateUser, handleToggle, digitalGroups, addUserToGroup, locatities }) {
+export default function UserForm({ item, groups, addNewUser, updateUser, handleToggle, digitalGroups, addUserToGroup, locatities , sapUsers}) {
 
   const getUserLocalitities = () => {
     const localidades = locatities.reduce((obj, item) => Object.assign(obj, { [item.Localidad]: "" }), {})
@@ -39,6 +39,7 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
     idGrupo: item?.IdGrupo || groups[0]?.Id,
     idGrupoDigital: item?.IdGrupoDigitalizacion || digitalGroups[0]?.Id,
     localidades: getUserLocalitities(),
+    UserSAP: item?.UserSAP || "null"
   }
 
 
@@ -140,6 +141,17 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
               <CheckBoxInput id={item.Codigo} name={`[localidades.${item.Localidad}]`} key={item.Codigo} label={item.Localidad} />
             ))
           }
+        </fieldset>
+
+        <fieldset className="mt-4">
+        <SelectInput label='Usuario sap' name='UserSAP'>
+              <option value={"null"}>Elegir usuarios</option>
+              { sapUsers &&
+                sapUsers.map(item => (
+                  <option key={item.UserCode}>{item.UserCode}</option>
+                ))
+              }
+            </SelectInput>
         </fieldset>
 
 

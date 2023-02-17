@@ -13,8 +13,8 @@ export const Home = () => {
 
   return (
    <section className=" h-screen grid place-items-center bg-cyan-600 p-4">
-      <div className="w-full md:w-[50%] xl:w-[20%] min-h-[30rem] h-fit p-4 bg-gray-50 rounded-md shadow-sm shadow-slate-800">
-        <figure className="relative w-full h-44">
+      <div className="w-5/6  sm:w-4/12   xl:w-2/12  p-4 shadow-sm shadow-slate-800 bg bg-gray-50 rounded-md">
+        <figure className="relative w-full h-36 ">
           <Image src={logo} layout='fill' alt="logo"/>
         </figure>
         <div>

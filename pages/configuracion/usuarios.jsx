@@ -25,6 +25,7 @@ const Users = (props) => {
     const confirmModalRef = useRef(null);
     const [digitalGroups, setDigitalGroups] = useState([]);
     const [locatities, setLocatities] = useState([]);
+    const [sapUsers, setSapUsers] = useState([]);
 
     const handleSelect = async item => {
         setSelectedUser(item);
@@ -128,10 +129,12 @@ const Users = (props) => {
                 const groupResponse = await service.getGroups();
                 const digitalGroupsResponse = await service.getGruposDigitalizacion();
                 const locatitiesRespose = await service.getLocalities();
+                const sapUserResponse = await service.getSAPUsers();
                 setUsers(userResponse);
                 setGroups(groupResponse);
                 setDigitalGroups(digitalGroupsResponse);
-                setLocatities(locatitiesRespose)
+                setLocatities(locatitiesRespose);
+                setSapUsers(sapUserResponse)
             } catch (error) {
                 sendNotification({
                     type: 'ERROR',
@@ -190,6 +193,7 @@ const Users = (props) => {
                     digitalGroups={digitalGroups}
                     addUserToGroup={adduserToDigitalGroup}
                     locatities={locatities}
+                    sapUsers = {sapUsers}
                 />
 
             </FormModal>

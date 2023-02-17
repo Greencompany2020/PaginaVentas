@@ -247,6 +247,15 @@ export default function configuratorService(){
     }
   }
 
+  const getSAPUsers = async() => {
+    try {
+      const {data} = await configuradorProvider.get('/usuarios/sap');
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   return {
     getUsers,
     getGroups,
@@ -270,7 +279,8 @@ export default function configuratorService(){
     createDigitalizacionGrupo,
     updateDigitalizacionGrupo,
     deleteDigitalizacionGrupo,
-    getLocalities
+    getLocalities,
+    getSAPUsers
   };
 }
 
