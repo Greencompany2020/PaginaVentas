@@ -15,6 +15,7 @@ import TabButton from '../../components/configuration/TabButton';
 
 const Access = (props) => {
     const [access, setAccess] = useState([]);
+    const [proyects, setProyects] = useState([]);
     const [selectedAccess, setSelectedAccess] = useState({
         data:undefined,
         parameters:undefined,
@@ -102,7 +103,9 @@ const Access = (props) => {
         (async ()=>{
             try {
                const response = await service.getAccess();
-               setAccess(response) 
+               const responseProyects = await service.getProyects();
+               setAccess(response);
+               setProyects(responseProyects)
             } catch (error) {
                 sendNotification({
                     type:'ERROR',
@@ -151,6 +154,7 @@ const Access = (props) => {
                     addNewAccess = {addNewAccess}
                     updateAccess = {updateAccess}
                     handleModal =  {setShowModal}
+                    proyects = {proyects}
                 />
             </FormModal>
             <FormModal key={2} active={showRetrive} handleToggle={setShowRetrive} name='Editar parametros'>
