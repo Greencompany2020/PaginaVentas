@@ -8,11 +8,12 @@ export default function UserAccessTable(props) {
       <table className="w-full">
         <thead className="text-left">
           <tr>
-            <th className="bg-slate-300 rounded-l-md hidden  lg:table-cell">
+            <th className="bg-slate-300 rounded-l-md   lg:table-cell">Proyecto</th>
+            <th className="bg-slate-300 hidden lg:table-cell">
               Menu
             </th>
-            <th className="bg-slate-300 p-1 hidden  lg:table-cell">Reporte</th>
-            <th className="bg-slate-300 p-1">Nombre</th>
+            <th className="bg-slate-300 p-1">Reporte</th>
+            <th className="bg-slate-300 p-1 hidden  lg:table-cell">Nombre</th>
             <th className="bg-slate-300 text-center rounded-r-md p-1">
               Acciones
             </th>
@@ -21,9 +22,10 @@ export default function UserAccessTable(props) {
         <tbody>
           {items.map((item, index) => (
             <tr key={generateKey(index)} className="cursor-pointer">
+              <td>{item.nombreProyecto}</td>
               <td className=" hidden lg:table-cell">{item.menu}</td>
-              <td className=" hidden lg:table-cell">{item.reporte}</td>
-              <td>{item.nombreReporte}</td>
+              <td>{item.reporte}</td>
+              <td className=" hidden lg:table-cell">{item.nombreReporte}</td>
               <td className="flex justify-center space-x-1">
                 <TooggleSwitch
                   key={index}

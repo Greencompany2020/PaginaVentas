@@ -9,11 +9,12 @@ export default function TableAccess(props) {
       <table className="w-full overflow-auto">
         <thead className="text-left">
           <tr>
-            <th className="bg-slate-300 rounded-l-md hidden  lg:table-cell">
+            <th className="bg-slate-300 rounded-l-md">Proyecto</th>
+            <th className="bg-slate-300 hidden lg:table-cell">
               Menu
             </th>
-            <th className="bg-slate-300 p-1 hidden  lg:table-cell">Reporte</th>
-            <th className="bg-slate-300 p-1 rounded-l-md lg:rounded-none">Nombre</th>
+            <th className="bg-slate-300 p-1">Reporte</th>
+            <th className="bg-slate-300 p-1 hidden  lg:table-cell">Nombre</th>
             <th className="bg-slate-300 text-center rounded-r-md p-1">
               Acciones
             </th>
@@ -22,9 +23,10 @@ export default function TableAccess(props) {
         <tbody>
           {items.map(item => (
             <tr key={v4()} className="cursor-pointer" onClick={()=>handleSelect(item)}>
+              <td>{item.nombreProyecto}</td>
               <td className=" hidden lg:table-cell">{item.menu}</td>
-              <td className=" hidden lg:table-cell">{item.reporte}</td>
-              <td>{item.nombreReporte}</td>
+              <td className="">{item.reporte}</td>
+              <td className=" hidden lg:table-cell">{item.nombreReporte}</td>
               <td className="flex justify-center space-x-1">
                 <PencilAltIcon
                   width={26}
