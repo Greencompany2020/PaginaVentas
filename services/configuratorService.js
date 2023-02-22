@@ -1,9 +1,9 @@
 import configuradorProvider from "./providers/configuradorProvider";
 
-export default function configuratorService(){
+export default function configuratorService() {
   const getUsers = async () => {
     try {
-      const { data } = await  configuradorProvider.get("/usuarios?page=1&size=300");
+      const { data } = await configuradorProvider.get("/usuarios?page=1&size=300");
       return data;
     } catch (error) {
       throw error;
@@ -12,7 +12,7 @@ export default function configuratorService(){
 
   const getGroups = async () => {
     try {
-      const { data } = await  configuradorProvider.get("/grupos");
+      const { data } = await configuradorProvider.get("/grupos");
       return data;
     } catch (error) {
       throw error;
@@ -21,22 +21,22 @@ export default function configuratorService(){
 
   const getAccess = async () => {
     try {
-      const { data } = await  configuradorProvider.get("/accesos");
+      const { data } = await configuradorProvider.get("/accesos");
       return data;
     } catch (error) {
       throw error;
     }
   }
 
-  const  getUserDetail = async (userId) => {
+  const getUserDetail = async (userId) => {
     try {
-      const { data } = await  configuradorProvider.get(`/accesos/perfil/${userId}`);
+      const { data } = await configuradorProvider.get(`/accesos/perfil/${userId}`);
       const response = await getAccess();
-      const { Accesos, ...usuario} = data;
-      const formatedData = replaceAccess(response,  Accesos);
+      const { Accesos, ...usuario } = data;
+      const formatedData = replaceAccess(response, Accesos);
       const newData = {
         usuario,
-        accesos:formatedData
+        accesos: formatedData
       }
       return newData;
     } catch (error) {
@@ -46,7 +46,7 @@ export default function configuratorService(){
 
   const assignAccess = async (body) => {
     try {
-      const response = await  configuradorProvider.post(
+      const response = await configuradorProvider.post(
         "/accesos/assign",
         body
       );
@@ -58,7 +58,7 @@ export default function configuratorService(){
 
   const createUser = async (body) => {
     try {
-      const { data } = await  configuradorProvider.post(
+      const { data } = await configuradorProvider.post(
         "/usuarios/create",
         body
       );
@@ -70,7 +70,7 @@ export default function configuratorService(){
 
   const updateUser = async (id, body) => {
     try {
-      const { data } = await  configuradorProvider.put(
+      const { data } = await configuradorProvider.put(
         `/usuarios/update/${id}`,
         body
       );
@@ -82,7 +82,7 @@ export default function configuratorService(){
 
   const deleteUser = async (id) => {
     try {
-      const { data } = await  configuradorProvider.delete(
+      const { data } = await configuradorProvider.delete(
         `/usuarios/delete/${id}`
       );
       return data;
@@ -93,17 +93,17 @@ export default function configuratorService(){
 
   const createGroup = async (body) => {
     try {
-      const { data } = await  configuradorProvider.post("/grupos/create", body);
+      const { data } = await configuradorProvider.post("/grupos/create", body);
       return data;
     } catch (error) {
       throw error;
     }
   }
 
-  const  updateGroup = async (id, body) => {
+  const updateGroup = async (id, body) => {
     try {
       const params = { Nombre: body.Nombre };
-      const { data } = await  configuradorProvider.put(
+      const { data } = await configuradorProvider.put(
         `/grupos/update/${id}`,
         params
       );
@@ -113,9 +113,9 @@ export default function configuratorService(){
     }
   }
 
- const deleteGroup = async (id) => {
+  const deleteGroup = async (id) => {
     try {
-      const { data } = await  configuradorProvider.delete(
+      const { data } = await configuradorProvider.delete(
         `/grupos/delete/${id}`
       );
       return data;
@@ -125,11 +125,10 @@ export default function configuratorService(){
   }
 
   const createAccess = async (body) => {
-    const newBody = {...body, idProyect:1}
     try {
-      const { data } = await  configuradorProvider.post(
+      const { data } = await configuradorProvider.post(
         "/accesos/create",
-        newBody
+        body
       );
       return data;
     } catch (error) {
@@ -137,12 +136,11 @@ export default function configuratorService(){
     }
   }
 
-  const  updateAccess = async (id, body) =>  {
+  const updateAccess = async (id, body) => {
     try {
-      const newBody = {...body, idProyect:1}
-      const { data } = await  configuradorProvider.put(
+      const { data } = await configuradorProvider.put(
         `/accesos/update/${id}`,
-        newBody
+        body
       );
       return data;
     } catch (error) {
@@ -150,9 +148,9 @@ export default function configuratorService(){
     }
   }
 
-  const  deleteAccess = async (id) => {
+  const deleteAccess = async (id) => {
     try {
-      const { data } = await  configuradorProvider.delete(
+      const { data } = await configuradorProvider.delete(
         `/accesos/delete/${id}`
       );
       return data;
@@ -163,16 +161,16 @@ export default function configuratorService(){
 
   const configureParameters = async (idDashboard, body) => {
     try {
-      const response = await  configuradorProvider.post(`/dashboards/parameters/${idDashboard}`, body);
+      const response = await configuradorProvider.post(`/dashboards/parameters/${idDashboard}`, body);
       return response;
     } catch (error) {
       throw error
     }
   }
 
-  const getParameters = async (idDashboard) =>{
+  const getParameters = async (idDashboard) => {
     try {
-      const {data} = await  configuradorProvider.get(`/dashboards/parameters/${idDashboard}`);
+      const { data } = await configuradorProvider.get(`/dashboards/parameters/${idDashboard}`);
       return data;
     } catch (error) {
       throw error;
@@ -195,7 +193,7 @@ export default function configuratorService(){
 
   const getGruposDigitalizacion = async () => {
     try {
-      const {data}  = await configuradorProvider.get('/grupos-digitalizacion');
+      const { data } = await configuradorProvider.get('/grupos-digitalizacion');
       return data;
     } catch (error) {
       throw error;
@@ -238,19 +236,44 @@ export default function configuratorService(){
     }
   }
 
-  const getLocalities = async() => {
+  const getLocalities = async () => {
     try {
-      const {data} = await configuradorProvider.get('/localidades');
+      const { data } = await configuradorProvider.get('/localidades');
       return data;
     } catch (error) {
       throw error;
     }
   }
 
-  const getSAPUsers = async() => {
+  const getSAPUsers = async () => {
     try {
-      const {data} = await configuradorProvider.get('/usuarios/sap');
+      const { data } = await configuradorProvider.get('/usuarios/sap');
       return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const getProyects = async () => {
+    try {
+      const { data } = await configuradorProvider.get('/proyectos');
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const createProyect = async (body) => {
+    try {
+      const data = await configuradorProvider.post('/proyectos', body);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  const updateProyect = async(id, body) => {
+    try {
+      const data = await configuradorProvider.put(`/proyectos/${id}`, body);
     } catch (error) {
       throw error;
     }
@@ -280,7 +303,10 @@ export default function configuratorService(){
     updateDigitalizacionGrupo,
     deleteDigitalizacionGrupo,
     getLocalities,
-    getSAPUsers
+    getSAPUsers,
+    getProyects,
+    createProyect,
+    updateProyect
   };
 }
 

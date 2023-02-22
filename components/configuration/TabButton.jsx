@@ -1,5 +1,5 @@
 import React from "react";
-import { UserIcon, UserGroupIcon, LockOpenIcon } from "@heroicons/react/solid";
+import { UserIcon, UserGroupIcon, LockOpenIcon, GlobeIcon } from "@heroicons/react/solid";
 import Link from "next/link";
 export default function TabButton(props) {
   return (
@@ -17,6 +17,11 @@ export default function TabButton(props) {
       <Link href="/configuracion/accesos">
         <a className="secondary-btn w-20 flex justify-center">
           <LockOpenIcon width={32} className="" />
+        </a>
+      </Link>
+      <Link href="/configuracion/proyectos">
+        <a className="secondary-btn w-20 flex justify-center">
+          <GlobeIcon width={32} className=""/>
         </a>
       </Link>
     </div>
