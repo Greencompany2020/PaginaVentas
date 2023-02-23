@@ -279,6 +279,14 @@ export default function configuratorService() {
     }
   }
 
+  const deleteProyect = async(id) => {
+    try {
+      const data = await configuradorProvider.delete(`/proyectos/${id}`);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   return {
     getUsers,
     getGroups,
@@ -306,7 +314,8 @@ export default function configuratorService() {
     getSAPUsers,
     getProyects,
     createProyect,
-    updateProyect
+    updateProyect,
+    deleteProyect
   };
 }
 
