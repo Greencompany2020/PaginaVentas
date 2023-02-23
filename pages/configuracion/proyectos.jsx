@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import withAuth from '../../components/withAuth';
 import { getBaseLayout } from '../../components/layout/BaseLayout';
 import TabButton from '../../components/configuration/TabButton';
@@ -9,7 +9,7 @@ import { FormModal } from '../../components/modals';
 import { useNotification } from '../../components/notifications/NotificationsProvider';
 import useToggle from '../../hooks/useToggle';
 import Proyectform from '../../components/configuration/proyects/ProyectForm';
-
+import { ConfirmModal } from '../../components/modals';
 
 const Proyects = (props) => {
     const service = configuratorService();
@@ -17,6 +17,7 @@ const Proyects = (props) => {
     const sendNotification = useNotification();
     const [showModal, setShowModal] = useToggle();
     const [selected, setSelected] = useState(null);
+    const confirmModalRef = useRef(null);
 
     const onPressAdd = () => {
         setSelected(null)
@@ -41,7 +42,7 @@ const Proyects = (props) => {
         }
     }
 
-    const updateProyect = async(values) => {
+    const updateProyect = async (values) => {
         try {
             await service.updateProyect(selected.Id, values);
             const response = await service.getProyects();
@@ -52,6 +53,23 @@ const Proyects = (props) => {
                 message: error.response.data.message || error.message
             });
         }
+    }
+
+    const deleteProyect = async (id) => {
+        const confirm = await confirmModalRef.current.show();
+        if (confirm) {
+            try {
+                await service.deleteProyect(id);
+                const response = await service.getProyects();
+                setData(response);
+            } catch (error) {
+                sendNotification({
+                    type: 'ERROR',
+                    message: error.response.data.message || error.message
+                });
+            }
+        }
+
     }
 
     useEffect(() => {
@@ -93,14 +111,15 @@ const Proyects = (props) => {
                             searchBy: ["Nombre"],
                         }}
                     >
-                        <ProyectTable onSelectItem={onSelectItem}/>
+                        <ProyectTable onSelectItem={onSelectItem} deleteProyect={deleteProyect}/>
                     </Paginate>
                 </div>
             </section>
 
             <FormModal active={showModal} handleToggle={setShowModal} name={selected ? 'Editar Proyecto' : 'Agregar Proyecto'}>
-                <Proyectform item={selected} handleToggle={setShowModal} onCreateNew = {createNewProyect} onUpdate={updateProyect}/>
+                <Proyectform item={selected} handleToggle={setShowModal} onCreateNew={createNewProyect} onUpdate={updateProyect} />
             </FormModal>
+            <ConfirmModal ref={confirmModalRef} />
         </>
     )
 }

@@ -14,6 +14,7 @@ const CALCULATE_PAGES = "CALCULATE_PAGES";
 const CALCULATE_SLICE = "CALCULATE_SLICE";
 const CHANGE_SHOW_ITEMS = "CHANGE_SHOW_ITEMS";
 const REPLACE_SLICE = "REPLACE_SLICE";
+const CHANGE_SEARCH_PARAM = "CHANGE_SEARCH_PARAM";
 
 export default function Paginate(props) {
   const initialState = {
@@ -21,7 +22,7 @@ export default function Paginate(props) {
     currentPage: props.currentPage,
     pages: props.pages,
     showItems: props.options.optionRange[0],
-    search: "",
+    searchParam: "",
   };
 
   const reducer = (state, action) => {
@@ -64,6 +65,8 @@ export default function Paginate(props) {
         return { ...state, showItems: action.payload };
       case REPLACE_SLICE:
         return { ...state, dataFilter: [...action.payload] };
+      case CHANGE_SEARCH_PARAM:
+        return {...state, searchParam: action.payload }
       default:
         return state;
     }
@@ -71,12 +74,16 @@ export default function Paginate(props) {
   const [state, dispatch] = useReducer(reducer, initialState);
 
   useEffect(() => {
+    const {searchParam} =  state;
     const { showItems, currentPage } = state;
     const { data } = props;
     const definedPages = calculatePages(data, showItems);
     const definedSlice = calculateSlice(data, showItems, currentPage);
     dispatch({ type: CALCULATE_PAGES, payload: definedPages });
     dispatch({ type: CALCULATE_SLICE, payload: definedSlice });
+    if(searchParam){
+      search(searchParam)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.data]);
 
@@ -165,6 +172,7 @@ export default function Paginate(props) {
         });
       });
       dispatch({ type: REPLACE_SLICE, payload: filtered });
+      dispatch({type: CHANGE_SEARCH_PARAM, payload: param});
     } else {
       const definedSlice = calculateSlice(data, showItems, currentPage);
       dispatch({ type: CALCULATE_SLICE, payload: definedSlice });
