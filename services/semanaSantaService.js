@@ -44,3 +44,12 @@ export async function getSemanaSantaAcumulado(body) {
     throw error;
   }
 }
+
+export async function getSemanaSantaGrafica(body) {
+  try {
+    const { data } = await reporteProvider.post("/semanasanta/grafica", body)
+    return data;
+  } catch (error) {
+    throw error
+  }
+}
