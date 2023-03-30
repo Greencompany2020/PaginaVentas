@@ -79,7 +79,7 @@ export default function withAuth(Component){
         } catch (error) {
           sendNotification({
             type: 'ERROR',
-            message: error.response.data.message || error.message
+            message: error?.response?.data?.message || error.message
           });
           router.replace('/unauthorized')
         }

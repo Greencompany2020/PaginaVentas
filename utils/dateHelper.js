@@ -1,7 +1,8 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import utc from 'dayjs/plugin/utc'
 import weekday from 'dayjs/plugin/weekday';
-import duration from 'dayjs/plugin/duration'
+import duration from 'dayjs/plugin/duration';
+import { semanaSanta } from './dateFunctions';
 
 
 const WEEK_DAYS = Object.freeze({
@@ -29,9 +30,9 @@ const MONTHS = Object.freeze({
     11: 'Diciembre',
 });
 
-export default function DateHelper(){
-    
-    
+export default function DateHelper() {
+
+
     dayjs.extend(utc);
     dayjs.extend(weekday);
     dayjs.extend(duration)
@@ -98,10 +99,38 @@ export default function DateHelper(){
     }
 
     const getYesterday = () => {
-        return dayjs().utc().local().subtract(1,'day').format('YYYY-MM-DD')
+        return dayjs().utc().local().subtract(1, 'day').format('YYYY-MM-DD')
     }
 
-    return{
+    const getCurrent = () => {
+        return dayjs().utc().local().format('YYYY-MM-DD')
+    }
+
+    const getEasterDayWeek = (date) => {
+        if (dayjs(date, 'YYYY-MM-DD', true).isValid()) {
+            const current = validDate(date);
+            return `${WEEK_DAYS[current.day()]}-${current.date()}-${MONTHS[current.month()].substring(0, 3)}`
+        }
+        return date
+    }
+
+    const getDayFromEasterWeek = (date) => {
+        if (dayjs(date, 'YYYY-MM-DD', true).isValid()) {
+            const current = validDate(date);
+            return WEEK_DAYS[current.day()]
+        }
+        return date
+    }
+
+    const getYearFromEasterWeek = (date) => {
+        if (dayjs(date, 'YYYY-MM-DD', true).isValid()) {
+            const current = validDate(date);
+            return current.year()
+        }
+        return date
+    }
+
+    return {
         getYesterdayDate,
         getToday,
         getWeekDate,
@@ -112,6 +141,11 @@ export default function DateHelper(){
         getCurrentDate,
         getweekRange,
         getPreviousMonth,
-        getNextMonth
+        getNextMonth,
+        getYesterday,
+        getEasterDayWeek,
+        getCurrent,
+        getDayFromEasterWeek,
+        getYearFromEasterWeek
     }
 }

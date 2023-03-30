@@ -130,6 +130,10 @@ export const enlaces = [
         linkText: 'Acumulado'
       },
       {
+        link: '/semanasanta/grafica',
+        linkText: 'Grafica'
+      },
+      {
         link: '/semanasanta/grupo',
         linkText: 'Grupo'
       },
