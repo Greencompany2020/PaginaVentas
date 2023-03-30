@@ -228,7 +228,7 @@ const Grafica = (props) => {
                   (data && data?.lista) ?
                     data.lista
                       .map(item => (
-                        <tr key={item.dia} className={`${(item.dia === 'Total') ?
+                        <tr key={v4()} className={`${(item.dia === 'Total') ?
                           'bg-orange-400 text-white text-sm font-bold'
                           : (item.dia === 'Porcentaje') ?
                             'bg-orange-200 text-sm font-bold'
@@ -238,11 +238,11 @@ const Grafica = (props) => {
                           {item.datos
                             .map(col => (
                               item.dia !== 'Porcentaje' ?
-                                <td key={col.agno} colSpan={calculateCols(item.dia)}>
+                                <td key={v4()} colSpan={calculateCols(item.dia)}>
                                   {numberWithCommas(col.valor)}
                                 </td>
                                 :
-                                <td key={col.agno} colSpan={calculateCols(item.dia)} data-porcent-format={isNegative(col.valor)}>
+                                <td key={v4()} colSpan={calculateCols(item.dia)} data-porcent-format={isNegative(col.valor)}>
                                   {numberAbs(col.valor)}
                                 </td>
                             ))}
@@ -279,32 +279,32 @@ const Grafica = (props) => {
                       (data && data?.segmentos) ?
                         data.segmentos
                           .map(item => (
-                            <React.Fragment key={item.dia}>
+                            <React.Fragment key={v4()}>
                               <tr>
                                 <td className="text-left font-bold text-sm" rowSpan={3}>{dateHelpers.getEasterDayWeek(item.dia)}</td>
                                 <td className="text-left">LINEA</td>
-                                {item.detalles.linea.map(col => (<td key={item.dia + col.valor}>{numberWithCommas(col.valor)}</td>))}
+                                {item.detalles.linea.map(col => (<td key={v4()}>{numberWithCommas(col.valor)}</td>))}
                               </tr>
 
                               <tr>
                                 <td className="text-left">MODA</td>
-                                {item.detalles.moda.map(col => (<td key={item.dia + col.valor}>{numberWithCommas(col.valor)}</td>))}
+                                {item.detalles.moda.map(col => (<td key={v4()}>{numberWithCommas(col.valor)}</td>))}
                               </tr>
 
                               <tr>
                                 <td className="text-left">ACCESORIOS</td>
-                                {item.detalles.accesorios.map(col => (<td key={item.dia + col.valor}>{numberWithCommas(col.valor)}</td>))}
+                                {item.detalles.accesorios.map(col => (<td key={v4()}>{numberWithCommas(col.valor)}</td>))}
                               </tr>
 
                               <tr className="bg-orange-400 text-white text-sm font-bold">
                                 <td className="text-left " colSpan={2}>Totales {dateHelpers.getEasterDayWeek(item.dia)}</td>
-                                {item.totales.map(col => (<td key={item.dia + col.valor}>{numberWithCommas(col.valor)}</td>))}
+                                {item.totales.map(col => (<td key={v4()}>{numberWithCommas(col.valor)}</td>))}
                               </tr>
 
                               <tr className=" border-b border-b-black bg-orange-200 text-sm font-bold">
                                 <td></td>
                                 <td className="text-left">%Var</td>
-                                {item.porcentajes.map(col => (<td key={item.dia  + col.valor} colSpan={1} data-porcent-format={isNegative(col.valor)}>{numberAbs(col.valor)}</td>))}
+                                {item.porcentajes.map(col => (<td key={v4()} colSpan={1} data-porcent-format={isNegative(col.valor)}>{numberAbs(col.valor)}</td>))}
                                 <td></td>
                               </tr>
                             </React.Fragment>
@@ -337,33 +337,33 @@ const Grafica = (props) => {
                           <tr>
                             <td rowSpan={3} className="text-left text-sm font-bold"> Ingreso Acumulado</td>
                             <td className="text-left">LINEA</td>
-                            {data.ingresos.totales.linea.map(item => (<td key={item.agno + item.valor}>{numberWithCommas(item.valor)}</td>))}
+                            {data.ingresos.totales.linea.map(item => (<td key={v4()}>{numberWithCommas(item.valor)}</td>))}
                           </tr>
 
                           <tr>
                             <td className="text-left">MODA</td>
-                            {data.ingresos.totales.moda.map(item => (<td key={item.agno + item.valor}>{numberWithCommas(item.valor)}</td>))}
+                            {data.ingresos.totales.moda.map(item => (<td key={v4()}>{numberWithCommas(item.valor)}</td>))}
                           </tr>
 
                           <tr>
                             <td className="text-left">ACCESORIOS</td>
-                            {data.ingresos.totales.accesorios.map(item => (<td key={item.agno + item.valor}>{numberWithCommas(item.valor)}</td>))}
+                            {data.ingresos.totales.accesorios.map(item => (<td key={v4()}>{numberWithCommas(item.valor)}</td>))}
                           </tr>
 
                           <tr className="border-t">
                             <td rowSpan={3} className="text-left text-sm font-bold">% Var</td>
                             <td className="text-left">LINEA</td>
-                            {data.ingresos.porcentajes.linea.map(item => (<td key={item.agno + item.valor} colSpan={1} data-porcent-format={isNegative(item.valor)}>{numberAbs(item.valor)}</td>))}
+                            {data.ingresos.porcentajes.linea.map(item => (<td key={v4()} colSpan={1} data-porcent-format={isNegative(item.valor)}>{numberAbs(item.valor)}</td>))}
                           </tr>
 
                           <tr>
                             <td className="text-left">MODA</td>
-                            {data.ingresos.porcentajes.moda.map(item => (<td key={item.agno + item.valor} colSpan={1} data-porcent-format={isNegative(item.valor)}>{numberAbs(item.valor)}</td>))}
+                            {data.ingresos.porcentajes.moda.map(item => (<td key={v4()} colSpan={1} data-porcent-format={isNegative(item.valor)}>{numberAbs(item.valor)}</td>))}
                           </tr>
 
                           <tr>
                             <td className="text-left">ACCESORIOS</td>
-                            {data.ingresos.porcentajes.accesorios.map(item => (<td key={item.agno + item.valor} colSpan={1} data-porcent-format={isNegative(item.valor)}>{numberAbs(item.valor)}</td>))}
+                            {data.ingresos.porcentajes.accesorios.map(item => (<td key={v4()} colSpan={1} data-porcent-format={isNegative(item.valor)}>{numberAbs(item.valor)}</td>))}
                           </tr>
 
                         </>
