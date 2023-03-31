@@ -42,7 +42,7 @@ const Grafica = (props) => {
   const [dataSet, setDataSet] = useState({ labels: [], datasets: [] });
   const [reportDate, setReportDate] = useState({ current: getCurrentDate(true), dateRange: spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1) });
   const [isDisable, setIsDisable] = useState(isSecondDateBlock(config?.cbAgnosComparar || 1));
-  const [showDetail, setShowDetail] = useState(false);
+  const [showDetail, setShowDetail] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
   const parameters = {
@@ -57,7 +57,7 @@ const Grafica = (props) => {
     tipoCambioTiendas: parseNumberToBoolean(config?.tipoCambioTiendas || 0),
     agnosComparar: spliteArrDate(config?.agnosComparativos, config?.cbAgnosComparar || 1),
     cbAgnosComparar: config?.cbAgnosComparar || 1,
-    mostrarDetalle: parseNumberToBoolean(0),
+    mostrarDetalle: true,
     tipo: 'grupo'
   }
 
@@ -151,7 +151,13 @@ const Grafica = (props) => {
     }
 
     if(name === 'mostrarDetalle'){
-      const val = value === 'true' ? true : false
+      let val = false;
+      if(typeof value === 'boolean'){
+        val = value
+      }
+      else{
+        val = value === 'true' ? true : false
+      }
       setShowDetail(val);
     }
   }
@@ -224,7 +230,7 @@ const Grafica = (props) => {
                     <Checkbox id={inputNames.INCLUIR_FIN_SEMANA_ANTERIOR} name={inputNames.INCLUIR_FIN_SEMANA_ANTERIOR} label={checkboxLabels.INCLUIR_FIN_DE_SEMANA_ANTERIOR} />
                     <Checkbox id={inputNames.RESULTADOS_PESOS} name={inputNames.RESULTADOS_PESOS} label={checkboxLabels.RESULTADO_PESOS} />
                     <Checkbox id={inputNames.TIPO_CAMBIO_TIENDAS} name={inputNames.TIPO_CAMBIO_TIENDAS} label={checkboxLabels.TIPO_CAMBIO_TIENDAS} />
-                    <Checkbox id={'mostrarDetalle'} name={'mostrarDetalle'} label={checkboxLabels.MOSTRAR_DETALLES} />
+                    <Checkbox id={'mostrarDetalle'} name={'mostrarDetalle'} label={"Ocultar detalle por segmento"} />
                   </fieldset>
                   <div className="mt-4">
                     <input type="submit" value="Buscar" className="primary-btn w-full disabled:bg-gray-500" disabled={isLoading} />
