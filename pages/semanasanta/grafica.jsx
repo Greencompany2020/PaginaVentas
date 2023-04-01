@@ -68,6 +68,23 @@ const Grafica = (props) => {
       const { cbAgnosComparar, agnosComparar: [first, last] } = values
       const colors = ['#006400', '#daa520', '#6495ed'];
 
+
+      const currentYear = dateHelpers.getYearFromEasterWeek(fecha);
+      const years = [currentYear, ...agnosComparar];
+
+
+      years.forEach((item) => {
+        let  coincidents = 0;
+        years.forEach(secondItem => {
+          if(item === secondItem){
+            coincidents ++;
+          }
+        });
+        if(coincidents >= 2) {
+          throw Error('Los años a comparar no pueden ser identicos')
+        }
+      })
+
       setIsLoading(true);
       const result = await getSemanaSantaGrafica(params);
       setData(result);
@@ -76,8 +93,6 @@ const Grafica = (props) => {
         .filter(list => list.dia !== 'Porcentaje' && list.dia !== 'Total')
         .flatMap(item => dateHelpers.getDayFromEasterWeek(item.dia));
 
-      const currentYear = dateHelpers.getYearFromEasterWeek(fecha);
-      const years = [currentYear, ...agnosComparar];
 
       const dataSets = years.map((date, i) => {
         const dataInDate = result.lista
@@ -173,7 +188,7 @@ const Grafica = (props) => {
               <Formik initialValues={parameters} onSubmit={handleSubmit} enableReinitialize>
                 <Form onChange={onChangeValue}>
 
-                  <Input type={'date'} placeholder={"Hola"} id='fecha' name='fecha' label='Fecha' />
+                  <Input type={'date'} placeholder={reportDate.current} id='fecha' name='fecha' label='Fecha' />
                   <fieldset className='flex space-x-1 border border-slate-400 p-2 rounded-md mb-3 mt-3'>
                     <legend className='text-sm font-semibold text-slate-700'>Mostrar</legend>
                     <Radio id='grupo' name='tipo' value='grupo' label='Grupo' />

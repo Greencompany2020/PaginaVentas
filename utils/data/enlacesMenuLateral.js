@@ -131,7 +131,7 @@ export const enlaces = [
       },
       {
         link: '/semanasanta/grafica',
-        linkText: 'Grafica'
+        linkText: 'Por dia'
       },
       {
         link: '/semanasanta/grupo',
