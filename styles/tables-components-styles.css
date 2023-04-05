@@ -7,38 +7,44 @@
 
 .table-report tbody tr td[data-type-format="text" i],
 .table-report-footer tbody tr td[data-type-format="text" i],
-.table-report-mobile tbody tr td[data-type-format="text" i] 
+.table-report-mobile tbody tr td[data-type-format="text" i], 
+.table-report-grafica tbody tr td[data-type-format="text" i] 
 {@apply text-left}
 
 .table-report tbody tr td[data-type-format="number" i],
 .table-report-footer tbody tr td[data-type-format="number" i],
-.table-report-mobile tbody tr td[data-type-format="number" i]
+.table-report-mobile tbody tr td[data-type-format="number" i],
+.table-report-grafica tbody tr td[data-type-format="number" i]
 {@apply text-right}
 
 .table-report tbody tr td[data-porcent-format="negative" i],
 .table-report-footer tbody tr td[data-porcent-format="negative" i],
 .table-report-mobile tbody tr td[data-porcent-format="negative" i],
-.table-report-comparative tbody tr td[data-porcent-format="negative" i]
+.table-report-comparative tbody tr td[data-porcent-format="negative" i],
+.table-report-grafica tbody tr td[data-porcent-format="negative" i]
 {@apply text-red-600 font-bold}
 
 
 .table-report tbody tr td[data-porcent-format="positive" i],
 .table-report-footer tbody tr td[data-porcent-format="positive" i],
 .table-report-mobile tbody tr td[data-porcent-format="positive" i],
-.table-report-comparative tbody tr td[data-porcent-format="positive" i]
+.table-report-comparative tbody tr td[data-porcent-format="positive" i],
+.table-report-grafica tbody tr td[data-porcent-format="positive" i]
 {@apply text-green-600 font-bold}
 
 .table-report tbody tr[data-row-format="plaza" i] > td,
 .table-report-footer tbody tr[data-row-format="plaza" i] > td,
 .table-report-mobile tbody tr[data-row-format="plaza" i] > td,
-.table-report-comparative tbody tr[data-row-format="plaza" i] > td
+.table-report-comparative tbody tr[data-row-format="plaza" i] > td,
+.table-report-grafica tbody tr[data-row-format="plaza" i] > td
 {@apply bg-gray-300 font-bold }
 
 
 .table-report  tbody tr[data-row-format="region" i] > td,
 .table-report-footer  tbody tr[data-row-format="region" i] > td,
 .table-report-mobile tbody tr[data-row-format="region" i] > td,
-.table-report-comparative  tbody tr[data-row-format="region" i] > td
+.table-report-comparative  tbody tr[data-row-format="region" i] > td,
+.table-report-grafica  tbody tr[data-row-format="region" i] > td
 {@apply bg-gray-400 font-bold}
 
 
@@ -145,3 +151,19 @@
 .table-report-comparative tfoot tr th:last-child {@apply bg-black-shape border-r-0}
 .table-report-comparative tfoot tr:first-child th:first-child{@apply  rounded-bl-lg border-l-0 border-t-0}
 .table-report-comparative tfoot tr:first-child th:last-child{@apply   rounded-br-lg  border-r-0 border-t-0}
+
+/***************************************************************************************************************/
+/*HEADER TABLE STYLE*/
+.table-report-grafica{@apply text-xs text-right w-[80rem] table-fixed md:max-w-3xl}
+.table-report-grafica thead{@apply text-white}
+.table-report-grafica thead tr th {@apply bg-black-shape border}
+.table-report-grafica thead tr th:last-child {@apply bg-black-shape border-r-0}
+.table-report-grafica thead tr:first-child th:first-child{@apply rounded-tl-lg border-l-0 border-t-0}
+.table-report-grafica thead tr:first-child th:last-child{@apply  rounded-tr-lg  border-r-0 border-t-0}
+
+/*FOOTER TABLE STYLE*/
+.table-report-grafica tfoot{@apply text-white font-bold}
+.table-report-grafica tfoot tr td{@apply bg-black-shape border }
+.table-report-grafica tfoot tr:last-child td{@apply border-b-0 text-center}
+.table-report-grafica tfoot tr:last-child td:first-child{@apply  rounded-bl-lg border-l-0 border-b-0}
+.table-report-grafica tfoot tr:last-child td:last-child{@apply  rounded-br-lg border-r-0 border-b-0}
