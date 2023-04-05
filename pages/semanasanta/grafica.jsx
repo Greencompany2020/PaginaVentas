@@ -92,7 +92,7 @@ const Grafica = (props) => {
 
       setReportDate({
         current: fecha,
-        dateRange:[first, last]
+        dateRange: [first, last]
       })
 
       setIsDisable(isSecondDateBlock(cbAgnosComparar));
@@ -151,14 +151,14 @@ const Grafica = (props) => {
     if (name === 'fecha') {
       const date = dateHelpers.getYearFromEasterWeek(value);
       const dateRange1 = reportDate.dateRange[0] === date ? date - 1 : reportDate.dateRange[0];
-      const dateRange2 = reportDate.dateRange[1] === dateRange1 ? dateRange1 - 1 :reportDate.dateRange[1];
-      setReportDate({current: value,dateRange:[Number(dateRange1),  Number(dateRange2)]})
+      const dateRange2 = reportDate.dateRange[1] === dateRange1 ? dateRange1 - 1 : reportDate.dateRange[1];
+      setReportDate({ current: value, dateRange: [Number(dateRange1), Number(dateRange2)] })
     }
 
 
-    if(name === 'agnosComparar[0]'){
+    if (name === 'agnosComparar[0]') {
       const dateRange2 = reportDate.dateRange[1] === Number(value) ? Number(value) - 1 : reportDate.dateRange[1]
-      setReportDate(prev => ({...prev, dateRange:[Number(value), Number(dateRange2)]}))
+      setReportDate(prev => ({ ...prev, dateRange: [Number(value), Number(dateRange2)] }))
     }
   }
 
@@ -187,7 +187,7 @@ const Grafica = (props) => {
               }} onSubmit={handleSubmit} enableReinitialize>
                 <Form onChange={onChangeValue}>
 
-                  <AutoSubmitToken/>
+                  <AutoSubmitToken />
                   <Input type={'date'} placeholder={reportDate.current} id='fecha' name='fecha' label='Fecha' />
                   <fieldset className='flex space-x-1 border border-slate-400 p-2 rounded-md mb-3 mt-3'>
                     <legend className='text-sm font-semibold text-slate-700'>Mostrar</legend>
@@ -258,12 +258,14 @@ const Grafica = (props) => {
             <section className="p-4 overflow-auto ">
               <div className="overflow-y-auto space-y-8">
                 <div>
-                  <table className="table-report-footer">
+                  <table className="table-report-grafica">
                     <thead>
                       <tr>
                         <th className="text-left">DIA REF</th>
                         <th>{getYearFromDate(reportDate.current)}</th>
+                        {reportDate.dateRange[0] ? <th>% VS {reportDate.dateRange[0]}</th> : null}
                         {reportDate.dateRange[0] ? <th>{reportDate.dateRange[0]}</th> : null}
+                        {!isDisable ? <th>% VS {reportDate.dateRange[1]}</th> : null}
                         {!isDisable ? <th>{reportDate.dateRange[1]}</th> : null}
                       </tr>
                     </thead>
@@ -282,13 +284,16 @@ const Grafica = (props) => {
                                 {item.datos
                                   .map(col => (
                                     item.dia !== 'Porcentaje' ?
-                                      <td key={v4()} colSpan={calculateCols(item.dia)}>
-                                        {numberWithCommas(col.valor)}
-                                      </td>
+                                      <React.Fragment key={v4()}>
+                                        {col?.porcentaje ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
+                                        <td>{numberWithCommas(col.valor)}</td>
+                                      </React.Fragment>
+
                                       :
-                                      <td key={v4()} colSpan={calculateCols(item.dia)} data-porcent-format={isNegative(col.valor)}>
-                                        {numberAbs(col.valor)}
-                                      </td>
+                                      <React.Fragment key={v4()}>
+                                        {col?.porcentaje ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
+                                        <td>{numberWithCommas(col.valor)}</td>
+                                      </React.Fragment>
                                   ))}
                               </tr>
                             ))
@@ -308,13 +313,15 @@ const Grafica = (props) => {
                 {
                   (data && data?.segmentos && data.segmentos.length > 0) ?
                     <div>
-                      <table className="table-report-footer">
+                      <table className="table-report-grafica">
                         <thead>
                           <tr>
                             <th className="text-left">DIA REF</th>
                             <th className="text-left">SEGMENTO</th>
                             <th>{getYearFromDate(reportDate.current)}</th>
+                            {reportDate.dateRange[0] ? <th>% VS {reportDate.dateRange[0]}</th> : null}
                             {reportDate.dateRange[0] ? <th>{reportDate.dateRange[0]}</th> : null}
+                            {!isDisable ? <th>% VS {reportDate.dateRange[1]}</th> : null}
                             {!isDisable ? <th>{reportDate.dateRange[1]}</th> : null}
                           </tr>
                         </thead>
@@ -327,30 +334,45 @@ const Grafica = (props) => {
                                     <tr>
                                       <td className="text-left font-bold text-sm" rowSpan={3}>{dateHelpers.getEasterDayWeek(item.dia)}</td>
                                       <td className="text-left">LINEA</td>
-                                      {item.detalles.linea.map(col => (<td key={v4()}>{numberWithCommas(col.valor)}</td>))}
+                                      {item.detalles.linea.map(col => (
+                                        <React.Fragment key={v4()}>
+                                          {col?.porcentaje ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
+                                          <td>{numberWithCommas(col.valor)}</td>
+                                        </React.Fragment>
+                                      ))}
                                     </tr>
 
                                     <tr>
                                       <td className="text-left">MODA</td>
-                                      {item.detalles.moda.map(col => (<td key={v4()}>{numberWithCommas(col.valor)}</td>))}
+                                      {item.detalles.moda.map(col => (
+                                        <React.Fragment key={v4()}>
+                                          {col?.porcentaje ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
+                                          <td>{numberWithCommas(col.valor)}</td>
+                                        </React.Fragment>
+                                      ))}
                                     </tr>
 
                                     <tr>
                                       <td className="text-left">ACCESORIOS</td>
-                                      {item.detalles.accesorios.map(col => (<td key={v4()}>{numberWithCommas(col.valor)}</td>))}
+                                      {item.detalles.accesorios.map(col => (
+                                        <React.Fragment key={v4()}>
+                                          {col?.porcentaje ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
+                                          <td>{numberWithCommas(col.valor)}</td>
+                                        </React.Fragment>
+                                      ))}
                                     </tr>
 
-                                    <tr className="bg-gray-400 text-sm font-bold">
+                                    <tr className="bg-gray-300 text-sm font-bold">
                                       <td className="text-left " colSpan={2}>Totales {dateHelpers.getEasterDayWeek(item.dia)}</td>
-                                      {item.totales.map(col => (<td key={v4()}>{numberWithCommas(col.valor)}</td>))}
+                                      {item.totales.map(col => (
+                                        <React.Fragment key={v4()}>
+                                          {col?.porcentaje ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
+                                          <td>{numberWithCommas(col.valor)}</td>
+                                        </React.Fragment>
+                                      ))}
                                     </tr>
 
-                                    <tr className=" border-b border-b-black bg-gray-300 text-sm font-bold">
-                                      <td></td>
-                                      <td className="text-left">%Var</td>
-                                      {item.porcentajes.map(col => (<td key={v4()} colSpan={1} data-porcent-format={isNegative(col.valor)}>{numberAbs(col.valor)}</td>))}
-                                      <td></td>
-                                    </tr>
+
                                   </React.Fragment>
                                 ))
                               : null
@@ -364,13 +386,15 @@ const Grafica = (props) => {
                 {
                   (data && data?.ingresos && data?.segmentos && data.segmentos.length > 0) ?
                     <div>
-                      <table className="table-report-footer">
+                      <table className="table-report-grafica">
                         <thead>
                           <tr>
                             <th className="text-left">Tipo</th>
                             <th className="text-left">SEGMENTO</th>
                             <th>{getYearFromDate(reportDate.current)}</th>
+                            {reportDate.dateRange[0] ? <th>% VS {reportDate.dateRange[0]}</th> : null}
                             {reportDate.dateRange[0] ? <th>{reportDate.dateRange[0]}</th> : null}
+                            {!isDisable ? <th>% VS {reportDate.dateRange[1]}</th> : null}
                             {!isDisable ? <th>{reportDate.dateRange[1]}</th> : null}
                           </tr>
                         </thead>
@@ -379,35 +403,45 @@ const Grafica = (props) => {
                             (data && data?.ingresos) ?
                               <>
                                 <tr>
-                                  <td rowSpan={3} className="text-left text-sm font-bold"> Ingreso Acumulado</td>
+                                  <td rowSpan={4} className="text-left text-sm font-bold"> Ingreso Acumulado</td>
                                   <td className="text-left">LINEA</td>
-                                  {data.ingresos.totales.linea.map(item => (<td key={v4()}>{numberWithCommas(item.valor)}</td>))}
+                                  {data.ingresos.totales.linea.map(item => (
+                                    <React.Fragment key={v4()}>
+                                      {item?.porcentaje ? <td data-porcent-format={isNegative(item.porcentaje)}>{numberAbs(item.porcentaje)}</td> : null}
+                                      <td>{numberWithCommas(item.valor)}</td>
+                                    </React.Fragment>
+
+                                  ))}
                                 </tr>
 
                                 <tr>
                                   <td className="text-left">MODA</td>
-                                  {data.ingresos.totales.moda.map(item => (<td key={v4()}>{numberWithCommas(item.valor)}</td>))}
+                                  {data.ingresos.totales.moda.map(item => (
+                                    <React.Fragment key={v4()}>
+                                      {item?.porcentaje ? <td data-porcent-format={isNegative(item.porcentaje)}>{numberAbs(item.porcentaje)}</td> : null}
+                                      <td>{numberWithCommas(item.valor)}</td>
+                                    </React.Fragment>
+                                  ))}
                                 </tr>
 
                                 <tr>
                                   <td className="text-left">ACCESORIOS</td>
-                                  {data.ingresos.totales.accesorios.map(item => (<td key={v4()}>{numberWithCommas(item.valor)}</td>))}
-                                </tr>
-
-                                <tr className="border-t">
-                                  <td rowSpan={3} className="text-left text-sm font-bold">% Var</td>
-                                  <td className="text-left">LINEA</td>
-                                  {data.ingresos.porcentajes.linea.map(item => (<td key={v4()} colSpan={1} data-porcent-format={isNegative(item.valor)}>{numberAbs(item.valor)}</td>))}
-                                </tr>
-
-                                <tr>
-                                  <td className="text-left">MODA</td>
-                                  {data.ingresos.porcentajes.moda.map(item => (<td key={v4()} colSpan={1} data-porcent-format={isNegative(item.valor)}>{numberAbs(item.valor)}</td>))}
+                                  {data.ingresos.totales.accesorios.map(item => (
+                                    <React.Fragment key={v4()}>
+                                      {item?.porcentaje ? <td data-porcent-format={isNegative(item.porcentaje)}>{numberAbs(item.porcentaje)}</td> : null}
+                                      <td>{numberWithCommas(item.valor)}</td>
+                                    </React.Fragment>
+                                  ))}
                                 </tr>
 
                                 <tr>
-                                  <td className="text-left">ACCESORIOS</td>
-                                  {data.ingresos.porcentajes.accesorios.map(item => (<td key={v4()} colSpan={1} data-porcent-format={isNegative(item.valor)}>{numberAbs(item.valor)}</td>))}
+                                  <td className="text-left">GLOBAL</td>
+                                  {data.ingresos.totales.global.map(item => (
+                                    <React.Fragment key={v4()}>
+                                      {item?.porcentaje ? <td data-porcent-format={isNegative(item.porcentaje)}>{numberAbs(item.porcentaje)}</td> : null}
+                                      <td>{numberWithCommas(item.valor)}</td>
+                                    </React.Fragment>
+                                  ))}
                                 </tr>
 
                               </>
@@ -423,7 +457,6 @@ const Grafica = (props) => {
             :
             <div className="w-full h-full text-center">
               <h1 className="text-xl">Sin datos para mostrar</h1>
-              <p>(Abrir los filtros y presionar buscar)</p>
             </div>
 
         }
