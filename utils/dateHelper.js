@@ -106,6 +106,10 @@ export default function DateHelper() {
         return dayjs().utc().local().format('YYYY-MM-DD')
     }
 
+    const getMinusCurrent = (years = 1) => {
+        return dayjs().utc().local().subtract(years, 'year').year();
+    }
+
     const getEasterDayWeek = (date) => {
         if (dayjs(date, 'YYYY-MM-DD', true).isValid()) {
             const current = validDate(date);
@@ -146,6 +150,7 @@ export default function DateHelper() {
         getEasterDayWeek,
         getCurrent,
         getDayFromEasterWeek,
-        getYearFromEasterWeek
+        getYearFromEasterWeek,
+        getMinusCurrent
     }
 }

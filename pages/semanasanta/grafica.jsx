@@ -6,13 +6,11 @@ import {
 import { getVentasLayout } from "../../components/layout/VentasLayout";
 import { checkboxLabels, inputNames, comboValues } from "../../utils/data";
 import {
-  getCurrentDate,
   getYearFromDate,
 } from "../../utils/dateFunctions";
 import {
   parseNumberToBoolean,
   parseToNumber,
-  spliteArrDate,
   isSecondDateBlock,
   getInitialPlaza,
   getInitialTienda
@@ -40,26 +38,10 @@ const Grafica = (props) => {
   const dateHelpers = DateHelper();
   const [data, setData] = useState(null);
   const [dataSet, setDataSet] = useState({ labels: [], datasets: [] });
-  const [reportDate, setReportDate] = useState({ current: getCurrentDate(true), dateRange: spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1) });
+  const [reportDate, setReportDate] = useState({ current: dateHelpers.getCurrent(), dateRange: [dateHelpers.getMinusCurrent(1), dateHelpers.getMinusCurrent(1) - 1] });
   const [isDisable, setIsDisable] = useState(isSecondDateBlock(config?.cbAgnosComparar || 1));
-  const [showDetail, setShowDetail] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
 
-  const parameters = {
-    fecha: dateHelpers.getCurrent(),
-    tienda: getInitialTienda(shops),
-    empresa: getInitialPlaza(places),
-    conIva: parseNumberToBoolean(config?.conIva || 0),
-    conVentasEventos: parseNumberToBoolean(config?.conVentasEventos || 0),
-    incluirFinSemanaAnterior: parseNumberToBoolean(config?.incluirFinSemanaAnterior || 0),
-    resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
-    mostrarTiendas: config?.mostrarTiendas || 'activas',
-    tipoCambioTiendas: parseNumberToBoolean(config?.tipoCambioTiendas || 0),
-    agnosComparar: spliteArrDate(config?.agnosComparativos, config?.cbAgnosComparar || 1),
-    cbAgnosComparar: config?.cbAgnosComparar || 1,
-    mostrarDetalle: true,
-    tipo: 'grupo'
-  }
 
   const handleSubmit = async values => {
     try {
@@ -74,13 +56,13 @@ const Grafica = (props) => {
 
 
       years.forEach((item) => {
-        let  coincidents = 0;
+        let coincidents = 0;
         years.forEach(secondItem => {
-          if(item === secondItem){
-            coincidents ++;
+          if (item === secondItem) {
+            coincidents++;
           }
         });
-        if(coincidents >= 2) {
+        if (coincidents >= 2) {
           throw Error('Los años a comparar no pueden ser identicos')
         }
       })
@@ -110,8 +92,10 @@ const Grafica = (props) => {
 
       setReportDate({
         current: fecha,
-        dateRange: cbAgnosComparar == 1 ? [first] : [first, last]
+        dateRange:[first, last]
       })
+
+      setIsDisable(isSecondDateBlock(cbAgnosComparar));
 
     } catch (error) {
       sendNotification({
@@ -129,7 +113,6 @@ const Grafica = (props) => {
     const {
       agnosComparar: [first, last],
       cbAgnosComparar,
-      mostrarDetalle,
     } = params;
 
     const rest = {
@@ -141,12 +124,11 @@ const Grafica = (props) => {
       incluirFinSemanaAnterior: parseToNumber(params.incluirFinSemanaAnterior),
       resultadosPesos: parseToNumber(params.resultadosPesos),
       tipoCambioTiendas: parseToNumber(params.tipoCambioTiendas),
-      agnosComparar: cbAgnosComparar == 1 ? [first] : [first, last],
+      agnosComparar: cbAgnosComparar == 1 ? [Number(first)] : [Number(first), Number(last)],
       tipo: params.tipo,
-      mostrarTiendas: params.mostrarTiendas
+      mostrarTiendas: params.mostrarTiendas,
+      ocultarDetalles: parseToNumber(params.ocultarDetalles)
     }
-
-    setShowDetail(mostrarDetalle);
 
     return rest;
   }
@@ -160,20 +142,23 @@ const Grafica = (props) => {
   }
 
   const onChangeValue = (e) => {
-    const {name, value} = e.target;
-    if(name === 'cbAgnosComparar'){
-      setIsDisable(isSecondDateBlock(value));
+
+    const { name, value } = e.target;
+    if (name === 'cbAgnosComparar') {
+      //setIsDisable(isSecondDateBlock(value));
     }
 
-    if(name === 'mostrarDetalle'){
-      let val = false;
-      if(typeof value === 'boolean'){
-        val = value
-      }
-      else{
-        val = value === 'true' ? true : false
-      }
-      setShowDetail(val);
+    if (name === 'fecha') {
+      const date = dateHelpers.getYearFromEasterWeek(value);
+      const dateRange1 = reportDate.dateRange[0] === date ? date - 1 : reportDate.dateRange[0];
+      const dateRange2 = reportDate.dateRange[1] === dateRange1 ? dateRange1 - 1 :reportDate.dateRange[1];
+      setReportDate({current: value,dateRange:[Number(dateRange1),  Number(dateRange2)]})
+    }
+
+
+    if(name === 'agnosComparar[0]'){
+      const dateRange2 = reportDate.dateRange[1] === Number(value) ? Number(value) - 1 : reportDate.dateRange[1]
+      setReportDate(prev => ({...prev, dateRange:[Number(value), Number(dateRange2)]}))
     }
   }
 
@@ -185,9 +170,24 @@ const Grafica = (props) => {
         <section className="p-4 flex flex-row justify-between items-baseline">
           <ParametersContainer>
             <Parameters>
-              <Formik initialValues={parameters} onSubmit={handleSubmit} enableReinitialize>
+              <Formik initialValues={{
+                fecha: reportDate.current,
+                tienda: getInitialTienda(shops),
+                empresa: getInitialPlaza(places),
+                conIva: parseNumberToBoolean(config?.conIva || 0),
+                conVentasEventos: parseNumberToBoolean(config?.conVentasEventos || 0),
+                incluirFinSemanaAnterior: parseNumberToBoolean(config?.incluirFinSemanaAnterior || 0),
+                resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
+                mostrarTiendas: config?.mostrarTiendas || 'activas',
+                tipoCambioTiendas: parseNumberToBoolean(config?.tipoCambioTiendas || 0),
+                agnosComparar: reportDate.dateRange,
+                cbAgnosComparar: config?.cbAgnosComparar || 1,
+                ocultarDetalles: false,
+                tipo: 'grupo'
+              }} onSubmit={handleSubmit} enableReinitialize>
                 <Form onChange={onChangeValue}>
 
+                  <AutoSubmitToken/>
                   <Input type={'date'} placeholder={reportDate.current} id='fecha' name='fecha' label='Fecha' />
                   <fieldset className='flex space-x-1 border border-slate-400 p-2 rounded-md mb-3 mt-3'>
                     <legend className='text-sm font-semibold text-slate-700'>Mostrar</legend>
@@ -245,11 +245,8 @@ const Grafica = (props) => {
                     <Checkbox id={inputNames.INCLUIR_FIN_SEMANA_ANTERIOR} name={inputNames.INCLUIR_FIN_SEMANA_ANTERIOR} label={checkboxLabels.INCLUIR_FIN_DE_SEMANA_ANTERIOR} />
                     <Checkbox id={inputNames.RESULTADOS_PESOS} name={inputNames.RESULTADOS_PESOS} label={checkboxLabels.RESULTADO_PESOS} />
                     <Checkbox id={inputNames.TIPO_CAMBIO_TIENDAS} name={inputNames.TIPO_CAMBIO_TIENDAS} label={checkboxLabels.TIPO_CAMBIO_TIENDAS} />
-                    <Checkbox id={'mostrarDetalle'} name={'mostrarDetalle'} label={"Ocultar detalle por segmento"} />
+                    <Checkbox id={'ocultarDetalles'} name={'ocultarDetalles'} label={"Mostrar detalle por segmento"} />
                   </fieldset>
-                  <div className="mt-4">
-                    <input type="submit" value="Buscar" className="primary-btn w-full disabled:bg-gray-500" disabled={isLoading} />
-                  </div>
                 </Form>
               </Formik>
             </Parameters>
@@ -258,177 +255,177 @@ const Grafica = (props) => {
 
         {
           (data) ?
-          <section className="p-4 overflow-auto ">
-            <div className="overflow-y-auto space-y-8">
-              <div>
-                <table className="table-report-footer">
-                  <thead>
-                    <tr>
-                      <th className="text-left">DIA REF</th>
-                      <th>{getYearFromDate(reportDate.current)}</th>
-                      {reportDate.dateRange[0] ? <th>{reportDate.dateRange[0]}</th> : null}
-                      {reportDate.dateRange[1] ? <th>{reportDate.dateRange[1]}</th> : null}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {
-                      (data && data?.lista) ?
-                        data.lista
-                          .map(item => (
-                            <tr key={v4()} className={`${(item.dia === 'Total') ?
-                              'bg-orange-400 text-white text-sm font-bold'
-                              : (item.dia === 'Porcentaje') ?
-                                'bg-orange-200 text-sm font-bold'
-                                : ''
-                              }`}>
-                              <td className="text-left">{dateHelpers.getEasterDayWeek(item.dia)}</td>
-                              {item.datos
-                                .map(col => (
-                                  item.dia !== 'Porcentaje' ?
-                                    <td key={v4()} colSpan={calculateCols(item.dia)}>
-                                      {numberWithCommas(col.valor)}
-                                    </td>
-                                    :
-                                    <td key={v4()} colSpan={calculateCols(item.dia)} data-porcent-format={isNegative(col.valor)}>
-                                      {numberAbs(col.valor)}
-                                    </td>
-                                ))}
-                            </tr>
-                          ))
-                        : null
-                    }
-                  </tbody>
-                </table>
+            <section className="p-4 overflow-auto ">
+              <div className="overflow-y-auto space-y-8">
+                <div>
+                  <table className="table-report-footer">
+                    <thead>
+                      <tr>
+                        <th className="text-left">DIA REF</th>
+                        <th>{getYearFromDate(reportDate.current)}</th>
+                        {reportDate.dateRange[0] ? <th>{reportDate.dateRange[0]}</th> : null}
+                        {!isDisable ? <th>{reportDate.dateRange[1]}</th> : null}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {
+                        (data && data?.lista) ?
+                          data.lista
+                            .map(item => (
+                              <tr key={v4()} className={`${(item.dia === 'Total') ?
+                                'bg-gray-400 text-white text-sm font-bold'
+                                : (item.dia === 'Porcentaje') ?
+                                  'bg-gray-300 text-sm font-bold'
+                                  : ''
+                                }`}>
+                                <td className="text-left">{dateHelpers.getEasterDayWeek(item.dia)}</td>
+                                {item.datos
+                                  .map(col => (
+                                    item.dia !== 'Porcentaje' ?
+                                      <td key={v4()} colSpan={calculateCols(item.dia)}>
+                                        {numberWithCommas(col.valor)}
+                                      </td>
+                                      :
+                                      <td key={v4()} colSpan={calculateCols(item.dia)} data-porcent-format={isNegative(col.valor)}>
+                                        {numberAbs(col.valor)}
+                                      </td>
+                                  ))}
+                              </tr>
+                            ))
+                          : null
+                      }
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="overflow-y-auto h-[30rem]">
+                  <LineChart
+                    text="Años"
+                    data={dataSet}
+                  />
+                </div>
+
+                {
+                  (data && data?.segmentos && data.segmentos.length > 0) ?
+                    <div>
+                      <table className="table-report-footer">
+                        <thead>
+                          <tr>
+                            <th className="text-left">DIA REF</th>
+                            <th className="text-left">SEGMENTO</th>
+                            <th>{getYearFromDate(reportDate.current)}</th>
+                            {reportDate.dateRange[0] ? <th>{reportDate.dateRange[0]}</th> : null}
+                            {!isDisable ? <th>{reportDate.dateRange[1]}</th> : null}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {
+                            (data && data?.segmentos) ?
+                              data.segmentos
+                                .map(item => (
+                                  <React.Fragment key={v4()}>
+                                    <tr>
+                                      <td className="text-left font-bold text-sm" rowSpan={3}>{dateHelpers.getEasterDayWeek(item.dia)}</td>
+                                      <td className="text-left">LINEA</td>
+                                      {item.detalles.linea.map(col => (<td key={v4()}>{numberWithCommas(col.valor)}</td>))}
+                                    </tr>
+
+                                    <tr>
+                                      <td className="text-left">MODA</td>
+                                      {item.detalles.moda.map(col => (<td key={v4()}>{numberWithCommas(col.valor)}</td>))}
+                                    </tr>
+
+                                    <tr>
+                                      <td className="text-left">ACCESORIOS</td>
+                                      {item.detalles.accesorios.map(col => (<td key={v4()}>{numberWithCommas(col.valor)}</td>))}
+                                    </tr>
+
+                                    <tr className="bg-gray-400 text-sm font-bold">
+                                      <td className="text-left " colSpan={2}>Totales {dateHelpers.getEasterDayWeek(item.dia)}</td>
+                                      {item.totales.map(col => (<td key={v4()}>{numberWithCommas(col.valor)}</td>))}
+                                    </tr>
+
+                                    <tr className=" border-b border-b-black bg-gray-300 text-sm font-bold">
+                                      <td></td>
+                                      <td className="text-left">%Var</td>
+                                      {item.porcentajes.map(col => (<td key={v4()} colSpan={1} data-porcent-format={isNegative(col.valor)}>{numberAbs(col.valor)}</td>))}
+                                      <td></td>
+                                    </tr>
+                                  </React.Fragment>
+                                ))
+                              : null
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                    : null
+                }
+
+                {
+                  (data && data?.ingresos && data?.segmentos && data.segmentos.length > 0) ?
+                    <div>
+                      <table className="table-report-footer">
+                        <thead>
+                          <tr>
+                            <th className="text-left">Tipo</th>
+                            <th className="text-left">SEGMENTO</th>
+                            <th>{getYearFromDate(reportDate.current)}</th>
+                            {reportDate.dateRange[0] ? <th>{reportDate.dateRange[0]}</th> : null}
+                            {!isDisable ? <th>{reportDate.dateRange[1]}</th> : null}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {
+                            (data && data?.ingresos) ?
+                              <>
+                                <tr>
+                                  <td rowSpan={3} className="text-left text-sm font-bold"> Ingreso Acumulado</td>
+                                  <td className="text-left">LINEA</td>
+                                  {data.ingresos.totales.linea.map(item => (<td key={v4()}>{numberWithCommas(item.valor)}</td>))}
+                                </tr>
+
+                                <tr>
+                                  <td className="text-left">MODA</td>
+                                  {data.ingresos.totales.moda.map(item => (<td key={v4()}>{numberWithCommas(item.valor)}</td>))}
+                                </tr>
+
+                                <tr>
+                                  <td className="text-left">ACCESORIOS</td>
+                                  {data.ingresos.totales.accesorios.map(item => (<td key={v4()}>{numberWithCommas(item.valor)}</td>))}
+                                </tr>
+
+                                <tr className="border-t">
+                                  <td rowSpan={3} className="text-left text-sm font-bold">% Var</td>
+                                  <td className="text-left">LINEA</td>
+                                  {data.ingresos.porcentajes.linea.map(item => (<td key={v4()} colSpan={1} data-porcent-format={isNegative(item.valor)}>{numberAbs(item.valor)}</td>))}
+                                </tr>
+
+                                <tr>
+                                  <td className="text-left">MODA</td>
+                                  {data.ingresos.porcentajes.moda.map(item => (<td key={v4()} colSpan={1} data-porcent-format={isNegative(item.valor)}>{numberAbs(item.valor)}</td>))}
+                                </tr>
+
+                                <tr>
+                                  <td className="text-left">ACCESORIOS</td>
+                                  {data.ingresos.porcentajes.accesorios.map(item => (<td key={v4()} colSpan={1} data-porcent-format={isNegative(item.valor)}>{numberAbs(item.valor)}</td>))}
+                                </tr>
+
+                              </>
+                              : null
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                    : null
+                }
               </div>
-
-              <div className="overflow-y-auto h-[30rem]">
-                <LineChart
-                  text="Años"
-                  data={dataSet}
-                />
-              </div>
-
-              {
-                (showDetail) ?
-                  <div>
-                    <table className="table-report-footer">
-                      <thead>
-                        <tr>
-                          <th className="text-left">DIA REF</th>
-                          <th className="text-left">SEGMENTO</th>
-                          <th>{getYearFromDate(reportDate.current)}</th>
-                          {reportDate.dateRange[0] ? <th>{reportDate.dateRange[0]}</th> : null}
-                          {reportDate.dateRange[1] ? <th>{reportDate.dateRange[1]}</th> : null}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {
-                          (data && data?.segmentos) ?
-                            data.segmentos
-                              .map(item => (
-                                <React.Fragment key={v4()}>
-                                  <tr>
-                                    <td className="text-left font-bold text-sm" rowSpan={3}>{dateHelpers.getEasterDayWeek(item.dia)}</td>
-                                    <td className="text-left">LINEA</td>
-                                    {item.detalles.linea.map(col => (<td key={v4()}>{numberWithCommas(col.valor)}</td>))}
-                                  </tr>
-
-                                  <tr>
-                                    <td className="text-left">MODA</td>
-                                    {item.detalles.moda.map(col => (<td key={v4()}>{numberWithCommas(col.valor)}</td>))}
-                                  </tr>
-
-                                  <tr>
-                                    <td className="text-left">ACCESORIOS</td>
-                                    {item.detalles.accesorios.map(col => (<td key={v4()}>{numberWithCommas(col.valor)}</td>))}
-                                  </tr>
-
-                                  <tr className="bg-orange-400 text-white text-sm font-bold">
-                                    <td className="text-left " colSpan={2}>Totales {dateHelpers.getEasterDayWeek(item.dia)}</td>
-                                    {item.totales.map(col => (<td key={v4()}>{numberWithCommas(col.valor)}</td>))}
-                                  </tr>
-
-                                  <tr className=" border-b border-b-black bg-orange-200 text-sm font-bold">
-                                    <td></td>
-                                    <td className="text-left">%Var</td>
-                                    {item.porcentajes.map(col => (<td key={v4()} colSpan={1} data-porcent-format={isNegative(col.valor)}>{numberAbs(col.valor)}</td>))}
-                                    <td></td>
-                                  </tr>
-                                </React.Fragment>
-                              ))
-                            : null
-                        }
-                      </tbody>
-                    </table>
-                  </div>
-                  : null
-              }
-
-              {
-                (showDetail) ?
-                  <div>
-                    <table className="table-report-footer">
-                      <thead>
-                        <tr>
-                          <th className="text-left">Tipo</th>
-                          <th className="text-left">SEGMENTO</th>
-                          <th>{getYearFromDate(reportDate.current)}</th>
-                          {reportDate.dateRange[0] ? <th>{reportDate.dateRange[0]}</th> : null}
-                          {reportDate.dateRange[1] ? <th>{reportDate.dateRange[1]}</th> : null}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {
-                          (data && data.ingresos && showDetail) ?
-                            <>
-                              <tr>
-                                <td rowSpan={3} className="text-left text-sm font-bold"> Ingreso Acumulado</td>
-                                <td className="text-left">LINEA</td>
-                                {data.ingresos.totales.linea.map(item => (<td key={v4()}>{numberWithCommas(item.valor)}</td>))}
-                              </tr>
-
-                              <tr>
-                                <td className="text-left">MODA</td>
-                                {data.ingresos.totales.moda.map(item => (<td key={v4()}>{numberWithCommas(item.valor)}</td>))}
-                              </tr>
-
-                              <tr>
-                                <td className="text-left">ACCESORIOS</td>
-                                {data.ingresos.totales.accesorios.map(item => (<td key={v4()}>{numberWithCommas(item.valor)}</td>))}
-                              </tr>
-
-                              <tr className="border-t">
-                                <td rowSpan={3} className="text-left text-sm font-bold">% Var</td>
-                                <td className="text-left">LINEA</td>
-                                {data.ingresos.porcentajes.linea.map(item => (<td key={v4()} colSpan={1} data-porcent-format={isNegative(item.valor)}>{numberAbs(item.valor)}</td>))}
-                              </tr>
-
-                              <tr>
-                                <td className="text-left">MODA</td>
-                                {data.ingresos.porcentajes.moda.map(item => (<td key={v4()} colSpan={1} data-porcent-format={isNegative(item.valor)}>{numberAbs(item.valor)}</td>))}
-                              </tr>
-
-                              <tr>
-                                <td className="text-left">ACCESORIOS</td>
-                                {data.ingresos.porcentajes.accesorios.map(item => (<td key={v4()} colSpan={1} data-porcent-format={isNegative(item.valor)}>{numberAbs(item.valor)}</td>))}
-                              </tr>
-
-                            </>
-                            : null
-                        }
-                      </tbody>
-                    </table>
-                  </div>
-                  : null
-              }
+            </section>
+            :
+            <div className="w-full h-full text-center">
+              <h1 className="text-xl">Sin datos para mostrar</h1>
+              <p>(Abrir los filtros y presionar buscar)</p>
             </div>
-          </section>
-          :
-          <div className="w-full h-full text-center">
-            <h1 className="text-xl">Sin datos para mostrar</h1>
-            <p>(Abrir los filtros y presionar buscar)</p>
-          </div>
-          
+
         }
       </div>
 
