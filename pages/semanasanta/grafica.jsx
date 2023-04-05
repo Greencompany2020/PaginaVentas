@@ -276,7 +276,7 @@ const Grafica = (props) => {
                           data.lista
                             .map(item => (
                               <tr key={v4()} className={`${(item.dia === 'Total') ?
-                                'bg-gray-400 text-white text-xs font-bold'
+                                'bg-gray-400 text-white md:text-xs font-bold'
                                 : (item.dia === 'Porcentaje') ?
                                   'bg-gray-300 text-xs font-bold'
                                   : ''
@@ -293,7 +293,7 @@ const Grafica = (props) => {
                                       :
                                       <React.Fragment key={v4()}>
                                         {col?.porcentaje ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
-                                        <td>{numberWithCommas(col.valor)}</td>
+                                        <td className>{numberWithCommas(col.valor)}</td>
                                       </React.Fragment>
                                   ))}
                               </tr>
@@ -363,7 +363,7 @@ const Grafica = (props) => {
                                       ))}
                                     </tr>
 
-                                    <tr className="bg-gray-300 text-xs font-bold">
+                                    <tr className="bg-gray-300 md:text-xs font-bold">
                                       <td className="text-left " colSpan={isMobile ? 1 : 2}>{ !isMobile ? 'Totales ' : ''}{dateHelpers.getEasterDayWeek(item.dia)}</td>
                                       {item.totales.map(col => (
                                         <React.Fragment key={v4()}>
