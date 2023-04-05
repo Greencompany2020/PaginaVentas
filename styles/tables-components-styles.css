@@ -154,7 +154,7 @@
 
 /***************************************************************************************************************/
 /*HEADER TABLE STYLE*/
-.table-report-grafica{@apply text-xs text-right w-[80rem] table-fixed md:max-w-3xl}
+.table-report-grafica{@apply text-[0.6rem] md:text-xs text-right w-full table-fixed md:max-w-3xl}
 .table-report-grafica thead{@apply text-white}
 .table-report-grafica thead tr th {@apply bg-black-shape border}
 .table-report-grafica thead tr th:last-child {@apply bg-black-shape border-r-0}

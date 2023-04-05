@@ -28,6 +28,7 @@ import LineChart from "../../components/LineChart";
 import DateHelper from "../../utils/dateHelper";
 import { useSelector } from 'react-redux';
 import Loader from "../../components/Loader";
+import { isMobile } from "react-device-detect";
 
 
 const Grafica = (props) => {
@@ -39,7 +40,7 @@ const Grafica = (props) => {
   const [data, setData] = useState(null);
   const [dataSet, setDataSet] = useState({ labels: [], datasets: [] });
   const [reportDate, setReportDate] = useState({ current: dateHelpers.getCurrent(), dateRange: [dateHelpers.getMinusCurrent(1), dateHelpers.getMinusCurrent(1) - 1] });
-  const [isDisable, setIsDisable] = useState(isSecondDateBlock(config?.cbAgnosComparar || 1));
+  const [isDisable, setIsDisable] = useState(isSecondDateBlock(2));
   const [isLoading, setIsLoading] = useState(false);
 
 
@@ -181,7 +182,7 @@ const Grafica = (props) => {
                 mostrarTiendas: config?.mostrarTiendas || 'activas',
                 tipoCambioTiendas: parseNumberToBoolean(config?.tipoCambioTiendas || 0),
                 agnosComparar: reportDate.dateRange,
-                cbAgnosComparar: config?.cbAgnosComparar || 1,
+                cbAgnosComparar: 2,
                 ocultarDetalles: false,
                 tipo: 'grupo'
               }} onSubmit={handleSubmit} enableReinitialize>
@@ -261,7 +262,7 @@ const Grafica = (props) => {
                   <table className="table-report-grafica">
                     <thead>
                       <tr>
-                        <th className="text-left">DIA REF</th>
+                        <th className="text-left w-28">DIA REF</th>
                         <th>{getYearFromDate(reportDate.current)}</th>
                         {reportDate.dateRange[0] ? <th>% VS {reportDate.dateRange[0]}</th> : null}
                         {reportDate.dateRange[0] ? <th>{reportDate.dateRange[0]}</th> : null}
@@ -275,9 +276,9 @@ const Grafica = (props) => {
                           data.lista
                             .map(item => (
                               <tr key={v4()} className={`${(item.dia === 'Total') ?
-                                'bg-gray-400 text-white text-sm font-bold'
+                                'bg-gray-400 text-white text-xs font-bold'
                                 : (item.dia === 'Porcentaje') ?
-                                  'bg-gray-300 text-sm font-bold'
+                                  'bg-gray-300 text-xs font-bold'
                                   : ''
                                 }`}>
                                 <td className="text-left">{dateHelpers.getEasterDayWeek(item.dia)}</td>
@@ -316,8 +317,8 @@ const Grafica = (props) => {
                       <table className="table-report-grafica">
                         <thead>
                           <tr>
-                            <th className="text-left">DIA REF</th>
-                            <th className="text-left">SEGMENTO</th>
+                            <th className="text-left hidden md:table-cell">DIA REF</th>
+                            <th className="text-left w-28 rounded-tl-md md:rounded-none">SEGMENTO</th>
                             <th>{getYearFromDate(reportDate.current)}</th>
                             {reportDate.dateRange[0] ? <th>% VS {reportDate.dateRange[0]}</th> : null}
                             {reportDate.dateRange[0] ? <th>{reportDate.dateRange[0]}</th> : null}
@@ -332,7 +333,7 @@ const Grafica = (props) => {
                                 .map(item => (
                                   <React.Fragment key={v4()}>
                                     <tr>
-                                      <td className="text-left font-bold text-sm" rowSpan={3}>{dateHelpers.getEasterDayWeek(item.dia)}</td>
+                                      <td className="text-left font-bold text-xs hidden md:table-cell" rowSpan={3}>{dateHelpers.getEasterDayWeek(item.dia)}</td>
                                       <td className="text-left">LINEA</td>
                                       {item.detalles.linea.map(col => (
                                         <React.Fragment key={v4()}>
@@ -362,8 +363,8 @@ const Grafica = (props) => {
                                       ))}
                                     </tr>
 
-                                    <tr className="bg-gray-300 text-sm font-bold">
-                                      <td className="text-left " colSpan={2}>Totales {dateHelpers.getEasterDayWeek(item.dia)}</td>
+                                    <tr className="bg-gray-300 text-xs font-bold">
+                                      <td className="text-left " colSpan={isMobile ? 1 : 2}>{ !isMobile ? 'Totales ' : ''}{dateHelpers.getEasterDayWeek(item.dia)}</td>
                                       {item.totales.map(col => (
                                         <React.Fragment key={v4()}>
                                           {col?.porcentaje ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
@@ -403,7 +404,7 @@ const Grafica = (props) => {
                             (data && data?.ingresos) ?
                               <>
                                 <tr>
-                                  <td rowSpan={4} className="text-left text-sm font-bold"> Ingreso Acumulado</td>
+                                  <td rowSpan={4} className="text-left text-xs font-bold truncate"> Ingreso Acumulado</td>
                                   <td className="text-left">LINEA</td>
                                   {data.ingresos.totales.linea.map(item => (
                                     <React.Fragment key={v4()}>
@@ -455,9 +456,7 @@ const Grafica = (props) => {
               </div>
             </section>
             :
-            <div className="w-full h-full text-center">
-              <h1 className="text-xl">Sin datos para mostrar</h1>
-            </div>
+           null
 
         }
       </div>
