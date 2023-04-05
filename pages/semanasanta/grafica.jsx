@@ -13,7 +13,9 @@ import {
   parseToNumber,
   isSecondDateBlock,
   getInitialPlaza,
-  getInitialTienda
+  getInitialTienda,
+  getTiendaName,
+  getPlazaName
 } from "../../utils/functions";
 import { getSemanaSantaGrafica } from "../../services/semanaSantaService";
 import { numberWithCommas, isNegative, numberAbs } from "../../utils/resultsFormated";
@@ -42,6 +44,7 @@ const Grafica = (props) => {
   const [reportDate, setReportDate] = useState({ current: dateHelpers.getCurrent(), dateRange: [dateHelpers.getMinusCurrent(1), dateHelpers.getMinusCurrent(1) - 1] });
   const [isDisable, setIsDisable] = useState(isSecondDateBlock(2));
   const [isLoading, setIsLoading] = useState(false);
+  const [reportType, setReportType] = useState('grupo');
 
 
   const handleSubmit = async values => {
@@ -54,6 +57,15 @@ const Grafica = (props) => {
 
       const currentYear = dateHelpers.getYearFromEasterWeek(fecha);
       const years = [currentYear, ...agnosComparar];
+
+      if(params.tipo === 'grupo'){
+        setReportType('Grupo')
+      }else if(params.tipo === 'tiendas'){
+        setReportType(`Tienda ${getTiendaName(params.tienda, shops)}`)
+      }else if(params.tipo === 'plazas') {
+        setReportType(`Plaza ${getPlazaName(params.empresa, places)}`)
+      }
+    
 
 
       years.forEach((item) => {
@@ -134,20 +146,9 @@ const Grafica = (props) => {
     return rest;
   }
 
-  const calculateCols = (itemName) => {
-    if (itemName === 'Porcentaje') {
-      return 2
-    } else {
-      return 0
-    }
-  }
-
+ 
   const onChangeValue = (e) => {
-
-    const { name, value } = e.target;
-    if (name === 'cbAgnosComparar') {
-      //setIsDisable(isSecondDateBlock(value));
-    }
+    const {name, value} = e.target
 
     if (name === 'fecha') {
       const date = dateHelpers.getYearFromEasterWeek(value);
@@ -167,7 +168,7 @@ const Grafica = (props) => {
   return (
     <>
       <div className=" flex flex-col h-full">
-        <TitleReport title={`Ventas Semana Santa del año ${reportDate.current}`} />
+        <TitleReport title={`Ventas Semana Santa del año ${dateHelpers.getYearFromEasterWeek(reportDate.current)} (${reportType})`} />
         <section className="p-4 flex flex-row justify-between items-baseline">
           <ParametersContainer>
             <Parameters>
@@ -178,7 +179,7 @@ const Grafica = (props) => {
                 conIva: parseNumberToBoolean(config?.conIva || 0),
                 conVentasEventos: parseNumberToBoolean(config?.conVentasEventos || 0),
                 incluirFinSemanaAnterior: parseNumberToBoolean(config?.incluirFinSemanaAnterior || 0),
-                resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
+                resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 1),
                 mostrarTiendas: config?.mostrarTiendas || 'activas',
                 tipoCambioTiendas: parseNumberToBoolean(config?.tipoCambioTiendas || 0),
                 agnosComparar: reportDate.dateRange,
