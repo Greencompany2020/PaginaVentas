@@ -190,7 +190,7 @@ const Grafica = (props) => {
               }} onSubmit={handleSubmit} enableReinitialize>
                 <Form onChange={onChangeValue}>
 
-                  <AutoSubmitToken />
+                  <AutoSubmitToken alwaysFetch={false}/>
                   <Input type={'date'} placeholder={reportDate.current} id='fecha' name='fecha' label='Fecha' />
                   <fieldset className='flex space-x-1 border border-slate-400 p-2 rounded-md mb-3 mt-3'>
                     <legend className='text-sm font-semibold text-slate-700'>Mostrar</legend>
@@ -250,6 +250,9 @@ const Grafica = (props) => {
                     <Checkbox id={inputNames.TIPO_CAMBIO_TIENDAS} name={inputNames.TIPO_CAMBIO_TIENDAS} label={checkboxLabels.TIPO_CAMBIO_TIENDAS} />
                     <Checkbox id={'ocultarDetalles'} name={'ocultarDetalles'} label={"Mostrar detalle por segmento"} />
                   </fieldset>
+                  <div className="mt-4">
+                      <input type="submit" value={"Buscar"} className="btn-search" disabled={isLoading}/>
+                  </div>
                 </Form>
               </Formik>
             </Parameters>
@@ -277,25 +280,13 @@ const Grafica = (props) => {
                         (data && data?.lista) ?
                           data.lista
                             .map(item => (
-                              <tr key={v4()} className={`${(item.dia === 'Total') ?
-                                'bg-gray-400 text-white md:text-xs font-bold'
-                                : (item.dia === 'Porcentaje') ?
-                                  'bg-gray-300 text-xs font-bold'
-                                  : ''
-                                }`}>
+                              <tr key={v4()} className={`${(item.dia === 'Total') ? 'bg-gray-400 text-white md:text-xs font-bold' : ''}`}>
                                 <td className="text-left">{dateHelpers.getEasterDayWeek(item.dia)}</td>
                                 {item.datos
                                   .map(col => (
-                                    item.dia !== 'Porcentaje' ?
                                       <React.Fragment key={v4()}>
-                                        {col?.porcentaje ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
+                                        {(col.hasOwnProperty('porcentaje')) ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
                                         <td>{numberWithCommas(col.valor)}</td>
-                                      </React.Fragment>
-
-                                      :
-                                      <React.Fragment key={v4()}>
-                                        {col?.porcentaje ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
-                                        <td className>{numberWithCommas(col.valor)}</td>
                                       </React.Fragment>
                                   ))}
                               </tr>
@@ -339,7 +330,7 @@ const Grafica = (props) => {
                                       <td className="text-left">LINEA</td>
                                       {item.detalles.linea.map(col => (
                                         <React.Fragment key={v4()}>
-                                          {col?.porcentaje ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
+                                          {(col.hasOwnProperty('porcentaje')) ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
                                           <td>{numberWithCommas(col.valor)}</td>
                                         </React.Fragment>
                                       ))}
@@ -349,7 +340,7 @@ const Grafica = (props) => {
                                       <td className="text-left">MODA</td>
                                       {item.detalles.moda.map(col => (
                                         <React.Fragment key={v4()}>
-                                          {col?.porcentaje ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
+                                          {(col.hasOwnProperty('porcentaje')) ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
                                           <td>{numberWithCommas(col.valor)}</td>
                                         </React.Fragment>
                                       ))}
@@ -359,7 +350,7 @@ const Grafica = (props) => {
                                       <td className="text-left">ACCESORIOS</td>
                                       {item.detalles.accesorios.map(col => (
                                         <React.Fragment key={v4()}>
-                                          {col?.porcentaje ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
+                                          {(col.hasOwnProperty('porcentaje')) ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
                                           <td>{numberWithCommas(col.valor)}</td>
                                         </React.Fragment>
                                       ))}
@@ -369,7 +360,7 @@ const Grafica = (props) => {
                                       <td className="text-left " colSpan={isMobile ? 1 : 2}>{ !isMobile ? 'Totales ' : ''}{dateHelpers.getEasterDayWeek(item.dia)}</td>
                                       {item.totales.map(col => (
                                         <React.Fragment key={v4()}>
-                                          {col?.porcentaje ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
+                                          {(col.hasOwnProperty('porcentaje')) ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
                                           <td>{numberWithCommas(col.valor)}</td>
                                         </React.Fragment>
                                       ))}
@@ -410,7 +401,7 @@ const Grafica = (props) => {
                                   <td className="text-left">LINEA</td>
                                   {data.ingresos.totales.linea.map(item => (
                                     <React.Fragment key={v4()}>
-                                      {item?.porcentaje ? <td data-porcent-format={isNegative(item.porcentaje)}>{numberAbs(item.porcentaje)}</td> : null}
+                                      {(item.hasOwnProperty('porcentaje')) ? <td data-porcent-format={isNegative(item.porcentaje)}>{numberAbs(item.porcentaje)}</td> : null}
                                       <td>{numberWithCommas(item.valor)}</td>
                                     </React.Fragment>
 
@@ -421,7 +412,7 @@ const Grafica = (props) => {
                                   <td className="text-left">MODA</td>
                                   {data.ingresos.totales.moda.map(item => (
                                     <React.Fragment key={v4()}>
-                                      {item?.porcentaje ? <td data-porcent-format={isNegative(item.porcentaje)}>{numberAbs(item.porcentaje)}</td> : null}
+                                      {(item.hasOwnProperty('porcentaje')) ? <td data-porcent-format={isNegative(item.porcentaje)}>{numberAbs(item.porcentaje)}</td> : null}
                                       <td>{numberWithCommas(item.valor)}</td>
                                     </React.Fragment>
                                   ))}
@@ -431,7 +422,7 @@ const Grafica = (props) => {
                                   <td className="text-left">ACCESORIOS</td>
                                   {data.ingresos.totales.accesorios.map(item => (
                                     <React.Fragment key={v4()}>
-                                      {item?.porcentaje ? <td data-porcent-format={isNegative(item.porcentaje)}>{numberAbs(item.porcentaje)}</td> : null}
+                                      {(item.hasOwnProperty('porcentaje')) ? <td data-porcent-format={isNegative(item.porcentaje)}>{numberAbs(item.porcentaje)}</td> : null}
                                       <td>{numberWithCommas(item.valor)}</td>
                                     </React.Fragment>
                                   ))}
@@ -441,7 +432,7 @@ const Grafica = (props) => {
                                   <td className="text-left">GLOBAL</td>
                                   {data.ingresos.totales.global.map(item => (
                                     <React.Fragment key={v4()}>
-                                      {item?.porcentaje ? <td data-porcent-format={isNegative(item.porcentaje)}>{numberAbs(item.porcentaje)}</td> : null}
+                                      {(item.hasOwnProperty('porcentaje')) ? <td data-porcent-format={isNegative(item.porcentaje)}>{numberAbs(item.porcentaje)}</td> : null}
                                       <td>{numberWithCommas(item.valor)}</td>
                                     </React.Fragment>
                                   ))}
@@ -465,7 +456,7 @@ const Grafica = (props) => {
 
       {isLoading ?
         <>
-          <div className="bg-gray-500 opacity-25 w-full h-screen fixed top-0 left-0 z-30" />
+          <div className="bg-gray-500 opacity-25 w-full h-screen fixed top-0 left-0 z-40" />
           <Loader />
         </>
 
