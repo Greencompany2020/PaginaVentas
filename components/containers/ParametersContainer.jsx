@@ -82,4 +82,5 @@ const ParametersContainer = forwardRef(({ children }, ref) => {
   );
 });
 
+ParametersContainer.displayName = 'ParametersContainer'
 export default ParametersContainer;
