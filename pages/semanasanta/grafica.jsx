@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   ParametersContainer,
   Parameters,
@@ -45,7 +45,16 @@ const Grafica = (props) => {
   const [isDisable, setIsDisable] = useState(isSecondDateBlock(2));
   const [isLoading, setIsLoading] = useState(false);
   const [reportType, setReportType] = useState('grupo');
+  const parametersFilter = useRef(null);
 
+
+  const onPressSubmit = () => {
+    if(parametersFilter.current?.isOpen && parametersFilter.current?.close){
+      if(parametersFilter.current.isOpen){
+        parametersFilter.current.close()
+      }
+    }
+  }
 
   const handleSubmit = async values => {
     try {
@@ -171,7 +180,7 @@ const Grafica = (props) => {
       <div className=" flex flex-col h-full">
         <TitleReport title={`Ventas Semana Santa del año ${dateHelpers.getYearFromEasterWeek(reportDate.current)} (${reportType})`} />
         <section className="p-4 flex flex-row justify-between items-baseline">
-          <ParametersContainer>
+          <ParametersContainer ref={parametersFilter}>
             <Parameters>
               <Formik initialValues={{
                 fecha: reportDate.current,
@@ -251,7 +260,7 @@ const Grafica = (props) => {
                     <Checkbox id={'ocultarDetalles'} name={'ocultarDetalles'} label={"Mostrar detalle por segmento"} />
                   </fieldset>
                   <div className="mt-4">
-                      <input type="submit" value={"Buscar"} className="btn-search" disabled={isLoading}/>
+                      <input type="submit" value={"Buscar"} className="btn-search" disabled={isLoading} onClick={onPressSubmit}/>
                   </div>
                 </Form>
               </Formik>
