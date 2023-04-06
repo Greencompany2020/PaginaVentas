@@ -31,7 +31,7 @@ import DateHelper from "../../utils/dateHelper";
 import { useSelector } from 'react-redux';
 import Loader from "../../components/Loader";
 import { isMobile } from "react-device-detect";
-
+import { ExclamationCircleIcon } from "@heroicons/react/outline";
 
 const Grafica = (props) => {
 
@@ -49,8 +49,8 @@ const Grafica = (props) => {
 
 
   const onPressSubmit = () => {
-    if(parametersFilter.current?.isOpen && parametersFilter.current?.close){
-      if(parametersFilter.current.isOpen){
+    if (parametersFilter.current?.isOpen && parametersFilter.current?.close) {
+      if (parametersFilter.current.isOpen) {
         parametersFilter.current.close()
       }
     }
@@ -67,14 +67,14 @@ const Grafica = (props) => {
       const currentYear = dateHelpers.getYearFromEasterWeek(fecha);
       const years = [currentYear, ...agnosComparar];
 
-      if(params.tipo === 'grupo'){
+      if (params.tipo === 'grupo') {
         setReportType('Grupo')
-      }else if(params.tipo === 'tiendas'){
+      } else if (params.tipo === 'tiendas') {
         setReportType(`Tienda ${getTiendaName(params.tienda, shops)}`)
-      }else if(params.tipo === 'plazas') {
+      } else if (params.tipo === 'plazas') {
         setReportType(`Plaza ${getPlazaName(params.empresa, places)}`)
       }
-    
+
 
 
       years.forEach((item) => {
@@ -102,7 +102,7 @@ const Grafica = (props) => {
         const dataInDate = result.lista
           .filter(item => item.dia !== 'Porcentaje' && item.dia !== 'Total')
           .flatMap(itemFilter => itemFilter.datos.filter(secondFilter => secondFilter.agno === date))
-          .flatMap(flatItem =>  flatItem.valor)
+          .flatMap(flatItem => flatItem.valor)
         return {
           label: date,
           data: dataInDate,
@@ -150,15 +150,15 @@ const Grafica = (props) => {
       agnosComparar: cbAgnosComparar == 1 ? [Number(first)] : [Number(first), Number(last)],
       tipo: params.tipo,
       mostrarTiendas: params.mostrarTiendas,
-      ocultarDetalles: parseToNumber(params.ocultarDetalles)
+      mostrarDetalles: parseToNumber(params.mostrarDetalles)
     }
 
     return rest;
   }
 
- 
+
   const onChangeValue = (e) => {
-    const {name, value} = e.target
+    const { name, value } = e.target
 
     if (name === 'fecha') {
       const date = dateHelpers.getYearFromEasterWeek(value);
@@ -194,12 +194,12 @@ const Grafica = (props) => {
                 tipoCambioTiendas: parseNumberToBoolean(config?.tipoCambioTiendas || 0),
                 agnosComparar: reportDate.dateRange,
                 cbAgnosComparar: 2,
-                ocultarDetalles: false,
+                mostrarDetalles: false,
                 tipo: 'grupo'
               }} onSubmit={handleSubmit} enableReinitialize>
                 <Form onChange={onChangeValue}>
 
-                  <AutoSubmitToken alwaysFetch={false}/>
+                  <AutoSubmitToken alwaysFetch={false} />
                   <Input type={'date'} placeholder={reportDate.current} id='fecha' name='fecha' label='Fecha' />
                   <fieldset className='flex space-x-1 border border-slate-400 p-2 rounded-md mb-3 mt-3'>
                     <legend className='text-sm font-semibold text-slate-700'>Mostrar</legend>
@@ -257,10 +257,10 @@ const Grafica = (props) => {
                     <Checkbox id={inputNames.INCLUIR_FIN_SEMANA_ANTERIOR} name={inputNames.INCLUIR_FIN_SEMANA_ANTERIOR} label={checkboxLabels.INCLUIR_FIN_DE_SEMANA_ANTERIOR} />
                     <Checkbox id={inputNames.RESULTADOS_PESOS} name={inputNames.RESULTADOS_PESOS} label={checkboxLabels.RESULTADO_PESOS} />
                     <Checkbox id={inputNames.TIPO_CAMBIO_TIENDAS} name={inputNames.TIPO_CAMBIO_TIENDAS} label={checkboxLabels.TIPO_CAMBIO_TIENDAS} />
-                    <Checkbox id={'ocultarDetalles'} name={'ocultarDetalles'} label={"Mostrar detalle por segmento"} />
+                    <Checkbox id={'mostrarDetalles'} name={'mostrarDetalles'} label={"Mostrar detalle por segmento"} />
                   </fieldset>
                   <div className="mt-4">
-                      <input type="submit" value={"Buscar"} className="btn-search" disabled={isLoading} onClick={onPressSubmit}/>
+                    <input type="submit" value={"Buscar"} className="btn-search" disabled={isLoading} onClick={onPressSubmit} />
                   </div>
                 </Form>
               </Formik>
@@ -293,10 +293,10 @@ const Grafica = (props) => {
                                 <td className="text-left">{dateHelpers.getEasterDayWeek(item.dia)}</td>
                                 {item.datos
                                   .map(col => (
-                                      <React.Fragment key={v4()}>
-                                        {(col.hasOwnProperty('porcentaje')) ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
-                                        <td>{numberWithCommas(col.valor)}</td>
-                                      </React.Fragment>
+                                    <React.Fragment key={v4()}>
+                                      {(col.hasOwnProperty('porcentaje')) ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
+                                      <td>{numberWithCommas(col.valor)}</td>
+                                    </React.Fragment>
                                   ))}
                               </tr>
                             ))
@@ -316,6 +316,15 @@ const Grafica = (props) => {
                 {
                   (data && data?.segmentos && data.segmentos.length > 0) ?
                     <div>
+
+                      <div className="bg-blue-100 py-2 px-1 w-fit h-fit rounded-md mb-2">
+                        <div className=" flex items-center w-full h-full">
+                          <ExclamationCircleIcon width={24} />
+                          <p className="ml-1 text-sm">Pueden existir pequeñas diferencias por cuestion de redondeo</p>
+                        </div>
+
+                      </div>
+
                       <table className="table-report-grafica">
                         <thead>
                           <tr>
@@ -366,7 +375,7 @@ const Grafica = (props) => {
                                     </tr>
 
                                     <tr className="bg-gray-300 md:text-xs font-bold">
-                                      <td className="text-left " colSpan={isMobile ? 1 : 2}>{ !isMobile ? 'Totales ' : ''}{dateHelpers.getEasterDayWeek(item.dia)}</td>
+                                      <td className="text-left " colSpan={isMobile ? 1 : 2}>{!isMobile ? 'Totales ' : ''}{dateHelpers.getEasterDayWeek(item.dia)}</td>
                                       {item.totales.map(col => (
                                         <React.Fragment key={v4()}>
                                           {(col.hasOwnProperty('porcentaje')) ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
@@ -458,7 +467,7 @@ const Grafica = (props) => {
               </div>
             </section>
             :
-           null
+            null
 
         }
       </div>
