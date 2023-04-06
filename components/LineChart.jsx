@@ -9,7 +9,6 @@ CharJS.register(
     Title,
     Tooltip,
     Legend,
-    ChartDataLabels, // https://chartjs-plugin-datalabels.netlify.app/,
     PointElement,
     LineElement
 )
@@ -21,7 +20,16 @@ const LineChart = ({ text, data }) => {
             options={{
                 responsive: true,
                 plugins: {
+                    datalabels: {
+                        anchor: 'end',
+                        color: '#4b5563',
+                        align: 'top',
+                        font: {
+                            weight: 'bold'
+                        }
+                    },
                     legend: {
+                        display: true,
                         position: 'top'
                     },
                     title: {
@@ -29,13 +37,10 @@ const LineChart = ({ text, data }) => {
                         text
                     }
                 },
-                plugins: {
-                    datalabels: {
-                        anchor: 'end',
-                        color: '#4b5563',
-                        align: 'top',
-                        font: {
-                            weight: 'bold'
+                tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            return `${data.labels[tooltipItem.datasetIndex]} - ${numeral(data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]).format('0,0')}`;
                         }
                     }
                 },
