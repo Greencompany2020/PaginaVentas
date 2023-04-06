@@ -1,13 +1,19 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useImperativeHandle, forwardRef } from "react";
 import Image from "next/image";
 import { XIcon} from "@heroicons/react/solid";
 import useClickOutside from "../../hooks/useClickOutside";
 import filter from '../../public/icons/filter.svg';
 
-const ParametersContainer = ({ children }) => {
+const ParametersContainer = forwardRef(({ children }, ref) => {
   const container = useRef(null);
   const [toggle, setToggle] = useState(false);
   const handleToggle = () => setToggle(!toggle);
+
+
+  useImperativeHandle(ref, () => ({
+    close(){handleToggle()},
+    isOpen:{toggle}
+  }))
 
   useClickOutside(container, () => {
     if (toggle) {
@@ -74,6 +80,6 @@ const ParametersContainer = ({ children }) => {
       </div>
     </>
   );
-};
+});
 
 export default ParametersContainer;
