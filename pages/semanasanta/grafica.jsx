@@ -93,11 +93,12 @@ const Grafica = (props) => {
         const dataInDate = result.lista
           .filter(item => item.dia !== 'Porcentaje' && item.dia !== 'Total')
           .flatMap(itemFilter => itemFilter.datos.filter(secondFilter => secondFilter.agno === date))
-          .flatMap(flatItem => flatItem.valor)
+          .flatMap(flatItem =>  flatItem.valor)
         return {
           label: date,
           data: dataInDate,
           backgroundColor: colors[i],
+          lineTension: 0.5,
         }
       });
 
