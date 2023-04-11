@@ -1,4 +1,4 @@
-import React,{useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getBaseLayout } from '../../components/layout/BaseLayout';
 import configuratorService from '../../services/configuratorService';
 import { useNotification } from '../../components/notifications/NotificationsProvider';
@@ -7,7 +7,7 @@ import TableAccess from '../../components/configuration/access/TableAccess';
 import { FormModal } from '../../components/modals';
 import useToggle from '../../hooks/useToggle';
 import AccessForm from '../../components//configuration/access/AccessForm';
-import {ConfirmModal} from '../../components/modals';
+import { ConfirmModal } from '../../components/modals';
 import ParameterForm from '../../components/ParameterForm';
 import withAuth from '../../components/withAuth';
 import TabButton from '../../components/configuration/TabButton';
@@ -17,40 +17,46 @@ const Access = (props) => {
     const [access, setAccess] = useState([]);
     const [proyects, setProyects] = useState([]);
     const [selectedAccess, setSelectedAccess] = useState({
-        data:undefined,
-        parameters:undefined,
+        data: undefined,
+        parameters: undefined,
+        defaultParameters: undefined
     });
     const service = configuratorService();
     const sendNotification = useNotification();
     const [showModal, setShowModal] = useToggle();
     const [showRetrive, setShowRetrive] = useToggle();
     const confirmModalRef = useRef(null);
+    const [tabList, setTabList] = useState(1);
 
     const handleSelect = async item => {
         try {
             const response = await service.getParameters(item?.idDashboard);
             setSelectedAccess({
                 data: item,
-                parameters: response,
-            })
+                parameters: response.inputs,
+                defaultParameters: response.default
+            });
         } catch (error) {
-            
+            sendNotification({
+                type: 'ERROR',
+                message: error.response.data.message || error.message
+            });
         }
     }
 
-    const handleAddButton = () =>{
-        setSelectedAccess({data: undefined, parameters:undefined});
+    const handleAddButton = () => {
+        setSelectedAccess({ data: undefined, parameters: undefined });
         setShowModal();
     }
 
-    const addNewAccess = async values =>{
+    const addNewAccess = async values => {
         try {
             await service.createAccess(values);
             const response = await service.getAccess();
-            setAccess(response) 
+            setAccess(response)
         } catch (error) {
             sendNotification({
-                type:'ERROR',
+                type: 'ERROR',
                 message: error.response.data.message || error.message
             });
         }
@@ -60,10 +66,10 @@ const Access = (props) => {
         try {
             await service.updateAccess(id, values);
             const response = await service.getAccess();
-            setAccess(response) 
+            setAccess(response)
         } catch (error) {
             sendNotification({
-                type:'ERROR',
+                type: 'ERROR',
                 message: error.response.data.message || error.message
             });
         }
@@ -76,7 +82,7 @@ const Access = (props) => {
             setShowRetrive();
         } catch (error) {
             sendNotification({
-                type:'ERROR',
+                type: 'ERROR',
                 message: error.response.data.message || error.message
             });
         }
@@ -84,37 +90,37 @@ const Access = (props) => {
 
     const deleteAccess = async id => {
         const confirm = await confirmModalRef.current.show();
-        if(confirm){
+        if (confirm) {
             try {
                 await service.deleteAccess(id);
                 const response = await service.getAccess();
                 setAccess(response);
-                setSelectedAccess({data: undefined, parameters:undefined});
+                setSelectedAccess({ data: undefined, parameters: undefined });
             } catch (error) {
                 sendNotification({
-                    type:'ERROR',
+                    type: 'ERROR',
                     message: error.response.data.message || error.message
                 });
             }
         }
     }
 
-    useEffect(()=>{
-        (async ()=>{
+    useEffect(() => {
+        (async () => {
             try {
-               const response = await service.getAccess();
-               const responseProyects = await service.getProyects();
-               setAccess(response);
-               setProyects(responseProyects)
+                const response = await service.getAccess();
+                const responseProyects = await service.getProyects();
+                setAccess(response);
+                setProyects(responseProyects)
             } catch (error) {
                 sendNotification({
-                    type:'ERROR',
+                    type: 'ERROR',
                     message: error.response.data.message || error.message
                 });
             }
         })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    },[])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
     return (
         <>
             <div className="flex flex-col md:flex-row justify-between h-fit p-4  bg-slate-50">
@@ -122,7 +128,7 @@ const Access = (props) => {
                 <span className=" text-3xl font-semibold">Configuración de Accesos</span>
             </div>
             <div className='p-4'>
-                <TabButton/>
+                <TabButton />
             </div>
             <section className=' overflow-hidden'>
                 <div className='p-4 md:p-8 space-y-4'>
@@ -133,34 +139,59 @@ const Access = (props) => {
                         data={access}
                         showItems={5}
                         options={{
-                        labelSelector: "Mostrar",
-                        optionRange: [20, 50, 100],
-                        searchBy: ["menu", "reporte", "nombreReporte"],
+                            labelSelector: "Mostrar",
+                            optionRange: [20, 50, 100],
+                            searchBy: ["menu", "reporte", "nombreReporte"],
                         }}
                     >
                         <TableAccess
-                            handleSelect = {handleSelect}
-                            handleShowModal = {setShowModal}
-                            deleteAccess = {deleteAccess}
-                            handleShowRetrive ={setShowRetrive}
+                            handleSelect={handleSelect}
+                            handleShowModal={setShowModal}
+                            deleteAccess={deleteAccess}
+                            handleShowRetrive={setShowRetrive}
                         />
                     </Paginate>
                 </div>
             </section>
             {/* MODALS*/}
             <FormModal key={1} active={showModal} handleToggle={setShowModal} name={selectedAccess.data ? 'Editar acceso' : 'Agregar acceso'}>
-                <AccessForm 
+                <AccessForm
                     item={selectedAccess.data}
-                    addNewAccess = {addNewAccess}
-                    updateAccess = {updateAccess}
-                    handleModal =  {setShowModal}
-                    proyects = {proyects}
+                    addNewAccess={addNewAccess}
+                    updateAccess={updateAccess}
+                    handleModal={setShowModal}
+                    proyects={proyects}
                 />
             </FormModal>
             <FormModal key={2} active={showRetrive} handleToggle={setShowRetrive} name='Editar parametros'>
-                <ParameterForm savedParameters={selectedAccess.parameters} submit={setParameters} onlySelect={false}/>
+                <div>
+                    <button className={`py-1 px-2  ${tabList === 1 ? 'border-b border-blue-500' : ''}`} onClick={() => setTabList(1)}>Parametros</button>
+                    <button className={`py-1 px-2  ${tabList === 2 ? 'border-b border-blue-500' : ''}`} onClick={() => setTabList(2)}>Default</button>
+                </div>
+                <section className='border-t'>
+                    {
+                        tabList === 1 ?
+                            <div>
+                                <ParameterForm savedParameters={selectedAccess.parameters} submit={setParameters} onlySelect={false} />
+                            </div>
+                            :
+                            null
+                    }
+
+                    {
+                        tabList === 2 ?
+                            <div className={`${tabList === 2 ? 'block' : 'hidden'}`}>
+                                <ParameterForm savedParameters={selectedAccess.defaultParameters} submit={setParameters} onlySelect={false} />
+                            </div>
+                            :
+                            null
+                    }
+
+
+                </section>
+
             </FormModal>
-            <ConfirmModal ref={confirmModalRef}/>
+            <ConfirmModal ref={confirmModalRef} />
         </>
     )
 }

@@ -34,15 +34,20 @@ export default function ParameterForm({ submit, savedParameters, onlySelect = tr
         evt.preventDefault();
         const formatedValues = {}
         for (const item in values) {
-            let value = null
-            if (item == inputNames.VISTA_MOBILE || item == inputNames.VISTA_DESKTOP) {
-                if (!onlySelect) {
-                    value = values[item] == true ? 1 : 0;
+            let value = null;
+            if (item !== inputNames.TIPO_VALORES) {
+                if (item == inputNames.VISTA_MOBILE || item == inputNames.VISTA_DESKTOP) {
+                    if (!onlySelect) {
+                        value = values[item] == true ? 1 : 0;
+                    }
+                    else value = values[item] == null ? 1 : values[item];
+                } else {
+                    value = values[item] == true ? 'Y' : 'N';
                 }
-                else value = values[item] == null ? 1 : values[item];
-            } else {
-                value = values[item] == true ? 'Y' : 'N';
+            }else{
+                value = values[item]
             }
+
             Object.assign(formatedValues, { [item]: value });
         }
         await submit(formatedValues);
@@ -54,14 +59,19 @@ export default function ParameterForm({ submit, savedParameters, onlySelect = tr
             for (const item in inputNames) {
                 let key = inputNames[item];
                 let value = null;
-                if (key == inputNames.VISTA_DESKTOP || key == inputNames.VISTA_MOBILE) {
-                    if (!onlySelect) {
-                        value = savedParameters?.[key] == 1 ? true : false;
+                if (key !== inputNames.TIPO_VALORES) {
+                    if (key == inputNames.VISTA_DESKTOP || key == inputNames.VISTA_MOBILE) {
+                        if (!onlySelect) {
+                            value = savedParameters?.[key] == 1 ? true : false;
+                        }
+                        else value = savedParameters?.[key];
+                    } else {
+                        value = savedParameters?.[key] == 'Y' ? true : false;
                     }
-                    else value = savedParameters?.[key];
-                } else {
-                    value = savedParameters?.[key] == 'Y' ? true : false;
+                }else{
+                    value = savedParameters?.[key]
                 }
+
                 Object.assign(initialValues, { [key]: value });
             }
             setValues(initialValues);

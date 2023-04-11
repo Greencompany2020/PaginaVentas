@@ -68,6 +68,7 @@ export const inputNames = {
   VISTA_DESKTOP: 'desktopReportView',
   VISTA_MOBILE: 'mobileReportView',
   PRESUPUESTO_EXTRAORDINARIO:'presupuestoExtraordinario',
+  TIPO_VALORES: 'tipoValores'
 }
 
 export const comboNames = {

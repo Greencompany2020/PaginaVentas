@@ -77,7 +77,7 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
 
     if (item) {
       const { password, ...params } = rest;
-      const body = { ...params, localidades: localitities }
+      const body = { ...params, localidades: localitities, idProyect: 1 }
       await updateUser(item?.Id, body);
       await addUserToGroup({
         idUser: item?.Id,
