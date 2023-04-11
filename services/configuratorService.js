@@ -177,6 +177,7 @@ export default function configuratorService() {
     }
   }
 
+
   const replaceAccess = (current, next) => {
     const modified = current.map((item) => {
       let modify = {};
@@ -315,7 +316,7 @@ export default function configuratorService() {
     getProyects,
     createProyect,
     updateProyect,
-    deleteProyect
+    deleteProyect,
   };
 }
 
