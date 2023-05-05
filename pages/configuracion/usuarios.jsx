@@ -48,7 +48,8 @@ const Users = (props) => {
 
     const addNewUser = async values => {
         try {
-            await service.createUser(values);
+            const body = {...values, idProyect:1};
+            await service.createUser(body);
             const response = await service.getUsers();
             setUsers(response);
         } catch (error) {
