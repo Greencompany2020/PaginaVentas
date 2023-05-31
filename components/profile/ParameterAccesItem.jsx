@@ -47,7 +47,7 @@ export default function ParameterAccesItem(props) {
 
     const handleSetFavorite = async () => {
         try {
-            const response = await service.updateGlobalParameters(idAccess);
+            const response = await service.updateGlobalParameters({favoriteAccess:idAccess});
             refreshParams(response)
             sendNotification({
                 type: 'OK',
