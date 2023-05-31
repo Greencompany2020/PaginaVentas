@@ -121,13 +121,9 @@ export default function userService(){
         }
     }
 
-    const updateGlobalParameters = async(idAccess) => {
+    const updateGlobalParameters = async(body) => {
         try {
-            const body = {
-                idProyect:1,
-                favoriteAccess: idAccess,
-            }
-            await configuradorProvider.post(`user/dashboards/parameters/globals/${idAccess}`,body);
+            await configuradorProvider.post('user/dashboards/parameters/globals',body);
             const {data} = await configuradorProvider.get(`user/dashboards/parameters/globals/1`);
             return data;
         } catch (error) {
