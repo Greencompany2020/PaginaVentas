@@ -3,7 +3,7 @@ import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { TextInput, SelectInput, CheckBoxInput } from "../../FormInputs";
 
-export default function UserForm({ item, groups, addNewUser, updateUser, handleToggle, digitalGroups, addUserToGroup, locatities , sapUsers}) {
+export default function UserForm({ item, groups, addNewUser, updateUser, handleToggle, digitalGroups, addUserToGroup, locatities, sapUsers }) {
 
   const getUserLocalitities = () => {
     const localidades = locatities.reduce((obj, item) => Object.assign(obj, { [item.Localidad]: "" }), {})
@@ -27,6 +27,7 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
     return localidades
   }
 
+
   const initialValues = {
     UserCode: item?.UserCode || "",
     Email: item?.Email || "",
@@ -39,7 +40,10 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
     idGrupo: item?.IdGrupo || groups[0]?.Id,
     idGrupoDigital: item?.IdGrupoDigitalizacion || digitalGroups[0]?.Id,
     localidades: getUserLocalitities(),
-    UserSAP: item?.UserSAP || "null"
+    UserSAP: item?.UserSAP || "null",
+    parametros: {
+      confirmShippingList: item?.Parametros?.confirmShippingList || "CB",
+    }
   }
 
 
@@ -95,7 +99,7 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
 
   return (
     <Formik validationSchema={validationSchema} initialValues={initialValues} onSubmit={handleOnSubmit} enableReinitialize>
-      <Form className="p-4 relative">
+      <Form className="p-4 relative h-96 overflow-y-auto">
         <div className="space-y-1">
           <TextInput label='No. Empleado' name='NoEmpleado' type='number' elementwidth='w-36' />
           <TextInput label='Nombre' name='Nombre' />
@@ -133,7 +137,7 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
         </fieldset>
 
 
-        <fieldset className=" overflow-auto h-32 mt-4">
+        <fieldset className="mt-4">
           <legend className="font-semibold text-sm text-gray-600 mb-1">Localidades</legend>
           {
             locatities &&
@@ -144,16 +148,23 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
         </fieldset>
 
         <fieldset className="mt-4">
-        <SelectInput label='Usuario sap' name='UserSAP'>
-              <option value={"null"}>Elegir usuarios</option>
-              { sapUsers &&
-                sapUsers.map(item => (
-                  <option key={item.UserCode}>{item.UserCode}</option>
-                ))
-              }
-            </SelectInput>
+          <SelectInput label='Usuario sap' name='UserSAP'>
+            <option value={"null"}>Elegir usuarios</option>
+            {sapUsers &&
+              sapUsers.map(item => (
+                <option key={item.UserCode}>{item.UserCode}</option>
+              ))
+            }
+          </SelectInput>
         </fieldset>
 
+        <fieldset className="mt-4">
+          <SelectInput label={"Metodo de confirmacion de embarque"} name='parametros.confirmShippingList'>
+            <option value={"CM"}>Confirmacion manual</option>
+            <option value={"CB"}>Confirmar por bulto</option>
+            <option value={"CE"}>Confirmar por embarque</option>
+          </SelectInput>
+        </fieldset>
 
         <div className="flex flex-row justify-end space-x-2 mt-6 ">
           <input type='reset' value='Cancelar' className="secondary-btn w-28" onClick={handleToggle} />
