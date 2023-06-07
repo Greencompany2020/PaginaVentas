@@ -163,7 +163,7 @@ export default function Paginate(props) {
       const filtered = [];
       data.forEach((item) => {
         searchBy.forEach((key) => {
-          if (String(item[key]).includes(param)) {
+          if (String(item[key]).toUpperCase().includes(String(param).toUpperCase())) {
             const isOnResult = filtered.find(
               (filterItem) => item == filterItem
             );
