@@ -9,12 +9,14 @@ export default function ParametersPageContainer() {
     const sendNotification = useNotification();
     const [values, setValues] = useState({
         confirmShippingList: 'CM',
+        confirmPackingList: 'CM',
     });
 
     const getGlobarParameters = async () => {
-        const {confirmGlobalShippingList} = await service.getGlobalParameters();
+        const {confirmGlobalShippingList, confirmGlobalPackingList} = await service.getGlobalParameters();
         setValues({ 
-            confirmShippingList:confirmGlobalShippingList ?? values.confirmShippingList, 
+            confirmShippingList: confirmGlobalShippingList ?? values.confirmShippingList,
+            confirmPackingList: confirmGlobalPackingList ?? values.confirmPackingList
         })
     }
 
@@ -48,6 +50,10 @@ export default function ParametersPageContainer() {
                             <option value={"CM"}>Confirmacion manual</option>
                             <option value={"CB"}>Confirmar por bulto</option>
                             <option value={"CE"}>Confirmar por embarque</option>
+                        </SelectInput>
+                        <SelectInput label={"Metodo de confirmacion de packing"} name='confirmPackingList'>
+                            <option value={"CM"}>Confirmacion manual</option>
+                            <option value={"CL"}>Confirmar por linea</option>
                         </SelectInput>
                     </fieldset>
 

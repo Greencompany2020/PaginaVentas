@@ -43,6 +43,7 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
     UserSAP: item?.UserSAP || "null",
     parametros: {
       confirmShippingList: item?.Parametros?.confirmShippingList || "CB",
+      confirmPackingList: item?.Parametros?.confirmPackingList || 'CL'
     }
   }
 
@@ -158,11 +159,15 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
           </SelectInput>
         </fieldset>
 
-        <fieldset className="mt-4">
+        <fieldset className="mt-4 space-y-2">
           <SelectInput label={"Metodo de confirmacion de embarque"} name='parametros.confirmShippingList'>
             <option value={"CM"}>Confirmacion manual</option>
             <option value={"CB"}>Confirmar por bulto</option>
             <option value={"CE"}>Confirmar por embarque</option>
+          </SelectInput>
+          <SelectInput label="Metodo de confirmacion de packing" name='parametros.confirmPackingList'>
+            <option value={"CM"}>Confirmacion manual</option>
+            <option value={"CL"}>Confirmar por linea</option>
           </SelectInput>
         </fieldset>
 
