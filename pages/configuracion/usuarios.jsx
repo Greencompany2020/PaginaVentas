@@ -12,6 +12,7 @@ import UserAccessTable from '../../components/configuration/users/UserAccessTabl
 import { ConfirmModal } from '../../components/modals/';
 import witAuth from '../../components/withAuth';
 import TabButton from '../../components/configuration/TabButton';
+import Drawer from "../../components/commons/Drawer";
 
 const Users = (props) => {
     const service = configuratorService();
@@ -25,13 +26,17 @@ const Users = (props) => {
     const confirmModalRef = useRef(null);
     const [digitalGroups, setDigitalGroups] = useState([]);
     const [locatities, setLocatities] = useState([]);
+    const [shops, setShops] = useState([]);
+    const [userShops, setUserShops] = useState([]);
     const [sapUsers, setSapUsers] = useState([]);
 
     const handleSelect = async item => {
         setSelectedUser(item);
         try {
             const response = await service.getUserDetail(item.Id);
-            setUserDetail(response)
+            setUserDetail(response);
+            const responseShops = await service.getUserShops(item.Id);
+            setUserShops(responseShops.tiendas);
         } catch (error) {
             sendNotification({
                 type: 'ERROR',
@@ -123,18 +128,31 @@ const Users = (props) => {
         }
     }
 
+    const setShopsToUser = async (id, body) => {
+      try {
+        console.log(id)
+        await service.setUserLocalityShop(id, body);
+      } catch (error) {
+        sendNotification({
+          type: 'ERROR',
+          message: error.response.data.message || error.message
+        });
+      }
+    }
+
     useEffect(() => {
         (async () => {
             try {
                 const userResponse = await service.getUsers();
                 const groupResponse = await service.getGroups();
                 const digitalGroupsResponse = await service.getGruposDigitalizacion();
-                const locatitiesRespose = await service.getLocalities();
+                const {Localidades, Tiendas} = await service.getLocalities();
                 const sapUserResponse = await service.getSAPUsers();
                 setUsers(userResponse);
                 setGroups(groupResponse);
                 setDigitalGroups(digitalGroupsResponse);
-                setLocatities(locatitiesRespose);
+                setLocatities(Localidades);
+                setShops(Tiendas);
                 setSapUsers(sapUserResponse)
             } catch (error) {
                 sendNotification({
@@ -184,7 +202,12 @@ const Users = (props) => {
             </section>
 
             {/* MODALS */}
-            <FormModal key={1} active={showModal} handleToggle={setShowModal} name={userDetails ? 'Editar usuario' : 'Agregar usuario'}>
+
+            <Drawer
+                expand={showModal}
+                handleExpand={setShowModal}
+                title={selectedUser?.Nombre ? `${selectedUser.Nombre} ${selectedUser.Apellidos}` : 'Agregar usuario'}
+            >
                 <UserForm
                     item={userDetails?.usuario}
                     groups={groups}
@@ -195,9 +218,11 @@ const Users = (props) => {
                     addUserToGroup={adduserToDigitalGroup}
                     locatities={locatities}
                     sapUsers = {sapUsers}
+                    shops = {shops}
+                    setShopsToUser = {setShopsToUser}
+                    userShops = {userShops}
                 />
-
-            </FormModal>
+            </Drawer>
 
             <FormModal key={2} active={showRetrieve} handleToggle={setShowRetrieve} name='Asignar acceso'>
                 <div className=" p-8  h-[500px] w-[400px] md:h-[570px] md:w-[500px] lg:w-[1000px] overflow-y-auto">
@@ -214,7 +239,11 @@ const Users = (props) => {
                     </Paginate>
                 </div>
             </FormModal>
-            <ConfirmModal ref={confirmModalRef} title='Eliminar usuario' message={`Eliminar al usuario usuario ${selectedUser?.Nombre}`} />
+            <ConfirmModal
+                ref={confirmModalRef}
+                title='Eliminar usuario'
+                message={`Eliminar al usuario usuario ${selectedUser?.Nombre}`}
+            />
         </>
     )
 }
