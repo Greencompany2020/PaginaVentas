@@ -2,9 +2,50 @@ import React from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import { TextInput, SelectInput, CheckBoxInput } from "../../FormInputs";
+import useToggle from "../../../hooks/useToggle";
+import {PlusIcon, MinusIcon} from "@heroicons/react/outline";
 
-export default function UserForm({ item, groups, addNewUser, updateUser, handleToggle, digitalGroups, addUserToGroup, locatities, sapUsers }) {
 
+export default function UserForm({
+   item,
+   groups,
+   addNewUser,
+   updateUser,
+   handleToggle,
+   digitalGroups,
+   addUserToGroup,
+   locatities,
+   sapUsers,
+   shops,
+   setShopsToUser,
+   userShops
+}) {
+
+  const LocalitiesSection = ({locality}) => {
+    const [isOpen, setIsOpen] = useToggle();
+    const placeShops = shops.find( item => item.codigoLocalidad === locality.Codigo)
+    return (
+      <li className="bg-gray-100 py-2 px-1 rounded-md">
+        <div className="flex justify-between items-center cursor-pointer" onClick={setIsOpen}>
+          <CheckBoxInput id={locality.Codigo} name={`[localidades.${locality.Localidad}]`} key={locality.Codigo} label={locality.Localidad} />
+          {isOpen ? <MinusIcon width={18}/> : <PlusIcon width={18}/>}
+        </div>
+        <div className={`${isOpen ? 'h-fit  px-1 py-2' : 'hidden'}`}>
+          <ul className="pl-4 space-y-1 bg-white rounded-md">
+            {
+              placeShops ?
+                placeShops.almacenes.map(shop => (
+                  <li key={shop.codigo} >
+                    <CheckBoxInput id={shop.codigo} name={`[shops.${shop.codigo}]`} label={shop.codigo} disabled={!item}/>
+                  </li>
+                ))
+              : null
+            }
+          </ul>
+        </div>
+      </li>
+    )
+  }
   const getUserLocalitities = () => {
     const localidades = locatities.reduce((obj, item) => Object.assign(obj, { [item.Localidad]: "" }), {})
 
@@ -28,6 +69,13 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
   }
 
 
+  const getUserShops = () => {
+    const filteredUserShops = userShops.flatMap(item => item.almacenes.filter(flat => flat.selected)).map(flat => flat.codigo);
+    const globalShops = shops.flatMap(item => item.almacenes.map(flat => flat.codigo)).reduce((obj, item) => Object.assign(obj, {[item]: filteredUserShops.includes(item)}), {});
+    return globalShops;
+  }
+
+
   const initialValues = {
     UserCode: item?.UserCode || "",
     Email: item?.Email || "",
@@ -38,14 +86,16 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
     Apellidos: item?.Apellidos || "",
     password: "",
     idGrupo: item?.IdGrupo || groups[0]?.Id,
-    idGrupoDigital: item?.IdGrupoDigitalizacion || digitalGroups[0]?.Id,
+    idGrupoDigital: item?.IdGrupoDigitalizacion || 0,
     localidades: getUserLocalitities(),
     UserSAP: item?.UserSAP || "null",
     parametros: {
       confirmShippingList: item?.Parametros?.confirmShippingList || "CB",
       confirmPackingList: item?.Parametros?.confirmPackingList || 'CL'
-    }
+    },
+    shops:  getUserShops()
   }
+
 
 
 
@@ -75,9 +125,17 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
     return [];
   }
 
+  const getShopsFromValues = (data) => {
+    let shopsIntrue = [];
+    for(const property in data){
+      if(data[property] === true) shopsIntrue = [...shopsIntrue, property];
+    }
+    return shopsIntrue;
+  }
+
   const handleOnSubmit = async (values, { resetForm }) => {
 
-    const { idGrupoDigital, localidades, ...rest } = values;
+    const { idGrupoDigital, localidades, shops, ...rest } = values;
     const localitities = getIdfromLocatitites(localidades);
 
     if (item) {
@@ -88,6 +146,7 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
         idUser: item?.Id,
         idGrupo: idGrupoDigital
       });
+       await setShopsToUser(item?.Id, getShopsFromValues(values.shops));
     }
     else {
       const body = { ...rest, localidades: localitities }
@@ -100,7 +159,7 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
 
   return (
     <Formik validationSchema={validationSchema} initialValues={initialValues} onSubmit={handleOnSubmit} enableReinitialize>
-      <Form className="p-4 relative h-96 overflow-y-auto">
+      <Form className="p-4 relative h-fit overflow-y-auto">
         <div className="space-y-1">
           <TextInput label='No. Empleado' name='NoEmpleado' type='number' elementwidth='w-36' />
           <TextInput label='Nombre' name='Nombre' />
@@ -133,6 +192,7 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
 
         <fieldset className="mt-4">
           <SelectInput label="Rol digitalizado" name='idGrupoDigital' disabled={!item ? true : false}>
+            <option value={0}>Elegir grupo</option>
             <DigitalGroups digitalGroups={digitalGroups} />
           </SelectInput>
         </fieldset>
@@ -140,12 +200,14 @@ export default function UserForm({ item, groups, addNewUser, updateUser, handleT
 
         <fieldset className="mt-4">
           <legend className="font-semibold text-sm text-gray-600 mb-1">Localidades</legend>
-          {
-            locatities &&
-            locatities.map((item, index) => (
-              <CheckBoxInput id={item.Codigo} name={`[localidades.${item.Localidad}]`} key={item.Codigo} label={item.Localidad} />
-            ))
-          }
+          <ul className="space-y-2">
+            {
+              locatities &&
+              locatities.map((item) => (
+                  <LocalitiesSection key={item.Codigo} locality={item}/>
+              ))
+            }
+          </ul>
         </fieldset>
 
         <fieldset className="mt-4">

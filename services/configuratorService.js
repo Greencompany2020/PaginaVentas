@@ -246,6 +246,22 @@ export default function configuratorService() {
     }
   }
 
+  const setUserLocalityShop = async (id,body) => {
+    try {
+     const response = await configuradorProvider.put(`/user/tiendas/${id}`,{tiendas:body})
+    } catch (error){
+      throw  error;
+    }
+  }
+
+  const getUserShops = async (id)=> {
+    try {
+      const {data} = await configuradorProvider(`/user/tiendas/${id}`);
+      return data;
+    } catch (error){
+      throw error;
+    }
+  }
   const getSAPUsers = async () => {
     try {
       const { data } = await configuradorProvider.get('/usuarios/sap');
@@ -317,6 +333,8 @@ export default function configuratorService() {
     createProyect,
     updateProyect,
     deleteProyect,
+    setUserLocalityShop,
+    getUserShops
   };
 }
 

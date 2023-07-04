@@ -4,7 +4,7 @@ import {XIcon} from '@heroicons/react/solid';
 import useClickOutside from '../../hooks/useClickOutside';
 
 export default function Drawer(props) {
-    const {children, expand, handleExpand, keepScreen} = props;
+    const {children, expand, handleExpand, keepScreen, title} = props;
     const drawerRef = useRef(null);
     useClickOutside(drawerRef, ()=>{
         if(expand){
@@ -19,6 +19,7 @@ export default function Drawer(props) {
             >
                 <div className='relative h-[5%] top-0 flex items-center p-2'>
                     <XIcon width={28} className='text-gray-500 cursor-pointer' onClick={handleExpand}/>
+                    <h2 className="ml-4 font-semibold text-lg">{title}</h2>
                 </div>
                 <section className="p-4 overflow-y-auto h-[95%]">
                     {children}
