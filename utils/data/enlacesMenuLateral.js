@@ -203,8 +203,17 @@ export const enlaces = [
     ]
   },
   {
+    summaryText: 'Ventas',
+    links: [
+      {
+        link: 'https://wms.officialstore.net/reports/ventas/TopVentas',
+        linkText: 'Top Ventas'
+      }
+    ]
+  },
+  {
     summaryText: 'MKT',
-    links: [    
+    links: [
       {
         link: '/mkt/promotores',
         linkText: 'Promotores'
