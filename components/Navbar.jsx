@@ -17,6 +17,7 @@ import { useRouter } from "next/router";
 import jsCookie from 'js-cookie';
 import removeInitialData from "../redux/actions/removeInitialData";
 import authService from "../services/authService";
+import {COOKIE_DOMAIN} from "services/providers/CookieDomain";
 
 const Navbar = () => {
   const {user} = useSelector(state => state);
@@ -27,7 +28,7 @@ const Navbar = () => {
   const [showDialog, setShowDialog] = useState(false);
   const service = authService();
   const handleToggle = () => setShowDialog(!showDialog);
-  
+
 
   useClickOutside(userMenuRef, () => {
     if (showDialog) {
@@ -38,7 +39,7 @@ const Navbar = () => {
   const handleLogout = async() => {
     try {
         await service.logout();
-        jsCookie.remove('accessToken');
+        jsCookie.remove('accessToken', { domain: COOKIE_DOMAIN });
         dispatch(removeInitialData());
         router.push('/')
     } catch (error) {
@@ -99,7 +100,7 @@ const Navbar = () => {
           </div>
           <div className="space-y-1">
             <Link href="/usuario/perfil">
-              <a 
+              <a
                 className="hover:bg-sky-400 m-1 flex p-1 rounded-sm transition ease-in-out duration-200"
                 onClick={handleToggle}
               >

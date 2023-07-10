@@ -3,6 +3,7 @@ import jsCookie from 'js-cookie';
 import jwtDecode from "jwt-decode";
 import differenceInMinutes from "date-fns/differenceInMinutes";
 import fromUnixTime from 'date-fns/fromUnixTime';
+import {COOKIE_DOMAIN} from "services/providers/CookieDomain";
 
 const BASE_URL_CONFIGURADOR = `${process.env.API_CONFIGURADOR_URL}/api/v1/configurador`;
 const BASE_URL_REPORTE = `${process.env.API_VENTAS_URL}/api/v1/ventas`;
@@ -28,7 +29,7 @@ function isTokenValidYet() {
 }
 
 function expiredSession() {
-    jsCookie.remove('accessToken');
+    jsCookie.remove('accessToken', { domain: COOKIE_DOMAIN });
     jsCookie.remove('jwt');
     alert("Sesion esxpirada")
     window.location.href = '/'
@@ -52,10 +53,10 @@ configuradorProvider.interceptors.request.use(
             isRefreshing = true;
             refreshToken()
                 .then(({ data }) => {
-                    jsCookie.remove('accessToken');
-                    jsCookie.set('accessToken', data.accessToken)
+                    jsCookie.remove('accessToken', { domain: COOKIE_DOMAIN });
+                    jsCookie.set('accessToken', data.accessToken, { domain: COOKIE_DOMAIN })
                     req.headers['Authorization'] = `Bearer ${jsCookie.get('accessToken') || ''}`;
-                    isRefreshing = false;   
+                    isRefreshing = false;
                 })
                 .catch(({ response }) => {
                     isRefreshing = false;
@@ -63,7 +64,7 @@ configuradorProvider.interceptors.request.use(
                 })
         }
         else{
-            req.headers['Authorization'] = `Bearer ${jsCookie.get('accessToken') || ''}`   
+            req.headers['Authorization'] = `Bearer ${jsCookie.get('accessToken') || ''}`
         }
         return req;
     },
@@ -76,7 +77,7 @@ export const reporteProvider = axios.create({
     baseURL: BASE_URL_REPORTE,
     withCredentials: true,
     headers: {
-      
+
         Authorization: `Bearer ${jsCookie.get('accessToken') || ''}`,
         'Content-Type': 'application/json'
     }
@@ -89,10 +90,10 @@ reporteProvider.interceptors.request.use(
             isRefreshing = true;
             refreshToken()
                 .then(({ data }) => {
-                    jsCookie.remove('accessToken');
-                    jsCookie.set('accessToken', data.accessToken)
+                    jsCookie.remove('accessToken', { domain: COOKIE_DOMAIN });
+                    jsCookie.set('accessToken', data.accessToken, { domain: COOKIE_DOMAIN })
                     req.headers['Authorization'] = `Bearer ${jsCookie.get('accessToken') || ''}`;
-                    isRefreshing = false;   
+                    isRefreshing = false;
                 })
                 .catch(({ response }) => {
                     isRefreshing = false;
@@ -100,7 +101,7 @@ reporteProvider.interceptors.request.use(
                 })
         }
         else{
-            req.headers['Authorization'] = `Bearer ${jsCookie.get('accessToken') || ''}` 
+            req.headers['Authorization'] = `Bearer ${jsCookie.get('accessToken') || ''}`
         }
         return req;
     },

@@ -32,7 +32,8 @@ jobs:
             docker build --tag ${DOCKERHUB_USERNAME}/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1} \
             --build-arg API_DIGITALIZADO_URL=${API_DIGITALIZADO_URL} \
             --build-arg API_CONFIGURADOR_URL=${API_CONFIGURADOR_URL} \
-            --build-arg API_VENTAS_URL=${API_VENTAS_URL} .
+            --build-arg API_VENTAS_URL=${API_VENTAS_URL} \
+            --build-arg COOKIE_DOMAIN=${COOKIE_DOMAIN} .
       - run:
           name: Archive Docker Image
           command: docker save --output image.tar "${DOCKERHUB_USERNAME}/<< pipeline.parameters.image-name >>:${CIRCLE_SHA1}"
