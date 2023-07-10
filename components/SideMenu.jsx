@@ -12,6 +12,7 @@ import { useDispatch } from "react-redux";
 import removeInitialData from "../redux/actions/removeInitialData";
 import authService from "../services/authService";
 import jsCookie from 'js-cookie'
+import {COOKIE_DOMAIN} from "services/providers/CookieDomain";
 
 const SideMenu = () => {
   const router = useRouter();
@@ -22,12 +23,12 @@ const SideMenu = () => {
   const [showChevron, setShowChevron] = useState(false);
   const sendNotification = useNotification();
   const service = authService();
-  
+
 
   const handleLogout = async() => {
     try {
         await service.logout();
-        jsCookie.remove('accessToken');
+        jsCookie.remove('accessToken', { domain: COOKIE_DOMAIN });
         dispatch(removeInitialData());
         router.push('/');
     } catch (error) {

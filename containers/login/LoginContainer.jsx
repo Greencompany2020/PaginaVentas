@@ -8,6 +8,7 @@ import { useNotification } from '../../components/notifications/NotificationsPro
 import {LoginInput, ResetViewInput} from '../../components/FormInputs';
 import { useDispatch } from 'react-redux';
 import setInitialData from '../../redux/actions/setInitialData';
+import {COOKIE_DOMAIN} from "services/providers/CookieDomain";
 
 export default function LoginContainer(props) {
     const {setLoading} =props
@@ -19,7 +20,7 @@ export default function LoginContainer(props) {
         UserCode: Yup.string().required("Requerido"),
         password: Yup.string().required("Requerido"),
     });
-  
+
     const initialValues = {
         UserCode: "",
         password: "",
@@ -30,7 +31,7 @@ export default function LoginContainer(props) {
     try {
       const response = await service.login(values);
       const { accessToken } = response;
-      jsCookie.set('accessToken', accessToken);
+      jsCookie.set('accessToken', accessToken, { domain: COOKIE_DOMAIN });
       const data = await service.getUserData();
       dispatch(setInitialData(data));
       router.push('/dashboard');

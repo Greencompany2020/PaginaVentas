@@ -1,6 +1,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 import createAuthRefreshInterceptor from 'axios-auth-refresh';
+import {COOKIE_DOMAIN} from "services/providers/CookieDomain";
 
 const BASE_URL_REPORTE = `${process.env.API_VENTAS_URL}/api/v1/ventas`;
 const BASE_URL_CONFIGURADOR = `${process.env.API_CONFIGURADOR_URL}/api/v1/configurador`;
@@ -15,15 +16,15 @@ reporteProvider.interceptors.request.use((request) =>{
     return request;
 })
 
-const refreshToken = (req) => 
+const refreshToken = (req) =>
 axios.get(`${BASE_URL_CONFIGURADOR}/auth/refresh`,{withCredentials: true})
 .then(response => {
-    Cookies.set('accessToken', response.data.accessToken);
+    Cookies.set('accessToken', response.data.accessToken, { domain: COOKIE_DOMAIN });
     req.response.config.headers['Authorization'] = 'Bearer' + response.data.accessToken;
     return Promise.resolve();
 })
 .catch(error =>{
-    Cookies.remove('accessToken');
+    Cookies.remove('accessToken', { domain: COOKIE_DOMAIN });
     Cookies.remove('jwt');
     alert('sesion expirada');
     window.location.href = '/'
