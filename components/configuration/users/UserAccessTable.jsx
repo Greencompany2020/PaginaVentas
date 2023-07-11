@@ -1,4 +1,3 @@
-import TooggleSwitch from "../../inputs/TooggleSwitch";
 import generateKey from "../../paginate/generateKey";
 import {PlusIcon, MinusIcon} from "@heroicons/react/outline";
 
