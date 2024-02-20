@@ -89,6 +89,7 @@ export default function UserForm({
     idGrupoDigital: item?.IdGrupoDigitalizacion || 0,
     localidades: getUserLocalitities(),
     UserSAP: item?.UserSAP || "null",
+    PasswordSAP: item?.PasswordSAP || "null",
     parametros: {
       confirmShippingList: item?.Parametros?.confirmShippingList || "CB",
       confirmPackingList: item?.Parametros?.confirmPackingList || 'CL'
@@ -220,6 +221,10 @@ export default function UserForm({
             }
           </SelectInput>
         </fieldset>
+
+        <div className="space-y-1 mt-4">
+          <TextInput label='Contraseña SAP' name='PasswordSAP' />
+        </div>
 
         <fieldset className="mt-4 space-y-2">
           <SelectInput label={"Metodo de confirmacion de embarque"} name='parametros.confirmShippingList'>
