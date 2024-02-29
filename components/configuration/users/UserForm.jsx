@@ -1,7 +1,7 @@
 import React from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { TextInput, SelectInput, CheckBoxInput } from "../../FormInputs";
+import {TextInput, SelectInput, CheckBoxInput, PasswordViewInput} from "../../FormInputs";
 import useToggle from "../../../hooks/useToggle";
 import {PlusIcon, MinusIcon} from "@heroicons/react/outline";
 
@@ -223,7 +223,7 @@ export default function UserForm({
         </fieldset>
 
         <div className="space-y-1 mt-4">
-          <TextInput label='Contraseña SAP' name='PasswordSAP' />
+          <PasswordViewInput label='Contraseña SAP' name='PasswordSAP' />
         </div>
 
         <fieldset className="mt-4 space-y-2">
