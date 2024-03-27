@@ -24,7 +24,7 @@ import {spliceData, parseParams, parseNumberToBoolean, spliteArrDate, isSecondDa
 import { v4 } from "uuid";
 
 import { Formik, Form } from "formik";
-import { Select, Checkbox, DateRange, BeetWenYears } from "../../components/inputs/reportInputs";
+import { Select, Checkbox, DateRange, BeetWenYears } from "../../components/reportInputs";
 import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
 import ExcelButton from '../../components/buttons/ExcelButton'
 import exportExcel from '../../utils/excel/exportExcel';

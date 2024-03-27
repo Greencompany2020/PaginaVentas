@@ -25,7 +25,7 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 import { Form, Formik } from "formik";
-import { Checkbox, BeetWenYears, Select, Input } from "../../components/inputs/reportInputs";
+import { Checkbox, BeetWenYears, Select, Input } from "../../components/reportInputs";
 import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
 import { v4 } from "uuid";
 
