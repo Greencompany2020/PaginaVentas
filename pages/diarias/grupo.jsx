@@ -9,7 +9,7 @@ import WithAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 import { parseNumberToBoolean, parseParams,  } from "../../utils/functions";
-import { Select, Checkbox, SelectMonth, SelectYear} from "../../components/inputs/reportInputs";
+import { Select, Checkbox, SelectMonth, SelectYear} from "../../components/reportInputs";
 import { Formik, Form } from "formik";
 import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
 import { getMonthByNumber } from "../../utils/dateFunctions";

@@ -13,7 +13,7 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 import { Formik, Form } from "formik";
-import { Select, Checkbox, SelectMonth, SelectYear} from "../../components/inputs/reportInputs";
+import { Select, Checkbox, SelectMonth, SelectYear} from "../../components/reportInputs";
 import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
 import { getMonthByNumber } from "../../utils/dateFunctions";
 import { getLastTwoNumbers } from "../../utils/functions";

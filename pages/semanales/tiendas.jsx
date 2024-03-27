@@ -21,7 +21,7 @@ import { isMobile } from "react-device-detect";
 import ViewFilter from "../../components/ViewFilter";
 import { v4 } from "uuid";
 import { Formik,Form } from "formik";
-import {Select, DateRange, Checkbox, BeetWenYears} from '../../components/inputs/reportInputs';
+import {Select, DateRange, Checkbox, BeetWenYears} from '../../components/reportInputs';
 import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
 import ExcelButton from "../../components/buttons/ExcelButton";
 import exportExcel from "../../utils/excel/exportExcel";

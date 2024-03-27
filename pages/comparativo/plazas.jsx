@@ -17,7 +17,7 @@ import Stats from "../../components/Stats";
 import { v4 } from "uuid";
 import { isMobile } from "react-device-detect";
 import {Formik, Form} from 'formik'
-import { Input, Select, BeetWenYears, Checkbox } from "../../components/inputs/reportInputs";
+import { Input, Select, BeetWenYears, Checkbox } from "../../components/reportInputs";
 import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
 import ExcelButton from '../../components/buttons/ExcelButton';
 import exportExcel from '../../utils/excel/exportExcel';

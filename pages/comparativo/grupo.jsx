@@ -22,7 +22,7 @@ import Stats from "../../components/Stats";
 import { v4 } from "uuid";
 import ViewFilter from "../../components/ViewFilter";
 import { isMobile } from "react-device-detect";
-import { Select, Input,BeetWenYears, Checkbox } from "../../components/inputs/reportInputs";
+import { Select, Input,BeetWenYears, Checkbox } from "../../components/reportInputs";
 import {Formik ,Form} from 'formik';
 import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
 import ExcelButton from '../../components/buttons/ExcelButton';

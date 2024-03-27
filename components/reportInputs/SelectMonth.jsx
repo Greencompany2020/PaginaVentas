@@ -1,6 +1,6 @@
 import React from 'react';
 import Select from './Select';
-import { meses } from '../../../utils/data';
+import { meses } from '../../utils/data';
 
 export default function SelectMonth(props) {
   return (
