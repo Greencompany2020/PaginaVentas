@@ -278,8 +278,8 @@ const Grafica = (props) => {
                       <tr>
                         <th className="text-left w-28">DIA REF</th>
                         <th>{getYearFromDate(reportDate.current)}</th>
-                        <th>PPTO.</th>
                         <th>% PPTO.</th>
+                        <th>PPTO.</th>
                         {reportDate.dateRange[0] ? <th>% VS {reportDate.dateRange[0]}</th> : null}
                         {reportDate.dateRange[0] ? <th>{reportDate.dateRange[0]}</th> : null}
                         {!isDisable ? <th>% VS {reportDate.dateRange[1]}</th> : null}
@@ -298,8 +298,8 @@ const Grafica = (props) => {
                                     <React.Fragment key={v4()}>
                                       {(col.hasOwnProperty('porcentaje')) ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
                                       <td>{numberWithCommas(col.valor)}</td>
-                                      {(col.hasOwnProperty('presupuesto')) ? <td>{numberWithCommas(col.presupuesto)}</td> : null}
                                       {(col.hasOwnProperty('porcentajePresupuesto')) ? <td data-porcent-format={isNegative(col.porcentajePresupuesto)}>{numberAbs(col.porcentajePresupuesto)}</td> : null}
+                                      {(col.hasOwnProperty('presupuesto')) ? <td>{numberWithCommas(col.presupuesto)}</td> : null}
                                     </React.Fragment>
                                   ))}
                               </tr>
@@ -335,8 +335,8 @@ const Grafica = (props) => {
                             <th className="text-left hidden md:table-cell">DIA REF</th>
                             <th className="text-left w-28 rounded-tl-md md:rounded-none">SEGMENTO</th>
                             <th>{getYearFromDate(reportDate.current)}</th>
-                            <th>PPTO.</th>
                             <th>% PPTO.</th>
+                            <th>PPTO.</th>
                             {reportDate.dateRange[0] ? <th>% VS {reportDate.dateRange[0]}</th> : null}
                             {reportDate.dateRange[0] ? <th>{reportDate.dateRange[0]}</th> : null}
                             {!isDisable ? <th>% VS {reportDate.dateRange[1]}</th> : null}
@@ -392,8 +392,8 @@ const Grafica = (props) => {
                                         <React.Fragment key={v4()}>
                                           {(col.hasOwnProperty('porcentaje')) ? <td data-porcent-format={isNegative(col.porcentaje)}>{numberAbs(col.porcentaje)}</td> : null}
                                           <td>{numberWithCommas(col.valor)}</td>
-                                          {(col.hasOwnProperty('presupuesto')) ? <td>{numberWithCommas(col.presupuesto)}</td> : null}
                                           {(col.hasOwnProperty('porcentajePresupuesto')) ?  <td data-porcent-format={isNegative(col.porcentajePresupuesto)}>{numberAbs(col.porcentajePresupuesto)}</td> : null}
+                                          {(col.hasOwnProperty('presupuesto')) ? <td>{numberWithCommas(col.presupuesto)}</td> : null}
                                         </React.Fragment>
                                       ))}
                                     </tr>
@@ -418,8 +418,8 @@ const Grafica = (props) => {
                             <th className="text-left">Tipo</th>
                             <th className="text-left">SEGMENTO</th>
                             <th>{getYearFromDate(reportDate.current)}</th>
-                            <th>PPTO.</th>
                             <th>% PPTO.</th>
+                            <th>PPTO.</th>
                             {reportDate.dateRange[0] ? <th>% VS {reportDate.dateRange[0]}</th> : null}
                             {reportDate.dateRange[0] ? <th>{reportDate.dateRange[0]}</th> : null}
                             {!isDisable ? <th>% VS {reportDate.dateRange[1]}</th> : null}
@@ -474,8 +474,8 @@ const Grafica = (props) => {
                                     <React.Fragment key={v4()}>
                                       {(item.hasOwnProperty('porcentaje')) ? <td data-porcent-format={isNegative(item.porcentaje)}>{numberAbs(item.porcentaje)}</td> : null}
                                       <td>{numberWithCommas(item.valor)}</td>
-                                      {(item.hasOwnProperty('presupuesto')) ? <td>{numberWithCommas(item.presupuesto)}</td> : null}
                                       {(item.hasOwnProperty('porcentajePresupuesto')) ?  <td data-porcent-format={isNegative(item.porcentajePresupuesto)}>{numberAbs(item.porcentajePresupuesto)}</td> : null}
+                                      {(item.hasOwnProperty('presupuesto')) ? <td>{numberWithCommas(item.presupuesto)}</td> : null}
                                     </React.Fragment>
                                   ))}
                                 </tr>

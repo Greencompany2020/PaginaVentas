@@ -21,6 +21,7 @@ const LineChart = ({ text, data }) => {
                 responsive: true,
                 plugins: {
                     datalabels: {
+                        display: false,
                         anchor: 'end',
                         color: '#4b5563',
                         align: 'top',
