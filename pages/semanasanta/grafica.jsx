@@ -97,7 +97,6 @@ const Grafica = (props) => {
         .filter(list => list.dia !== 'Porcentaje' && list.dia !== 'Total')
         .flatMap(item => dateHelpers.getDayFromEasterWeek(item.dia));
 
-
       const dataSets = years.map((date, i) => {
         const dataInDate = result.lista
           .filter(item => item.dia !== 'Porcentaje' && item.dia !== 'Total')
@@ -110,6 +109,18 @@ const Grafica = (props) => {
           lineTension: 0.5,
         }
       });
+
+      const presu = result.lista
+        .filter(item => item.dia !== 'Porcentaje' && item.dia !== 'Total')
+        .flatMap(itemFilter => itemFilter.datos.filter(secondFilter => secondFilter.agno === currentYear))
+        .flatMap(flatItem => flatItem.presupuesto)
+        
+      dataSets.push({
+        label: 'PPTO',
+        data: presu,
+        backgroundColor: '#4c195a',
+        lineTension: 0.5
+      })
 
       setDataSet({ labels: labelDays, datasets: dataSets })
 
