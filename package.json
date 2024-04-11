@@ -37,7 +37,7 @@
     "react-redux": "^8.0.2",
     "react-select": "^5.4.0",
     "redux-logger": "^3.0.6",
-    "sharp": "^0.30.3",
+    "sharp": "^0.32.6",
     "uuid": "^8.3.2",
     "webpack": "^5.74.0",
     "yup": "^0.32.11"
