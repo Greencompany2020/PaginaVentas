@@ -1,11 +1,19 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react'
 
+/**
+ * Hook para aplicar efecto de `turn on/off`
+ * @param initialState {boolean}
+ * @returns {[boolean, function(): void]} Estado y callback con {@link  React.useCallback}
+ */
 const useToggle = (initialState) => {
-  const [state, setState] = useState(initialState);
+  /**
+   * @type {[boolean, React.Dispatch<SetStateAction<boolean>>]}
+   */
+	const [state, setState] = useState(initialState)
 
-  const toggle = useCallback(() => setState(state => !state), [])
+	const toggle = useCallback(() => setState((state) => !state), [])
 
-  return [state, toggle];
+	return [state, toggle]
 }
 
-export default useToggle;
+export default useToggle

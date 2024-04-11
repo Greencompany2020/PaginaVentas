@@ -1,6 +1,81 @@
 import reporteProvider from "./providers/reporteProvider";
 import configuradorProvider from "./providers/configuradorProvider";
 
+/**
+ * Localidades asignadas al usuario
+ * @typedef {Object} Locations
+ * @property {number} Codigo
+ * @property {string} Number
+ */
+
+/**
+ * Almacén de tienda
+ * @typedef {Object} StoreWarehouse
+ * @property {string} nombre
+ * @property {string} codigo
+ * @property {string} tipo
+ * @property {string} tipoMaximizador
+ * @property {boolean} selected Si se ha asignado al usuario. Por default en
+ * false. Usado para elementos visuales
+ */
+
+/**
+ * Tiendas asignadas al usuario
+ * @typedef {Object} Store
+ * @property {string} plaza
+ * @property {number} codigoLocalidad
+ * @property {string} region
+ * @property {string} nombreRegion
+ * @property {Array<StoreWarehouse>} almacenes
+ */
+
+/**
+ * Datos de Usuario
+ * @typedef {Object} UserData
+ * @property {number} Id
+ * @property {string} UserCode
+ * @property {number} NoEmpleado
+ * @property {number} Level
+ * @property {number} Clase
+ * @property {string} Nombre
+ * @property {string} Apellidos
+ * @property {string} ImgPerfil
+ * @property {number} idGrupo
+ * @property {string} UserSAP
+ * @property {string} NombreGrupo
+ * @property {string} Email
+ * @property {string} PasswordSAP
+ * @property {string | null} DefaultReposicion
+ * @property {Array<Locations>} Localidades
+ * @property {Array<Store>} Tiendas
+ */
+
+/**
+ * @typedef {Object} GlobalParameters
+ * @property {number} idAcceso
+ * @property {string} point Ruta de reportes de
+ * ventas seleccionada principal.
+ * @property {string | null} confirmGlobalShippingList
+ * @property {string | null} confirmGlobalPackingList
+ * @property {string | null} tipoTraspasos Tipo de usuario para traspasos. Valores: tienda - bodega
+ */
+
+/**
+ * Perfil de Usuario
+ * @typedef {Object} UserProfile
+ * @property {UserData} user
+ */
+
+
+/**
+ *
+ * @returns {
+ * {logout: (() => Promise<any|undefined>),
+ * getUserAuthorization: ((function(*): Promise<any|undefined>)|*),
+ * getUserData: (function(): Promise<[UserProfile, any, any, GlobalParameters]>),
+ * login: ((function(*): Promise<any|undefined>)|*)}
+ * }
+ */
 export default function authService(){
     const login = async (body) => {
         try {
@@ -30,7 +105,11 @@ export default function authService(){
         }
     }
 
-    const getUserData = async () => {
+  /**
+   * Obtiene los datos para el perfil del usuario.
+   * @returns {Promise<[UserProfile, any, any, GlobalParameters]>}
+   */
+  const getUserData = async () => {
 
         return Promise.all([
             configuradorProvider.get('/user/perfil'),

@@ -5,6 +5,11 @@ import { setShops } from "../reducers/shopSlice";
 import { setParameters } from "../reducers/parametersSlice";
 import { setAuth } from "../reducers/authSlice";
 
+/**
+ *
+ * @param {[UserData, any, any, GlobalParameters]} response
+ * @returns {(function(*): void)|*}
+ */
 const setInitialData = (response) => dispatch => {
     dispatch(setUser(response[0].user));
     dispatch(setAccess(response[0].dashboards));

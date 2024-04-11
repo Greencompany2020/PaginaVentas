@@ -1,122 +1,117 @@
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import authService from "../services/authService";
-import {useSelector, useDispatch} from 'react-redux';
-import setInitialData from "../redux/actions/setInitialData";
-import {urlExceptions} from '../utils/constants';
-import { useNotification } from "./notifications/NotificationsProvider";
-import Loader from '../components/Loader';
+import { useCallback, useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import authService from '../services/authService'
+import { useSelector, useDispatch } from 'react-redux'
+import setInitialData from '../redux/actions/setInitialData'
+import { urlExceptions } from '../utils/constants'
+import { useNotification } from './notifications/NotificationsProvider'
+import Loader from '../components/Loader'
 
-export default function withAuth(Component){
+export default function withAuth(Component) {
+	function parseParams(params) {
+		const newParams = {}
+		if (params) {
+			for (let item in params) {
+				let value = null
+				switch (typeof params[item]) {
+					case 'string':
+						if (params[item] === 'Y' || params[item] === 'N') {
+							value = params[item] === 'Y' ? 1 : 0
+						} else {
+							value = params[item] || null
+						}
+						break
 
-  function parseParams(params){
-    const newParams = {};
-    if(params){
-      for(let item in params){
-        let value = null;
-        switch( typeof params[item]){
+					default:
+						value = params[item] || null
+						break
+				}
+				Object.assign(newParams, { [item]: value })
+			}
+		}
+		return newParams
+	}
 
-          case 'string':
-            if(params[item] == 'Y' || params[item] == 'N'){
-              value = (params[item] == 'Y') ? 1 : 0;
-            }
-            else {
-              value = params[item] || null
-            }
-          break;
+  /**
+   *
+   * @param {string} pathname
+   * @param {string} token
+   * @returns {JSX.Element}
+   * @constructor
+   */
+	function AuthComponent({ pathname, token }) {
+		const router = useRouter()
+		const service = authService()
+		const { isAuth } = useSelector((state) => state)
+		const dispatch = useDispatch()
+		const [isLoading, setIsLoading] = useState(true)
+		const [config, setConfig] = useState({})
+		const sendNotification = useNotification()
 
-          default:
-            value = params[item] || null
-          break;
-        }
-         Object.assign(newParams, {[item]: value});
-      }
-    }
-    return newParams;
-  }
+		const initialData = useCallback(async () => {
+			if (token && !isAuth) {
+				try {
+					const response = await service.getUserData()
+					dispatch(setInitialData(response))
+				} catch (error) {
+					throw error
+				}
+			}
+		}, [])
 
+		const evaluatePathname = useCallback(async () => {
+			const pathException = urlExceptions.find((url) => url.pathname == pathname)
+			if (!pathException) {
+				try {
+					const { access, config } = await service.getUserAuthorization(pathname)
+					if (!access) router.replace('/unauthorized')
+					setConfig(parseParams(config))
+				} catch (error) {
+					throw error
+				}
+			}
+		}, [pathname])
 
-  function AuthComponent({pathname, token}){
-    const router = useRouter();
-    const service = authService();
-    const {isAuth} = useSelector(state => state);
-    const dispatch = useDispatch();
-    const [isLoading, setIsLoading] = useState(true);
-    const [config, setConfig] = useState({});
-    const sendNotification = useNotification();
+		useEffect(() => {
+			;(async () => {
+				try {
+					await initialData()
+					await evaluatePathname()
+				} catch (error) {
+					sendNotification({
+						type: 'ERROR',
+						message: error?.response?.data?.message || error.message
+					})
+					router.replace('/unauthorized')
+				} finally {
+					setIsLoading(false)
+				}
+			})()
+		}, [])
 
-    const initialData = useCallback(async () => {
-      if(token && !isAuth){
-        try {
-          const response = await service.getUserData();
-          dispatch(setInitialData(response));
-        } catch (error) {
-          throw error;
-        }
-      }
-    }, [])
+		return isLoading ? <Loader /> : <Component config={config} />
+	}
 
+	AuthComponent.getInitialProps = async ({ req, res, pathname }) => {
+		let token = null
+		if (req && res) {
+			const { accessToken } = req.cookies
+			token = accessToken
+			if (!accessToken && pathname !== '/') {
+				res.writeHead(302, {
+					location: '/'
+				})
+				res.end()
+			} else if (accessToken && pathname === '/') {
+				res.writeHead(302, {
+					location: '/dashboard'
+				})
+				res.end()
+			}
+		}
 
-    const evaluatePathname = useCallback(async () => {
-      const pathException = urlExceptions.find(url => url.pathname == pathname);
-      if(!pathException){
-        try {
-          const {access, config} = await service.getUserAuthorization(pathname);
-          if(!access) router.replace('/unauthorized');
-          setConfig(parseParams(config));
-        } catch (error) {
-          throw error;
-        }
-      }
-    }, [pathname]);
+		return { pathname, token }
+	}
 
-
-    useEffect(() => {
-      (async () => {
-        try {
-          await initialData();
-          await evaluatePathname();
-        } catch (error) {
-          sendNotification({
-            type: 'ERROR',
-            message: error?.response?.data?.message || error.message
-          });
-          router.replace('/unauthorized')
-        }
-        finally {
-          setIsLoading(false);
-        }
-      })()
-    }, [])
-
-    return isLoading ?
-    <Loader/> : 
-    <Component config={config}/>
-  }
-
-  AuthComponent.getInitialProps = async ({req, res, pathname}) => {
-    let token = null;
-    if(req && res){
-
-      const {accessToken} = req.cookies;
-      token = accessToken;
-      if(!accessToken && pathname !== '/'){
-        res.writeHead(302,{
-          location:'/'
-        });
-        res.end();
-      }
-      
-      else if(accessToken && pathname == '/'){
-        res.writeHead(302,{
-          location:'/dashboard'
-        });
-        res.end();
-      }
-    }
-
-    return{pathname, token}
-  }
-
-  return AuthComponent;
+	return AuthComponent
 }
