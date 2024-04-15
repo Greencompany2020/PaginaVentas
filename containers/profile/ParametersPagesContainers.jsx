@@ -3,7 +3,6 @@ import { Form, Formik } from 'formik'
 import { SelectInput } from 'components/FormInputs'
 import { useNotification } from 'components/notifications/NotificationsProvider'
 import { ConfirmOptions } from 'constants/ConfirmOptions'
-import userService from 'services/userServices'
 import { StockTransferUserType } from 'constants/StockTransferUserType'
 import { UserServiceInstance } from 'services/UserService'
 import { useSelector } from 'react-redux'
@@ -15,7 +14,6 @@ import { useSelector } from 'react-redux'
  * @constructor
  */
 export default function ParametersPageContainer() {
-	const service = userService()
 	/** @type {UserData} */
 	const user = useSelector((state) => state.user)
 	const sendNotification = useNotification()
@@ -25,7 +23,7 @@ export default function ParametersPageContainer() {
 	 * @property {string} confirmShippingList
 	 * @property {string} confirmPackingList
 	 * @property {string} tipoTraspasos
-	 * @property {string} defaultReposicion
+	 * @property {number} defaultReposicion
 	 */
 
 	const [config, setConfig] = useState(
@@ -56,11 +54,12 @@ export default function ParametersPageContainer() {
 	 * @returns {Promise<GlobalParameters>}
 	 */
 	const getGlobalParameters = async () => {
-		const { confirmGlobalShippingList, confirmGlobalPackingList, tipoTraspasos } = await service.getGlobalParameters()
+		const { confirmGlobalShippingList, confirmGlobalPackingList, tipoTraspasos } = await UserServiceInstance.getGlobalParameters()
 		setConfig({
 			confirmShippingList: confirmGlobalShippingList ?? config.confirmShippingList,
 			confirmPackingList: confirmGlobalPackingList ?? config.confirmPackingList,
-			tipoTraspasos: tipoTraspasos ?? config.tipoTraspasos
+			tipoTraspasos: tipoTraspasos ?? config.tipoTraspasos,
+      defaultReposicion: config.defaultReposicion
 		})
 	}
 
@@ -72,11 +71,17 @@ export default function ParametersPageContainer() {
 	 */
 	const onSubmitGlobals = async (values) => {
 		try {
-			const response = await service.updateGlobalParameters({
+			const response = await UserServiceInstance.updateGlobalParameters({
 				tipoTraspasos: values.tipoTraspasos,
 				confirmPackingList: values.confirmShippingList,
 				confirmShippingList: values.confirmShippingList
 			})
+
+      await UserServiceInstance.updateDefaultReposicion({
+        idUser: user.Id,
+        defaultReposicion: values.defaultReposicion
+      })
+
 			if (response) {
 				sendNotification({
 					type: 'OK',
@@ -106,7 +111,9 @@ export default function ParametersPageContainer() {
 		return (
 			<SelectInput label="PDF Reporte Reposición" name="defaultReposicion">
 				{catalog.map((item) => (
-					<option value={item.Id}>{item.Nombre}</option>
+					<option key={item.Id} value={item.Id}>
+						{item.Nombre}
+					</option>
 				))}
 			</SelectInput>
 		)
