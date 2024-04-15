@@ -5,6 +5,8 @@ import { useNotification } from 'components/notifications/NotificationsProvider'
 import { ConfirmOptions } from 'constants/ConfirmOptions'
 import userService from 'services/userServices'
 import { StockTransferUserType } from 'constants/StockTransferUserType'
+import { UserServiceInstance } from 'services/UserService'
+import { useSelector } from 'react-redux'
 
 /**
  * Componente de configuración de parámetros del
@@ -14,23 +16,40 @@ import { StockTransferUserType } from 'constants/StockTransferUserType'
  */
 export default function ParametersPageContainer() {
 	const service = userService()
+	/** @type {UserData} */
+	const user = useSelector((state) => state.user)
 	const sendNotification = useNotification()
 
 	/**
-	 * @typedef {Object} GlobalParametersValue
+	 * @typedef {Object} ConfigValues
 	 * @property {string} confirmShippingList
 	 * @property {string} confirmPackingList
 	 * @property {string} tipoTraspasos
+	 * @property {string} defaultReposicion
 	 */
 
+	const [config, setConfig] = useState(
+		/** @type {ConfigValues} */
+		{
+			confirmShippingList: ConfirmOptions.CONFIRMAR_MANUAL,
+			confirmPackingList: ConfirmOptions.CONFIRMAR_MANUAL,
+			tipoTraspasos: StockTransferUserType.TIENDA,
+			defaultReposicion: user?.DefaultReposicion ?? 1
+		}
+	)
+
 	/**
-	 * @type {[GlobalParametersValue,Dispatch<SetStateAction<GlobalParametersValue>>]}
+	 * @typedef {Object.<string, string | number>} ReportsCatalog
+	 * @property {number} Id
+	 * @property {string} Tipo
+	 * @property {string} Nombre
+	 * @property {string} UrlBase
+	 * @property {string} Version
 	 */
-	const [values, setValues] = useState({
-		confirmShippingList: ConfirmOptions.CONFIRMAR_MANUAL,
-		confirmPackingList: ConfirmOptions.CONFIRMAR_MANUAL,
-		tipoTraspasos: StockTransferUserType.TIENDA
-	})
+	const [catalog, setCatalog] = useState(
+		/** @type {Array<ReportsCatalog>} */
+		[]
+	)
 
 	/**
 	 * Wrapper de {@link getGlobalParameters} de servicio de usuarios.
@@ -38,22 +57,26 @@ export default function ParametersPageContainer() {
 	 */
 	const getGlobalParameters = async () => {
 		const { confirmGlobalShippingList, confirmGlobalPackingList, tipoTraspasos } = await service.getGlobalParameters()
-		setValues({
-			confirmShippingList: confirmGlobalShippingList ?? values.confirmShippingList,
-			confirmPackingList: confirmGlobalPackingList ?? values.confirmPackingList,
-			tipoTraspasos: tipoTraspasos ?? values.tipoTraspasos
+		setConfig({
+			confirmShippingList: confirmGlobalShippingList ?? config.confirmShippingList,
+			confirmPackingList: confirmGlobalPackingList ?? config.confirmPackingList,
+			tipoTraspasos: tipoTraspasos ?? config.tipoTraspasos
 		})
 	}
 
 	/**
 	 * Envía los valores de parámetros globales
 	 * a llamar al formulario
-	 * @param {GlobalParametersValue} values
+	 * @param {ConfigValues} values
 	 * @returns {Promise<void>}
 	 */
 	const onSubmitGlobals = async (values) => {
 		try {
-			const response = await service.updateGlobalParameters(values)
+			const response = await service.updateGlobalParameters({
+				tipoTraspasos: values.tipoTraspasos,
+				confirmPackingList: values.confirmShippingList,
+				confirmShippingList: values.confirmShippingList
+			})
 			if (response) {
 				sendNotification({
 					type: 'OK',
@@ -70,11 +93,28 @@ export default function ParametersPageContainer() {
 
 	useEffect(() => {
 		getGlobalParameters()
+		UserServiceInstance.getCatalogReport({
+			Tipo: 'Reposicion'
+		}).then((data) => setCatalog(data))
 	}, [])
+
+	/**
+	 * @param {Array<ReportsCatalog>} catalog
+	 * @returns {JSX.Element}
+	 */
+	const renderCatalogInput = (catalog) => {
+		return (
+			<SelectInput label="PDF Reporte Reposición" name="defaultReposicion">
+				{catalog.map((item) => (
+					<option value={item.Id}>{item.Nombre}</option>
+				))}
+			</SelectInput>
+		)
+	}
 
 	return (
 		<div>
-			<Formik initialValues={values} onSubmit={onSubmitGlobals} enableReinitialize>
+			<Formik initialValues={config} onSubmit={onSubmitGlobals} enableReinitialize>
 				<Form>
 					<fieldset className="space-y-2">
 						<SelectInput label={'Metodo de confirmacion de embarque'} name="confirmShippingList">
@@ -86,10 +126,12 @@ export default function ParametersPageContainer() {
 							<option value={ConfirmOptions.CONFIRMAR_MANUAL}>Confirmacion manual</option>
 							<option value={ConfirmOptions.CONFIRMAR_LINEA}>Confirmar por linea</option>
 						</SelectInput>
-						<SelectInput label={'Tipo Usuario para Traspasos'} name='tipoTraspasos'>
+						<SelectInput label={'Tipo Usuario para Traspasos'} name="tipoTraspasos">
 							<option value={StockTransferUserType.TIENDA}>Tienda</option>
 							<option value={StockTransferUserType.BODEGA}>Bodega</option>
 						</SelectInput>
+
+						{catalog.length !== 0 && renderCatalogInput(catalog)}
 					</fieldset>
 
 					<div className="flex flex-row justify-end space-x-2 mt-6 ">
