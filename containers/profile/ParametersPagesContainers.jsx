@@ -6,6 +6,7 @@ import { ConfirmOptions } from 'constants/ConfirmOptions'
 import { StockTransferUserType } from 'constants/StockTransferUserType'
 import { UserServiceInstance } from 'services/UserService'
 import { useSelector } from 'react-redux'
+import { PDFReplenishmentCatalogInput } from 'components/PDFReplenishmentCatalogInput'
 
 /**
  * Componente de configuración de parámetros del
@@ -36,14 +37,6 @@ export default function ParametersPageContainer() {
 		}
 	)
 
-	/**
-	 * @typedef {Object.<string, string | number>} ReportsCatalog
-	 * @property {number} Id
-	 * @property {string} Tipo
-	 * @property {string} Nombre
-	 * @property {string} UrlBase
-	 * @property {string} Version
-	 */
 	const [catalog, setCatalog] = useState(
 		/** @type {Array<ReportsCatalog>} */
 		[]
@@ -103,22 +96,6 @@ export default function ParametersPageContainer() {
 		}).then((data) => setCatalog(data))
 	}, [])
 
-	/**
-	 * @param {Array<ReportsCatalog>} catalog
-	 * @returns {JSX.Element}
-	 */
-	const renderCatalogInput = (catalog) => {
-		return (
-			<SelectInput label="PDF Reporte Reposición" name="defaultReposicion">
-				{catalog.map((item) => (
-					<option key={item.Id} value={item.Id}>
-						{item.Nombre}
-					</option>
-				))}
-			</SelectInput>
-		)
-	}
-
 	return (
 		<div>
 			<Formik initialValues={config} onSubmit={onSubmitGlobals} enableReinitialize>
@@ -138,7 +115,13 @@ export default function ParametersPageContainer() {
 							<option value={StockTransferUserType.BODEGA}>Bodega</option>
 						</SelectInput>
 
-						{catalog.length !== 0 && renderCatalogInput(catalog)}
+						{catalog.length !== 0 && (
+							<PDFReplenishmentCatalogInput
+								label={'PDF Reporte Reposición'}
+								name={'defaultReposicion'}
+								catalog={catalog}
+							/>
+						)}
 					</fieldset>
 
 					<div className="flex flex-row justify-end space-x-2 mt-6 ">

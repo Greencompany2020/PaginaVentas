@@ -115,7 +115,7 @@ export default function configuratorService() {
 	 * @property {string} Apellidos
 	 * @property {string} UserSAP
 	 * @property {string} PasswordSAP
-	 * @property {number} DefaultReposition
+	 * @property {number} DefaultReposicion
 	 * @property {string} Email
 	 * @property {number} IdGrupo
 	 * @property {number} IdGrupoDigitalizacion

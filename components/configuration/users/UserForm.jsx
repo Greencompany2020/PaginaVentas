@@ -5,6 +5,7 @@ import { TextInput, SelectInput, PasswordViewInput } from '../../FormInputs'
 import { ConfirmOptions } from 'constants/ConfirmOptions'
 import { StockTransferUserType } from 'constants/StockTransferUserType'
 import { LocationsSection } from 'components/configuration/users/LocationsSection'
+import { PDFReplenishmentCatalogInput } from 'components/PDFReplenishmentCatalogInput'
 
 /**
  * @typedef {Object} SAPUser
@@ -24,6 +25,7 @@ import { LocationsSection } from 'components/configuration/users/LocationsSectio
  * @param {Array<Store>} shops
  * @param setShopsToUser
  * @param userShops
+ * @param {Array<ReportsCatalog>} reportsCatalog
  * @returns {JSX.Element}
  */
 export default function UserForm({
@@ -38,7 +40,8 @@ export default function UserForm({
 	sapUsers,
 	shops,
 	setShopsToUser,
-	userShops
+	userShops,
+	reportsCatalog
 }) {
 	const getUserLocations = () => {
 		const localidades = locatities.reduce((obj, item) => Object.assign(obj, { [item.Localidad]: '' }), {})
@@ -86,11 +89,11 @@ export default function UserForm({
 		localidades: getUserLocations(),
 		UserSAP: item?.UserSAP || 'null',
 		PasswordSAP: item?.PasswordSAP || 'null',
-    DefaultReposicion: 1,
+		DefaultReposicion: item?.DefaultReposicion ?? 1,
 		parametros: {
 			confirmShippingList: item?.Parametros?.confirmShippingList || ConfirmOptions.CONFIRMAR_BULTO,
 			confirmPackingList: item?.Parametros?.confirmPackingList || ConfirmOptions.CONFIRMAR_LINEA,
-      tipoTraspasos: item?.Parametros?.tipoTraspasos || StockTransferUserType.TIENDA
+			tipoTraspasos: item?.Parametros?.tipoTraspasos || StockTransferUserType.TIENDA
 		},
 		shops: getUserShops()
 	}
@@ -131,6 +134,7 @@ export default function UserForm({
 	}
 
 	const handleOnSubmit = async (values, { resetForm }) => {
+    console.log(values)
 		const { idGrupoDigital, localidades, shops, ...rest } = values
 		const localitities = getIdFromLocations(localidades)
 
@@ -184,13 +188,13 @@ export default function UserForm({
 							<option value={20}>20</option>
 						</SelectInput>
 						<SelectInput label="Grupo" name="idGrupo">
-							<Listgroups groups={groups} />
+							<ListGroups groups={groups} />
 						</SelectInput>
 					</div>
 				</div>
 
 				<fieldset className="mt-4">
-					<SelectInput label="Rol digitalizado" name="idGrupoDigital" disabled={!item ? true : false}>
+					<SelectInput label="Rol digitalizado" name="idGrupoDigital" disabled={!item}>
 						<option value={0}>Elegir grupo</option>
 						<DigitalGroups digitalGroups={digitalGroups} />
 					</SelectInput>
@@ -199,7 +203,8 @@ export default function UserForm({
 				<fieldset className="mt-4">
 					<legend className="font-semibold text-sm text-gray-600 mb-1">Localidades</legend>
 					<ul className="space-y-2">
-						{locatities && locatities.map((item) => <LocationsSection key={item.Codigo} locality={item} shops={shops} />)}
+						{locatities &&
+							locatities.map((item) => <LocationsSection key={item.Codigo} locality={item} shops={shops} />)}
 					</ul>
 				</fieldset>
 
@@ -213,7 +218,7 @@ export default function UserForm({
 				<div className="space-y-1 mt-4">
 					<PasswordViewInput label="Contraseña SAP" name="PasswordSAP" />
 				</div>
-        {/* * El nombre del input representa que es un objeto anidado. Ver initialValues */}
+				{/* * El nombre del input representa que es un objeto anidado. Ver initialValues */}
 				<fieldset className="mt-4 space-y-2">
 					<SelectInput label={'Metodo de confirmacion de embarque'} name="parametros.confirmShippingList">
 						<option value={ConfirmOptions.CONFIRMAR_MANUAL}>Confirmacion manual</option>
@@ -230,6 +235,16 @@ export default function UserForm({
 					</SelectInput>
 				</fieldset>
 
+				<fieldset className="mt-4">
+					{reportsCatalog.length !== 0 && (
+						<PDFReplenishmentCatalogInput
+							label={'PDF Reporte Reposición'}
+							name={'DefaultReposicion'}
+							catalog={reportsCatalog}
+						/>
+					)}
+				</fieldset>
+
 				<div className="flex flex-row justify-end space-x-2 mt-6 ">
 					<input type="reset" value="Cancelar" className="secondary-btn w-28" onClick={handleToggle} />
 					<input type="submit" value="Guardar" className="primary-btn w-28" />
@@ -239,7 +254,7 @@ export default function UserForm({
 	)
 }
 
-function Listgroups({ groups }) {
+function ListGroups({ groups }) {
 	if (!groups) return <option value={0}>Sin grupos</option>
 	const Items = groups.map((item, index) => (
 		<option key={index} value={item.Id}>
