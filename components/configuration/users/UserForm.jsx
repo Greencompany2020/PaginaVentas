@@ -1,15 +1,30 @@
 import React from 'react'
 import { Formik, Form } from 'formik'
 import * as Yup from 'yup'
-import { TextInput, SelectInput, CheckBoxInput, PasswordViewInput } from '../../FormInputs'
-import useToggle from 'hooks/useToggle'
-import { PlusIcon, MinusIcon } from '@heroicons/react/outline'
+import { TextInput, SelectInput, PasswordViewInput } from '../../FormInputs'
 import { ConfirmOptions } from 'constants/ConfirmOptions'
 import { StockTransferUserType } from 'constants/StockTransferUserType'
+import { LocationsSection } from 'components/configuration/users/LocationsSection'
 
 /**
+ * @typedef {Object} SAPUser
+ * @property {string} UserCode
+ */
+
+/**
+ * @param {UserDetailWithoutAccessList | undefined} item
+ * @param groups
+ * @param addNewUser
+ * @param updateUser
+ * @param handleToggle
+ * @param digitalGroups
+ * @param addUserToGroup
+ * @param locatities
+ * @param {Array<SAPUser>} sapUsers
+ * @param {Array<Store>} shops
+ * @param setShopsToUser
+ * @param userShops
  * @returns {JSX.Element}
- * @constructor
  */
 export default function UserForm({
 	item, // Valores del usuario. Si se asigna indica que es una actualización.
@@ -25,41 +40,6 @@ export default function UserForm({
 	setShopsToUser,
 	userShops
 }) {
-  // TODO: Mover a archivo de componente
-	const LocalitiesSection = ({ locality }) => {
-		const [isOpen, setIsOpen] = useToggle()
-		const placeShops = shops.find((item) => item.codigoLocalidad === locality.Codigo)
-
-		return (
-			<li className="bg-gray-100 py-2 px-1 rounded-md">
-				<div className="flex justify-between items-center cursor-pointer" onClick={setIsOpen}>
-					<CheckBoxInput
-						id={locality.Codigo}
-						name={`[localidades.${locality.Localidad}]`}
-						key={locality.Codigo}
-						label={locality.Localidad}
-					/>
-					{isOpen ? <MinusIcon width={18} /> : <PlusIcon width={18} />}
-				</div>
-				<div className={`${isOpen ? 'h-fit  px-1 py-2' : 'hidden'}`}>
-					<ul className="pl-4 space-y-1 bg-white rounded-md">
-						{placeShops
-							? placeShops.almacenes.map((shop) => (
-									<li key={shop.codigo}>
-										<CheckBoxInput
-											id={shop.codigo}
-											name={`[shops.${shop.codigo}]`}
-											label={shop.codigo}
-											disabled={!item}
-										/>
-									</li>
-								))
-							: null}
-					</ul>
-				</div>
-			</li>
-		)
-	}
 	const getUserLocations = () => {
 		const localidades = locatities.reduce((obj, item) => Object.assign(obj, { [item.Localidad]: '' }), {})
 
@@ -106,6 +86,7 @@ export default function UserForm({
 		localidades: getUserLocations(),
 		UserSAP: item?.UserSAP || 'null',
 		PasswordSAP: item?.PasswordSAP || 'null',
+    DefaultReposicion: 1,
 		parametros: {
 			confirmShippingList: item?.Parametros?.confirmShippingList || ConfirmOptions.CONFIRMAR_BULTO,
 			confirmPackingList: item?.Parametros?.confirmPackingList || ConfirmOptions.CONFIRMAR_LINEA,
@@ -218,7 +199,7 @@ export default function UserForm({
 				<fieldset className="mt-4">
 					<legend className="font-semibold text-sm text-gray-600 mb-1">Localidades</legend>
 					<ul className="space-y-2">
-						{locatities && locatities.map((item) => <LocalitiesSection key={item.Codigo} locality={item} />)}
+						{locatities && locatities.map((item) => <LocationsSection key={item.Codigo} locality={item} shops={shops} />)}
 					</ul>
 				</fieldset>
 

@@ -5,7 +5,7 @@ import configuradorProvider from "./providers/configuradorProvider";
  * Localidades asignadas al usuario
  * @typedef {Object} Locations
  * @property {number} Codigo
- * @property {string} Number
+ * @property {string} Nombre
  */
 
 /**

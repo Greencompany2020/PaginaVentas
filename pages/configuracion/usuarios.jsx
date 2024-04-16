@@ -14,6 +14,14 @@ import UserInfo from 'components/configuration/users/UserInfo'
 import TabButton from 'components/configuration/TabButton'
 import Drawer from 'components/commons/Drawer'
 
+// * Copiamos y pegamos esta definición, ya que entra con la de Location de NodeJS
+/**
+ * @typedef {Object} Location
+ * @property {number} Codigo
+ * @property {string} Localidad
+ * @property {string} Inactiva
+ */
+
 /**
  * @param props
  * @returns {JSX.Element}
@@ -22,18 +30,18 @@ import Drawer from 'components/commons/Drawer'
 const Users = (props) => {
 	const service = configuratorService()
 	const sendNotification = useNotification()
-	const [users, setUsers] = useState([])
-	const [groups, setGroups] = useState([])
-	const [selectedUser, setSelectedUser] = useState({})
-	const [userDetails, setUserDetail] = useState({})
-	const [showModal, setShowModal] = useToggle()
-	const [showRetrieve, setShowRetrieve] = useToggle()
+	const [users, setUsers] = useState(/** @type {Array<User>} */[])
+	const [groups, setGroups] = useState(/** @type {Array<UserGroup>} */[])
+	const [selectedUser, setSelectedUser] = useState(/** @type {UserDetail} */ {})
+	const [userDetails, setUserDetail] = useState(/** @type {UserDetail} */ {})
+	const [showModal, setShowModal] = useToggle(false)
+	const [showRetrieve, setShowRetrieve] = useToggle(false)
 	const confirmModalRef = useRef(null)
 	const [digitalGroups, setDigitalGroups] = useState([])
-	const [locations, setLocations] = useState([])
-	const [shops, setShops] = useState([])
-	const [userShops, setUserShops] = useState([])
-	const [sapUsers, setSapUsers] = useState([])
+	const [locations, setLocations] = useState(/** @type {Array<Location>} */ [])
+	const [shops, setShops] = useState(/** @type {Array<Store>} */ [])
+	const [userShops, setUserShops] = useState(/** @type {Array<Store>} */ [])
+	const [sapUsers, setSapUsers] = useState(/** @type {Array<SAPUser>} */ [])
 
 	const handleSelect = async (item) => {
 		setSelectedUser(item)
@@ -51,8 +59,8 @@ const Users = (props) => {
 	}
 
 	const handleAddButton = () => {
-		setSelectedUser({})
-		setUserDetail({})
+		setSelectedUser(/** @type {UserDetailWithoutAccessList} */ {})
+		setUserDetail(/** @type {UserDetail} */ {})
 		setShowModal()
 	}
 
@@ -133,6 +141,12 @@ const Users = (props) => {
 		}
 	}
 
+	/**
+	 *
+	 * @param {number} id
+	 * @param {SetUserShopBody} body
+	 * @returns {Promise<void>}
+	 */
 	const setShopsToUser = async (id, body) => {
 		try {
 			console.log(id)

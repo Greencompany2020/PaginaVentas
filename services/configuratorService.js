@@ -1,6 +1,30 @@
 import configuradorProvider from './providers/configuradorProvider'
 
 export default function configuratorService() {
+  /**
+   * @typedef {Object} User
+   * @property {number} Id
+   * @property {string} UserCode
+   * @property {string} Email
+   * @property {number} NoEmpleado
+   * @property {number} Level
+   * @property {number} Clase
+   * @property {string} Nombre
+   * @property {string} Apellidos
+   * @property {string} UserSAP
+   * @property {number} IdGrupo
+   * @property {string} NombreGrupo
+   * @property {string} Rol
+   * @property {number} idProyect
+   * @property {string | null} PasswordSAP
+   * @property {string | null} DefaultReposicion
+   */
+
+  /**
+   * Obtiene los usuarios registrados
+   * @returns {Promise<Array<User>>}
+   */
+
 	const getUsers = async () => {
 		try {
 			const { data } = await configuradorProvider.get('/usuarios?page=1&size=300')
@@ -10,6 +34,18 @@ export default function configuratorService() {
 		}
 	}
 
+  /**
+   * @typedef {Object} UserGroup
+   * @property {number} Id
+   * @property {string} Nombre
+   * @property {number} IdProyecto
+   * @property {string} NombreProyecto
+   */
+
+  /**
+   * Obtiene la lista de grupos de usuario
+   * @returns {Promise<Array<UserGroup>>}
+   */
 	const getGroups = async () => {
 		try {
 			const { data } = await configuradorProvider.get('/grupos')
@@ -61,6 +97,14 @@ export default function configuratorService() {
 	 */
 
 	/**
+	 * @typedef {Object} UserProfileGlobalParameters
+	 * @property {number} favoriteAccess
+	 * @property {string} confirmPackingList
+	 * @property {string} confirmShippingList
+	 * @property {string} tipoTraspasos
+	 */
+
+	/**
 	 * @typedef {Object} UserProfileWithAccess
 	 * @property {number} Id
 	 * @property {string} UserCode
@@ -77,20 +121,32 @@ export default function configuratorService() {
 	 * @property {number} IdGrupoDigitalizacion
 	 * @property {Array<UserLocations>} Localidades
 	 * @property {Array<UserAccess>} Accesos
+	 * @property {UserProfileGlobalParameters} Parametros
+	 */
+
+  /**
+   * @typedef {Omit<UserProfileWithAccess, "Accesos">} UserDetailWithoutAccessList
+   */
+
+	/**
+	 * @typedef {Object} UserDetail
+	 * @property {UserDetailWithoutAccessList} usuario
+	 * @property {Array<Access>} accesos
 	 */
 
 	/**
 	 * Obtiene los datos del usuario junto con los accesos asignados.
-	 * @param userId
-	 * @returns {Promise<{usuario: Omit<UserProfileWithAccess, "Accesos">, accesos: Array<Access>}>}
+	 * @param {number} userId
+	 * @returns {Promise<UserDetail>}
 	 */
 	const getUserDetail = async (userId) => {
 		try {
-			const { data } = await configuradorProvider.get(`/accesos/perfil/${userId}`)
+			const { /** @type {UserProfileWithAccess} */ data } = await configuradorProvider.get(`/accesos/perfil/${userId}`)
 			const response = await getAccess()
 			const { Accesos, ...usuario } = data
 			const formatedData = replaceAccess(response, Accesos)
 			console.log(data)
+      /** @type {UserDetail} */
 			const newData = {
 				usuario,
 				accesos: formatedData
@@ -213,8 +269,8 @@ export default function configuratorService() {
 	/**
 	 * Sobreescribe el permiso del acceso a partir
 	 * de la configuración de acceso del usuario
-   * para poder mostrar en la UI cuáles tiene
-   * el usuario asignado.
+	 * para poder mostrar en la UI cuáles tiene
+	 * el usuario asignado.
 	 * @param {Array<Access>} current
 	 * @param {Array<UserAccess>} next
 	 * @returns {Array<Access>}
@@ -278,6 +334,17 @@ export default function configuratorService() {
 		}
 	}
 
+  /**
+   * @typedef {Object} Location
+   * @property {number} Codigo
+   * @property {string} Localidad
+   * @property {string} Inactiva
+   */
+
+  /**
+   * Obtiene las tiendas y localidades existentes
+   * @returns {Promise<{Localidades: Array<Location>, Tiendas: Array<Store>}>}
+   */
 	const getLocalities = async () => {
 		try {
 			const { data } = await configuradorProvider.get('/localidades')
@@ -287,22 +354,46 @@ export default function configuratorService() {
 		}
 	}
 
+  /**
+   * @typedef {Object} SetUserShopBody
+   * @property {Array<string>} tiendas Lista de nombre de tiendas a asignar
+   * @example
+   * {
+   *   tiendas: ["TA-M01", "TA-M02"]
+   * }
+   */
+
+  /**
+   * Asigna una lista de tiendas al usuario
+   * @param {number} id
+   * @param {SetUserShopBody} body
+   * @returns {Promise<void>}
+   */
 	const setUserLocalityShop = async (id, body) => {
 		try {
-			const response = await configuradorProvider.put(`/user/tiendas/${id}`, { tiendas: body })
+			await configuradorProvider.put(`/user/tiendas/${id}`, { tiendas: body })
 		} catch (error) {
 			throw error
 		}
 	}
 
+	/**
+	 * Obtiene la lista de tiendas asignadas al usuario
+	 * @param {number} id ID de usuario
+	 * @returns {Promise<{tiendas: Array<Store>}>}
+	 */
 	const getUserShops = async (id) => {
 		try {
-			const { data } = await configuradorProvider(`/user/tiendas/${id}`)
+			const { /** @type {{tiendas: Array<Store>}} */ data } = await configuradorProvider(`/user/tiendas/${id}`)
 			return data
 		} catch (error) {
 			throw error
 		}
 	}
+
+  /**
+   * @returns {Promise<Array<SAPUser>>}
+   */
 	const getSAPUsers = async () => {
 		try {
 			const { data } = await configuradorProvider.get('/usuarios/sap')
