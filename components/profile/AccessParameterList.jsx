@@ -1,5 +1,5 @@
 import React,{useState} from 'react'
-import ParameterAccesItem from './ParameterAccesItem';
+import ParameterAccessItem from 'components/profile/ParameterAccessItem';
 import { groupBykey } from '../../utils/functions';
 import { v4 } from 'uuid';
 
@@ -15,7 +15,7 @@ export default function AccessParameterList(props) {
                     <span className="font-semibold text-xl">{group}</span>
                     <ul className='list-none space-y-2 mt-2'>
                         {groups[group].map((item) => (
-                            <ParameterAccesItem
+                            <ParameterAccessItem
                                 key={item.IdDashboardUsr}
                                 id={item.IdDashboardUsr}
                                 name={item.Nombre}

@@ -6,12 +6,12 @@ import Avatar from '../../components/commons/Avatar'
 import { FormModal } from '../../components/modals'
 import VerifyHolder from '../../components/commons/VerifyHolder'
 import ConfigurationItems from '../../containers/profile/ConfigurationItems'
-import userService from '../../services/userServices'
 import { useNotification } from 'components/notifications/NotificationsProvider'
 import LoaderComponentBas from '../../components/LoaderComponentBas'
 import { useSelector, useDispatch } from 'react-redux'
 import { setUser } from 'redux/reducers/userSlice'
 import { handleProgress } from 'redux/actions/notificationSystem'
+import { UserServiceInstance } from 'services/UserService'
 
 /**
  * Componente de perfil de usuario
@@ -29,13 +29,12 @@ const Perfil = () => {
 	const [visible, setVisible] = useToggle(false)
 	const sendNotification = useNotification()
 	const [isLoading, setLoading] = useToggle(false)
-	const service = userService()
 
 	const handleUploadImage = async (files) => {
 		setVisible()
 		setLoading()
 		try {
-			const response = await service.updateUserAvatar(files, progress.handle)
+			const response = await UserServiceInstance.updateUserAvatar(files, progress.handle)
 			dispatch(setUser(response))
 		} catch (error) {
 			sendNotification({
@@ -50,7 +49,7 @@ const Perfil = () => {
 	const handleRequestNewPassword = async () => {
 		setLoading()
 		try {
-			await service.requestPasswordReset({ email: user?.Email })
+			await UserServiceInstance.requestPasswordReset({ email: user?.Email })
 			sendNotification({
 				type: 'OK',
 				message: 'Se ha enviado un link a su correo'

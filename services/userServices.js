@@ -126,9 +126,10 @@ export default function userService() {
 
   /**
    * @typedef {Object} UpdateGlobalParameters
-   * @property {string} confirmShippingList
-   * @property {string} confirmPackingList
-   * @property {string} tipoTraspasos
+   * @property {number} favoriteAccess
+   * @property {string | undefined} confirmShippingList
+   * @property {string | undefined} confirmPackingList
+   * @property {string | undefined} tipoTraspasos
    */
   /**
    * @typedef {Object} UserGlobalParameters
