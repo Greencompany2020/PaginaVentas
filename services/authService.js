@@ -5,7 +5,7 @@ import configuradorProvider from "./providers/configuradorProvider";
  * Localidades asignadas al usuario
  * @typedef {Object} Locations
  * @property {number} Codigo
- * @property {string} Number
+ * @property {string} Nombre
  */
 
 /**
@@ -30,6 +30,17 @@ import configuradorProvider from "./providers/configuradorProvider";
  */
 
 /**
+ * @typedef {Object} Dashboard
+ * @property {number} IdDashboardUsr
+ * @property {number} IdProyectAcceso
+ * @property {string} Selected
+ * @property {string} Nombre
+ * @property {string} Clase
+ * @property {string} Endpoint
+ * @property {string} Enabled
+ */
+
+/**
  * Datos de Usuario
  * @typedef {Object} UserData
  * @property {number} Id
@@ -48,6 +59,7 @@ import configuradorProvider from "./providers/configuradorProvider";
  * @property {string | null} DefaultReposicion
  * @property {Array<Locations>} Localidades
  * @property {Array<Store>} Tiendas
+ * @property {Array<Dashboard>} dashboards
  */
 
 /**

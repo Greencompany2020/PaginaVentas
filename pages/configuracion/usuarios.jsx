@@ -13,6 +13,34 @@ import witAuth from '../../components/withAuth'
 import UserInfo from 'components/configuration/users/UserInfo'
 import TabButton from 'components/configuration/TabButton'
 import Drawer from 'components/commons/Drawer'
+import { UserServiceInstance } from 'services/UserService'
+
+// * Copiamos y pegamos esta definición, ya que entra con la de Location de NodeJS
+/**
+ * @typedef {Object} Location
+ * @property {number} Codigo
+ * @property {string} Localidad
+ * @property {string} Inactiva
+ */
+// * Copiamos y pegamos esta definición, ya que entra con la de Location de Commitlint
+/**
+ * @typedef {Object} User
+ * @property {number} Id
+ * @property {string} UserCode
+ * @property {string} Email
+ * @property {number} NoEmpleado
+ * @property {number} Level
+ * @property {number} Clase
+ * @property {string} Nombre
+ * @property {string} Apellidos
+ * @property {string} UserSAP
+ * @property {number} IdGrupo
+ * @property {string} NombreGrupo
+ * @property {string} Rol
+ * @property {number} idProyect
+ * @property {string | null} PasswordSAP
+ * @property {string | null} DefaultReposicion
+ */
 
 /**
  * @param props
@@ -22,23 +50,25 @@ import Drawer from 'components/commons/Drawer'
 const Users = (props) => {
 	const service = configuratorService()
 	const sendNotification = useNotification()
-	const [users, setUsers] = useState([])
-	const [groups, setGroups] = useState([])
-	const [selectedUser, setSelectedUser] = useState({})
-	const [userDetails, setUserDetail] = useState({})
-	const [showModal, setShowModal] = useToggle()
-	const [showRetrieve, setShowRetrieve] = useToggle()
+	const [users, setUsers] = useState(/** @type {Array<User>} */[])
+	const [groups, setGroups] = useState(/** @type {Array<UserGroup>} */[])
+	const [selectedUser, setSelectedUser] = useState(/** @type {UserDetail} */ {})
+	const [userDetails, setUserDetail] = useState(/** @type {UserDetail} */ {})
+	const [showModal, setShowModal] = useToggle(false)
+	const [showRetrieve, setShowRetrieve] = useToggle(false)
 	const confirmModalRef = useRef(null)
 	const [digitalGroups, setDigitalGroups] = useState([])
-	const [locations, setLocations] = useState([])
-	const [shops, setShops] = useState([])
-	const [userShops, setUserShops] = useState([])
-	const [sapUsers, setSapUsers] = useState([])
+	const [locations, setLocations] = useState(/** @type {Array<Location>} */ [])
+	const [shops, setShops] = useState(/** @type {Array<Store>} */ [])
+	const [userShops, setUserShops] = useState(/** @type {Array<Store>} */ [])
+	const [sapUsers, setSapUsers] = useState(/** @type {Array<SAPUser>} */ [])
+  const [reportsCatalog, setReportsCatalog] = useState(/** @type {Array<ReportsCatalog>}  */[])
 
 	const handleSelect = async (item) => {
 		setSelectedUser(item)
 		try {
 			const response = await service.getUserDetail(item.Id)
+      console.log(response)
 			setUserDetail(response)
 			const responseShops = await service.getUserShops(item.Id)
 			setUserShops(responseShops.tiendas)
@@ -51,8 +81,8 @@ const Users = (props) => {
 	}
 
 	const handleAddButton = () => {
-		setSelectedUser({})
-		setUserDetail({})
+		setSelectedUser(/** @type {UserDetail} */ {})
+		setUserDetail(/** @type {UserDetail} */ {})
 		setShowModal()
 	}
 
@@ -133,6 +163,12 @@ const Users = (props) => {
 		}
 	}
 
+	/**
+	 *
+	 * @param {number} id
+	 * @param {SetUserShopBody} body
+	 * @returns {Promise<void>}
+	 */
 	const setShopsToUser = async (id, body) => {
 		try {
 			console.log(id)
@@ -153,12 +189,14 @@ const Users = (props) => {
 				const digitalGroupsResponse = await service.getGruposDigitalizacion()
 				const { Localidades, Tiendas } = await service.getLocalities()
 				const sapUserResponse = await service.getSAPUsers()
+        const reportsCatalog = await UserServiceInstance.getCatalogReport({ Tipo: 'Reposicion' })
 				setUsers(userResponse)
 				setGroups(groupResponse)
 				setDigitalGroups(digitalGroupsResponse)
 				setLocations(Localidades)
 				setShops(Tiendas)
 				setSapUsers(sapUserResponse)
+        setReportsCatalog(reportsCatalog)
 			} catch (error) {
 				sendNotification({
 					type: 'ERROR',
@@ -229,6 +267,7 @@ const Users = (props) => {
 					shops={shops}
 					setShopsToUser={setShopsToUser}
 					userShops={userShops}
+          reportsCatalog={reportsCatalog}
 				/>
 			</Drawer>
 

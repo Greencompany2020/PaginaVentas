@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useField, FieldHookConfig } from 'formik'
 import Image from 'next/image'
 import { EyeIcon, EyeOffIcon } from '@heroicons/react/outline'
-import { useDropzone } from 'react-dropzone'
 
 export const TextInput = ({ label, ...props }) => {
 	const [field, meta] = useField(props)

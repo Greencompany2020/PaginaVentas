@@ -1,4 +1,4 @@
-import { getBaseLayout } from '../../components/layout/BaseLayout'
+import { getBaseLayout } from 'components/layout/BaseLayout'
 import withAuth from '../../components/withAuth'
 import useToggle from '../../hooks/useToggle'
 import Dropzone from '../../components/dropzone'
@@ -6,12 +6,12 @@ import Avatar from '../../components/commons/Avatar'
 import { FormModal } from '../../components/modals'
 import VerifyHolder from '../../components/commons/VerifyHolder'
 import ConfigurationItems from '../../containers/profile/ConfigurationItems'
-import userService from '../../services/userServices'
-import { useNotification } from '../../components/notifications/NotificationsProvider'
+import { useNotification } from 'components/notifications/NotificationsProvider'
 import LoaderComponentBas from '../../components/LoaderComponentBas'
 import { useSelector, useDispatch } from 'react-redux'
-import { setUser } from '../../redux/reducers/userSlice'
-import { handleProgress } from '../../redux/actions/notificationSystem'
+import { setUser } from 'redux/reducers/userSlice'
+import { handleProgress } from 'redux/actions/notificationSystem'
+import { UserServiceInstance } from 'services/UserService'
 
 /**
  * Componente de perfil de usuario
@@ -19,6 +19,9 @@ import { handleProgress } from '../../redux/actions/notificationSystem'
  * @constructor
  */
 const Perfil = () => {
+  /**
+   * @type {UserData}
+   */
 	const user = useSelector((state) => state.user)
 	const dispatch = useDispatch()
 	const progress = handleProgress()
@@ -26,13 +29,12 @@ const Perfil = () => {
 	const [visible, setVisible] = useToggle(false)
 	const sendNotification = useNotification()
 	const [isLoading, setLoading] = useToggle(false)
-	const service = userService()
 
 	const handleUploadImage = async (files) => {
 		setVisible()
 		setLoading()
 		try {
-			const response = await service.updateUserAvatar(files, progress.handle)
+			const response = await UserServiceInstance.updateUserAvatar(files, progress.handle)
 			dispatch(setUser(response))
 		} catch (error) {
 			sendNotification({
@@ -47,7 +49,7 @@ const Perfil = () => {
 	const handleRequestNewPassword = async () => {
 		setLoading()
 		try {
-			await service.requestPasswordReset({ email: user?.Email })
+			await UserServiceInstance.requestPasswordReset({ email: user?.Email })
 			sendNotification({
 				type: 'OK',
 				message: 'Se ha enviado un link a su correo'
@@ -116,7 +118,7 @@ const Perfil = () => {
 									<label htmlFor="">Level</label>
 									<input
 										type="text"
-										placeholder={user?.Level}
+										placeholder={user?.Level?.toString()}
 										className="outline-none border-2 h-10 rounded-md pl-3 placeholder:text-md  placeholder:font-semibold"
 										disabled
 									/>
@@ -126,7 +128,7 @@ const Perfil = () => {
 									<label htmlFor="">Clase</label>
 									<input
 										type="text"
-										placeholder={user?.Clase}
+										placeholder={user?.Clase?.toString()}
 										className="outline-none border-2 h-10 rounded-md pl-3 placeholder:text-md  placeholder:font-semibold"
 										disabled
 									/>

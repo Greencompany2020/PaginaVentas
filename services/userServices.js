@@ -124,6 +124,26 @@ export default function userService() {
 		}
 	}
 
+  /**
+   * @typedef {Object} UpdateGlobalParameters
+   * @property {number} favoriteAccess
+   * @property {string | undefined} confirmShippingList
+   * @property {string | undefined} confirmPackingList
+   * @property {string | undefined} tipoTraspasos
+   */
+  /**
+   * @typedef {Object} UserGlobalParameters
+   * @property {number} idAcceso El Acceso configurado como default (favorito)
+   * @property {string} point Ruta del acceso
+   * @property {string} confirmGlobalShippingList
+   * @property {string} confirmGlobalPackingList
+   * @property {number} tipoTraspasos
+   */
+
+  /**
+   * @param {UpdateGlobalParameters} body
+   * @returns {Promise<UserGlobalParameters>}
+   */
 	const updateGlobalParameters = async (body) => {
 		try {
 			await configuradorProvider.post('user/dashboards/parameters/globals', body)
