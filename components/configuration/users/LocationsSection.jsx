@@ -41,8 +41,9 @@ export const LocationsSection = ({ item, locality, shops }) => {
 										id={shop.codigo}
 										name={`[shops.${shop.codigo}]`}
 										label={shop.codigo}
-										disabled={!item}
+										//disabled={!item}
 									/>
+                  {item}
 								</li>
 							))
 						: null}
