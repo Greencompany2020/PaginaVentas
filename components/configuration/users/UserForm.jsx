@@ -134,7 +134,6 @@ export default function UserForm({
 	}
 
 	const handleOnSubmit = async (values, { resetForm }) => {
-    console.log(values)
 		const { idGrupoDigital, localidades, shops, ...rest } = values
 		const localitities = getIdFromLocations(localidades)
 
