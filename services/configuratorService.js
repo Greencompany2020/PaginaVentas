@@ -145,7 +145,7 @@ export default function configuratorService() {
 			const response = await getAccess()
 			const { Accesos, ...usuario } = data
 			const formatedData = replaceAccess(response, Accesos)
-			console.log(data)
+
       /** @type {UserDetail} */
 			const newData = {
 				usuario,

@@ -87,8 +87,8 @@ export default function UserForm({
 		idGrupo: item?.IdGrupo || groups[0]?.Id,
 		idGrupoDigital: item?.IdGrupoDigitalizacion || 0,
 		localidades: getUserLocations(),
-		UserSAP: item?.UserSAP || 'null',
-		PasswordSAP: item?.PasswordSAP || 'null',
+		UserSAP: item?.UserSAP || '',
+		PasswordSAP: item?.PasswordSAP || '',
 		DefaultReposicion: item?.DefaultReposicion ?? 1,
 		parametros: {
 			confirmShippingList: item?.Parametros?.confirmShippingList || ConfirmOptions.CONFIRMAR_BULTO,
@@ -109,8 +109,16 @@ export default function UserForm({
 		Nombre: Yup.string().required('Requerido'),
 		Apellidos: Yup.string().required('Requerido'),
 		password: !item && Yup.string().required('Requerido'),
-		idGrupo: Yup.number().transform((v) => parseInt(v))
-	})
+		idGrupo: Yup.number().transform((v) => parseInt(v)),
+    UserSAP: Yup.string().ensure().when(['PasswordSAP'],{
+      is: (PasswordSAP) => PasswordSAP,
+      then: Yup.string().required('Es necesario elegir un usuario de SAP')
+    }),
+    PasswordSAP: Yup.string().ensure().when('UserSAP', {
+      is: (UserSAP) => UserSAP,
+      then: Yup.string().required('Es necesario agregar una contraseña')
+    })
+	}, [['UserSAP', 'PasswordSAP']])
 
 	const getIdFromLocations = (data) => {
 		let places = []
@@ -138,7 +146,7 @@ export default function UserForm({
 		const localitities = getIdFromLocations(localidades)
 
 		if (item) {
-			const { password, ...params } = rest
+			const { password,...params } = rest
 			const body = { ...params, localidades: localitities, idProyect: 1 }
 			await updateUser(item?.Id, body)
 			await addUserToGroup({
@@ -209,7 +217,7 @@ export default function UserForm({
 
 				<fieldset className="mt-4">
 					<SelectInput label="Usuario sap" name="UserSAP">
-						<option value={'null'}>Elegir usuarios</option>
+						<option value={''}>Seleccionar usuario</option>
 						{sapUsers && sapUsers.map((item) => <option key={item.UserCode}>{item.UserCode}</option>)}
 					</SelectInput>
 				</fieldset>

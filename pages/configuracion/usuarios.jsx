@@ -68,7 +68,6 @@ const Users = (props) => {
 		setSelectedUser(item)
 		try {
 			const response = await service.getUserDetail(item.Id)
-      console.log(response)
 			setUserDetail(response)
 			const responseShops = await service.getUserShops(item.Id)
 			setUserShops(responseShops.tiendas)
@@ -171,7 +170,6 @@ const Users = (props) => {
 	 */
 	const setShopsToUser = async (id, body) => {
 		try {
-			console.log(id)
 			await service.setUserLocalityShop(id, body)
 		} catch (error) {
 			sendNotification({
