@@ -1,4 +1,6 @@
-export default function comGrupo(titles, rows, years){
+export default function comGrupo(titles, rows, years, incremento){
+	const percentageYear = incremento === 'compromiso' ? years[0] : years[1]
+	console.log(percentageYear)
     const getColumns = () => {
         const columns = [
             {
@@ -73,7 +75,7 @@ export default function comGrupo(titles, rows, years){
                     cell:'G2',
                 },
             ] : [],
-           
+
 
             {
                 value:years[0],
@@ -101,7 +103,7 @@ export default function comGrupo(titles, rows, years){
                     cell:'M2',
                 },
             ] : [],
-          
+
 
             {
                 value:years[0],
@@ -137,7 +139,7 @@ export default function comGrupo(titles, rows, years){
                     cell:'U2',
                 },
             ] : [],
-           
+
 
             {
                 value:years[0],
@@ -173,7 +175,7 @@ export default function comGrupo(titles, rows, years){
                     cell:'AC2',
                 },
             ] : []
-            
+
         ]
 
         return columns.flat(1);
@@ -187,14 +189,14 @@ export default function comGrupo(titles, rows, years){
                     ventasActual: item['ventasActuales' + years[0]] || 0,
                     ventasAnterior: item['ventasActuales' + years[1]] || 0,
                     presupuesto: item['presupuesto' + years[0]] || 0,
-                    porcentaje: item['porcentaje' + years[0]],
+                    porcentaje: item['porcentaje' + percentageYear],
                     ...(years[2]) && {ventasAdicional: item['ventasActuales' + years[2]]},
                     ...(years[2]) && {porcentajeAdicional: item['porcentaje' + years[2]]},
 
                     ventasSemanal: item['ventasSemanalesActual' + years[0]] || 0,
                     ventasSemanalAnterior: item['ventasSemanalesActual' + years[1]] || 0,
                     presupuestoSemanal: item['presupuestoSemanal' + years[0]] || 0,
-                    porcentajeSemanal: item['porcentajeSemanal' + years[0]],
+                    porcentajeSemanal: item['porcentajeSemanal' + percentageYear],
                     ...(years[2]) && {ventasSemanalAdicional: item['ventasSemanalesActual' + years[2]] || 0},
                     ...(years[2]) && {porcentajeSemanalAdicional: item['porcentajeSemanal' + years[2]] || 0},
 
@@ -202,7 +204,7 @@ export default function comGrupo(titles, rows, years){
                     ventasMensualAnterior: item['ventasMensualesActual' + years[1]] || 0,
                     presupuestoMensual: item['presupuestoMensual' + years[0]] || 0,
                     diferenciaMensual: item['diferenciaMensual' + years[1]] || item['diferenciaMensual'],
-                    porcentajeMensual: item['porcentajeMensual' + years[0]],
+                    porcentajeMensual: item['porcentajeMensual' + percentageYear],
                     ...(years[2]) && {ventasMensualAdicional: item['ventasMensualesActual' + years[2]] || 0},
                     ...(years[2]) && {diferenciaMensualAdicional: item['diferenciaMensual' + years[2]] || 0},
                     ...(years[2]) && {porcentajeMensualAdicional: item['porcentajeMensual' + years[2]] || 0},
@@ -211,12 +213,12 @@ export default function comGrupo(titles, rows, years){
                     ventasAnualAnterior: item['ventasAnualActual' + years[1]] || 0,
                     presupuestoAnual: item['presupuestoAnual' + years[0]] || 0,
                     diferenciaAnual: item['diferenciaAnual' + years[1]] || item['diferenciaAnual'],
-                    porcentajeAnual: item['porcentajeAnual' + years[0]] || 0,
+                    porcentajeAnual: item['porcentajeAnual' + percentageYear] || 0,
                     ...(years[2]) && {ventasAnualAdicional: item['ventasAnualActual' + years[2]] || 0},
                     ...(years[2]) && {diferenciaAnualAdicional: item['diferenciaAnual' + years[2]] || 0},
                     ...(years[2]) && {porcentajeAnualAdicional: item['porcentajeAnual' + years[2]] || 0},
 
-                    
+
                 }));
 
             });
