@@ -37,23 +37,25 @@ const Acumulado = (props) => {
   const [reportDate, setReportDate] = useState({current:getCurrentDate(true) , dateRange:spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)});
   const [endWeek, setEndWeek] = useState( parseNumberToBoolean(config?.incluirFinSemanaAnterior || 0));
   const [isDisable, setIsDisable] = useState(isSecondDateBlock(config?.cbAgnosComparar || 1));
+	const [incremento, setIncremento] = useState(config?.incremento || 'compromiso')
 
   const parameters = {
     fecha: getCurrentDate(true),
     conIva: parseNumberToBoolean(config?.conIva || 0),
-    conVentasEventos: parseNumberToBoolean(config?.conVentasEventos,0),
+    conVentasEventos: parseNumberToBoolean(config?.conVentasEventos ?? 0),
     incluirFinSemanaAnterior: parseNumberToBoolean(config?.incluirFinSemanaAnterior || 0),
     resultadosPesos:parseNumberToBoolean(config?.resultadosPesos || 0),
     incremento: config?.incremento || 'compromiso',
     mostrarTiendas: config?.mostrarTiendas || 'activas',
     tipoCambioTiendas: parseNumberToBoolean(config?.tipoCambioTiendas || 0),
     agnosComparar: spliteArrDate(config?.agnosComparativos, config?.cbAgnosComparar || 1),
-    cbAgnosComparar: config?.cbAgnosComparar || 1, 
+    cbAgnosComparar: config?.cbAgnosComparar || 1,
   }
 
   const handleSubmit = async values => {
     try {
       const params = removeParams(values);
+			setIncremento(values.incremento)
       const response = await getSemanaSantaAcumulado(parseParams(params));
       setReportDate(prev => ({...prev, current:values.fecha}))
       setEndWeek(values.incluirFinSemanaAnterior);
@@ -85,6 +87,16 @@ const Acumulado = (props) => {
 
   }
 
+	/**
+	 * @param currentYear {string}
+	 * @param comparissonYear {string}
+	 * @param incremento {string}
+	 * @returns {string}
+	 */
+	const getPercentageYear = (currentYear, comparissonYear, incremento) => {
+		return incremento === 'compromiso' ? currentYear : comparissonYear
+	}
+
   return (
     <div className=" flex flex-col h-full">
       <TitleReport title={`Ventas Semana Santa del año ${getYearFromDate(reportDate.current || new Date().getFullYear)}`}/>
@@ -112,7 +124,7 @@ const Acumulado = (props) => {
                     name:'agnosComparar[1]',
                     label:'Segundo año',
                     disabled: isDisable
-                  }}  
+                  }}
                 />
                 <Select id='incremento' name='incremento' label='Formular % de incremento'>
                   {
@@ -208,7 +220,9 @@ const Acumulado = (props) => {
                         <td>{numberWithCommas(item['ventaActual'+ getYearFromDate(reportDate.current)])}</td>
                         <td>{numberWithCommas(item['ventaActual'+ reportDate.dateRange[0]])}</td>
                         <td>{numberWithCommas(item['presupuesto'+ getYearFromDate(reportDate.current)])}</td>
-                        <td data-porcent-format={isNegative(item['porcentaje'+ getYearFromDate(reportDate.current)])}>{numberAbs(item['porcentaje'+ getYearFromDate(reportDate.current)])}</td>
+                        <td data-porcent-format={
+													isNegative(item['porcentaje'+ getPercentageYear(getYearFromDate(reportDate.current), reportDate.dateRange[0], incremento)])
+												}>{numberAbs(item['porcentaje'+ getPercentageYear(getYearFromDate(reportDate.current), reportDate.dateRange[0], incremento)])}</td>
                         {reportDate.dateRange[1] &&
                           <React.Fragment key={v4()}>
                             <td>{numberWithCommas(item['ventaActual'+ reportDate.dateRange[1]])}</td>
@@ -239,7 +253,9 @@ const Acumulado = (props) => {
                         <td>{numberWithCommas(item['ventaAcumuladaActual'+ getYearFromDate(reportDate.current)])}</td>
                         <td>{numberWithCommas(item['ventaAcumuladaActual'+ reportDate.dateRange[0]])}</td>
                         <td>{numberWithCommas(item['presupuestoAcumulado'+ getYearFromDate(reportDate.current)])}</td>
-                        <td data-porcent-format={isNegative(item['porcentajeAcumulado'+ reportDate.dateRange[0]])}>{numberAbs(item['porcentajeAcumulado'+ reportDate.dateRange[0]])}</td>
+                        <td data-porcent-format={
+													isNegative(item['porcentajeAcumulado'+ getPercentageYear(getYearFromDate(reportDate.current), reportDate.dateRange[0], incremento)])
+												}>{numberAbs(item['porcentajeAcumulado'+ getPercentageYear(getYearFromDate(reportDate.current), reportDate.dateRange[0], incremento)])}</td>
                         {reportDate.dateRange[1] &&
                           <React.Fragment key={v4()}>
                             <td>{numberWithCommas(item['ventaAcumuladaActual'+ reportDate.dateRange[1]])}</td>

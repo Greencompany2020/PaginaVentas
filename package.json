@@ -5,6 +5,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "doppler:dev": "doppler run -- npm run dev",
     "lint": "next lint",
     "build:prod": "env-cmd -f .env.production npm run build",
     "prepare": "husky",
