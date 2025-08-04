@@ -12,12 +12,12 @@ parameters:
     default: ventas-site
 
 executors:
-  machine-executor:
-    machine:
-      image: ubuntu-2004:202010-01
   docker-publisher:
     docker:
-      - image: cimg/base:2021.04
+      - image: cimg/base:2024.10
+  machine-executor:
+    machine:
+      image: ubuntu-2204:2024.05.1
 
 jobs:
   build:
@@ -45,7 +45,7 @@ jobs:
     executor: docker-publisher
     steps:
       - setup_remote_docker:
-          version: 20.10.14
+          docker_layer_caching: true
       - attach_workspace:
           at: /tmp/workspace
       - run:

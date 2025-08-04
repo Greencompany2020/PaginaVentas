@@ -36,7 +36,7 @@ function Grupo(props) {
   const sendNotification = useNotification();
   const dateHelper = DateHelper();
 
-  
+
   //Estados de los reportes
   const [dataReport, setDataReport] = useState(null);
   const [reportDate, setReportDate] = useState({current: dateHelper.getYesterdayDate(),  dateRange:spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)});
@@ -48,7 +48,7 @@ function Grupo(props) {
   const [seccions, setSeccions] = useState(["REGION I", "REGION II", "REGION III", "WEB", "TOTAL"]);
   const [currentRegion, setCurrentRegion] = useState(seccions[0]);
   const [displayMode, setDisplayMode] = useState((isMobile ? config?.mobileReportView : config?.desktopReportView));
- 
+  const [incremento, setIncremento] = useState('compromiso')
 
 
   const parameters = {
@@ -67,7 +67,8 @@ function Grupo(props) {
 
   const handleSubmit = async values => {
     try {
-      const params = removeParams(values);
+      const params = removeParams(values)
+      setIncremento(values.incremento)
       const response = await getComparativoGrupo(parseParams(params));
       setDataReport(response);
       setDataReportSeccions(spliceByRegion(response));
@@ -178,10 +179,10 @@ function Grupo(props) {
               </Formik>
             </Parameters>
           </ParametersContainer>
-          <ViewFilter 
-            viewOption={displayMode} 
-            handleView={setDisplayMode} 
-            selectOption={currentRegion} 
+          <ViewFilter
+            viewOption={displayMode}
+            handleView={setDisplayMode}
+            selectOption={currentRegion}
             handleSelect = {setCurrentRegion}
             options={seccions}
           />
@@ -199,7 +200,7 @@ function Grupo(props) {
             (() => {
               switch (displayMode) {
                 case 1:
-                  return <Table data={dataReport} date={reportDate} includeSem={includeSem} />
+                  return <Table data={dataReport} date={reportDate} includeSem={includeSem} incremento={incremento} />
                 case 2:
                   return <Stat data={dataReport} date={reportDate} includeSem={includeSem} />
                 case 3:
@@ -207,7 +208,7 @@ function Grupo(props) {
                 case 4:
                   return <TableMovil data={dataReport} date={reportDate} includeSem={includeSem} />
                 default:
-                  return <Table data={dataReport} date={reportDate} includeSem={includeSem} />
+                  return <Table data={dataReport} date={reportDate} includeSem={includeSem} incremento={incremento} />
               }
             })()
           }
@@ -219,8 +220,18 @@ function Grupo(props) {
 
 
 const Table = props => {
-  const { date, data, includeSem } = props;
+  const { date, data, includeSem, incremento } = props;
   const dateHelper = DateHelper();
+
+  /**
+   * @param currentYear {number}
+   * @param comparissonYear {number}
+   * @param incremento {string}
+   * @returns {number}
+   */
+  const getPercentageYear = (currentYear, comparissonYear, incremento) => {
+    return incremento === 'compromiso' ? currentYear : comparissonYear
+  }
 
   return (
     <div className="space-y-8">
@@ -259,14 +270,14 @@ const Table = props => {
                       <th>PPTO.</th>
                       <th>%</th>
                       {
-                        date.dateRange[1] && 
+                        date.dateRange[1] &&
                         <React.Fragment key={v4()}>
                           <th>{date.dateRange[1]}</th>
                           <th>%</th>
                         </React.Fragment>
                       }
                     </React.Fragment>
-                  
+
                   }
 
                   <th>{dateHelper.getCurrentYear(date.current)}</th>
@@ -306,9 +317,11 @@ const Table = props => {
                       <td className="priority-cell">{ numberWithCommas(item['ventasActuales' + dateHelper.getCurrentYear(date.current)])}</td>
                       <td>{ numberWithCommas(item['ventasActuales' + date.dateRange[0]])}</td>
                       <td>{ numberWithCommas(item['presupuesto' + dateHelper.getCurrentYear(date.current)])}</td>
-                      <td data-porcent-format={isNegative(item['porcentaje' + dateHelper.getCurrentYear(date.current)])}>{ numberAbs(item['porcentaje' + dateHelper.getCurrentYear(date.current)])}</td>
+                      <td data-porcent-format={
+                        isNegative(item['porcentaje' + getPercentageYear(dateHelper.getCurrentYear(date.current), date.dateRange[0], incremento)])
+                      }>{ numberAbs(item['porcentaje' + getPercentageYear(dateHelper.getCurrentYear(date.current), date.dateRange[0], incremento)])}</td>
                       {
-                        date.dateRange[1]  && 
+                        date.dateRange[1]  &&
                         <React.Fragment key={v4()}>
                           <td className="priority-cell">{ numberWithCommas(item['ventasActuales' + date.dateRange[1]])}</td>
                           <td data-porcent-format={isNegative(item['porcentaje' +date.dateRange[1]])}>{ numberAbs(item['porcentaje' +date.dateRange[1]])}</td>
@@ -321,7 +334,8 @@ const Table = props => {
                           <td className="priority-cell">{ numberWithCommas(item['ventasSemanalesActual' + dateHelper.getCurrentYear(date.current)])}</td>
                           <td>{ numberWithCommas(item['ventasSemanalesActual' + date.dateRange[0]])}</td>
                           <td>{ numberWithCommas(item['presupuestoSemanal' + dateHelper.getCurrentYear(date.current)])}</td>
-                          <td data-porcent-format={isNegative(item['porcentajeSemanal' + dateHelper.getCurrentYear(date.current)])}>{ numberAbs(item['porcentajeSemanal' + dateHelper.getCurrentYear(date.current)])}</td>
+                          <td data-porcent-format={isNegative(item['porcentajeSemanal' + getPercentageYear(dateHelper.getCurrentYear(date.current), date.dateRange[0], incremento)])
+                          }>{ numberAbs(item['porcentajeSemanal' + getPercentageYear(dateHelper.getCurrentYear(date.current), date.dateRange[0], incremento)])}</td>
                           {
                             date.dateRange[1] &&
                             <React.Fragment key={v4()}>
@@ -335,12 +349,13 @@ const Table = props => {
                       <td className="priority-cell">{ numberWithCommas(item['ventasMensualesActual' + dateHelper.getCurrentYear(date.current)])}</td>
                       <td>{ numberWithCommas(item['ventasMensualesActual' + date.dateRange[0]])}</td>
                       <td>{ numberWithCommas(item['presupuestoMensual' + dateHelper.getCurrentYear(date.current)])}</td>
-                      <td 
+                      <td
                         data-porcent-format={isNegative(item['diferenciaMensual' + date.dateRange[0]] || item['diferenciaMensual'])}
                       >
                         { numberAbsComma(item['diferenciaMensual' + date.dateRange[0]] || item['diferenciaMensual'])}
                       </td>
-                      <td data-porcent-format={isNegative(item['porcentajeMensual' + dateHelper.getCurrentYear(date.current)])}>{numberAbs(item['porcentajeMensual' + dateHelper.getCurrentYear(date.current)])}</td>
+                      <td data-porcent-format={isNegative(item['porcentajeMensual' + getPercentageYear(dateHelper.getCurrentYear(date.current), date.dateRange[0], incremento)])
+                      }>{numberAbs(item['porcentajeMensual' + getPercentageYear(dateHelper.getCurrentYear(date.current), date.dateRange[0], incremento)])}</td>
                       {
                         date.dateRange[1] &&
                         <React.Fragment key={v4()}>
@@ -353,12 +368,14 @@ const Table = props => {
                       <td className="priority-cell">{numberWithCommas(item['ventasAnualActual' + dateHelper.getCurrentYear(date.current)])}</td>
                       <td>{numberWithCommas(item['ventasAnualActual' + date.dateRange[0]])}</td>
                       <td>{numberWithCommas(item['presupuestoAnual' + dateHelper.getCurrentYear(date.current)])}</td>
-                      <td 
+                      <td
                         data-porcent-format={isNegative(item['diferenciaAnual' + date.dateRange[0]] || item['diferenciaAnual'])}
                       >
                         {numberAbsComma(item['diferenciaAnual' + date.dateRange[0]] || item['diferenciaAnual'])}
                       </td>
-                      <td data-porcent-format={isNegative(item['porcentajeAnual' + dateHelper.getCurrentYear(date.current)])}>{numberAbs(item['porcentajeAnual' + dateHelper.getCurrentYear(date.current)])}</td>
+                      <td data-porcent-format={
+                        isNegative(item['porcentajeAnual' + getPercentageYear(dateHelper.getCurrentYear(date.current), date.dateRange[0], incremento)])
+                      }>{numberAbs(item['porcentajeAnual' + getPercentageYear(dateHelper.getCurrentYear(date.current), date.dateRange[0], incremento)])}</td>
                       {
                         date.dateRange[1] &&
                         <React.Fragment key={v4()}>
@@ -504,7 +521,7 @@ const TableMovil = props => {
                         <td className="priority-cell">{numberWithCommas(item['ventasMensualesActual' + dateHelper.getCurrentYear(date.current)])}</td>
                         <td>{numberWithCommas(item['ventasMensualesActual' + date.dateRange[0]])}</td>
                         <td>{numberWithCommas(item['presupuestoMensual' + dateHelper.getCurrentYear(date.current)])}</td>
-                        <td 
+                        <td
                           data-porcent-format={isNegative(item['diferenciaMensual' + date.dateRange[0]] || item['diferenciaMensual'])}
                         >
                           {numberAbsComma(item['diferenciaMensual' + date.dateRange[0]] || item['diferenciaMensual'])}
@@ -552,7 +569,7 @@ const TableMovil = props => {
                         <td className="priority-cell">{numberWithCommas(item['ventasAnualActual' + dateHelper.getCurrentYear(date.current)])}</td>
                         <td>{numberWithCommas(item['ventasAnualActual' + date.dateRange[0]])}</td>
                         <td>{numberWithCommas(item['presupuestoAnual' + dateHelper.getCurrentYear(date.current)])}</td>
-                        <td 
+                        <td
                           data-porcent-format={isNegative(item['diferenciaAnual' + date.dateRange[0]] || item['diferenciaAnual'])}
                         >
                           {numberAbsComma(item['diferenciaAnual' + date.dateRange[0]] || item['diferenciaAnual'])}
@@ -758,10 +775,10 @@ const StatGroup = props => {
   const dateHelper = DateHelper();
 
   if(data && data.hasOwnProperty(region)){
-    const acumDia = [];
-    const acumSem = [];
-    const acumMes = [];
-    const acumAnual = [];
+    let acumDia = [];
+    let acumSem = [];
+    let acumMes = [];
+    let acumAnual = [];
 
     if(region !== 'TOTAL'){
       data[region].forEach(item =>{
@@ -1124,7 +1141,7 @@ const StatGroup = props => {
       })
     }
 
-  
+
   }
   return(
     <></>
