@@ -27,6 +27,17 @@ import ExcelButton from "../../components/buttons/ExcelButton";
 import exportExcel from "../../utils/excel/exportExcel";
 import semTiendas from "../../utils/excel/templates/semTiendas";
 
+const getPercentageYear = (currentYear, comparisonYear, dateRange, incremento) => {
+	// En el caso de que se estén comparando 2 años, si el año de comparación
+	// es el último elemento del array, usamos el propio año para acceder al porcentaje.
+	const yearIndex = dateRange.indexOf(comparisonYear);
+	if (dateRange.length === 2 && yearIndex === 1) return comparisonYear
+	// En cambio, si el año a comparar es el único elemento del array,
+	// checamos el tipo de incremento para acceder al porcentaje correspondiente.
+	return incremento === 'compromiso' ? currentYear : comparisonYear
+}
+
+
 const Tiendas = (props) => {
   const {config} = props;
   const sendNotification = useNotification();
@@ -34,9 +45,10 @@ const Tiendas = (props) => {
 
   //Estados de los reportes
   const [beginDate, endDate] = getCurrentWeekDateRange();
-  const [reportDate, setReportDate] = useState({beginDate, endDate, dateRange:spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)});
+  const [reportDate, setReportDate] = useState({ beginDate, endDate, dateRange: spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)});
   const [dataReport, setDataReport] = useState(null);
   const [isDisable, setIsDisable] = useState(isSecondDateBlock(config?.cbAgnosComparar || 1));
+	const [incremento, setIncremento] = useState('compromiso')
 
   //Estado del reporte por secciones;
   const [dataReportSeccions, setDataReportSeccions] = useState(null);
@@ -56,12 +68,13 @@ const Tiendas = (props) => {
     mostrarTiendas: config?.cbMostrarTiendas || 'activas',
     agnosComparar: spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1),
     tipoCambioTiendas: config?.tipoCambioTiendas || 0,
-    cbAgnosComparar: config?.cbAgnosComparar || 1, 
+    cbAgnosComparar: config?.cbAgnosComparar || 1,
   }
   Object.seal(parameters);
 
   const handleSubmit = async values =>{
     try {
+			setIncremento(values.incremento);
       const params = removeParams(values);
       const response = await getSemanalesTiendas(parseParams(params));
       sliceForRegion(response, params.tiendas);
@@ -76,31 +89,36 @@ const Tiendas = (props) => {
   }
 
   const removeParams = params => {
-    if(params.cbAgnosComparar == 1){
-      const {cbAgnosComparar, agnosComparar:[a], ...rest} = params;
-      setReportDate(prev => ({...prev, dateRange:[a]}));
+    if(params.cbAgnosComparar === 1){
+      const { cbAgnosComparar, agnosComparar: [a], fechaInicio, fechaFin, ...rest} = params;
+      setReportDate(prev => ({ ...prev, dateRange: [a], beginDate: fechaInicio, endDate: fechaFin }));
       setIsDisable(isSecondDateBlock(cbAgnosComparar));
-      return {...rest, agnosComparar:[a]}
+      return {...rest, agnosComparar:[a], fechaFin, fechaInicio }
     }else{
-      const {cbAgnosComparar, ...rest} = params;
-      setReportDate(prev => ({...prev, dateRange:params.agnosComparar}));
+      const { cbAgnosComparar, fechaInicio, fechaFin, ...rest} = params;
+      setReportDate((prev) => ({ ...prev, dateRange: params.agnosComparar, beginDate: fechaInicio, endDate: fechaFin }))
       setIsDisable(isSecondDateBlock(cbAgnosComparar));
-      return rest;
+      return {
+				...rest,
+				agnosComparar: params.agnosComparar,
+				fechaFin,
+				fechaInicio,
+			};
     }
   }
 
-  const sliceForRegion = async(data,tiendas) =>{
+  const sliceForRegion = (data,tiendas) =>{
 
     let dataSeccions;
-    if(tiendas == 0){
+    if(tiendas === 0){
       setCurrentShop('Frogs');
       dataSeccions = ['REGION I', 'REGION II', 'REGION III', 'GRUPO'];
     }
-    else if(tiendas == 2){
+    else if(tiendas === 2){
       setCurrentShop('Skoro');
       dataSeccions = ['SK MAZATLAN', 'SK CULIACAN', 'SK MEXICALI', 'SK CHIHUAHUA', 'SK TIJUANA', 'SIN REGION', 'GRUPO', ];
     }
-    else if(tiendas == 3){
+    else if(tiendas === 3){
       setCurrentShop('Web');
       dataSeccions = ['WEB', 'SIN REGION' ,'GRUPO'];
     }
@@ -110,11 +128,12 @@ const Tiendas = (props) => {
     setDataReportSeccions(spliceData(data, dataSeccions));
   }
 
-  const handleExport = () => {
+  const handleExport = (incremento) => {
     const template = semTiendas(
       dateRangeTitle(reportDate.beginDate, reportDate.endDate),
-      dataReport, 
-      [getYearFromDate(reportDate.endDate), reportDate.dateRange].flat(1)
+      dataReport,
+      [getYearFromDate(reportDate.endDate), reportDate.dateRange].flat(1),
+			incremento
     );
     exportExcel('Semanales Tienda', template.getColums(), template.getRows(), template.style);
   }
@@ -148,7 +167,7 @@ const Tiendas = (props) => {
                         name:'fechaFin',
                         label:'Fecha final',
                         placeholder: reportDate.endDate
-                      }}  
+                      }}
                     />
                     <BeetWenYears
                       enabledDates={{
@@ -166,7 +185,7 @@ const Tiendas = (props) => {
                         name:'agnosComparar[1]',
                         label:'Segundo año',
                         disabled: isDisable
-                      }}  
+                      }}
                     />
                     <Select id='incremento' name='incremento' label='Formular % de incremento'>
                       {
@@ -192,17 +211,17 @@ const Tiendas = (props) => {
               </Formik>
             </Parameters>
           </ParametersContainer>
-          <ViewFilter 
-            viewOption={displayMode} 
-            handleView={setDisplayMode} 
-            selectOption={currentRegion} 
+          <ViewFilter
+            viewOption={displayMode}
+            handleView={setDisplayMode}
+            selectOption={currentRegion}
             handleSelect = {setCurrentRegion}
             options={seccions}
           />
         </div>
         <div className="flex justify-between">
           <p className="text-sm font-bold">{currentShop}</p>
-          <ExcelButton handleClick={handleExport} />
+          <ExcelButton handleClick={() => handleExport(incremento)} />
         </div>
       </section>
 
@@ -212,18 +231,18 @@ const Tiendas = (props) => {
           (()=>{
             switch (displayMode) {
               case 1:
-                return <Table data={dataReport} date={reportDate}/>
+                return <Table data={dataReport} date={reportDate} incremento={incremento}/>
 
               case 2:
-                return <Stat data={dataReport} date={reportDate}/>
+                return <Stat data={dataReport} date={reportDate} incremento={incremento} />
 
               case 3:
                 return <StatGroup data={dataReportSeccions} date={reportDate} region={currentRegion}/>
 
               case 4:
-                return <TableMobil data={dataReport} date={reportDate}/>
+                return <TableMobil data={dataReport} date={reportDate} incremento={incremento} />
               default:
-                return <Table data={dataReport} date={reportDate}/>
+                return <Table data={dataReport} date={reportDate} incremento={incremento} />
             }
           })()
         }
@@ -234,8 +253,8 @@ const Tiendas = (props) => {
 };
 
 
-const Table = props => {
-  const {data, date} = props;
+const Table = (props) => {
+  const {data, date, incremento } = props;
 
 
   return(
@@ -243,7 +262,7 @@ const Table = props => {
       <thead>
         <tr>
           <th rowSpan={3} className='text-center'>Plaza</th>
-          <th colSpan={15 + (date.dateRange.length == 2 ? 8 : 0)} className='text-center'>{ dateRangeTitle(date.beginDate, date.endDate)}</th>
+          <th colSpan={15 + (date.dateRange.length === 2 ? 8 : 0)} className='text-center'>{ dateRangeTitle(date.beginDate, date.endDate)}</th>
         </tr>
         <tr>
           <th rowSpan={2}>Comp</th>
@@ -256,9 +275,9 @@ const Table = props => {
               </React.Fragment>
             ))
           }
-          <th colSpan={3 + (date.dateRange.length == 2 ? 3 : 1)}>operaciones</th>
-          <th colSpan={3 + (date.dateRange.length == 2 ? 3 : 1)}>promedios</th>
-          <th colSpan={2 + (date.dateRange.length == 2 ? 3 : 1)}>Articulos Prom.</th>
+          <th colSpan={3 + (date.dateRange.length === 2 ? 3 : 1)}>operaciones</th>
+          <th colSpan={3 + (date.dateRange.length === 2 ? 3 : 1)}>promedios</th>
+          <th colSpan={2 + (date.dateRange.length === 2 ? 3 : 1)}>Articulos Prom.</th>
         </tr>
         <tr>
           <th>Comp</th>
@@ -302,7 +321,9 @@ const Table = props => {
               {
                 date.dateRange.map(year => (
                   <React.Fragment key={v4()}>
-                    <td data-porcent-format={isNegative(item['porcentaje' + year])}>{ numberAbs(item['porcentaje' + year])}</td>
+                    <td data-porcent-format={
+											isNegative(item['porcentaje' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])
+										}>{ numberAbs(item['porcentaje' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])}</td>
                     <td>{ numberWithCommas(item['ventasActuales' + year])}</td>
                   </React.Fragment>
                 ))
@@ -312,7 +333,9 @@ const Table = props => {
               {
                 date.dateRange.map(year => (
                   <React.Fragment key={v4()}>
-                    <td data-porcent-format={isNegative(item['porcentajeOperaciones' + year])}>{numberAbs(item['porcentajeOperaciones' + year])}</td>
+                    <td data-porcent-format={
+											isNegative(item['porcentajeOperaciones' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])
+										}>{numberAbs(item['porcentajeOperaciones' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])}</td>
                     <td>{ numberWithCommas(item['operacionesActual' + year])}</td>
                   </React.Fragment>
                 ))
@@ -322,7 +345,9 @@ const Table = props => {
               {
                 date.dateRange.map(year => (
                   <React.Fragment key={v4()}>
-                    <td data-porcent-format={isNegative(item['porcentajePromedios' + year])}>{ numberAbs(item['porcentajePromedios' + year])}</td>
+                    <td data-porcent-format={
+											isNegative(item['porcentajePromedios' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])
+										}>{ numberAbs(item['porcentajePromedios' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])}</td>
                     <td>{ numberWithCommas(item['promedioActual' + year])}</td>
                   </React.Fragment>
                 ))
@@ -345,8 +370,8 @@ const Table = props => {
 }
 
 const TableMobil = props =>{
-  const {data, date} = props;
-  
+  const {data, date, incremento } = props;
+
   return(
     <>
       <div className="space-y-8">
@@ -505,7 +530,7 @@ const TableMobil = props =>{
 }
 
 const Stat = props => {
-  const { data, date } = props;
+  const { data, date, incremento } = props;
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
       {
@@ -525,7 +550,7 @@ const Stat = props => {
                 [
                   {
                     caption: '%',
-                    value: stringFormatNumber(item['porcentaje' + year])
+                    value: stringFormatNumber(item['porcentaje' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])
                   },
                   {
                     caption: year,
@@ -551,7 +576,7 @@ const Stat = props => {
                 [
                   {
                     caption: '%',
-                    value: stringFormatNumber(item['porcentajeOperaciones' + year])
+                    value: stringFormatNumber(item['porcentajeOperaciones' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])
                   },
                   {
                     caption: year,
@@ -576,7 +601,7 @@ const Stat = props => {
                 [
                   {
                     caption: '%',
-                    value: stringFormatNumber(item['porcentajePromedios' + year])
+                    value: stringFormatNumber(item['porcentajePromedios' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])
                   },
                   {
                     caption: year,
@@ -630,7 +655,7 @@ const Stat = props => {
 }
 
 const StatGroup = props =>{
-  const { data, date, region } = props;
+  const { data, date, region, incremento } = props;
   if(data &&  data.hasOwnProperty(region)){
     const comp = data[region].map(item => (
       {
@@ -648,7 +673,7 @@ const StatGroup = props =>{
             [
               {
                 caption: '%',
-                value: stringFormatNumber(item['porcentaje' + year])
+                value: stringFormatNumber(item['porcentaje' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])
               },
               {
                 caption: year,
@@ -676,7 +701,7 @@ const StatGroup = props =>{
             [
               {
                 caption: '%',
-                value: stringFormatNumber(item['porcentajeOperaciones' + year])
+                value: stringFormatNumber(item['porcentajeOperaciones' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])
               },
               {
                 caption: year,
@@ -704,7 +729,7 @@ const StatGroup = props =>{
             [
               {
                 caption: '%',
-                value: stringFormatNumber(item['porcentajePromedios' + year])
+                value: stringFormatNumber(item['porcentajePromedios' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])
               },
               {
                 caption: year,
