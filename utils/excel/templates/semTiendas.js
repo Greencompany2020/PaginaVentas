@@ -1,4 +1,5 @@
-export default function semTiendas(title, rows, years){
+export default function semTiendas(title, rows, years, incremento){
+		const percentageYear = incremento === 'compromiso' ? years[0] : years[1]
     const getColums = () => {
         const columns = [
             {
@@ -154,21 +155,21 @@ export default function semTiendas(title, rows, years){
                 plaza: item['plaza'],
                 compromisoActual: item['compromiso' + years[0]] || 0,
                 ventasActual: item['ventasActuales' + years[0]] || 0,
-                porcentajeActual: item['porcentaje' + years[0]] || 0,
+                porcentajeActual: item['porcentaje' + percentageYear] || 0,
                 ventasAnterior: item['ventasActuales' + years[1]] || 0,
                 ...(years[2]) && {porcentajeActualAdicional: item['porcentaje' + years[2]] || 0},
                 ...(years[2]) && {ventasAdicional: item['ventasActuales' + years[2]] || 0},
 
                 operacionesCompromiso: item['operacionesComp' + years[0]] || 0,
                 operacionesVentas: item['operacionesActual' + years[0]] || 0,
-                operacionesPorcentaje: item['porcentajeOperaciones' + years[1]]|| 0,
+                operacionesPorcentaje: item['porcentajeOperaciones' + percentageYear]|| 0,
                 operacionesVentasAnterior: item['operacionesActual' + years[1]]|| 0,
                 ...(years[2]) && {operacionesPorcentajeAdicional: item['porcentajeOperaciones' + years[2]] || 0},
                 ...(years[2]) && {operacionesVentasAdicional: item['operacionesActual' + years[2]] || 0},
 
                 promedioscompromiso: item['promedioComp' + years[0]]|| 0,
                 promedioVentas: item['promedioActual' + years[0]]|| 0,
-                promedioPorcentaje: item['porcentajePromedios' + years[1]]|| 0,
+                promedioPorcentaje: item['porcentajePromedios' + percentageYear]|| 0,
                 promediosVentasAnterior:item['promedioActual' + years[1]]|| 0,
                 ...(years[2]) && {promediosPorcentajeAdicional: item['porcentajePromedios' + years[2]] || 0},
                 ...(years[2]) && {promediosVentasAdicional: item['promedioActual' + years[2]] || 0},
