@@ -109,7 +109,34 @@ const DoughnutSmartLabels = {
 	}
 }
 
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, ChartTitle, DoughnutSmartLabels)
+const CornerNote = {
+	id: 'cornerNote',
+	afterDraw(chart, _args, opts) {
+		const text = opts?.text
+		if (!text) return
+		const { ctx, chartArea } = chart
+		ctx.save()
+		ctx.textAlign = 'right'
+		ctx.textBaseline = 'bottom'
+		ctx.fillStyle = opts?.color || '#374151' // gris 700
+		ctx.font = opts?.font || '500 12px system-ui, -apple-system, Segoe UI, Roboto'
+		const pad = opts?.padding ?? 10
+		ctx.fillText(text, chartArea.right - pad, chartArea.bottom - pad)
+		ctx.restore()
+	}
+}
+
+ChartJS.register(
+	ArcElement,
+	Tooltip,
+	Legend,
+	CategoryScale,
+	LinearScale,
+	BarElement,
+	ChartTitle,
+	DoughnutSmartLabels,
+	CornerNote
+)
 
 // util: fecha a DD-MM-YYYY (acepta 'YYYY-MM-DD' o 'DD/MM/YYYY')
 const toDMY = (raw) => {
@@ -315,13 +342,23 @@ function Segmento({ config }) {
 	const fmtMoney = (n) => '$' + numberWithCommas(n == null ? 0 : n)
 	const fmtPct = (p) => `${(p * 100).toFixed(1)}%`
 
-	const makeOptions = (title, parts, sales) => ({
+	const makeOptions = (title, parts, sales, cornerNoteText) => ({
 		responsive: true,
 		maintainAspectRatio: false,
 		cutout: '58%',
+		layout: { padding: { bottom: 22 } }, // deja espacio para la nota
 		plugins: {
-			legend: { position: 'right' },
-			title: { display: true, text: title },
+			legend: {
+				position: 'right',
+				labels: { usePointStyle: true, font: { size: 12, weight: '600' } }
+			},
+			title: {
+				display: true,
+				text: title,
+				color: '#111827',
+				font: { size: 18, weight: '700' }, // <— más grande/identificable
+				padding: { top: 8, bottom: 12 }
+			},
 			tooltip: {
 				callbacks: {
 					label: (ctx) => {
@@ -336,9 +373,12 @@ function Segmento({ config }) {
 				gap: 18,
 				lineColor: '#CBD5E1',
 				lineWidth: 1
-			}
+			},
+			cornerNote: cornerNoteText ? { text: cornerNoteText, color: '#374151' } : undefined
 		}
 	})
+
+	const notaMensual = `Ventas hasta el ${toDMY(reportDate.current)}`
 
 	return (
 		<div className="flex flex-col h-full">
@@ -355,7 +395,7 @@ function Segmento({ config }) {
 						<Formik initialValues={initialParams} onSubmit={handleSubmit} enableReinitialize>
 							{({ isSubmitting }) => (
 								<Form>
-									<fieldset className="space-y-2 mb-3">
+									<fieldset className="space-y-2 mb-[16rem]">
 										<Input
 											type="date"
 											id="fecha"
@@ -429,7 +469,8 @@ function Segmento({ config }) {
 								options={makeOptions(
 									`MENSUAL ${dateHelper.getMonthName(reportDate.current).toUpperCase()} ${dateHelper.getCurrentYear(reportDate.current)}`,
 									monthPart,
-									monthSale
+									monthSale,
+									notaMensual
 								)}
 							/>
 						</div>
@@ -440,7 +481,8 @@ function Segmento({ config }) {
 								options={makeOptions(
 									`ACUMULADO ${dateHelper.getCurrentYear(reportDate.current)}`,
 									anualPart,
-									anualSale
+									anualSale,
+									null
 								)}
 							/>
 						</div>
