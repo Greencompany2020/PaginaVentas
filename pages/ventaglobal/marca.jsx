@@ -141,7 +141,7 @@ function Marca({ config }) {
 
 	const initialParams = {
 		fecha: dateHelper.getYesterdayDate(),
-		conVentasEventos: Boolean((config && config.conVentasEventos) || 0)
+		conVentasEventos: false
 	}
 
 	// refs para exportar imágenes
@@ -149,7 +149,7 @@ function Marca({ config }) {
 	const yearChartRef = useRef(null)
 	const [lastParams, setLastParams] = useState({
 		fecha: initialParams.fecha,
-		conVentasEventos: initialParams.conVentasEventos ? 1 : 0
+		conVentasEventos: initialParams.conVentasEventos ? '1' : '2' // '2' = excluir
 	})
 
 	async function handleSubmit(values) {
@@ -158,7 +158,7 @@ function Marca({ config }) {
 			setDataReport(null)
 			setReportDate((prev) => ({ ...prev, current: values.fecha }))
 
-			const payload = { fecha: values.fecha, conVentasEventos: values.conVentasEventos ? 1 : 0 }
+			const payload = { fecha: values.fecha, conVentasEventos: values.conVentasEventos ? '1' : '2' }
 			const res = await getVentaGlobalMarca(payload) // <-- usa el servicio de marca
 			setDataReport(res)
 			setLastParams(payload)
@@ -325,7 +325,7 @@ function Marca({ config }) {
 			]
 			wf.addRows([
 				{ k: 'Fecha', v: toDMY(lastParams.fecha) },
-				{ k: 'Incluir ventas de eventos', v: Number(lastParams.conVentasEventos) ? 'Sí' : 'No' }
+				{ k: 'Incluir ventas de eventos', v: String(lastParams.conVentasEventos) === '1' ? 'Sí' : 'No' }
 			])
 			wf.getRow(1).font = { bold: true }
 
