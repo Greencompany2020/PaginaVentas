@@ -169,7 +169,7 @@ function Segmento({ config }) {
 
 	const initialParams = {
 		fecha: dateHelper.getYesterdayDate(),
-		conVentasEventos: Boolean((config && config.conVentasEventos) || 0)
+		conVentasEventos: false
 	}
 
 	// refs de las donas (react-chartjs-2)
@@ -178,7 +178,7 @@ function Segmento({ config }) {
 	// últimos parámetros usados (para hoja Filtros)
 	const [lastParams, setLastParams] = useState({
 		fecha: initialParams.fecha,
-		conVentasEventos: initialParams.conVentasEventos ? 1 : 0
+		conVentasEventos: initialParams.conVentasEventos ? '1' : '2' // '2' = excluir
 	})
 
 	async function handleSubmit(values) {
@@ -189,7 +189,7 @@ function Segmento({ config }) {
 
 			const payload = {
 				fecha: values.fecha,
-				conVentasEventos: values.conVentasEventos ? 1 : 0
+				conVentasEventos: values.conVentasEventos ? '1' : '2' // '1' incluye, '2' excluye
 			}
 			const res = await getVentaGlobalSegmento(payload)
 			setDataReport(res)
@@ -275,7 +275,7 @@ function Segmento({ config }) {
 			]
 			wf.addRows([
 				{ k: 'Fecha', v: toDMY(reportDate.current) },
-				{ k: 'Incluir ventas de eventos', v: lastParams.conVentasEventos ? 'Sí' : 'No' }
+				{ k: 'Incluir ventas de eventos', v: String(lastParams.conVentasEventos) === '1' ? 'Sí' : 'No' }
 			])
 			wf.getRow(1).font = { bold: true }
 
