@@ -275,6 +275,7 @@ function Marca({ config }) {
 	})
 
 	const notaMensual = `Ventas hasta el ${toDMY(reportDate.current)}`
+	const notaAnual = `Ventas hasta el ${toDMY(reportDate.current)}`
 
 	// === Export a Excel (misma hoja: tabla + donas) ===
 	const handleExport = async () => {
@@ -466,7 +467,7 @@ function Marca({ config }) {
 									`ACUMULADO ${dateHelper.getCurrentYear(reportDate.current)}`,
 									anualPart,
 									anualSale,
-									null
+									notaAnual
 								)}
 							/>
 						</div>

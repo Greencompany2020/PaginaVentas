@@ -379,6 +379,7 @@ function Segmento({ config }) {
 	})
 
 	const notaMensual = `Ventas hasta el ${toDMY(reportDate.current)}`
+	const notaAnual = `Ventas hasta el ${toDMY(reportDate.current)}`
 
 	return (
 		<div className="flex flex-col h-full">
@@ -482,7 +483,7 @@ function Segmento({ config }) {
 									`ACUMULADO ${dateHelper.getCurrentYear(reportDate.current)}`,
 									anualPart,
 									anualSale,
-									null
+									notaAnual
 								)}
 							/>
 						</div>
