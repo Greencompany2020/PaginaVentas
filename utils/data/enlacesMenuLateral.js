@@ -85,6 +85,19 @@ export const enlaces = [
     ]
   },
   {
+    summaryText: 'Participación Global',
+    links: [
+      {
+        link: '/ventaglobal/segmento',
+        linkText: 'Por Segmento'
+      },
+      {
+        link: '/ventaglobal/marca',
+        linkText: 'Por Marca'
+      }
+    ]
+  },
+  {
     summaryText: 'Porcentajes',
     links: [
       {
