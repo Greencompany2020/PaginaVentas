@@ -398,6 +398,13 @@ const Table = props => {
           </React.Fragment>
         ))
       }
+
+      {/* Mensaje general debajo de las tablas */}
+      <div className="mt-3 mb-6">
+        <p className="text-xs italic text-slate-600 text-center">
+          Las ventas en línea son reportadas por fecha de pedido.
+        </p>
+      </div>
     </div>
   )
 
@@ -604,6 +611,13 @@ const TableMovil = props => {
           </React.Fragment>
         ))
       }
+
+      {/* Mensaje general debajo de las tablas */}
+      <div className="mt-3 mb-6">
+        <p className="text-xs italic text-slate-600 text-center">
+          Las ventas en línea son reportadas por fecha de pedido.
+        </p>
+      </div>
     </div>
   )
 }
@@ -778,6 +792,13 @@ const Stat = props => {
           return Items
         })
       }
+
+      {/* Mensaje general debajo de las tablas */}
+      <div className="mt-3 mb-6">
+        <p className="text-xs italic text-slate-600 text-center">
+          Las ventas en línea son reportadas por fecha de pedido.
+        </p>
+      </div>
     </div>
   )
 }
@@ -971,6 +992,13 @@ const StatGroup = props => {
             columns = {acumAnual}
             expand={false}
           />
+
+          {/* Mensaje general debajo de las tablas */}
+          <div className="mt-3 mb-6">
+            <p className="text-xs italic text-slate-600 text-center">
+              Las ventas en línea son reportadas por fecha de pedido.
+            </p>
+          </div>
         </div>
       )
     }
