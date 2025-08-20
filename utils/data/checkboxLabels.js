@@ -40,7 +40,8 @@ export const checkboxLabels = {
   CBMOSTRARTIENDAS: 'Mostrar tiendas',
   VISUALIZACION_DISPOSITIVOS: 'Visualizacion en dispositivos',
   PRESUPUESTO_EXTRAORDINARIO: 'Presupuesto Extraordinario',
-  MOSTRAR_DETALLES: 'Ver detalle por segmento'
+  MOSTRAR_DETALLES: 'Ver detalle por segmento',
+  INCLUIR_VENTA_EN_LINEA: 'Incluir venta en línea',
 }
 
 export const inputNames = {

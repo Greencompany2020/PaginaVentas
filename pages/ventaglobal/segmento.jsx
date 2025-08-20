@@ -60,9 +60,9 @@ const DoughnutSmartLabels = {
 			const side = cos >= 0 ? 'right' : 'left'
 
 			const rOut = arc.outerRadius
-			const ax = arc.x + cos * rOut // ancla en el borde
+			const ax = arc.x + cos * rOut 
 			const ay = arc.y + sin * rOut
-			const lx = arc.x + cos * (rOut + 24) // posición de etiqueta fuera
+			const lx = arc.x + cos * (rOut + 24)
 			const ly = arc.y + sin * (rOut + 24)
 
 			const pct = (val / total) * 100
@@ -84,7 +84,6 @@ const DoughnutSmartLabels = {
 		resolve(left)
 		resolve(right)
 
-		// dibuja líneas y texto
 		ctx.save()
 		ctx.font = '600 12px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial'
 		ctx.fillStyle = '#111827'
@@ -118,7 +117,7 @@ const CornerNote = {
 		ctx.save()
 		ctx.textAlign = 'right'
 		ctx.textBaseline = 'bottom'
-		ctx.fillStyle = opts?.color || '#374151' // gris 700
+		ctx.fillStyle = opts?.color || '#374151'
 		ctx.font = opts?.font || '500 12px system-ui, -apple-system, Segoe UI, Roboto'
 		const pad = opts?.padding ?? 10
 		ctx.fillText(text, chartArea.right - pad, chartArea.bottom - pad)
@@ -138,14 +137,13 @@ ChartJS.register(
 	CornerNote
 )
 
-// util: fecha a DD-MM-YYYY (acepta 'YYYY-MM-DD' o 'DD/MM/YYYY')
 const toDMY = (raw) => {
 	if (!raw) return ''
 	const s = String(raw)
 	if (s.includes('-')) {
 		const [a, b, c] = s.split('-')
-		if (a.length === 4) return `${c.padStart(2, '0')}-${b.padStart(2, '0')}-${a}` // YYYY-MM-DD -> DD-MM-YYYY
-		return `${a.padStart(2, '0')}-${b.padStart(2, '0')}-${c}` // DD-MM-YYYY
+		if (a.length === 4) return `${c.padStart(2, '0')}-${b.padStart(2, '0')}-${a}`
+		return `${a.padStart(2, '0')}-${b.padStart(2, '0')}-${c}`
 	}
 	if (s.includes('/')) {
 		const [d, m, y] = s.split('/')
@@ -164,21 +162,22 @@ function Segmento({ config }) {
 		current: dateHelper.getYesterdayDate(),
 		dateRange: spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)
 	})
-	const [currentRegion] = useState('TOTAL') // placeholder
-	const [incremento] = useState('compromiso') // placeholder
+	const [currentRegion] = useState('TOTAL') 
+	const [incremento] = useState('compromiso') 
 
 	const initialParams = {
 		fecha: dateHelper.getYesterdayDate(),
-		conVentasEventos: false
+		conVentasEventos: false,
+		conVentasEnLinea: false,
 	}
 
-	// refs de las donas (react-chartjs-2)
 	const monthChartRef = useRef(null)
 	const yearChartRef = useRef(null)
-	// últimos parámetros usados (para hoja Filtros)
+	
 	const [lastParams, setLastParams] = useState({
 		fecha: initialParams.fecha,
-		conVentasEventos: initialParams.conVentasEventos ? '1' : '2' // '2' = excluir
+		conVentasEventos: initialParams.conVentasEventos ? '1' : '2',
+  		conVentasEnLinea: initialParams.conVentasEnLinea ? 'Y' : 'N',
 	})
 
 	async function handleSubmit(values) {
@@ -189,11 +188,12 @@ function Segmento({ config }) {
 
 			const payload = {
 				fecha: values.fecha,
-				conVentasEventos: values.conVentasEventos ? '1' : '2' // '1' incluye, '2' excluye
+				conVentasEventos: values.conVentasEventos ? '1' : '2', // '1' incluye, '2' excluye
+				conVentasEnLinea: values.conVentasEnLinea ? 'Y' : 'N',
 			}
 			const res = await getVentaGlobalSegmento(payload)
 			setDataReport(res)
-			setLastParams(payload) // para exportar a Excel lo último que buscaste
+			setLastParams(payload)
 		} catch (error) {
 			sendNotification({
 				type: 'ERROR',
@@ -204,7 +204,6 @@ function Segmento({ config }) {
 		}
 	}
 
-	// === Exportar a Excel (tabla + filtros + DONAS en la misma hoja) ===
 	const handleExport = async () => {
 		try {
 			const rows = Array.isArray(dataReport) ? dataReport : []
@@ -213,7 +212,6 @@ function Segmento({ config }) {
 				return
 			}
 
-			// 1) Capturar PNGs de las gráficas
 			const takePng = (ref) => {
 				const chart = ref?.current
 				if (!chart) return null
@@ -224,7 +222,6 @@ function Segmento({ config }) {
 			const imgMonth = takePng(monthChartRef)
 			const imgYear = takePng(yearChartRef)
 
-			// 2) Workbook y hoja principal
 			const { Workbook } = await import('exceljs')
 			const wb = new Workbook()
 			const ws = wb.addWorksheet('Segmento')
@@ -254,7 +251,6 @@ function Segmento({ config }) {
 			ws.autoFilter = 'A1:E1'
 			ws.views = [{ state: 'frozen', ySplit: 1 }]
 
-			// 3) Hoja de filtros con fecha DD-MM-YYYY
 			const toDMY = (raw) => {
 				if (!raw) return ''
 				const s = String(raw)
@@ -275,12 +271,12 @@ function Segmento({ config }) {
 			]
 			wf.addRows([
 				{ k: 'Fecha', v: toDMY(reportDate.current) },
-				{ k: 'Incluir ventas de eventos', v: String(lastParams.conVentasEventos) === '1' ? 'Sí' : 'No' }
+				{ k: 'Incluir ventas de eventos', v: String(lastParams.conVentasEventos) === '1' ? 'Sí' : 'No' },
+				{ k: 'Incluir venta en línea',    v: lastParams.conVentasEnLinea === 'Y' ? 'Sí' : 'No' },
 			])
 			wf.getRow(1).font = { bold: true }
 
-			// 4) Insertar DONAS en la MISMA hoja "Segmento", debajo de la tabla
-			const startRow = ws.lastRow.number + 3 // un poco de espacio tras la tabla
+			const startRow = ws.lastRow.number + 3
 			const leftCol = 0 // ~columna B (0=A,1=B,...)
 			const rightCol = 10 // ~columna K
 			const imgW = 750,
@@ -303,7 +299,6 @@ function Segmento({ config }) {
 				ws.addImage(id2, { tl: { col: rightCol, row: startRow - 1 }, ext: { width: imgW, height: imgH } })
 			}
 
-			// 5) Descargar
 			const filename = `Participación Global por Segmento${toDMY(reportDate.current)}.xlsx`
 			const buf = await wb.xlsx.writeBuffer()
 			const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
@@ -320,15 +315,14 @@ function Segmento({ config }) {
 
 	useEffect(() => {
 		handleSubmit(initialParams)
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	// ====== datos ======
 	const rows = Array.isArray(dataReport) ? dataReport : []
 	const labels = rows.map((r) => (r.ItemClass || '').toUpperCase())
-	const monthPart = rows.map((r) => Number(r.MonthParticipation) || 0) // 0..1
+	const monthPart = rows.map((r) => Number(r.MonthParticipation) || 0)
 	const monthSale = rows.map((r) => Number(r.MonthSale) || 0)
-	const anualPart = rows.map((r) => Number(r.AnualParticipation) || 0) // 0..1
+	const anualPart = rows.map((r) => Number(r.AnualParticipation) || 0)
 	const anualSale = rows.map((r) => Number(r.AnualSale) || 0)
 
 	// paleta
@@ -346,7 +340,7 @@ function Segmento({ config }) {
 		responsive: true,
 		maintainAspectRatio: false,
 		cutout: '58%',
-		layout: { padding: { bottom: 22 } }, // deja espacio para la nota
+		layout: { padding: { bottom: 22 } },
 		plugins: {
 			legend: {
 				position: 'right',
@@ -356,7 +350,7 @@ function Segmento({ config }) {
 				display: true,
 				text: title,
 				color: '#111827',
-				font: { size: 18, weight: '700' }, // <— más grande/identificable
+				font: { size: 18, weight: '700' },
 				padding: { top: 8, bottom: 12 }
 			},
 			tooltip: {
@@ -409,6 +403,12 @@ function Segmento({ config }) {
 											id="conVentasEventos"
 											name="conVentasEventos"
 											label={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
+											disabled={loading}
+										/>
+										<Checkbox
+											id="conVentasEnLinea"
+											name="conVentasEnLinea"
+											label={checkboxLabels.INCLUIR_VENTA_EN_LINEA}
 											disabled={loading}
 										/>
 									</fieldset>
@@ -496,6 +496,13 @@ function Segmento({ config }) {
 					</div>
 				)}
 			</section>
+
+			{/* Mensaje general debajo de las tablas */}
+			<div className="mt-3 mb-6">
+				<p className="text-xs italic text-slate-600 text-center">
+				Las ventas en línea son reportadas por fecha de facturación.
+				</p>
+			</div>
 		</div>
 	)
 }

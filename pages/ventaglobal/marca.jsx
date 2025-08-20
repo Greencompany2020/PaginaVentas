@@ -480,6 +480,13 @@ function Marca({ config }) {
 					</div>
 				)}
 			</section>
+
+			{/* Mensaje general debajo de las tablas */}
+			<div className="mt-3 mb-6">
+				<p className="text-xs italic text-slate-600 text-center">
+				Las ventas en línea son reportadas por fecha de facturación.
+				</p>
+			</div>
 		</div>
 	)
 }
