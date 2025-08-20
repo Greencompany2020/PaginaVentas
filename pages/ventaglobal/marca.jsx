@@ -141,7 +141,8 @@ function Marca({ config }) {
 
 	const initialParams = {
 		fecha: dateHelper.getYesterdayDate(),
-		conVentasEventos: false
+		conVentasEventos: false,
+		conVentasEnLinea: false,
 	}
 
 	// refs para exportar imágenes
@@ -149,7 +150,8 @@ function Marca({ config }) {
 	const yearChartRef = useRef(null)
 	const [lastParams, setLastParams] = useState({
 		fecha: initialParams.fecha,
-		conVentasEventos: initialParams.conVentasEventos ? '1' : '2' // '2' = excluir
+		conVentasEventos: initialParams.conVentasEventos ? '1' : '2', // '2' = excluir
+  		conVentasEnLinea: initialParams.conVentasEnLinea ? 'Y' : 'N',
 	})
 
 	async function handleSubmit(values) {
@@ -158,7 +160,12 @@ function Marca({ config }) {
 			setDataReport(null)
 			setReportDate((prev) => ({ ...prev, current: values.fecha }))
 
-			const payload = { fecha: values.fecha, conVentasEventos: values.conVentasEventos ? '1' : '2' }
+			const payload = {
+				fecha: values.fecha,
+				conVentasEventos: values.conVentasEventos ? '1' : '2', // '1' incluye, '2' excluye
+				conVentasEnLinea: values.conVentasEnLinea ? 'Y' : 'N',
+			}
+
 			const res = await getVentaGlobalMarca(payload) // <-- usa el servicio de marca
 			setDataReport(res)
 			setLastParams(payload)
@@ -326,7 +333,8 @@ function Marca({ config }) {
 			]
 			wf.addRows([
 				{ k: 'Fecha', v: toDMY(lastParams.fecha) },
-				{ k: 'Incluir ventas de eventos', v: String(lastParams.conVentasEventos) === '1' ? 'Sí' : 'No' }
+				{ k: 'Incluir ventas de eventos', v: String(lastParams.conVentasEventos) === '1' ? 'Sí' : 'No' },
+				{ k: 'Incluir venta en línea',    v: lastParams.conVentasEnLinea === 'Y' ? 'Sí' : 'No' },
 			])
 			wf.getRow(1).font = { bold: true }
 
@@ -395,6 +403,12 @@ function Marca({ config }) {
 											label={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
 											disabled={loading}
 										/>
+																				<Checkbox
+																					id="conVentasEnLinea"
+																					name="conVentasEnLinea"
+																					label={checkboxLabels.INCLUIR_VENTA_EN_LINEA}
+																					disabled={loading}
+																				/>
 									</fieldset>
 
 									<button
