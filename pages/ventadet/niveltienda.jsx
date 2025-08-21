@@ -90,11 +90,12 @@ function VentaDetNivelTienda(props) {
 	const [currentRegion, setCurrentRegion] = useState(seccions[0])
 	const [rows, setRows] = useState([])
 	const [range, setRange] = useState(() => {
-		const hoy = new Date(dateHelper.getYesterdayDate())
-		const ini = new Date(hoy.getFullYear(), hoy.getMonth(), 1)
+		const now = new Date()
+		const ayer = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1) // local
+		const ini = new Date(ayer.getFullYear(), ayer.getMonth(), 1)
 		const ymd = (d) =>
 			`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-		return { ini: ymd(ini), fin: ymd(hoy) }
+		return { ini: ymd(ini), fin: ymd(ayer) }
 	})
 
 	const initialParams = {
@@ -245,70 +246,156 @@ function VentaDetNivelTienda(props) {
 		return out
 	}, [rows])
 
-	const title = `VENTA TIENDAS CON DETALLADO POR SEGMENTO & MARCA (${dateHelper.getCurrentDate(range.fin)} ${dateHelper
-		.getMonthName(range.fin)
-		.toUpperCase()} ${dateHelper.getCurrentYear(range.fin)})`
+	const title = `VENTA TIENDAS CON DETALLADO POR SEGMENTO & MARCA (
+    ${dateHelper.getCurrentDate(range.ini)} ${dateHelper
+			.getMonthName(range.ini)
+			.toUpperCase()} ${dateHelper.getCurrentYear(range.ini)}
+    -
+    ${dateHelper.getCurrentDate(range.fin)} ${dateHelper
+			.getMonthName(range.fin)
+			.toUpperCase()} ${dateHelper.getCurrentYear(range.fin)}
+    )`
 
 	// exportación rápida (misma estructura visual)
+	// exportación a Excel (con título, periodo, estilos y filtros)
 	const handleExport = async () => {
 		try {
 			if (!flat.length) {
 				sendNotification({ type: 'ERROR', message: 'No hay datos para exportar.' })
 				return
 			}
+
 			const { Workbook } = await import('exceljs')
 			const wb = new Workbook()
 			const ws = wb.addWorksheet('VentaDetNivelTienda')
 
-			// Encabezado de 2 filas
-			ws.mergeCells('A1:A2')
-			ws.getCell('A1').value = 'TIENDA'
-			ws.mergeCells('B1:C1')
-			ws.getCell('B1').value = 'VENTA'
-			ws.getCell('B2').value = 'Venta ($)'
-			ws.getCell('C2').value = '% Venta'
-			ws.mergeCells('D1:I1')
-			ws.getCell('D1').value = 'SEGMENTO'
-			ws.getCell('D2').value = 'Línea ($)'
-			ws.getCell('E2').value = '% Línea'
-			ws.getCell('F2').value = 'Moda ($)'
-			ws.getCell('G2').value = '% Moda'
-			ws.getCell('H2').value = 'Accesorio ($)'
-			ws.getCell('I2').value = '% Acc'
-			ws.mergeCells('J1:M1')
-			ws.getCell('J1').value = 'MARCA'
-			ws.getCell('J2').value = 'Frogs ($)'
-			ws.getCell('K2').value = '% Frogs'
-			ws.getCell('L2').value = 'Mika ($)'
-			ws.getCell('M2').value = '% Mika'
+			// ---------- Título y periodo ----------
+			const titulo = 'VENTA TIENDAS CON DETALLADO POR SEGMENTO & MARCA'
+			const periodo = `Datos del ${dateHelper.getCurrentDate(range.ini)} ${dateHelper.getMonthName(range.ini)} ${dateHelper.getCurrentYear(range.ini)} al ${dateHelper.getCurrentDate(range.fin)} ${dateHelper.getMonthName(range.fin)} ${dateHelper.getCurrentYear(range.fin)}`
 
+			ws.mergeCells('A1:M1')
+			ws.getCell('A1').value = titulo
+			ws.getCell('A1').alignment = { horizontal: 'center' }
+			ws.getCell('A1').font = { bold: true, size: 14 }
+
+			ws.mergeCells('A2:M2')
+			ws.getCell('A2').value = periodo
+			ws.getCell('A2').alignment = { horizontal: 'center' }
+			ws.getCell('A2').font = { italic: true, color: { argb: '555555' } }
+
+			// ---------- Encabezado de 2 filas (comienza en la fila 3) ----------
+			ws.mergeCells('A3:A4')
+			ws.getCell('A3').value = 'TIENDA'
+
+			ws.mergeCells('B3:C3')
+			ws.getCell('B3').value = 'VENTA'
+			ws.getCell('B4').value = 'Venta ($)'
+			ws.getCell('C4').value = '% Venta'
+
+			ws.mergeCells('D3:I3')
+			ws.getCell('D3').value = 'SEGMENTO'
+			ws.getCell('D4').value = 'Línea ($)'
+			ws.getCell('E4').value = '% Línea'
+			ws.getCell('F4').value = 'Moda ($)'
+			ws.getCell('G4').value = '% Moda'
+			ws.getCell('H4').value = 'Accesorio ($)'
+			ws.getCell('I4').value = '% Acc'
+
+			ws.mergeCells('J3:M3')
+			ws.getCell('J3').value = 'MARCA'
+			ws.getCell('J4').value = 'Frogs ($)'
+			ws.getCell('K4').value = '% Frogs'
+			ws.getCell('L4').value = 'Mika ($)'
+			ws.getCell('M4').value = '% Mika'
+
+			// Formato del header
+			;[3, 4].forEach((r) => {
+				const row = ws.getRow(r)
+				row.font = { bold: true }
+				row.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }
+				row.eachCell((c) => {
+					c.border = {
+						top: { style: 'thin' },
+						left: { style: 'thin' },
+						bottom: { style: 'thin' },
+						right: { style: 'thin' }
+					}
+					c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'E9ECEF' } }
+				})
+			})
+
+			// Columnas (ancho + formato)
 			ws.columns = [
-				{ key: 'label', width: 22 },
-				{ key: 'Venta', width: 14, style: { numFmt: '$#,##0.00' } },
-				{ key: 'PartVenta', width: 10, style: { numFmt: '0.0%' } },
-				{ key: 'VentaLinea', width: 12, style: { numFmt: '$#,##0.00' } },
-				{ key: 'PartVentaLinea', width: 10, style: { numFmt: '0.0%' } },
-				{ key: 'VentaModa', width: 12, style: { numFmt: '$#,##0.00' } },
-				{ key: 'PartVentaModa', width: 10, style: { numFmt: '0.0%' } },
-				{ key: 'VentaAccesorio', width: 14, style: { numFmt: '$#,##0.00' } },
-				{ key: 'PartVentaAcc', width: 10, style: { numFmt: '0.0%' } },
-				{ key: 'VentaFrogs', width: 12, style: { numFmt: '$#,##0.00' } },
-				{ key: 'PartVentaFrogs', width: 10, style: { numFmt: '0.0%' } },
-				{ key: 'VentaMika', width: 12, style: { numFmt: '$#,##0.00' } },
-				{ key: 'PartMika', width: 10, style: { numFmt: '0.0%' } }
+				{ key: 'label', width: 26 }, // A
+				{ key: 'Venta', width: 14, style: { numFmt: '$#,##0.00' } }, // B
+				{ key: 'PartVenta', width: 10, style: { numFmt: '0.0%' } }, // C
+				{ key: 'VentaLinea', width: 12, style: { numFmt: '$#,##0.00' } }, // D
+				{ key: 'PartVentaLinea', width: 10, style: { numFmt: '0.0%' } }, // E
+				{ key: 'VentaModa', width: 12, style: { numFmt: '$#,##0.00' } }, // F
+				{ key: 'PartVentaModa', width: 10, style: { numFmt: '0.0%' } }, // G
+				{ key: 'VentaAccesorio', width: 14, style: { numFmt: '$#,##0.00' } }, // H
+				{ key: 'PartVentaAcc', width: 10, style: { numFmt: '0.0%' } }, // I
+				{ key: 'VentaFrogs', width: 12, style: { numFmt: '$#,##0.00' } }, // J
+				{ key: 'PartVentaFrogs', width: 10, style: { numFmt: '0.0%' } }, // K
+				{ key: 'VentaMika', width: 12, style: { numFmt: '$#,##0.00' } }, // L
+				{ key: 'PartMika', width: 10, style: { numFmt: '0.0%' } } // M
 			]
 
-			ws.getRow(1).font = { bold: true }
-			ws.getRow(2).font = { bold: true }
-
-			for (const r of flat) {
-				ws.addRow({
+			// ---------- Datos ----------
+			const startRow = 5
+			flat.forEach((r, idx) => {
+				const row = ws.addRow({
 					label: displayLabel(r),
-					...r
+					Venta: +r.Venta || 0,
+					PartVenta: +r.PartVenta || 0,
+					VentaLinea: +r.VentaLinea || 0,
+					PartVentaLinea: +r.PartVentaLinea || 0,
+					VentaModa: +r.VentaModa || 0,
+					PartVentaModa: +r.PartVentaModa || 0,
+					VentaAccesorio: +r.VentaAccesorio || 0,
+					PartVentaAcc: +r.PartVentaAcc || 0,
+					VentaFrogs: +r.VentaFrogs || 0,
+					PartVentaFrogs: +r.PartVentaFrogs || 0,
+					VentaMika: +r.VentaMika || 0,
+					PartMika: +r.PartMika || 0
+				})
+
+				// Estilos por nivel
+				const lvl =
+					r._level || (r.Tienda === 'TOTAL' ? 'grand' : /^TOT\s+/i.test(String(r.Tienda || '')) ? 'plaza' : 'store')
+				if (lvl === 'grand') {
+					row.font = { bold: true, color: { argb: '000000' } }
+					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'C8CBD0' } }))
+				} else if (lvl === 'region') {
+					row.font = { bold: true }
+					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'DCE0E5' } }))
+				} else if (lvl === 'plaza') {
+					row.font = { bold: true }
+					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'EDEFF2' } }))
+				}
+			})
+
+			// Bordes finos para el bloque de datos
+			const lastRow = ws.lastRow.number
+			for (let r = startRow; r <= lastRow; r++) {
+				ws.getRow(r).eachCell((c) => {
+					c.border = {
+						top: { style: 'thin' },
+						left: { style: 'thin' },
+						bottom: { style: 'thin' },
+						right: { style: 'thin' }
+					}
+					if (c.col === 1) c.alignment = { horizontal: 'left' }
+					else c.alignment = { horizontal: 'right' }
 				})
 			}
 
-			const fn = `VentaDetNivelTienda_${range.ini}_a_${range.fin}.xlsx`
+			// Congelar encabezado / Autofiltro
+			ws.views = [{ state: 'frozen', xSplit: 1, ySplit: 4 }]
+			ws.autoFilter = { from: 'A4', to: 'M4' }
+
+			// ---------- Descargar ----------
+			const fn = `Venta Tiendas Con Detallado_${range.ini}_a_${range.fin}.xlsx`
 			const buf = await wb.xlsx.writeBuffer()
 			const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
 			const url = URL.createObjectURL(blob)
@@ -389,10 +476,19 @@ function VentaDetNivelTienda(props) {
 					/>
 				</div>
 				<div className="flex justify-between">
-					<p className={`text-sm font-bold`}>{currentRegion}</p>
-					<ExcelButton handleClick={() => handleExport(incremento)} />
+					<p className={`text-sm font-bold`}> </p>
+					<ExcelButton handleClick={handleExport} />
 				</div>
 			</section>
+
+			{/* Subtítulo centrado */}
+			<h2 className="text-center text-base md:text-base font-bold text-black-mt-2">
+				{`Datos del 
+          ${dateHelper.getCurrentDate(range.ini)} ${dateHelper.getMonthName(range.ini)} ${dateHelper.getCurrentYear(range.ini)}
+          al 
+          ${dateHelper.getCurrentDate(range.fin)} ${dateHelper.getMonthName(range.fin)} ${dateHelper.getCurrentYear(range.fin)}
+        `}
+			</h2>
 
 			<section className="p-4 overflow-y-auto ">
 				{loading && (
@@ -845,3 +941,4 @@ const TableMovil = ({ data }) => {
 const PageWithAuth = withAuth(VentaDetNivelTienda)
 PageWithAuth.getLayout = getVentasLayout
 export default PageWithAuth
+
