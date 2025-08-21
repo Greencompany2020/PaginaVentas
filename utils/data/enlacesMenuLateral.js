@@ -85,7 +85,7 @@ export const enlaces = [
     ]
   },
   {
-    summaryText: 'Participación Global',
+    summaryText: 'Participación',
     links: [
       {
         link: '/ventaglobal/segmento',
@@ -94,15 +94,10 @@ export const enlaces = [
       {
         link: '/ventaglobal/marca',
         linkText: 'Por Marca'
-      }
-    ]
-  },
-  {
-    summaryText: 'Venta Detallada',
-    links: [
+      },
       {
         link: '/ventadet/niveltienda',
-        linkText: 'Nivel Tienda'
+        linkText: 'Por Tienda'
       }
     ]
   },

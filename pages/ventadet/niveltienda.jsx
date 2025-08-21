@@ -6,276 +6,840 @@ import withAuth from '../../components/withAuth'
 import { getVentasLayout } from '../../components/layout/VentasLayout'
 import TitleReport from '../../components/TitleReport'
 import { useNotification } from '../../components/notifications/NotificationsProvider'
+import { isMobile } from 'react-device-detect'
+import ViewFilter from '../../components/ViewFilter'
+import {
+	getTableName,
+	spliceByRegion,
+	parseParams,
+	parseNumberToBoolean,
+	spliteArrDate,
+	isSecondDateBlock
+} from '../../utils/functions'
+import {
+	stringFormatNumber,
+	numberWithCommas,
+	numberAbs,
+	isNegative,
+	isRegionOrPlaza,
+	numberAbsComma,
+	selectRow
+} from '../../utils/resultsFormated'
+import Stats from '../../components/Stats'
 
 import { ParametersContainer, Parameters } from '../../components/containers'
 import { Input, Checkbox } from '../../components/reportInputs'
 import ExcelButton from '../../components/buttons/ExcelButton'
+import { v4 } from 'uuid'
 
 import DateHelper from '../../utils/dateHelper'
-import { numberWithCommas, selectRow } from '../../utils/resultsFormated'
 
 import { getVentaDetNivelTienda } from '../../services/VentaDetService'
 
-const fmtPct = (p) => `${(Number(p || 0) * 100).toFixed(1)}%`
+const pct = (n) => `${(Number(n || 0) * 100).toFixed(1)}%`
 
-function VentaDetNivelTienda() {
-  const sendNotification = useNotification()
-  const dateHelper = DateHelper()
+// --- helpers de orden ---
+const REGION_ORDER = ['REGION I', 'REGION II', 'REGION III', 'WEB']
+const PLAZA_ORDER = ['MAZATLAN', 'ACAPULCO', 'CANCUN', 'PCARMEN', 'ISM', 'COZUMEL', 'VALLARTA', 'CABOS']
 
-  // Datos
-  const [loading, setLoading] = useState(false)
-  const [rows, setRows] = useState([])
-  const [range, setRange] = useState(() => {
-    const hoy = new Date(dateHelper.getYesterdayDate())
-    const ini = new Date(hoy.getFullYear(), hoy.getMonth(), 1)
-    const ymd = (d) =>
-      `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
-    return { ini: ymd(ini), fin: ymd(hoy) }
-  })
+const plazaIndex = (p) => {
+	const i = PLAZA_ORDER.indexOf(String(p || '').toUpperCase())
+	return i === -1 ? 98 : i
+}
 
-  const initialParams = {
-    fechaIni: range.ini,
-    fechaFin: range.fin,
-    conVentasEventos: false, // -> '1' incluye, '2' excluye
-    conVentasEnLinea: false   // -> 'Y' incluye, 'N' excluye
-  }
+const regionIndex = (r) => {
+	const i = REGION_ORDER.indexOf(String(r || '').toUpperCase())
+	return i === -1 ? 99 : i
+}
 
-  async function handleSubmit(values) {
-    try {
-      setLoading(true)
-      setRows([])
+// extrae sufijo numérico del final (M1 -> 1, PV12 -> 12, etc.)
+const numSufijo = (label = '') => {
+	const rev = `${label}`.split('').reverse().join('')
+	const cut = rev.search(/[^0-9]/)
+	if (cut <= 0) return null
+	const digits = rev.slice(0, cut).split('').reverse().join('')
+	const n = parseInt(digits, 10)
+	return Number.isFinite(n) ? n : null
+}
 
-      const payload = {
-        fechaIni: values.fechaIni,
-        fechaFin: values.fechaFin,
-        conVentasEventos: values.conVentasEventos ? '1' : '2',
-        conVentasEnLinea: values.conVentasEnLinea ? 'Y' : 'N'
-      }
+// clasifica filas para pintar
+const classifyRow = (r) => {
+	const tienda = String(r.Tienda || '')
+	if (tienda === 'TOTAL') return 'grand'
+	if (/^TOT\s+/i.test(tienda)) return 'plaza'
+	return 'store'
+}
 
-      console.log('[VENTA DET NIVEL TIENDA] payload =>', payload)
-      
-      const data = await getVentaDetNivelTienda(payload);
-    
-      setRows(Array.isArray(data) ? data : [])
-      setRange({ ini: values.fechaIni, fin: values.fechaFin })
-    } catch (err) {
-      sendNotification({
-        type: 'ERROR',
-        message: err?.response?.data?.message || err?.message || 'Error al cargar el reporte'
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
+// etiqueta visible en primera columna
+const displayLabel = (r) => {
+	const t = String(r.Tienda || '')
+	if (t === 'TOTAL') return 'TOTAL'
+	if (/^TOT\s+/i.test(t)) return String(r.Plaza || t).toUpperCase()
+	return t
+}
 
-  useEffect(() => {
-    handleSubmit(initialParams)
-  }, [])
+function VentaDetNivelTienda(props) {
+	const { config } = props
+	const sendNotification = useNotification()
+	const dateHelper = DateHelper()
 
-  // Agrupar por Región para mostrar secciones como en tus tablas
-  const byRegion = useMemo(() => {
-    const m = new Map()
-    for (const r of rows) {
-      const k = String(r.Region || 'SIN REGION')
-      if (!m.has(k)) m.set(k, [])
-      m.get(k).push(r)
-    }
-    // orden amigable
-    const order = ['REGION I', 'REGION II', 'REGION III', 'WEB', 'SIN REGION', 'TOTAL']
-    return Array.from(m.entries()).sort(
-      (a, b) => order.indexOf(a[0]) - order.indexOf(b[0])
-    )
-  }, [rows])
+	const [loading, setLoading] = useState(false)
+	const [dataReport, setDataReport] = useState(null)
+	const [displayMode, setDisplayMode] = useState(isMobile ? config?.mobileReportView : config?.desktopReportView)
+	const [seccions, setSeccions] = useState(['REGION I', 'REGION II', 'REGION III', 'WEB', 'TOTAL'])
+	const [currentRegion, setCurrentRegion] = useState(seccions[0])
+	const [rows, setRows] = useState([])
+	const [range, setRange] = useState(() => {
+		const hoy = new Date(dateHelper.getYesterdayDate())
+		const ini = new Date(hoy.getFullYear(), hoy.getMonth(), 1)
+		const ymd = (d) =>
+			`${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+		return { ini: ymd(ini), fin: ymd(hoy) }
+	})
 
-  const title = `VENTA DETALLE NIVEL TIENDA (${dateHelper.getCurrentDate(range.fin)} ${dateHelper
-    .getMonthName(range.fin)
-    .toUpperCase()} ${dateHelper.getCurrentYear(range.fin)})`
+	const initialParams = {
+		fechaIni: range.ini,
+		fechaFin: range.fin,
+		conVentasEventos: false,
+		conVentasEnLinea: false
+	}
 
-  const handleExport = async () => {
-    try {
-      if (!rows.length) {
-        sendNotification({ type: 'ERROR', message: 'No hay datos para exportar.' })
-        return
-      }
-      const { Workbook } = await import('exceljs')
-      const wb = new Workbook()
-      const ws = wb.addWorksheet('VentaDetNivelTienda')
+	async function handleSubmit(values) {
+		try {
+			setLoading(true)
+			setRows([])
 
-      ws.columns = [
-        { header: 'Región', key: 'Region', width: 12 },
-        { header: 'Tienda', key: 'Tienda', width: 22 },
-        { header: 'Plaza', key: 'Plaza', width: 14 },
-        { header: 'Venta ($)', key: 'Venta', width: 14, style: { numFmt: '$#,##0.00' } },
-        { header: '% Venta', key: 'PartVenta', width: 10, style: { numFmt: '0.0%' } },
-        { header: 'Línea ($)', key: 'VentaLinea', width: 12, style: { numFmt: '$#,##0.00' } },
-        { header: '% Línea', key: 'PartVentaLinea', width: 10, style: { numFmt: '0.0%' } },
-        { header: 'Moda ($)', key: 'VentaModa', width: 12, style: { numFmt: '$#,##0.00' } },
-        { header: '% Moda', key: 'PartVentaModa', width: 10, style: { numFmt: '0.0%' } },
-        { header: 'Accesorio ($)', key: 'VentaAccesorio', width: 14, style: { numFmt: '$#,##0.00' } },
-        { header: '% Acc', key: 'PartVentaAcc', width: 10, style: { numFmt: '0.0%' } },
-        { header: 'Frogs ($)', key: 'VentaFrogs', width: 12, style: { numFmt: '$#,##0.00' } },
-        { header: '% Frogs', key: 'PartVentaFrogs', width: 10, style: { numFmt: '0.0%' } },
-        { header: 'Mika ($)', key: 'VentaMika', width: 12, style: { numFmt: '$#,##0.00' } },
-        { header: '% Mika', key: 'PartMika', width: 10, style: { numFmt: '0.0%' } }
-      ]
-      ws.addRows(rows)
-      ws.getRow(1).font = { bold: true }
+			const payload = {
+				fechaIni: values.fechaIni,
+				fechaFin: values.fechaFin,
+				conVentasEventos: values.conVentasEventos ? '1' : '2',
+				conVentasEnLinea: values.conVentasEnLinea ? 'Y' : 'N'
+			}
 
-      const fn = `VentaDetNivelTienda_${range.ini}_a_${range.fin}.xlsx`
-      const buf = await wb.xlsx.writeBuffer()
-      const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = fn
-      a.click()
-      URL.revokeObjectURL(url)
-    } catch (err) {
-      sendNotification({ type: 'ERROR', message: err?.message || 'No se pudo exportar.' })
-    }
-  }
+			const data = await getVentaDetNivelTienda(payload)
 
-  return (
-    <div className="flex flex-col h-full">
-      <TitleReport title={title} />
+			setDataReport(data)
 
-      {/* Parámetros */}
-      <section className="p-4">
-        <ParametersContainer>
-          <Parameters>
-            <Formik initialValues={initialParams} onSubmit={handleSubmit} enableReinitialize>
-              {({ isSubmitting }) => (
-                <Form>
-                  <fieldset className="space-y-2 mb-4">
-                    <Input
-                      type="date"
-                      id="fechaIni"
-                      name="fechaIni"
-                      label="Fecha inicial"
-                      placeholder={range.ini}
-                      disabled={loading}
-                    />
-                    <Input
-                      type="date"
-                      id="fechaFin"
-                      name="fechaFin"
-                      label="Fecha final"
-                      placeholder={range.fin}
-                      disabled={loading}
-                    />
-                    <Checkbox
-                      id="conVentasEventos"
-                      name="conVentasEventos"
-                      label="Incluir ventas de eventos"
-                      disabled={loading}
-                    />
-                    <Checkbox
-                      id="conVentasEnLinea"
-                      name="conVentasEnLinea"
-                      label="Incluir venta en línea"
-                      disabled={loading}
-                    />
-                  </fieldset>
+			setRows(Array.isArray(data) ? data : [])
+			setRange({ ini: values.fechaIni, fin: values.fechaFin })
+		} catch (err) {
+			sendNotification({
+				type: 'ERROR',
+				message: err?.response?.data?.message || err?.message || 'Error al cargar el reporte'
+			})
+		} finally {
+			setLoading(false)
+		}
+	}
 
-                  <button
-                    type="submit"
-                    disabled={loading || isSubmitting}
-                    className={`w-full mt-2 px-4 py-2 rounded-md text-white ${
-                      loading ? 'bg-slate-400 cursor-not-allowed' : 'bg-sky-600 hover:bg-sky-500'
-                    }`}
-                  >
-                    {loading ? 'Buscando…' : 'Buscar'}
-                  </button>
-                </Form>
-              )}
-            </Formik>
-          </Parameters>
-        </ParametersContainer>
+	useEffect(() => {
+		handleSubmit(initialParams)
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
 
-        <div className="flex justify-between mt-2">
-          <p className="text-sm font-bold">Resultados</p>
-          <ExcelButton disabled={loading || rows.length === 0} handleClick={handleExport} />
-        </div>
-      </section>
+	// --- Construir UNA sola lista con: REGION (row sintética), PLAZA (TOT), TIENDAS y TOTAL ---
+	const flat = useMemo(() => {
+		if (!rows?.length) return []
 
-      {/* Tabla */}
-      <section className="p-4 overflow-x-auto">
-        {loading && (
-          <div className="rounded-xl border p-10 bg-white text-black flex items-center justify-center">
-            Cargando datos…
-          </div>
-        )}
+		// total global (para % venta de filas sintéticas)
+		const totalRow = rows.find((r) => r.Tienda === 'TOTAL')
+		const totalGlobal = Number(totalRow?.Venta || 0)
 
-        {!loading && rows.length === 0 && (
-          <div className="rounded-xl border p-10 bg-white text-gray-500 flex items-center justify-center">
-            Sin datos para los filtros seleccionados.
-          </div>
-        )}
+		// agrupar por región y plaza
+		const byRegPlaza = new Map()
+		for (const r of rows) {
+			const reg = String(r.Region || 'SIN REGION')
+			const plz = String(r.Plaza || '')
+			const key = `${reg}||${plz}`
+			if (!byRegPlaza.has(key)) byRegPlaza.set(key, [])
+			byRegPlaza.get(key).push(r)
+		}
 
-        {!loading && rows.length > 0 && (
-          <div className="space-y-8">
-            {byRegion.map(([region, list]) => (
-              <div key={region}>
-                <p className="text-sm font-bold mb-2">{region}</p>
-                <table className="table-report" onClick={selectRow}>
-                  <thead>
-                    <tr className="text-center">
-                      <th>Tienda</th>
-                      <th>Plaza</th>
-                      <th>Venta ($)</th>
-                      <th>% Venta</th>
-                      <th>Línea ($)</th>
-                      <th>% Línea</th>
-                      <th>Moda ($)</th>
-                      <th>% Moda</th>
-                      <th>Accesorio ($)</th>
-                      <th>% Acc</th>
-                      <th>Frogs ($)</th>
-                      <th>% Frogs</th>
-                      <th>Mika ($)</th>
-                      <th>% Mika</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {list.map((r, i) => (
-                      <tr key={`${region}-${r.Tienda}-${i}`}>
-                        <td className="priority-cell text-left">{r.Tienda}</td>
-                        <td>{r.Plaza ?? ''}</td>
-                        <td className="priority-cell">{numberWithCommas(r.Venta)}</td>
-                        <td>{fmtPct(r.PartVenta)}</td>
+		// regiones en orden
+		const regiones = Array.from(new Set(rows.map((r) => String(r.Region || 'SIN REGION')))).sort(
+			(a, b) => regionIndex(a) - regionIndex(b)
+		)
 
-                        <td>{numberWithCommas(r.VentaLinea)}</td>
-                        <td>{fmtPct(r.PartVentaLinea)}</td>
+		const out = []
 
-                        <td>{numberWithCommas(r.VentaModa)}</td>
-                        <td>{fmtPct(r.PartVentaModa)}</td>
+		for (const region of regiones) {
+			// tiendas de la región (evitar duplicar con TOT plaza o TOTAL)
+			const deRegion = rows.filter((r) => String(r.Region || 'SIN REGION') === region && r.Tienda !== 'TOTAL')
 
-                        <td>{numberWithCommas(r.VentaAccesorio)}</td>
-                        <td>{fmtPct(r.PartVentaAcc)}</td>
+			// región: crear fila sintética SUMA de tiendas (excluye TOT plaza)
+			const soloTiendas = deRegion.filter((r) => !/^TOT\s+/i.test(String(r.Tienda || '')))
+			const regSum = (field) => soloTiendas.reduce((a, b) => a + Number(b[field] || 0), 0)
 
-                        <td>{numberWithCommas(r.VentaFrogs)}</td>
-                        <td>{fmtPct(r.PartVentaFrogs)}</td>
+			const regionRow = {
+				_level: 'region',
+				Region: region,
+				Plaza: null,
+				Tienda: region,
+				Venta: regSum('Venta'),
+				PartVenta:
+					rows.find((r) => r.Tienda === 'TOTAL')?.Venta || 0
+						? regSum('Venta') / Number(rows.find((r) => r.Tienda === 'TOTAL')?.Venta || 0)
+						: 0,
+				VentaLinea: regSum('VentaLinea'),
+				PartVentaLinea: regSum('Venta') ? regSum('VentaLinea') / regSum('Venta') : 0,
+				VentaModa: regSum('VentaModa'),
+				PartVentaModa: regSum('Venta') ? regSum('VentaModa') / regSum('Venta') : 0,
+				VentaAccesorio: regSum('VentaAccesorio'),
+				PartVentaAcc: regSum('Venta') ? regSum('VentaAccesorio') / regSum('Venta') : 0,
+				VentaFrogs: regSum('VentaFrogs'),
+				PartVentaFrogs: regSum('Venta') ? regSum('VentaFrogs') / regSum('Venta') : 0,
+				VentaMika: regSum('VentaMika'),
+				PartMika: regSum('Venta') ? regSum('VentaMika') / regSum('Venta') : 0
+			}
 
-                        <td>{numberWithCommas(r.VentaMika)}</td>
-                        <td>{fmtPct(r.PartMika)}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ))}
+			// plazas de la región en orden
+			const plazasReg = Array.from(new Set(deRegion.map((r) => r.Plaza))).sort((a, b) => plazaIndex(a) - plazaIndex(b))
 
-            {/* Mensaje general debajo de las tablas */}
-            <div className="mt-3 mb-6">
-              <p className="text-xs italic text-slate-600 text-center">
-                Las ventas en línea son reportadas por fecha de pedido.
-              </p>
-            </div>
-          </div>
-        )}
-      </section>
-    </div>
-  )
+			for (const plaza of plazasReg) {
+				const key = `${region}||${plaza}`
+				const pack = (byRegPlaza.get(key) || []).slice()
+
+				// separar tiendas normales y TOT plaza
+				const totPlaza = pack.find((r) => /^TOT\s+/i.test(String(r.Tienda || '')))
+				const tiendas = pack.filter((r) => !/^TOT\s+/i.test(String(r.Tienda || '')))
+
+				// ordenar tiendas por sufijo (y casos especiales de Cancún)
+				tiendas.sort((a, b) => {
+					const la = String(a.Tienda || '')
+					const lb = String(b.Tienda || '')
+					if (String(a.Plaza).toUpperCase() === 'CANCUN' || String(b.Plaza).toUpperCase() === 'CANCUN') {
+						const special = (s) => {
+							const u = s.toUpperCase()
+							if (u.startsWith('IS-5')) return 998
+							if (u.startsWith('OUTLET MCD')) return 999
+							if (u.startsWith('FORUM')) return 1000
+							return null
+						}
+						const sa = special(la)
+						const sb = special(lb)
+						if (sa !== null || sb !== null) return (sa ?? 0) - (sb ?? 0)
+					}
+					const na = numSufijo(la)
+					const nb = numSufijo(lb)
+					if (na === null && nb === null) return la.localeCompare(lb)
+					if (na === null) return 1
+					if (nb === null) return -1
+					return na - nb
+				})
+
+				// primero todas las tiendas
+				for (const t of tiendas) out.push({ ...t, _level: 'store' })
+
+				// luego el TOT de la plaza
+				if (totPlaza) out.push({ ...totPlaza, _level: 'plaza' })
+			}
+
+			// FINALMENTE la fila de la REGIÓN (después de su contenido)
+			out.push(regionRow)
+		}
+
+		// TOTAL global al final
+		const total = rows.find((r) => r.Tienda === 'TOTAL')
+		if (total) out.push({ ...total, _level: 'grand' })
+
+		return out
+	}, [rows])
+
+	const title = `VENTA TIENDAS CON DETALLADO POR SEGMENTO & MARCA (${dateHelper.getCurrentDate(range.fin)} ${dateHelper
+		.getMonthName(range.fin)
+		.toUpperCase()} ${dateHelper.getCurrentYear(range.fin)})`
+
+	// exportación rápida (misma estructura visual)
+	const handleExport = async () => {
+		try {
+			if (!flat.length) {
+				sendNotification({ type: 'ERROR', message: 'No hay datos para exportar.' })
+				return
+			}
+			const { Workbook } = await import('exceljs')
+			const wb = new Workbook()
+			const ws = wb.addWorksheet('VentaDetNivelTienda')
+
+			// Encabezado de 2 filas
+			ws.mergeCells('A1:A2')
+			ws.getCell('A1').value = 'TIENDA'
+			ws.mergeCells('B1:C1')
+			ws.getCell('B1').value = 'VENTA'
+			ws.getCell('B2').value = 'Venta ($)'
+			ws.getCell('C2').value = '% Venta'
+			ws.mergeCells('D1:I1')
+			ws.getCell('D1').value = 'SEGMENTO'
+			ws.getCell('D2').value = 'Línea ($)'
+			ws.getCell('E2').value = '% Línea'
+			ws.getCell('F2').value = 'Moda ($)'
+			ws.getCell('G2').value = '% Moda'
+			ws.getCell('H2').value = 'Accesorio ($)'
+			ws.getCell('I2').value = '% Acc'
+			ws.mergeCells('J1:M1')
+			ws.getCell('J1').value = 'MARCA'
+			ws.getCell('J2').value = 'Frogs ($)'
+			ws.getCell('K2').value = '% Frogs'
+			ws.getCell('L2').value = 'Mika ($)'
+			ws.getCell('M2').value = '% Mika'
+
+			ws.columns = [
+				{ key: 'label', width: 22 },
+				{ key: 'Venta', width: 14, style: { numFmt: '$#,##0.00' } },
+				{ key: 'PartVenta', width: 10, style: { numFmt: '0.0%' } },
+				{ key: 'VentaLinea', width: 12, style: { numFmt: '$#,##0.00' } },
+				{ key: 'PartVentaLinea', width: 10, style: { numFmt: '0.0%' } },
+				{ key: 'VentaModa', width: 12, style: { numFmt: '$#,##0.00' } },
+				{ key: 'PartVentaModa', width: 10, style: { numFmt: '0.0%' } },
+				{ key: 'VentaAccesorio', width: 14, style: { numFmt: '$#,##0.00' } },
+				{ key: 'PartVentaAcc', width: 10, style: { numFmt: '0.0%' } },
+				{ key: 'VentaFrogs', width: 12, style: { numFmt: '$#,##0.00' } },
+				{ key: 'PartVentaFrogs', width: 10, style: { numFmt: '0.0%' } },
+				{ key: 'VentaMika', width: 12, style: { numFmt: '$#,##0.00' } },
+				{ key: 'PartMika', width: 10, style: { numFmt: '0.0%' } }
+			]
+
+			ws.getRow(1).font = { bold: true }
+			ws.getRow(2).font = { bold: true }
+
+			for (const r of flat) {
+				ws.addRow({
+					label: displayLabel(r),
+					...r
+				})
+			}
+
+			const fn = `VentaDetNivelTienda_${range.ini}_a_${range.fin}.xlsx`
+			const buf = await wb.xlsx.writeBuffer()
+			const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+			const url = URL.createObjectURL(blob)
+			const a = document.createElement('a')
+			a.href = url
+			a.download = fn
+			a.click()
+			URL.revokeObjectURL(url)
+		} catch (err) {
+			sendNotification({ type: 'ERROR', message: err?.message || 'No se pudo exportar.' })
+		}
+	}
+
+	return (
+		<div className="flex flex-col h-full">
+			<TitleReport title={title} />
+
+			{/* Parámetros */}
+			<section className="p-4 space-y-2">
+				<div className="flex justify-between items-start">
+					<ParametersContainer>
+						<Parameters>
+							<Formik initialValues={initialParams} onSubmit={handleSubmit} enableReinitialize>
+								{({ isSubmitting }) => (
+									<Form>
+										<fieldset className="space-y-2 mb-4">
+											<Input
+												type="date"
+												id="fechaIni"
+												name="fechaIni"
+												label="Fecha inicial"
+												placeholder={range.ini}
+												disabled={loading}
+											/>
+											<Input
+												type="date"
+												id="fechaFin"
+												name="fechaFin"
+												label="Fecha final"
+												placeholder={range.fin}
+												disabled={loading}
+											/>
+											<Checkbox
+												id="conVentasEventos"
+												name="conVentasEventos"
+												label="Incluir ventas de eventos"
+												disabled={loading}
+											/>
+											<Checkbox
+												id="conVentasEnLinea"
+												name="conVentasEnLinea"
+												label="Incluir venta en línea"
+												disabled={loading}
+											/>
+										</fieldset>
+
+										<button
+											type="submit"
+											disabled={loading || isSubmitting}
+											className={`w-full mt-2 px-4 py-2 rounded-md text-white ${
+												loading ? 'bg-slate-400 cursor-not-allowed' : 'bg-sky-600 hover:bg-sky-500'
+											}`}
+										>
+											{loading ? 'Buscando…' : 'Buscar'}
+										</button>
+									</Form>
+								)}
+							</Formik>
+						</Parameters>
+					</ParametersContainer>
+
+					<ViewFilter
+						viewOption={displayMode}
+						handleView={setDisplayMode}
+						selectOption={currentRegion}
+						handleSelect={setCurrentRegion}
+						options={seccions}
+					/>
+				</div>
+				<div className="flex justify-between">
+					<p className={`text-sm font-bold`}>{currentRegion}</p>
+					<ExcelButton handleClick={() => handleExport(incremento)} />
+				</div>
+			</section>
+
+			<section className="p-4 overflow-y-auto ">
+				{loading && (
+					<div className="rounded-xl border p-10 bg-white h-[380px] flex items-center justify-center">
+						<div className="flex flex-col items-center">
+							<svg className="animate-spin h-12 w-12 text-black" viewBox="0 0 24 24">
+								<circle
+									className="opacity-25"
+									cx="12"
+									cy="12"
+									r="10"
+									stroke="currentColor"
+									strokeWidth="4"
+									fill="none"
+								/>
+								<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4A4 4 0 008 12H4z" />
+							</svg>
+							<p className="mt-3 text-black font-medium">Cargando datos…</p>
+						</div>
+					</div>
+				)}
+
+				{!loading && rows.length > 0 && (
+					<div className=" overflow-y-auto">
+						{(() => {
+							switch (displayMode) {
+								case 1:
+									return <Table data={{ ventadetalle: flat }} />
+								case 2:
+									return <Stat data={{ ventadetalle: flat }} />
+								case 3:
+									return <StatGroup data={{ ventadetalle: flat }} region={currentRegion} />
+								case 4:
+									return <TableMovil data={{ ventadetalle: flat }} />
+								default:
+									return <Table data={{ ventadetalle: flat }} />
+							}
+						})()}
+					</div>
+				)}
+
+				{!loading && rows.length === 0 && (
+					<div className="rounded-xl border p-10 bg-white text-gray-500 flex items-center justify-center h-[380px]">
+						Sin datos para los filtros seleccionados.
+					</div>
+				)}
+			</section>
+		</div>
+	)
+}
+
+const Table = (props) => {
+	let { data } = props
+	if (Array.isArray(data)) {
+		data = { ventadetalle: data }
+	} else if (typeof data !== 'object' || data === null) {
+		data = {}
+	}
+
+	return (
+		<div className="space-y-8">
+			{data &&
+				Object.entries(data).map(([key, values]) => (
+					<React.Fragment key={v4()}>
+						{getTableName(key)}
+						<table className="table-report" key={v4()} onClick={selectRow}>
+							<thead>
+								<tr className="text-center">
+									<th rowSpan={2}>Tienda</th>
+									<th rowSpan={2}>Venta ($)</th>
+									<th rowSpan={2}>% PART. VS. VTA. TOT.</th>
+									<th colSpan={6}>VENTA POR SEGMENTO & PORC.PARTICIPACION POR ENTIDAD</th>
+									<th colSpan={4}>VENTA POR MARCA & PORC. PARTICIPACION</th>
+								</tr>
+								<tr className="text-center">
+									<th>Línea ($)</th>
+									<th>% L</th>
+									<th>Moda ($)</th>
+									<th>% M</th>
+									<th>Accesorio ($)</th>
+									<th>% A</th>
+									<th>Frogs ($)</th>
+									<th>% SF</th>
+									<th>Mika ($)</th>
+									<th>% MK</th>
+								</tr>
+							</thead>
+							<tbody>
+								{(Array.isArray(values) ? values : [])
+									.filter((r) => !(r._level === 'region' && String(r.Region || '').toUpperCase() === 'SIN REGION'))
+									.map((r, idx) => {
+										const level =
+											r._level ||
+											(r.Tienda === 'TOTAL' ? 'grand' : /^TOT\s+/i.test(String(r.Tienda || '')) ? 'plaza' : 'store')
+
+										// Colores tipo la 2da imagen (texto negro)
+										const rowClass =
+											level === 'grand'
+												? 'bg-gray-400 font-bold text-black' // TOTAL
+												: level === 'region'
+													? 'bg-gray-300 font-semibold text-black' // REGIÓN
+													: level === 'plaza'
+														? 'bg-gray-200 font-medium text-black' // PLAZA (TOT ...)
+														: '' // Tienda
+
+										const label =
+											r.Tienda === 'TOTAL'
+												? 'TOTAL'
+												: /^TOT\s+/i.test(String(r.Tienda || ''))
+													? String(r.Plaza || '').toUpperCase()
+													: r.Tienda || r.Region || ''
+
+										return (
+											<tr key={idx} className={rowClass} data-row-format={level}>
+												{/* 1a columna: izquierda */}
+												<td className="text-left">{label}</td>
+
+												{/* demás columnas: derecha */}
+												<td className="text-right">{numberWithCommas(r.Venta)}</td>
+												<td className="text-right">{pct(r.PartVenta)}</td>
+
+												<td className="text-right">{numberWithCommas(r.VentaLinea)}</td>
+												<td className="text-right">{pct(r.PartVentaLinea)}</td>
+
+												<td className="text-right">{numberWithCommas(r.VentaModa)}</td>
+												<td className="text-right">{pct(r.PartVentaModa)}</td>
+
+												<td className="text-right">{numberWithCommas(r.VentaAccesorio)}</td>
+												<td className="text-right">{pct(r.PartVentaAcc)}</td>
+
+												<td className="text-right">{numberWithCommas(r.VentaFrogs)}</td>
+												<td className="text-right">{pct(r.PartVentaFrogs)}</td>
+
+												<td className="text-right">{numberWithCommas(r.VentaMika)}</td>
+												<td className="text-right">{pct(r.PartMika)}</td>
+											</tr>
+										)
+									})}
+							</tbody>
+						</table>
+					</React.Fragment>
+				))}
+
+			{/* Mensaje general debajo de las tablas */}
+			<div className="mt-3 mb-6">
+				<p className="text-xs italic text-slate-600 text-center">
+					Las ventas en línea son reportadas por fecha de pedido.
+				</p>
+			</div>
+		</div>
+	)
+}
+
+const Stat = ({ data }) => {
+	// Normalizar la entrada: objeto { ventadetalle: [...] } o arreglo [...]
+	let list = []
+	if (Array.isArray(data)) {
+		list = data
+	} else if (data && typeof data === 'object') {
+		list = Array.isArray(data.ventadetalle)
+			? data.ventadetalle
+			: Array.isArray(Object.values(data)[0])
+				? Object.values(data)[0]
+				: []
+	}
+
+	const etiqueta = (r) => {
+		if (r.Tienda === 'TOTAL') return 'TOTAL'
+		if (/^TOT\s+/i.test(String(r.Tienda || ''))) return String(r.Plaza || '').toUpperCase()
+		return r.Tienda || r.Region || ''
+	}
+
+	return (
+		<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+			{list
+				.filter((r) => !(r._level === 'region' && String(r.Region || '').toUpperCase() === 'SIN REGION'))
+				.map((r, i) => {
+					const colVenta = {
+						columnTitle: 'VENTA',
+						values: [
+							{ caption: 'Venta ($)', value: numberWithCommas(r.Venta) },
+							{ caption: '% vs. Vta. Tot.', value: pct(r.PartVenta) }
+						]
+					}
+
+					const colSegmento = {
+						columnTitle: 'SEGMENTO',
+						values: [
+							{ caption: 'Línea ($)', value: numberWithCommas(r.VentaLinea) },
+							{ caption: '% L', value: pct(r.PartVentaLinea) },
+							{ caption: 'Moda ($)', value: numberWithCommas(r.VentaModa) },
+							{ caption: '% M', value: pct(r.PartVentaModa) },
+							{ caption: 'Accesorio ($)', value: numberWithCommas(r.VentaAccesorio) },
+							{ caption: '% A', value: pct(r.PartVentaAcc) }
+						]
+					}
+
+					const colMarca = {
+						columnTitle: 'MARCA',
+						values: [
+							{ caption: 'Frogs ($)', value: numberWithCommas(r.VentaFrogs) },
+							{ caption: '% SF', value: pct(r.PartVentaFrogs) },
+							{ caption: 'Mika ($)', value: numberWithCommas(r.VentaMika) },
+							{ caption: '% MK', value: pct(r.PartMika) }
+						]
+					}
+
+					return (
+						<Stats
+							key={`${etiqueta(r)}-${i}`}
+							title={etiqueta(r)}
+							expand={false}
+							columns={[colVenta, colSegmento, colMarca]}
+						/>
+					)
+				})}
+
+			{/* Mensaje general debajo de las tarjetas */}
+			<div className="mt-3 mb-6 col-span-full">
+				<p className="text-xs italic text-slate-600 text-center">
+					Las ventas en línea son reportadas por fecha de pedido.
+				</p>
+			</div>
+		</div>
+	)
+}
+
+const StatGroup = ({ data, region = 'TOTAL' }) => {
+	// Normalizar entrada: puede venir como arreglo o como { ventadetalle: [...] }
+	let list = []
+	if (Array.isArray(data)) {
+		list = data
+	} else if (data && typeof data === 'object') {
+		list = Array.isArray(data.ventadetalle)
+			? data.ventadetalle
+			: Array.isArray(Object.values(data)[0])
+				? Object.values(data)[0]
+				: []
+	}
+
+	// Etiqueta igual que la tabla (REGIÓN / TOT PLAZA / TIENDA / TOTAL)
+	const label = (r) => {
+		if (r.Tienda === 'TOTAL') return 'TOTAL'
+		if (/^TOT\s+/i.test(String(r.Tienda || ''))) return String(r.Plaza || '').toUpperCase()
+		return r.Tienda || r.Region || ''
+	}
+
+	// Filtrar “SIN REGION” en caso de que exista como fila sintética
+	const notSinRegion = (r) => !(r._level === 'region' && String(r.Region || '').toUpperCase() === 'SIN REGION')
+
+	// Elegir columnas según la región seleccionada
+	let colsSource = []
+	if (region === 'TOTAL') {
+		const regions = list.filter((r) => r._level === 'region').filter(notSinRegion)
+		const total = list.find((r) => r.Tienda === 'TOTAL')
+		colsSource = [...regions, ...(total ? [total] : [])]
+	} else {
+		colsSource = list
+			.filter((r) => String(r.Region || '') === region)
+			.filter((r) => r.Tienda !== 'TOTAL' && r._level !== 'region') // solo tiendas y TOT plaza
+	}
+
+	// Construir columnas para cada bloque
+	const ventaCols = colsSource.map((r) => ({
+		columnTitle: label(r),
+		values: [
+			{ caption: 'Venta ($)', value: numberWithCommas(r.Venta) },
+			{ caption: '% vs. Vta. Tot.', value: pct(r.PartVenta) }
+		]
+	}))
+
+	const segmentoCols = colsSource.map((r) => ({
+		columnTitle: label(r),
+		values: [
+			{ caption: 'Línea ($)', value: numberWithCommas(r.VentaLinea) },
+			{ caption: '% L', value: pct(r.PartVentaLinea) },
+			{ caption: 'Moda ($)', value: numberWithCommas(r.VentaModa) },
+			{ caption: '% M', value: pct(r.PartVentaModa) },
+			{ caption: 'Accesorio ($)', value: numberWithCommas(r.VentaAccesorio) },
+			{ caption: '% A', value: pct(r.PartVentaAcc) }
+		]
+	}))
+
+	const marcaCols = colsSource.map((r) => ({
+		columnTitle: label(r),
+		values: [
+			{ caption: 'Frogs ($)', value: numberWithCommas(r.VentaFrogs) },
+			{ caption: '% SF', value: pct(r.PartVentaFrogs) },
+			{ caption: 'Mika ($)', value: numberWithCommas(r.VentaMika) },
+			{ caption: '% MK', value: pct(r.PartMika) }
+		]
+	}))
+
+	// Si no hay columnas, no renderizamos nada “raro”
+	if (!ventaCols.length) return <></>
+
+	return (
+		<div className="grid grid-cols-1 gap-4">
+			<Stats title={`VENTA — ${region}`} columns={ventaCols} expand={false} />
+			<Stats title="SEGMENTO" columns={segmentoCols} expand={false} />
+			<Stats title="MARCA" columns={marcaCols} expand={false} />
+
+			{/* Mensaje general debajo de las tarjetas */}
+			<div className="mt-3 mb-6">
+				<p className="text-xs italic text-slate-600 text-center">
+					Las ventas en línea son reportadas por fecha de pedido.
+				</p>
+			</div>
+		</div>
+	)
+}
+
+// --- Mobile table for Venta Detalle (VENTA / SEGMENTO / MARCA) ---
+const TableMovil = ({ data }) => {
+	// Normalizar entrada: { ventadetalle: [...] } o arreglo [...]
+	let list = []
+	if (Array.isArray(data)) {
+		list = data
+	} else if (data && typeof data === 'object') {
+		list = Array.isArray(data.ventadetalle)
+			? data.ventadetalle
+			: Array.isArray(Object.values(data)[0])
+				? Object.values(data)[0]
+				: []
+	}
+
+	// Ocultar fila sintética "SIN REGION"
+	const rows = (list || []).filter(
+		(r) => !(r._level === 'region' && String(r.Region || '').toUpperCase() === 'SIN REGION')
+	)
+
+	const label = (r) => {
+		if (r.Tienda === 'TOTAL') return 'TOTAL'
+		if (/^TOT\s+/i.test(String(r.Tienda || ''))) return String(r.Plaza || '').toUpperCase()
+		return r.Tienda || r.Region || ''
+	}
+
+	const levelOf = (r) =>
+		r._level || (r.Tienda === 'TOTAL' ? 'grand' : /^TOT\s+/i.test(String(r.Tienda || '')) ? 'plaza' : 'store')
+
+	// Clases al estilo de la segunda imagen (grises, texto negro)
+	const rowClassOf = (level) =>
+		level === 'grand'
+			? 'bg-gray-400 font-bold text-black'
+			: level === 'region'
+				? 'bg-gray-300 font-semibold text-black'
+				: level === 'plaza'
+					? 'bg-gray-200 font-medium text-black'
+					: ''
+
+	// Render helpers (una fila para un r y un set de celdas)
+	const RowVenta = (r, i) => {
+		const lvl = levelOf(r)
+		return (
+			<tr key={`v-${i}`} className={rowClassOf(lvl)} data-row-format={lvl}>
+				<td className="priority-cell text-left">{label(r)}</td>
+				<td className="text-right">{numberWithCommas(r.Venta)}</td>
+				<td className="text-right">{pct(r.PartVenta)}</td>
+			</tr>
+		)
+	}
+
+	const RowSegmento = (r, i) => {
+		const lvl = levelOf(r)
+		return (
+			<tr key={`s-${i}`} className={rowClassOf(lvl)} data-row-format={lvl}>
+				<td className="priority-cell text-left">{label(r)}</td>
+				<td className="text-right">{numberWithCommas(r.VentaLinea)}</td>
+				<td className="text-right">{pct(r.PartVentaLinea)}</td>
+				<td className="text-right">{numberWithCommas(r.VentaModa)}</td>
+				<td className="text-right">{pct(r.PartVentaModa)}</td>
+				<td className="text-right">{numberWithCommas(r.VentaAccesorio)}</td>
+				<td className="text-right">{pct(r.PartVentaAcc)}</td>
+			</tr>
+		)
+	}
+
+	const RowMarca = (r, i) => {
+		const lvl = levelOf(r)
+		return (
+			<tr key={`m-${i}`} className={rowClassOf(lvl)} data-row-format={lvl}>
+				<td className="priority-cell text-left">{label(r)}</td>
+				<td className="text-right">{numberWithCommas(r.VentaFrogs)}</td>
+				<td className="text-right">{pct(r.PartVentaFrogs)}</td>
+				<td className="text-right">{numberWithCommas(r.VentaMika)}</td>
+				<td className="text-right">{pct(r.PartMika)}</td>
+			</tr>
+		)
+	}
+
+	if (!rows.length) return <></>
+
+	return (
+		<div className="space-y-8">
+			{/* VENTA */}
+			<table className="table-report-mobile" onClick={selectRow}>
+				<caption>VENTA</caption>
+				<thead>
+					<tr>
+						<th>Tienda</th>
+						<th>Venta ($)</th>
+						<th>% PART. VS. VTA. TOT.</th>
+					</tr>
+				</thead>
+				<tbody>{rows.map(RowVenta)}</tbody>
+			</table>
+
+			{/* SEGMENTO */}
+			<table className="table-report-mobile" onClick={selectRow}>
+				<caption>VENTA POR SEGMENTO &amp; PORC. PARTICIPACIÓN POR ENTIDAD</caption>
+				<thead>
+					<tr>
+						<th>Tienda</th>
+						<th>Línea ($)</th>
+						<th>% L</th>
+						<th>Moda ($)</th>
+						<th>% M</th>
+						<th>Accesorio ($)</th>
+						<th>% A</th>
+					</tr>
+				</thead>
+				<tbody>{rows.map(RowSegmento)}</tbody>
+			</table>
+
+			{/* MARCA */}
+			<table className="table-report-mobile" onClick={selectRow}>
+				<caption>VENTA POR MARCA &amp; PORC. PARTICIPACIÓN</caption>
+				<thead>
+					<tr>
+						<th>Tienda</th>
+						<th>Frogs ($)</th>
+						<th>% SF</th>
+						<th>Mika ($)</th>
+						<th>% MK</th>
+					</tr>
+				</thead>
+				<tbody>{rows.map(RowMarca)}</tbody>
+			</table>
+
+			{/* Mensaje final */}
+			<div className="mt-3 mb-6">
+				<p className="text-xs italic text-slate-600 text-center">
+					Las ventas en línea son reportadas por fecha de pedido.
+				</p>
+			</div>
+		</div>
+	)
 }
 
 const PageWithAuth = withAuth(VentaDetNivelTienda)
