@@ -434,7 +434,7 @@ function Segmento({ config }) {
 			</section>
 
 			{/* Subtítulo centrado */}
-			<h2 className="text-center text-base md:text-lg font-semibold text-gray-700 -mt-2">
+			<h2 className="text-center text-base md:text-base font-bold text-black-mt-2">
 				Distribución de venta por Segmento
 			</h2>
 
