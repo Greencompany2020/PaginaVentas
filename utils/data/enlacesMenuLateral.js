@@ -98,6 +98,15 @@ export const enlaces = [
     ]
   },
   {
+    summaryText: 'Venta Detallada',
+    links: [
+      {
+        link: '/ventadet/niveltienda',
+        linkText: 'Nivel Tienda'
+      }
+    ]
+  },
+  {
     summaryText: 'Porcentajes',
     links: [
       {
