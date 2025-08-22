@@ -267,83 +267,80 @@ function VentaDetNivelTienda(props) {
 
 			const { Workbook } = await import('exceljs')
 			const wb = new Workbook()
-			const ws = wb.addWorksheet('VentaDetNivelTienda')
+			const ws = wb.addWorksheet('VENTA DETALLADA')
 
 			// ---------- Título y periodo ----------
 			const titulo = 'VENTA TIENDAS CON DETALLADO POR SEGMENTO & MARCA'
 			const periodo = `Datos del ${dateHelper.getCurrentDate(range.ini)} ${dateHelper.getMonthName(range.ini)} ${dateHelper.getCurrentYear(range.ini)} al ${dateHelper.getCurrentDate(range.fin)} ${dateHelper.getMonthName(range.fin)} ${dateHelper.getCurrentYear(range.fin)}`
 
-			ws.mergeCells('A1:M1')
-			ws.getCell('A1').value = titulo
-			ws.getCell('A1').alignment = { horizontal: 'center' }
-			ws.getCell('A1').font = { bold: true, size: 14 }
-
-			ws.mergeCells('A2:M2')
-			ws.getCell('A2').value = periodo
-			ws.getCell('A2').alignment = { horizontal: 'center' }
-			ws.getCell('A2').font = { italic: true, color: { argb: '555555' } }
-
-			// ---------- Encabezado de 2 filas (comienza en la fila 3) ----------
 			ws.mergeCells('A3:A4')
 			ws.getCell('A3').value = 'TIENDA'
 
-			ws.mergeCells('B3:C3')
-			ws.getCell('B3').value = 'VENTA'
-			ws.getCell('B4').value = 'Venta ($)'
-			ws.getCell('C4').value = '% Venta'
+			// En web NO hay grupo "VENTA", son dos columnas sueltas:
+			ws.mergeCells('B3:B4')
+			ws.getCell('B3').value = 'Venta ($)'
+			ws.mergeCells('C3:C4')
+			ws.getCell('C3').value = '% PART. VS. VTA. TOT.'
 
+			// Grupos iguales a la tabla web:
 			ws.mergeCells('D3:I3')
-			ws.getCell('D3').value = 'SEGMENTO'
+			ws.getCell('D3').value = 'VENTA POR SEGMENTO & PORC.PARTICIPACION POR ENTIDAD'
 			ws.getCell('D4').value = 'Línea ($)'
-			ws.getCell('E4').value = '% Línea'
+			ws.getCell('E4').value = '% L'
 			ws.getCell('F4').value = 'Moda ($)'
-			ws.getCell('G4').value = '% Moda'
+			ws.getCell('G4').value = '% M'
 			ws.getCell('H4').value = 'Accesorio ($)'
-			ws.getCell('I4').value = '% Acc'
+			ws.getCell('I4').value = '% A'
 
 			ws.mergeCells('J3:M3')
-			ws.getCell('J3').value = 'MARCA'
+			ws.getCell('J3').value = 'VENTA POR MARCA & PORC. PARTICIPACION'
 			ws.getCell('J4').value = 'Frogs ($)'
-			ws.getCell('K4').value = '% Frogs'
+			ws.getCell('K4').value = '% SF'
 			ws.getCell('L4').value = 'Mika ($)'
-			ws.getCell('M4').value = '% Mika'
+			ws.getCell('M4').value = '% MK'
 
 			// Formato del header
-			;[3, 4].forEach((r) => {
-				const row = ws.getRow(r)
-				row.font = { bold: true }
-				row.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }
-				row.eachCell((c) => {
-					c.border = {
-						top: { style: 'thin' },
-						left: { style: 'thin' },
-						bottom: { style: 'thin' },
-						right: { style: 'thin' }
-					}
-					c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'E9ECEF' } }
-				})
+			const thinWhite = { style: 'thin', color: { argb: 'FFFFFFFF' } } // borde blanco
+
+			for (const r of [3, 4]) {
+			const row = ws.getRow(r)
+			row.height = 22
+			row.font = { bold: true, color: { argb: 'FFFFFFFF' } } // letra blanca
+			row.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }
+			row.eachCell({ includeEmpty: true }, (c) => {
+				c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '000000' } } // fondo negro
+				c.border = { top: thinWhite, left: thinWhite, bottom: thinWhite, right: thinWhite } // bordes blancos
 			})
+			}
 
 			// Columnas (ancho + formato)
 			ws.columns = [
-				{ key: 'label', width: 26 }, // A
-				{ key: 'Venta', width: 14, style: { numFmt: '$#,##0.00' } }, // B
-				{ key: 'PartVenta', width: 10, style: { numFmt: '0.0%' } }, // C
-				{ key: 'VentaLinea', width: 12, style: { numFmt: '$#,##0.00' } }, // D
-				{ key: 'PartVentaLinea', width: 10, style: { numFmt: '0.0%' } }, // E
-				{ key: 'VentaModa', width: 12, style: { numFmt: '$#,##0.00' } }, // F
-				{ key: 'PartVentaModa', width: 10, style: { numFmt: '0.0%' } }, // G
-				{ key: 'VentaAccesorio', width: 14, style: { numFmt: '$#,##0.00' } }, // H
-				{ key: 'PartVentaAcc', width: 10, style: { numFmt: '0.0%' } }, // I
-				{ key: 'VentaFrogs', width: 12, style: { numFmt: '$#,##0.00' } }, // J
-				{ key: 'PartVentaFrogs', width: 10, style: { numFmt: '0.0%' } }, // K
-				{ key: 'VentaMika', width: 12, style: { numFmt: '$#,##0.00' } }, // L
-				{ key: 'PartMika', width: 10, style: { numFmt: '0.0%' } } // M
+				{ key: 'label', width: 26 },
+				{ key: 'Venta', width: 14, style: { numFmt: '$#,##0.00' } },
+				{ key: 'PartVenta', width: 12, style: { numFmt: '0.0%' } }, // % angosto
+				{ key: 'VentaLinea', width: 15, style: { numFmt: '$#,##0.00' } },
+				{ key: 'PartVentaLinea', width: 9, style: { numFmt: '0.0%' } },
+				{ key: 'VentaModa', width: 15, style: { numFmt: '$#,##0.00' } },
+				{ key: 'PartVentaModa', width: 9, style: { numFmt: '0.0%' } },
+				{ key: 'VentaAccesorio', width: 15, style: { numFmt: '$#,##0.00' } },
+				{ key: 'PartVentaAcc', width: 9, style: { numFmt: '0.0%' } },
+				{ key: 'VentaFrogs', width: 15, style: { numFmt: '$#,##0.00' } },
+				{ key: 'PartVentaFrogs', width: 9, style: { numFmt: '0.0%' } },
+				{ key: 'VentaMika', width: 15, style: { numFmt: '$#,##0.00' } },
+				{ key: 'PartMika', width: 9, style: { numFmt: '0.0%' } }
 			]
 
 			// ---------- Datos ----------
+
 			const startRow = 5
-			flat.forEach((r, idx) => {
+			const toExport = flat.filter(
+				(r) => !(r._level === 'region' && String(r.Region || '').toUpperCase() === 'SIN REGION')
+			)
+
+			const PCT_COLS = [3, 5, 7, 9, 11, 13] // C, E, G, I, K, M
+			const pctFillStore = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'D1E9FF' } }
+
+			toExport.forEach((r) => {
 				const row = ws.addRow({
 					label: displayLabel(r),
 					Venta: +r.Venta || 0,
@@ -364,14 +361,23 @@ function VentaDetNivelTienda(props) {
 				const lvl =
 					r._level || (r.Tienda === 'TOTAL' ? 'grand' : /^TOT\s+/i.test(String(r.Tienda || '')) ? 'plaza' : 'store')
 				if (lvl === 'grand') {
-					row.font = { bold: true, color: { argb: '000000' } }
-					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'C8CBD0' } }))
+				row.font = { bold: true, color: { argb: '000000' } }
+				row.eachCell(c => c.fill = { type:'pattern', pattern:'solid', fgColor:{ argb:'C8CBD0' } })
 				} else if (lvl === 'region') {
-					row.font = { bold: true }
-					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'DCE0E5' } }))
+				row.font = { bold: true }
+				row.eachCell(c => c.fill = { type:'pattern', pattern:'solid', fgColor:{ argb:'DCE0E5' } })
 				} else if (lvl === 'plaza') {
-					row.font = { bold: true }
-					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'EDEFF2' } }))
+				row.font = { bold: true }
+				row.eachCell(c => c.fill = { type:'pattern', pattern:'solid', fgColor:{ argb:'EDEFF2' } })
+				}
+
+				// >>> Diferenciar columnas de PORCENTAJE <<<
+				// Para no “romper” el sombreado de totales/región/plaza, pinto solo tiendas.
+				// Si lo quieres en todas las filas, quita la condición lvl === 'store'.
+				if (lvl === 'store') {
+				PCT_COLS.forEach(ci => {
+					row.getCell(ci).fill = pctFillStore
+				})
 				}
 			})
 
@@ -389,6 +395,12 @@ function VentaDetNivelTienda(props) {
 					else c.alignment = { horizontal: 'right' }
 				})
 			}
+
+			const noteRow = ws.lastRow.number + 2
+			ws.mergeCells(`A${noteRow}:M${noteRow}`)
+			ws.getCell(`A${noteRow}`).value = 'Las ventas en línea son reportadas por fecha de facturación.'
+			ws.getCell(`A${noteRow}`).font = { italic: true, color: { argb: '555555' } }
+			ws.getCell(`A${noteRow}`).alignment = { horizontal: 'center' }
 
 			// Congelar encabezado / Autofiltro
 			ws.views = [{ state: 'frozen', xSplit: 1, ySplit: 4 }]
@@ -421,7 +433,7 @@ function VentaDetNivelTienda(props) {
 							<Formik initialValues={initialParams} onSubmit={handleSubmit} enableReinitialize>
 								{({ isSubmitting }) => (
 									<Form>
-										<fieldset className="space-y-2 mb-4">
+										<fieldset className="space-y-2 mb-[14rem]">
 											<Input
 												type="date"
 												id="fechaIni"
@@ -559,7 +571,9 @@ const Table = (props) => {
 								<tr className="text-center">
 									<th rowSpan={2}>Tienda</th>
 									<th rowSpan={2}>Venta ($)</th>
-									<th rowSpan={2}>% PART. VS. VTA. TOT.</th>
+									<th rowSpan={2} className="w-20 whitespace-nowrap">
+										% PART. VS. VTA. TOT.
+									</th>
 									<th colSpan={6}>VENTA POR SEGMENTO & PORC.PARTICIPACION POR ENTIDAD</th>
 									<th colSpan={4}>VENTA POR MARCA & PORC. PARTICIPACION</th>
 								</tr>
@@ -601,6 +615,8 @@ const Table = (props) => {
 													? String(r.Plaza || '').toUpperCase()
 													: r.Tienda || r.Region || ''
 
+										const pctBg = (lvl) => (lvl === 'store' ? 'bg-[#D1E9FF]' : '');
+
 										return (
 											<tr key={idx} className={rowClass} data-row-format={level}>
 												{/* 1a columna: izquierda */}
@@ -608,22 +624,22 @@ const Table = (props) => {
 
 												{/* demás columnas: derecha */}
 												<td className="text-right">{numberWithCommas(r.Venta)}</td>
-												<td className="text-right">{pct(r.PartVenta)}</td>
+												<td className={`text-right w-20 whitespace-nowrap ${pctBg(level)}`}>{pct(r.PartVenta)}</td>
 
 												<td className="text-right">{numberWithCommas(r.VentaLinea)}</td>
-												<td className="text-right">{pct(r.PartVentaLinea)}</td>
+												<td className={`text-right ${pctBg(level)}`}>{pct(r.PartVentaLinea)}</td>
 
 												<td className="text-right">{numberWithCommas(r.VentaModa)}</td>
-												<td className="text-right">{pct(r.PartVentaModa)}</td>
+												<td className={`text-right ${pctBg(level)}`}>{pct(r.PartVentaModa)}</td>
 
 												<td className="text-right">{numberWithCommas(r.VentaAccesorio)}</td>
-												<td className="text-right">{pct(r.PartVentaAcc)}</td>
+												<td className={`text-right ${pctBg(level)}`}>{pct(r.PartVentaAcc)}</td>
 
 												<td className="text-right">{numberWithCommas(r.VentaFrogs)}</td>
-												<td className="text-right">{pct(r.PartVentaFrogs)}</td>
+												<td className={`text-right ${pctBg(level)}`}>{pct(r.PartVentaFrogs)}</td>
 
 												<td className="text-right">{numberWithCommas(r.VentaMika)}</td>
-												<td className="text-right">{pct(r.PartMika)}</td>
+												<td className={`text-right ${pctBg(level)}`}>{pct(r.PartMika)}</td>
 											</tr>
 										)
 									})}
@@ -635,7 +651,7 @@ const Table = (props) => {
 			{/* Mensaje general debajo de las tablas */}
 			<div className="mt-3 mb-6">
 				<p className="text-xs italic text-slate-600 text-center">
-					Las ventas en línea son reportadas por fecha de pedido.
+					Las ventas en línea son reportadas por fecha de facturación.
 				</p>
 			</div>
 		</div>
@@ -709,7 +725,7 @@ const Stat = ({ data }) => {
 			{/* Mensaje general debajo de las tarjetas */}
 			<div className="mt-3 mb-6 col-span-full">
 				<p className="text-xs italic text-slate-600 text-center">
-					Las ventas en línea son reportadas por fecha de pedido.
+					Las ventas en línea son reportadas por fecha de facturación.
 				</p>
 			</div>
 		</div>
@@ -794,7 +810,7 @@ const StatGroup = ({ data, region = 'TOTAL' }) => {
 			{/* Mensaje general debajo de las tarjetas */}
 			<div className="mt-3 mb-6">
 				<p className="text-xs italic text-slate-600 text-center">
-					Las ventas en línea son reportadas por fecha de pedido.
+					Las ventas en línea son reportadas por fecha de facturación.
 				</p>
 			</div>
 		</div>
@@ -931,7 +947,7 @@ const TableMovil = ({ data }) => {
 			{/* Mensaje final */}
 			<div className="mt-3 mb-6">
 				<p className="text-xs italic text-slate-600 text-center">
-					Las ventas en línea son reportadas por fecha de pedido.
+					Las ventas en línea son reportadas por fecha de facturación.
 				</p>
 			</div>
 		</div>
