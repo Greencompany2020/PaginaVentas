@@ -303,14 +303,14 @@ function VentaDetNivelTienda(props) {
 			const thinWhite = { style: 'thin', color: { argb: 'FFFFFFFF' } } // borde blanco
 
 			for (const r of [3, 4]) {
-			const row = ws.getRow(r)
-			row.height = 22
-			row.font = { bold: true, color: { argb: 'FFFFFFFF' } } // letra blanca
-			row.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }
-			row.eachCell({ includeEmpty: true }, (c) => {
-				c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '000000' } } // fondo negro
-				c.border = { top: thinWhite, left: thinWhite, bottom: thinWhite, right: thinWhite } // bordes blancos
-			})
+				const row = ws.getRow(r)
+				row.height = 22
+				row.font = { bold: true, color: { argb: 'FFFFFFFF' } } // letra blanca
+				row.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }
+				row.eachCell({ includeEmpty: true }, (c) => {
+					c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '000000' } } // fondo negro
+					c.border = { top: thinWhite, left: thinWhite, bottom: thinWhite, right: thinWhite } // bordes blancos
+				})
 			}
 
 			// Columnas (ancho + formato)
@@ -337,9 +337,6 @@ function VentaDetNivelTienda(props) {
 				(r) => !(r._level === 'region' && String(r.Region || '').toUpperCase() === 'SIN REGION')
 			)
 
-			const PCT_COLS = [3, 5, 7, 9, 11, 13] // C, E, G, I, K, M
-			const pctFillStore = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'D1E9FF' } }
-
 			toExport.forEach((r) => {
 				const row = ws.addRow({
 					label: displayLabel(r),
@@ -361,23 +358,14 @@ function VentaDetNivelTienda(props) {
 				const lvl =
 					r._level || (r.Tienda === 'TOTAL' ? 'grand' : /^TOT\s+/i.test(String(r.Tienda || '')) ? 'plaza' : 'store')
 				if (lvl === 'grand') {
-				row.font = { bold: true, color: { argb: '000000' } }
-				row.eachCell(c => c.fill = { type:'pattern', pattern:'solid', fgColor:{ argb:'C8CBD0' } })
+					row.font = { bold: true, color: { argb: '000000' } }
+					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'C8CBD0' } }))
 				} else if (lvl === 'region') {
-				row.font = { bold: true }
-				row.eachCell(c => c.fill = { type:'pattern', pattern:'solid', fgColor:{ argb:'DCE0E5' } })
+					row.font = { bold: true }
+					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'DCE0E5' } }))
 				} else if (lvl === 'plaza') {
-				row.font = { bold: true }
-				row.eachCell(c => c.fill = { type:'pattern', pattern:'solid', fgColor:{ argb:'EDEFF2' } })
-				}
-
-				// >>> Diferenciar columnas de PORCENTAJE <<<
-				// Para no “romper” el sombreado de totales/región/plaza, pinto solo tiendas.
-				// Si lo quieres en todas las filas, quita la condición lvl === 'store'.
-				if (lvl === 'store') {
-				PCT_COLS.forEach(ci => {
-					row.getCell(ci).fill = pctFillStore
-				})
+					row.font = { bold: true }
+					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'EDEFF2' } }))
 				}
 			})
 
@@ -615,8 +603,6 @@ const Table = (props) => {
 													? String(r.Plaza || '').toUpperCase()
 													: r.Tienda || r.Region || ''
 
-										const pctBg = (lvl) => (lvl === 'store' ? 'bg-[#D1E9FF]' : '');
-
 										return (
 											<tr key={idx} className={rowClass} data-row-format={level}>
 												{/* 1a columna: izquierda */}
@@ -624,22 +610,22 @@ const Table = (props) => {
 
 												{/* demás columnas: derecha */}
 												<td className="text-right">{numberWithCommas(r.Venta)}</td>
-												<td className={`text-right w-20 whitespace-nowrap ${pctBg(level)}`}>{pct(r.PartVenta)}</td>
+												<td className={`text-right w-20 whitespace-nowrap`}>{pct(r.PartVenta)}</td>
 
 												<td className="text-right">{numberWithCommas(r.VentaLinea)}</td>
-												<td className={`text-right ${pctBg(level)}`}>{pct(r.PartVentaLinea)}</td>
+												<td className={`text-right`}>{pct(r.PartVentaLinea)}</td>
 
 												<td className="text-right">{numberWithCommas(r.VentaModa)}</td>
-												<td className={`text-right ${pctBg(level)}`}>{pct(r.PartVentaModa)}</td>
+												<td className={`text-right`}>{pct(r.PartVentaModa)}</td>
 
 												<td className="text-right">{numberWithCommas(r.VentaAccesorio)}</td>
-												<td className={`text-right ${pctBg(level)}`}>{pct(r.PartVentaAcc)}</td>
+												<td className={`text-right`}>{pct(r.PartVentaAcc)}</td>
 
 												<td className="text-right">{numberWithCommas(r.VentaFrogs)}</td>
-												<td className={`text-right ${pctBg(level)}`}>{pct(r.PartVentaFrogs)}</td>
+												<td className={`text-right`}>{pct(r.PartVentaFrogs)}</td>
 
 												<td className="text-right">{numberWithCommas(r.VentaMika)}</td>
-												<td className={`text-right ${pctBg(level)}`}>{pct(r.PartMika)}</td>
+												<td className={`text-right`}>{pct(r.PartMika)}</td>
 											</tr>
 										)
 									})}
