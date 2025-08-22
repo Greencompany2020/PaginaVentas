@@ -100,7 +100,9 @@ const Plazas = (props) => {
       template.getColumns(), 
       template.getRows(), 
       template.style,
-      ['Tiendas frogs', 'Tienda en linea']
+      ['Tiendas frogs', 'Tienda en linea'],
+      undefined,
+      'Las ventas en línea son reportadas por fecha de pedido.'
     );
   }
 
@@ -176,7 +178,7 @@ const Plazas = (props) => {
           />
         </div>
         <div className="flex justify-between">
-          <p className={`text-sm font-bold`}>{currentRegion}</p>
+          <p className={`text-sm font-bold`}> </p>
           <ExcelButton handleClick={handleExport}/>
         </div>
       </section>
