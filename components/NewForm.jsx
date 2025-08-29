@@ -89,6 +89,7 @@ export default function NewForm({submit, userParams, dashbordParams}) {
     [comboNames.CBAGNOSCOMPARAR_AGNOS.AGNO1]: agnos?.val1 || currentYear,
     [comboNames.CBAGNOSCOMPARAR_AGNOS.AGNO2]: agnos?.val2 || currentYear,
     [inputNames.CON_VENTAS_EVENTOS]:  isTrue(userParams?.[inputNames.CON_VENTAS_EVENTOS]),
+    [inputNames.INCLUIR_WEB]:  isTrue(userParams?.[inputNames.INCLUIR_WEB]),
     [inputNames.VISTA_DESKTOP]: userParams?.[inputNames.VISTA_DESKTOP] || 1,
     [inputNames.VISTA_MOBILE]: userParams?.[inputNames.VISTA_MOBILE] || 1
   };
@@ -282,6 +283,7 @@ export default function NewForm({submit, userParams, dashbordParams}) {
 
           <fieldset className='space-y-1'>
           <CheckBoxInput label={label.INCLUIR_EVENTOS} name={inputNames.CON_VENTAS_EVENTOS} id={inputNames.CON_VENTAS_EVENTOS} />
+          <CheckBoxInput label={label.INCLUIR_WEB} name={inputNames.INCLUIR_WEB} id={inputNames.INCLUIR_WEB} />
             <CheckBoxInput label={label.NO_HORAS_VENTAS_PARCIALES} name={inputNames.NO_HORAS_VENTAS_PARCIALES} id={inputNames.NO_HORAS_VENTAS_PARCIALES}/>
             <CheckBoxInput label={label.TIPO_CAMBIO_TIENDAS} name={inputNames.TIPO_CAMBIO_TIENDAS} id={inputNames.TIPO_CAMBIO_TIENDAS}/>
           </fieldset>

@@ -14,7 +14,8 @@ const DEFAULT_FILENAME = 'Workbook'
 const DEFAULT_SHEETNAME = 'Sheet 1'
 const DEFAULT_CONFIG = {
 	ignoreAutoMargin: false,
-	margin: 5
+	margin: 5,
+	includeWeb: true
 }
 
 /**
@@ -38,6 +39,7 @@ export default function exportExcel(
 	footerNote = ''
 ) {
 	try {
+		config = { ...DEFAULT_CONFIG, ...(config || {}) };
 		//Se crea el objeto principal de excel
 		const wb = new Excel.Workbook()
 		const arr = arrType(rows)
@@ -46,10 +48,15 @@ export default function exportExcel(
 			const sheet = Array.isArray(sheetNames) ? sheetNames[0] : sheetNames
 			addSheet(wb, columns, rows, sheet, format, config, footerNote)
 		} else if (arr === 'nested') {
-			Object.entries(rows ?? {}).forEach(([key, value], i) => {
-				const sheet = Array.isArray(sheetNames) ? sheetNames[i] : `${sheetNames} ${i}`
-				addSheet(wb, columns, value, sheet, format, config, footerNote)
-			})
+     Object.entries(rows ?? {}).forEach(([key, value], i) => {
+       // si includeWeb=false, solo agrega la primera hoja (i === 0)
+       if (!config.includeWeb && i > 0) return
+       const sheet = Array.isArray(sheetNames) ? sheetNames[i] : `${sheetNames} ${i}`
+       // Soporte opcional por-si-acaso para columns/format por hoja
+       const colsForSheet  = (Array.isArray(columns) && Array.isArray(columns[0])) ? (columns[i] || columns[0]) : columns
+       const fmtForSheet   = Array.isArray(format) ? (format[i] || format[0]) : format
+       addSheet(wb, colsForSheet, value, sheet, fmtForSheet, config, footerNote)
+     })
 		}
 
 		//Esta promesa escribe el archivo de lo decarga

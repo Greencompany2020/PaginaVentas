@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
@@ -16,13 +16,26 @@ import ViewFilter from "../../components/ViewFilter";
 import Stats from "../../components/Stats";
 import { v4 } from "uuid";
 import { isMobile } from "react-device-detect";
-import {Formik, Form} from 'formik'
+import {Formik, Form, useFormikContext} from 'formik'
 import { Input, Select, BeetWenYears, Checkbox } from "../../components/reportInputs";
 import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
 import ExcelButton from '../../components/buttons/ExcelButton';
 import exportExcel from '../../utils/excel/exportExcel';
 import comPlazas from "../../utils/excel/templates/comPlazas";
 import DateHelper from "../../utils/dateHelper";
+
+/* ====== mismo helper que en grupo ====== */
+// ¿El encabezado de sección es WEB / TIENDA EN LINEA?
+const isWebKey = (k) => {
+  const x = String(k || '')
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toUpperCase()
+    .replace(/\s+/g, '');
+  return x.includes('TIENDAENLINEA') || x.includes('WEB');
+};
+// para inicial del parámetro incluirWeb (idéntico al de grupo)
+const isBoolean = (data) => (data === 'N' ? false : true);
 
 const Plazas = (props) => {
   const {config} = props;
@@ -39,6 +52,7 @@ const Plazas = (props) => {
   const [seccions, setSeccions] = useState(null);
   const [currentRegion, setCurrentRegion] = useState(null);
   const [displayMode, setDisplayMode] = useState((isMobile ? config?.mobileReportView : config?.desktopReportView));
+  const [showWeb, setShowWeb] = useState(true); // <<< igual que en grupo
 
   const parameters = {
     fecha:dateHelper.getYesterdayDate(),
@@ -50,8 +64,15 @@ const Plazas = (props) => {
     cbAgnosComparar: config?.cbAgnosComparar || 1, 
     mostrarTiendas: config?.cbMostrarTiendas || 'activas',
     incremento: config?.cbIncremento || 'compromiso',
-  }
+    incluirWeb: isBoolean(config?.incluirWeb || 'N'), // <<< agregado
+  };
 
+  // mismo watcher que en grupo para reflejar el checkbox
+  const WatchIncluirWeb = () => {
+    const { values } = useFormikContext();
+    useEffect(() => { setShowWeb(!!values.incluirWeb) }, [values.incluirWeb]);
+    return null;
+  };
 
   const handleSubmit = async values => {
     try {
@@ -74,15 +95,16 @@ const Plazas = (props) => {
     setDataReportSeccions(spliceDataObject(data, regions, 'GRUPO'))
   }
 
+  // quitar incluirWeb del payload (igual que grupo)
   const removeParams = params => {
     setReportDate(prev => ({...prev, current:params.fecha}));
     if(params.cbAgnosComparar == 1){
-      const {cbAgnosComparar, agnosComparar:[a], ...rest} = params;
+      const {cbAgnosComparar, agnosComparar:[a], incluirWeb, ...rest} = params;
       setReportDate(prev => ({...prev, dateRange:[a]}));
       setIsDisable(isSecondDateBlock(cbAgnosComparar));
       return {...rest, agnosComparar:[a]}
     }else{
-      const {cbAgnosComparar, ...rest} = params;
+      const {cbAgnosComparar, incluirWeb, ...rest} = params;
       setReportDate(prev => ({...prev, dateRange:params.agnosComparar}));
       setIsDisable(isSecondDateBlock(cbAgnosComparar));
       return rest;
@@ -101,7 +123,7 @@ const Plazas = (props) => {
       template.getRows(), 
       template.style,
       ['Tiendas frogs', 'Tienda en linea'],
-      undefined,
+      { includeWeb: !!showWeb },
       'Las ventas en línea son reportadas por fecha de pedido.'
     );
   }
@@ -116,7 +138,6 @@ const Plazas = (props) => {
        `}
       />
 
-
       <section className="p-4 space-y-2">
         <div className="flex justify-between items-start">
           <ParametersContainer>
@@ -124,6 +145,7 @@ const Plazas = (props) => {
               <Formik initialValues={parameters} onSubmit={handleSubmit}  enableReinitialize>
                 <Form>
                   <AutoSubmitToken/>
+                  <WatchIncluirWeb /> {/* <<< agregado */}
                   <fieldset className="space-y-2 mb-3">
                     <Input type={'date'} id='fecha' name='fecha' label='Fecha' placeholder={reportDate.current}/>
                     <Select id='incremento' name='incremento' label='Formular % de incremento'>
@@ -162,6 +184,7 @@ const Plazas = (props) => {
                   <fieldset className="space-y-1">
                       <Checkbox id='conIva' name='conIva' label={checkboxLabels.VENTAS_IVA}/>
                       <Checkbox id='conVentasEventos' name='conVentasEventos' label={checkboxLabels.INCLUIR_VENTAS_EVENTOS}/>
+                      <Checkbox id='incluirWeb' name='incluirWeb' label={checkboxLabels.INCLUIR_WEB}/> {/* <<< agregado */}
                       <Checkbox id='tipoCambioTiendas' name='tipoCambioTiendas' label={checkboxLabels.TIPO_CAMBIO_TIENDAS}/>
                       <Checkbox id='resultadosPesos' name='resultadosPesos' label={checkboxLabels.RESULTADO_PESOS}/>
                   </fieldset>
@@ -189,15 +212,15 @@ const Plazas = (props) => {
             (() => {
               switch (displayMode) {
                 case 1:
-                  return <Table data={dataReport} date={reportDate} />
+                  return <Table data={dataReport} date={reportDate} webShown={showWeb} />
                 case 2:
-                  return <Stat data={dataReport} date={reportDate} />
+                  return <Stat data={dataReport} date={reportDate} webShown={showWeb} />
                 case 3:
-                  return <StatGroup data={dataReportSeccions} date={reportDate} region={currentRegion} />
+                  return <StatGroup data={dataReportSeccions} date={reportDate} region={currentRegion} webShown={showWeb} />
                 case 4:
-                  return <TableMobil data={dataReport} date={reportDate} />
+                  return <TableMobil data={dataReport} date={reportDate} webShown={showWeb} />
                 default:
-                  return <Table data={dataReport} date={reportDate} />
+                  return <Table data={dataReport} date={reportDate} webShown={showWeb} />
               }
             })()
           }
@@ -208,77 +231,80 @@ const Plazas = (props) => {
 };
 
 const Table = props => {
-  const {data, date} = props;
+  const {data, date, webShown} = props;
   const dateHelper = DateHelper();
   return(
     <div className="space-y-8">
       {
-        (data && Object.keys(data).length > 0) && Object.entries(data).map(([key, values]) => (
-          <table className="table-report" key={v4()} onClick={selectRow}>
-            <caption>{getTableName(key)}</caption>
-            <thead>
-              <tr>
-                <th rowSpan={2} className='text-center'>Plaza</th>
-                <th colSpan={5 + (date.dateRange[1] ? 3 : 0)}>{`Acumulado ${dateHelper.getMonthName(date.current)}`}</th>
-                <th colSpan={5 + (date.dateRange[1] ? 3 : 0)}>Acumulado anual</th>
-              </tr>
-              <tr>
-                <th>{dateHelper.getCurrentYear(date.current)}</th>
-                <th>{date.dateRange[0]}</th>
-                <th>PPTO.</th>
-                <th>(-)</th>
-                <th>%</th>
+        (data && Object.keys(data).length > 0) && Object.entries(data).map(([key, values]) => {
+          if (!webShown && isWebKey(key)) return null; // <<< igual que en grupo
+          return (
+            <table className="table-report" key={v4()} onClick={selectRow}>
+              <caption>{getTableName(key)}</caption>
+              <thead>
+                <tr>
+                  <th rowSpan={2} className='text-center'>Plaza</th>
+                  <th colSpan={5 + (date.dateRange[1] ? 3 : 0)}>{`Acumulado ${dateHelper.getMonthName(date.current)}`}</th>
+                  <th colSpan={5 + (date.dateRange[1] ? 3 : 0)}>Acumulado anual</th>
+                </tr>
+                <tr>
+                  <th>{dateHelper.getCurrentYear(date.current)}</th>
+                  <th>{date.dateRange[0]}</th>
+                  <th>PPTO.</th>
+                  <th>(-)</th>
+                  <th>%</th>
+                  {
+                    date.dateRange[1] &&
+                    <React.Fragment key={v4()}>
+                      <th>{date.dateRange[1]}</th>
+                      <th>(-)</th>
+                      <th>%</th>
+                    </React.Fragment>
+                  }
+                  <th>{dateHelper.getCurrentYear(date.current)}</th>
+                  <th>{date.dateRange[0]}</th>
+                  <th>PPTO.</th>
+                  <th>(-)</th>
+                  <th>%</th>
+                  {
+                    date.dateRange[1] &&
+                    <React.Fragment key={v4()}>
+                      <th>{date.dateRange[1]}</th>
+                      <th>(-)</th>
+                      <th>%</th>
+                    </React.Fragment>
+                  }
+                </tr>
+              </thead>
+              <tbody>
                 {
-                  date.dateRange[1] &&
-                  <React.Fragment key={v4()}>
-                    <th>{date.dateRange[1]}</th>
-                    <th>(-)</th>
-                    <th>%</th>
-                  </React.Fragment>
-                }
-                <th>{dateHelper.getCurrentYear(date.current)}</th>
-                <th>{date.dateRange[0]}</th>
-                <th>PPTO.</th>
-                <th>(-)</th>
-                <th>%</th>
-                {
-                  date.dateRange[1] &&
-                  <React.Fragment key={v4()}>
-                    <th>{date.dateRange[1]}</th>
-                    <th>(-)</th>
-                    <th>%</th>
-                  </React.Fragment>
-                }
-              </tr>
-            </thead>
-            <tbody>
-              {
-                (values && values.length > 0) && values.map(item => (
-                  <tr key={v4()}>
-                    <td data-type-format="text" className="priority-cell">{item.plaza}</td>
-                    <td className="priority-cell">{ numberWithCommas(item['ventasMensualesActual'+ dateHelper.getCurrentYear(date.current)])}</td>
-                    <td>{ numberWithCommas(item['ventasMensualesActual'+ date.dateRange[0]])}</td>
-                    <td>{ numberWithCommas(item['presupuestoMensual'+ dateHelper.getCurrentYear(date.current)])}</td>
-                    <td data-porcent-format={isNegative(item['diferenciaMensual' + date.dateRange[0]])}>{ numberAbsComma(item['diferenciaMensual' + date.dateRange[0]])}</td>
-                    <td data-porcent-format={isNegative(item['porcentajeMensual' + date.dateRange[0]])}>{ numberAbs(item['porcentajeMensual' + date.dateRange[0]])}</td>
-                    {date.dateRange[1] && <td>{ numberWithCommas(item['ventasMensualesActual'+ date.dateRange[1]])}</td>}
-                    {date.dateRange[1] && <td data-porcent-format={isNegative(item['diferenciaMensual'+ date.dateRange[1]])}>{ numberAbsComma(item['diferenciaMensual'+ date.dateRange[1]])}</td>}
-                    {date.dateRange[1] && <td data-porcent-format={isNegative(item['porcentajeMensual' + date.dateRange[1]])}>{ numberAbs(item['porcentajeMensual' + date.dateRange[1]])}</td>} 
+                  (values && values.length > 0) && values.map(item => (
+                    <tr key={v4()}>
+                      <td data-type-format="text" className="priority-cell">{item.plaza}</td>
+                      <td className="priority-cell">{ numberWithCommas(item['ventasMensualesActual'+ dateHelper.getCurrentYear(date.current)])}</td>
+                      <td>{ numberWithCommas(item['ventasMensualesActual'+ date.dateRange[0]])}</td>
+                      <td>{ numberWithCommas(item['presupuestoMensual'+ dateHelper.getCurrentYear(date.current)])}</td>
+                      <td data-porcent-format={isNegative(item['diferenciaMensual' + date.dateRange[0]])}>{ numberAbsComma(item['diferenciaMensual' + date.dateRange[0]])}</td>
+                      <td data-porcent-format={isNegative(item['porcentajeMensual' + date.dateRange[0]])}>{ numberAbs(item['porcentajeMensual' + date.dateRange[0]])}</td>
+                      {date.dateRange[1] && <td>{ numberWithCommas(item['ventasMensualesActual'+ date.dateRange[1]])}</td>}
+                      {date.dateRange[1] && <td data-porcent-format={isNegative(item['diferenciaMensual'+ date.dateRange[1]])}>{ numberAbsComma(item['diferenciaMensual'+ date.dateRange[1]])}</td>}
+                      {date.dateRange[1] && <td data-porcent-format={isNegative(item['porcentajeMensual' + date.dateRange[1]])}>{ numberAbs(item['porcentajeMensual' + date.dateRange[1]])}</td>} 
 
-                    <td className="priority-cell">{ numberWithCommas(item['ventasAnualActual'+ dateHelper.getCurrentYear(date.current)])}</td>
-                    <td>{ numberWithCommas(item['ventasAnualActual'+ date.dateRange[0]])}</td>
-                    <td>{ numberWithCommas(item['presupuestoAnual'+ dateHelper.getCurrentYear(date.current)])}</td>
-                    <td data-porcent-format={isNegative(item['diferenciaAnual' + date.dateRange[0]])}>{ numberAbsComma(item['diferenciaAnual' + date.dateRange[0]])}</td>
-                    <td data-porcent-format={isNegative(item['porcentajeAnual' + date.dateRange[0]])}>{ numberAbs(item['porcentajeAnual' + date.dateRange[0]])}</td>
-                    {date.dateRange[1] && <td>{ numberWithCommas(item['ventasAnualActual'+ date.dateRange[1]])}</td>}
-                    {date.dateRange[1] && <td>{ numberWithCommas(item['diferenciaAnual'+ date.dateRange[1]])}</td>}
-                    {date.dateRange[1] && <td data-porcent-format={isNegative(item['porcentajeAnual' + date.dateRange[1]])}>{ numberAbs(item['porcentajeMensual' + date.dateRange[1]])}</td>} 
-                  </tr>
-                ))
-              }
-            </tbody>
-          </table>
-        ))
+                      <td className="priority-cell">{ numberWithCommas(item['ventasAnualActual'+ dateHelper.getCurrentYear(date.current)])}</td>
+                      <td>{ numberWithCommas(item['ventasAnualActual'+ date.dateRange[0]])}</td>
+                      <td>{ numberWithCommas(item['presupuestoAnual'+ dateHelper.getCurrentYear(date.current)])}</td>
+                      <td data-porcent-format={isNegative(item['diferenciaAnual' + date.dateRange[0]])}>{ numberAbsComma(item['diferenciaAnual' + date.dateRange[0]])}</td>
+                      <td data-porcent-format={isNegative(item['porcentajeAnual' + date.dateRange[0]])}>{ numberAbs(item['porcentajeAnual' + date.dateRange[0]])}</td>
+                      {date.dateRange[1] && <td>{ numberWithCommas(item['ventasAnualActual'+ date.dateRange[1]])}</td>}
+                      {date.dateRange[1] && <td>{ numberWithCommas(item['diferenciaAnual'+ date.dateRange[1]])}</td>}
+                      {date.dateRange[1] && <td data-porcent-format={isNegative(item['porcentajeAnual' + date.dateRange[1]])}>{ numberAbs(item['porcentajeMensual' + date.dateRange[1]])}</td>} 
+                    </tr>
+                  ))
+                }
+              </tbody>
+            </table>
+          );
+        })
       }
 
       {/* Mensaje general debajo de las tablas */}
@@ -292,12 +318,14 @@ const Table = props => {
 }
 
 const TableMobil = props =>{
-  const {data, date} = props;
+  const {data, date, webShown} = props;
   const dateHelper = DateHelper();
   return(
     <div className="space-y-8">
       {
-        (data && Object.keys(data).length > 0) && Object.entries(data).map(([key, values]) =>(
+        (data && Object.keys(data).length > 0) && Object.entries(data).map(([key, values]) =>{
+          if (!webShown && isWebKey(key)) return null; // <<< igual
+          return (
           <React.Fragment key={v4()}>
             {getTableName(key)}
             <table className="table-report-mobile" onClick={selectRow}>
@@ -416,7 +444,7 @@ const TableMobil = props =>{
               </table>
             }
           </React.Fragment>
-        ))
+        )})
       }
 
       {/* Mensaje general debajo de las tablas */}
@@ -430,12 +458,13 @@ const TableMobil = props =>{
 }
 
 const Stat = props =>{
-  const {data, date} = props;
+  const {data, date, webShown} = props;
   const dateHelper = DateHelper();
   return(
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
       {
         (data && Object.keys(data).length > 0) && Object.entries(data).map(([key, val]) => {
+          if (!webShown && isWebKey(key)) return null; // <<< igual
           if(val && val.length > 0) {
             const Items =  val.map(item => {
               const acumMes = {
@@ -571,8 +600,12 @@ const Stat = props =>{
 }
 
 const StatGroup = props =>{
-  const {data, date, region} = props;
+  const {data, date, region, webShown} = props;
   const dateHelper = DateHelper();
+
+  // mismo comportamiento que en grupo
+  if (!webShown && isWebKey(region)) return <></>;
+
   return(
     <>
       {
@@ -800,7 +833,6 @@ const StatGroup = props =>{
 
             const acumMesCol = [acumMes];
             const acumAnualCol = [acumAnual]
-
 
             if(date.dateRange[1] && region !== 'GRUPO'){
               acumMesCol.push(acumMesAnt);
