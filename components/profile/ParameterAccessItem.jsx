@@ -5,6 +5,7 @@ import { useNotification } from '../notifications/NotificationsProvider'
 import ParameterForm from '../ParameterForm'
 import configuratorService from '../../services/configuratorService'
 import NewForm from '../NewForm'
+import NewForm2 from '../NewForm2'
 import { UserServiceInstance } from 'services/UserService'
 
 /**
@@ -74,14 +75,63 @@ export default function ParameterAccessItem(props) {
 			})
 		}
 	}
-	const isFavorite = () => (idAccess === globalParameters?.idAcceso)
+	const isFavorite = () => idAccess === globalParameters?.idAcceso
+
+	// const RenderForm = () => {
+	// 	const { idDashboard } = parameters?.userParameters || false
+	// 	if (
+	// 		idDashboard &&
+	// 		(idDashboard === 20 || idDashboard === 21 || idDashboard === 12 || idDashboard === 13 || idDashboard === 29 || idDashboard === 1113 || idDashboard === 1114 || idDashboard === 1116)
+	// 	) {
+	// 		return (
+	// 			<NewForm
+	// 				submit={handleSubmit}
+	// 				userParams={parameters.userParameters}
+	// 				dashbordParams={parameters.accessParameters}
+	// 			/>
+	// 		)
+	// 	} else {
+	// 		return (
+	// 			<ParameterForm
+	// 				submit={handleSubmit}
+	// 				savedParameters={parameters.userParameters}
+	// 				includedParameters={parameters.accessParameters}
+	// 				onlySelect={true}
+	// 			/>
+	// 		)
+	// 	}
+	// }
 
 	const RenderForm = () => {
-		const { idDashboard } = parameters?.userParameters || false
+		const { idDashboard } = parameters?.userParameters || {}
+
+		// mismos dashboards que ya renderizan formulario "NewForm" (y ahora también 1113/1114/1116)
 		if (
 			idDashboard &&
-			(idDashboard === 20 || idDashboard === 21 || idDashboard === 12 || idDashboard === 13 || idDashboard === 29)
+			(idDashboard === 20 ||
+				idDashboard === 21 ||
+				idDashboard === 12 ||
+				idDashboard === 13 ||
+				idDashboard === 29 ||
+				idDashboard === 1113 ||
+				idDashboard === 1114 ||
+				idDashboard === 1116)
 		) {
+			console.log(parameters.userParameters);
+			console.log(parameters.accessParameters);
+			// <<< sólo aquí añadimos el nuevo if >>>
+			if (idDashboard === 1113 || idDashboard === 1114 || idDashboard === 1116) {
+				return (
+					<NewForm2
+						mode={idDashboard === 1116 ? 'ventaDet' : 'participacion'}
+						submit={handleSubmit}
+						userParams={parameters.userParameters}
+						dashbordParams={parameters.accessParameters}
+					/>
+				)
+			}
+
+			// el resto permanece igual
 			return (
 				<NewForm
 					submit={handleSubmit}
@@ -89,16 +139,17 @@ export default function ParameterAccessItem(props) {
 					dashbordParams={parameters.accessParameters}
 				/>
 			)
-		} else {
-			return (
-				<ParameterForm
-					submit={handleSubmit}
-					savedParameters={parameters.userParameters}
-					includedParameters={parameters.accessParameters}
-					onlySelect={true}
-				/>
-			)
 		}
+
+		// vista alternativa original
+		return (
+			<ParameterForm
+				submit={handleSubmit}
+				savedParameters={parameters.userParameters}
+				includedParameters={parameters.accessParameters}
+				onlySelect={true}
+			/>
+		)
 	}
 
 	useEffect(() => {
@@ -149,3 +200,4 @@ export default function ParameterAccessItem(props) {
 		</li>
 	)
 }
+

@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, { useState, useEffect } from "react";
 import { getVentasLayout } from "../../components/layout/VentasLayout";
 import {
   ParametersContainer,
@@ -23,7 +23,7 @@ import { v4 } from "uuid";
 import ViewFilter from "../../components/ViewFilter";
 import { isMobile } from "react-device-detect";
 import { Select, Input,BeetWenYears, Checkbox } from "../../components/reportInputs";
-import {Formik ,Form} from 'formik';
+import { Formik, Form, useFormikContext } from 'formik';
 import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
 import ExcelButton from '../../components/buttons/ExcelButton';
 import exportExcel from '../../utils/excel/exportExcel';
@@ -44,6 +44,26 @@ const getPercentageYear = (currentYear, comparissonYear, incremento) => {
   return incremento === 'compromiso' ? currentYear : comparissonYear
 }
 
+// ¿El encabezado de sección es WEB / TIENDA EN LINEA?
+const isWebKey = (k) => {
+  const x = String(k || '')
+    .normalize('NFD')                 // normaliza
+    .replace(/[\u0300-\u036f]/g, '')  // quita acentos
+    .toUpperCase()
+    .replace(/\s+/g, '');             // sin espacios
+
+  // Coincide con: TIENDA EN LINEA, TIENDAWEB, WEB, etc.
+  return x.includes('TIENDAENLINEA') || x.includes('WEB');
+};
+
+const isBoolean = (data) => {
+  if (data === 'N') {
+    return false;
+  } else {
+    return true;
+  }
+}
+
 function Grupo(props) {
   const {config} = props;
   const sendNotification = useNotification();
@@ -62,7 +82,7 @@ function Grupo(props) {
   const [currentRegion, setCurrentRegion] = useState(seccions[0]);
   const [displayMode, setDisplayMode] = useState((isMobile ? config?.mobileReportView : config?.desktopReportView));
   const [incremento, setIncremento] = useState('compromiso')
-
+  const [showWeb, setShowWeb] = useState(true)
 
   const parameters = {
     fecha: dateHelper.getYesterdayDate(),
@@ -74,9 +94,16 @@ function Grupo(props) {
     agnosComparar: spliteArrDate(config?.agnosComparativos,config?.agnosComparar || 1),
     cbAgnosComparar: config?.cbAgnosComparar || 1,
     resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
-    mostrarTiendas: 'activas'
+    mostrarTiendas: 'activas',
+    incluirWeb: isBoolean(config?.incluirWeb || 'N'),
   }
   Object.seal(parameters);
+
+  const WatchIncluirWeb = () => {
+    const { values } = useFormikContext()
+    useEffect(() => { setShowWeb(!!values.incluirWeb) }, [values.incluirWeb])
+    return null
+  }
 
   const handleSubmit = async values => {
     try {
@@ -95,13 +122,13 @@ function Grupo(props) {
 
   const removeParams = params => {
     if(params.cbAgnosComparar === 1){
-      const {cbAgnosComparar, agnosComparar:[a], acumuladoSemanal,  ...rest} = params;
+      const {cbAgnosComparar, agnosComparar:[a], acumuladoSemanal, incluirWeb,  ...rest} = params;
       setReportDate(({current: params.fecha, dateRange:[a]}));
       setIncludeSem(acumuladoSemanal);
       setIsDisable(isSecondDateBlock(cbAgnosComparar));
       return {...rest, agnosComparar:[a]}
     }else{
-      const {cbAgnosComparar, acumuladoSemanal, ...rest} = params;
+      const {cbAgnosComparar, acumuladoSemanal, incluirWeb, ...rest} = params;
       setReportDate(({current: params.fecha, dateRange:params.agnosComparar}));
       setIncludeSem(acumuladoSemanal);
       setIsDisable(isSecondDateBlock(cbAgnosComparar));
@@ -126,7 +153,7 @@ function Grupo(props) {
       template.getRows(),
       template.style,
       ['Tiendas frogs', 'Tienda en linea'],
-      undefined,
+      { includeWeb: !!showWeb },
       'Las ventas en línea son reportadas por fecha de pedido.'
     )
   }
@@ -148,6 +175,7 @@ function Grupo(props) {
               <Formik initialValues={parameters} onSubmit={handleSubmit} >
                 <Form>
                   <AutoSubmitToken />
+                  <WatchIncluirWeb />
                   <fieldset className="space-y-2 mb-3">
                     <Input type={'date'} placeholder={reportDate.current} id='fecha' name='fecha' label='Fecha' />
                     <BeetWenYears
@@ -187,6 +215,7 @@ function Grupo(props) {
                     <Checkbox id='conIva' name='conIva' label={checkboxLabels.VENTAS_IVA} />
                     <Checkbox id='noHorasVentasParciales' name='noHorasVentasParciales' label={checkboxLabels.NO_HORAS_VENTAS_PARCIALES} />
                     <Checkbox id='conVentasEventos' name='conVentasEventos' label={checkboxLabels.INCLUIR_VENTAS_EVENTOS} />
+                    <Checkbox id='incluirWeb' name='incluirWeb' label={checkboxLabels.INCLUIR_WEB} />
                     <Checkbox id='acumuladoSemanal' name='acumuladoSemanal' label={checkboxLabels.ACUMULADO_SEMANAL} />
                     <Checkbox id='resultadosPesos' name='resultadosPesos' label={checkboxLabels.RESULTADO_PESOS} />
                     <Checkbox id='tipoCambioTiendas' name='tipoCambioTiendas' label={checkboxLabels.TIPO_CAMBIO_TIENDAS} />
@@ -216,15 +245,15 @@ function Grupo(props) {
             (() => {
               switch (displayMode) {
                 case 1:
-                  return <Table data={dataReport} date={reportDate} includeSem={includeSem} incremento={incremento}  />
+                  return <Table data={dataReport} date={reportDate} includeSem={includeSem} incremento={incremento} webShown={showWeb}  />
                 case 2:
-                  return <Stat data={dataReport} date={reportDate} includeSem={includeSem} incremento={incremento} />
+                  return <Stat data={dataReport} date={reportDate} includeSem={includeSem} incremento={incremento} webShown={showWeb} />
                 case 3:
-                  return <StatGroup data={dataReportSeccions} date={reportDate} region={currentRegion} includeSem={includeSem} incremento={incremento} />
+                  return <StatGroup data={dataReportSeccions} date={reportDate} region={currentRegion} includeSem={includeSem} incremento={incremento} webShown={showWeb} />
                 case 4:
-                  return <TableMovil data={dataReport} date={reportDate} includeSem={includeSem} incremento={incremento} />
+                  return <TableMovil data={dataReport} date={reportDate} includeSem={includeSem} incremento={incremento} webShown={showWeb} />
                 default:
-                  return <Table data={dataReport} date={reportDate} includeSem={includeSem} incremento={incremento} />
+                  return <Table data={dataReport} date={reportDate} includeSem={includeSem} incremento={incremento} webShown={showWeb} />
               }
             })()
           }
@@ -236,13 +265,14 @@ function Grupo(props) {
 
 
 const Table = props => {
-  const { date, data, includeSem, incremento } = props;
+  const { date, data, includeSem, incremento, webShown } = props;
   const dateHelper = DateHelper();
 
   return (
     <div className="space-y-8">
-      {
-        data && Object.entries(data).map(([key, values]) => (
+   { data && Object.entries(data).map(([key, values]) => {
+       if (!webShown && isWebKey(key)) return null; // << no renderizar el bloque completo
+       return (
           <React.Fragment key={v4()}>
            {getTableName(key)}
             <table className="table-report" key={v4()} onClick={selectRow}>
@@ -398,8 +428,9 @@ const Table = props => {
               </tbody>
             </table>
           </React.Fragment>
-        ))
-      }
+
+       )
+   })}
 
       {/* Mensaje general debajo de las tablas */}
       <div className="mt-3 mb-6">
@@ -413,13 +444,14 @@ const Table = props => {
 }
 
 const TableMovil = props => {
-  const { date, data, includeSem, incremento } = props;
+  const { date, data, includeSem, incremento, webShown } = props;
   const dateHelper = DateHelper();
 
   return(
     <div className="space-y-4">
-      {
-        data && Object.entries(data).map(([key, values]) => (
+   { data && Object.entries(data).map(([key, values]) => {
+       if (!webShown && isWebKey(key)) return null;
+       return (
           <React.Fragment key={v4()}>
             {getTableName(key)}
             <div key={v4()} className='space-y-8'>
@@ -611,8 +643,9 @@ const TableMovil = props => {
               </table>
             </div>
           </React.Fragment>
-        ))
-      }
+
+      )
+   })}
 
       {/* Mensaje general debajo de las tablas */}
       <div className="mt-3 mb-6">
@@ -625,13 +658,13 @@ const TableMovil = props => {
 }
 
 const Stat = props => {
-  const { date, data, includeSem, incremento } = props;
+  const { date, data, includeSem, incremento, webShown } = props;
   const dateHelper = DateHelper();
 
   return(
     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
-      {
-        data && Object.entries(data).map(([key, values]) => {
+   { data && Object.entries(data).map(([key, values]) => {
+       if (!webShown && isWebKey(key)) return null;
           const Items =  values && values.map(item =>{
             const acumDia = {
               columnTitle: dateHelper.getWeekDate(date.current),
@@ -806,8 +839,11 @@ const Stat = props => {
 }
 
 const StatGroup = props => {
-  const { date, data, includeSem, region, incremento } = props;
+  const { date, data, includeSem, region, incremento, webShown } = props;
   const dateHelper = DateHelper();
+
+  // Si se eligió la región WEB pero el check está desmarcado, no mostrar nada
+  if (!webShown && isWebKey(region)) return <></>;
 
   if(data && data.hasOwnProperty(region)){
     let acumDia = [];
