@@ -10,19 +10,10 @@ import { isMobile } from 'react-device-detect'
 import ViewFilter from '../../components/ViewFilter'
 import {
 	getTableName,
-	spliceByRegion,
-	parseParams,
 	parseNumberToBoolean,
-	spliteArrDate,
-	isSecondDateBlock
 } from '../../utils/functions'
 import {
-	stringFormatNumber,
 	numberWithCommas,
-	numberAbs,
-	isNegative,
-	isRegionOrPlaza,
-	numberAbsComma,
 	selectRow
 } from '../../utils/resultsFormated'
 import Stats from '../../components/Stats'
@@ -62,20 +53,20 @@ const numSufijo = (label = '') => {
 	return Number.isFinite(n) ? n : null
 }
 
-// clasifica filas para pintar
-const classifyRow = (r) => {
-	const tienda = String(r.Tienda || '')
-	if (tienda === 'TOTAL') return 'grand'
-	if (/^TOT\s+/i.test(tienda)) return 'plaza'
-	return 'store'
-}
-
 // etiqueta visible en primera columna
 const displayLabel = (r) => {
 	const t = String(r.Tienda || '')
 	if (t === 'TOTAL') return 'TOTAL'
 	if (/^TOT\s+/i.test(t)) return String(r.Plaza || t).toUpperCase()
 	return t
+}
+
+const isBoolean = (data) => {
+	if (data === 'N') {
+		return false
+	} else {
+		return true
+	}
 }
 
 function VentaDetNivelTienda(props) {
@@ -101,8 +92,8 @@ function VentaDetNivelTienda(props) {
 	const initialParams = {
 		fechaIni: range.ini,
 		fechaFin: range.fin,
-		conVentasEventos: false,
-		conVentasEnLinea: false
+		conVentasEventos: parseNumberToBoolean(config?.conVentasEventos || 0),
+		conVentasEnLinea: isBoolean(config?.incluirWeb || 'N')
 	}
 
 	async function handleSubmit(values) {

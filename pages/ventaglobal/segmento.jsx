@@ -25,7 +25,7 @@ import { Input, Checkbox } from '../../components/reportInputs'
 import { isMobile } from 'react-device-detect'
 import ExcelButton from '../../components/buttons/ExcelButton'
 
-import { spliteArrDate, isSecondDateBlock } from '../../utils/functions'
+import { spliteArrDate, isSecondDateBlock, parseNumberToBoolean } from '../../utils/functions'
 import { getVentaGlobalSegmento } from '../../services/VentaGlobalService'
 import { checkboxLabels, comboValues } from '../../utils/data'
 import DateHelper from '../../utils/dateHelper'
@@ -60,7 +60,7 @@ const DoughnutSmartLabels = {
 			const side = cos >= 0 ? 'right' : 'left'
 
 			const rOut = arc.outerRadius
-			const ax = arc.x + cos * rOut 
+			const ax = arc.x + cos * rOut
 			const ay = arc.y + sin * rOut
 			const lx = arc.x + cos * (rOut + 24)
 			const ly = arc.y + sin * (rOut + 24)
@@ -152,6 +152,14 @@ const toDMY = (raw) => {
 	return s
 }
 
+const isBoolean = (data) => {
+	if (data === 'N') {
+		return false
+	} else {
+		return true
+	}
+}
+
 function Segmento({ config }) {
 	const sendNotification = useNotification()
 	const dateHelper = DateHelper()
@@ -162,22 +170,22 @@ function Segmento({ config }) {
 		current: dateHelper.getYesterdayDate(),
 		dateRange: spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)
 	})
-	const [currentRegion] = useState('TOTAL') 
-	const [incremento] = useState('compromiso') 
+	const [currentRegion] = useState('TOTAL')
+	const [incremento] = useState('compromiso')
 
 	const initialParams = {
 		fecha: dateHelper.getYesterdayDate(),
-		conVentasEventos: false,
-		conVentasEnLinea: false,
+		conVentasEventos: parseNumberToBoolean(config?.conVentasEventos || 0),
+		conVentasEnLinea: isBoolean(config?.incluirWeb || 'N')
 	}
 
 	const monthChartRef = useRef(null)
 	const yearChartRef = useRef(null)
-	
+
 	const [lastParams, setLastParams] = useState({
 		fecha: initialParams.fecha,
 		conVentasEventos: initialParams.conVentasEventos ? '1' : '2',
-  		conVentasEnLinea: initialParams.conVentasEnLinea ? 'Y' : 'N',
+		conVentasEnLinea: initialParams.conVentasEnLinea ? 'Y' : 'N'
 	})
 
 	async function handleSubmit(values) {
@@ -189,7 +197,7 @@ function Segmento({ config }) {
 			const payload = {
 				fecha: values.fecha,
 				conVentasEventos: values.conVentasEventos ? '1' : '2', // '1' incluye, '2' excluye
-				conVentasEnLinea: values.conVentasEnLinea ? 'Y' : 'N',
+				conVentasEnLinea: values.conVentasEnLinea ? 'Y' : 'N'
 			}
 			const res = await getVentaGlobalSegmento(payload)
 			setDataReport(res)
@@ -272,7 +280,7 @@ function Segmento({ config }) {
 			wf.addRows([
 				{ k: 'Fecha', v: toDMY(reportDate.current) },
 				{ k: 'Incluir ventas de eventos', v: String(lastParams.conVentasEventos) === '1' ? 'Sí' : 'No' },
-				{ k: 'Incluir venta en línea',    v: lastParams.conVentasEnLinea === 'Y' ? 'Sí' : 'No' },
+				{ k: 'Incluir venta en línea', v: lastParams.conVentasEnLinea === 'Y' ? 'Sí' : 'No' }
 			])
 			wf.getRow(1).font = { bold: true }
 
@@ -500,7 +508,7 @@ function Segmento({ config }) {
 			{/* Mensaje general debajo de las tablas */}
 			<div className="mt-3 mb-6">
 				<p className="text-xs italic text-slate-600 text-center">
-				Las ventas en línea son reportadas por fecha de facturación.
+					Las ventas en línea son reportadas por fecha de facturación.
 				</p>
 			</div>
 		</div>
