@@ -23,7 +23,7 @@ import { Input, Checkbox } from '../../components/reportInputs'
 import ExcelButton from '../../components/buttons/ExcelButton'
 import { getVentaGlobalMarca } from '../../services/VentaGlobalService' // <-- NUEVO
 import { checkboxLabels } from '../../utils/data'
-import { spliteArrDate } from '../../utils/functions'
+import { spliteArrDate, parseNumberToBoolean } from '../../utils/functions'
 import DateHelper from '../../utils/dateHelper'
 
 // === Plugin para etiquetas “listas” fuera del gráfico (evita solapes)
@@ -95,23 +95,33 @@ const DoughnutSmartLabels = {
 }
 
 const CornerNote = {
-  id: 'cornerNote',
-  afterDraw(chart, _args, opts) {
-    const text = opts?.text
-    if (!text) return
-    const { ctx, chartArea } = chart
-    ctx.save()
-    ctx.textAlign = 'right'
-    ctx.textBaseline = 'bottom'
-    ctx.fillStyle = opts?.color || '#374151'       // gris 700
-    ctx.font = opts?.font || '500 12px system-ui, -apple-system, Segoe UI, Roboto'
-    const pad = opts?.padding ?? 10
-    ctx.fillText(text, chartArea.right - pad, chartArea.bottom - pad)
-    ctx.restore()
-  }
+	id: 'cornerNote',
+	afterDraw(chart, _args, opts) {
+		const text = opts?.text
+		if (!text) return
+		const { ctx, chartArea } = chart
+		ctx.save()
+		ctx.textAlign = 'right'
+		ctx.textBaseline = 'bottom'
+		ctx.fillStyle = opts?.color || '#374151' // gris 700
+		ctx.font = opts?.font || '500 12px system-ui, -apple-system, Segoe UI, Roboto'
+		const pad = opts?.padding ?? 10
+		ctx.fillText(text, chartArea.right - pad, chartArea.bottom - pad)
+		ctx.restore()
+	}
 }
 
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, ChartTitle, DoughnutSmartLabels, CornerNote)
+ChartJS.register(
+	ArcElement,
+	Tooltip,
+	Legend,
+	CategoryScale,
+	LinearScale,
+	BarElement,
+	ChartTitle,
+	DoughnutSmartLabels,
+	CornerNote
+)
 
 // util: fecha a DD-MM-YYYY
 const toDMY = (raw) => {
@@ -128,6 +138,14 @@ const toDMY = (raw) => {
 	return s
 }
 
+const isBoolean = (data) => {
+	if (data === 'N') {
+		return false
+	} else {
+		return true
+	}
+}
+
 function Marca({ config }) {
 	const sendNotification = useNotification()
 	const dateHelper = DateHelper()
@@ -141,8 +159,8 @@ function Marca({ config }) {
 
 	const initialParams = {
 		fecha: dateHelper.getYesterdayDate(),
-		conVentasEventos: false,
-		conVentasEnLinea: false,
+		conVentasEventos: parseNumberToBoolean(config?.conVentasEventos || 0),
+		conVentasEnLinea: isBoolean(config?.incluirWeb || 'N')
 	}
 
 	// refs para exportar imágenes
@@ -151,7 +169,7 @@ function Marca({ config }) {
 	const [lastParams, setLastParams] = useState({
 		fecha: initialParams.fecha,
 		conVentasEventos: initialParams.conVentasEventos ? '1' : '2', // '2' = excluir
-  		conVentasEnLinea: initialParams.conVentasEnLinea ? 'Y' : 'N',
+		conVentasEnLinea: initialParams.conVentasEnLinea ? 'Y' : 'N'
 	})
 
 	async function handleSubmit(values) {
@@ -163,7 +181,7 @@ function Marca({ config }) {
 			const payload = {
 				fecha: values.fecha,
 				conVentasEventos: values.conVentasEventos ? '1' : '2', // '1' incluye, '2' excluye
-				conVentasEnLinea: values.conVentasEnLinea ? 'Y' : 'N',
+				conVentasEnLinea: values.conVentasEnLinea ? 'Y' : 'N'
 			}
 
 			const res = await getVentaGlobalMarca(payload) // <-- usa el servicio de marca
@@ -244,7 +262,6 @@ function Marca({ config }) {
 	const fmtMoney = (n) => '$' + numberWithCommas(n == null ? 0 : n)
 	const fmtPct = (p) => `${(p * 100).toFixed(1)}%`
 
-	
 	const makeOptions = (title, parts, sales, cornerNoteText) => ({
 		responsive: true,
 		maintainAspectRatio: false,
@@ -334,7 +351,7 @@ function Marca({ config }) {
 			wf.addRows([
 				{ k: 'Fecha', v: toDMY(lastParams.fecha) },
 				{ k: 'Incluir ventas de eventos', v: String(lastParams.conVentasEventos) === '1' ? 'Sí' : 'No' },
-				{ k: 'Incluir venta en línea',    v: lastParams.conVentasEnLinea === 'Y' ? 'Sí' : 'No' },
+				{ k: 'Incluir venta en línea', v: lastParams.conVentasEnLinea === 'Y' ? 'Sí' : 'No' }
 			])
 			wf.getRow(1).font = { bold: true }
 
@@ -403,12 +420,12 @@ function Marca({ config }) {
 											label={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
 											disabled={loading}
 										/>
-																				<Checkbox
-																					id="conVentasEnLinea"
-																					name="conVentasEnLinea"
-																					label={checkboxLabels.INCLUIR_VENTA_EN_LINEA}
-																					disabled={loading}
-																				/>
+										<Checkbox
+											id="conVentasEnLinea"
+											name="conVentasEnLinea"
+											label={checkboxLabels.INCLUIR_VENTA_EN_LINEA}
+											disabled={loading}
+										/>
 									</fieldset>
 
 									<button
@@ -431,9 +448,7 @@ function Marca({ config }) {
 			</section>
 
 			{/* Subtítulo */}
-			<h2 className="text-center text-base md:text-base font-bold text-black-mt-2">
-				Distribución de venta por Marca
-			</h2>
+			<h2 className="text-center text-base md:text-base font-bold text-black-mt-2">Distribución de venta por Marca</h2>
 
 			{/* Gráficas */}
 			<section className="p-4">
@@ -498,7 +513,7 @@ function Marca({ config }) {
 			{/* Mensaje general debajo de las tablas */}
 			<div className="mt-3 mb-6">
 				<p className="text-xs italic text-slate-600 text-center">
-				Las ventas en línea son reportadas por fecha de facturación.
+					Las ventas en línea son reportadas por fecha de facturación.
 				</p>
 			</div>
 		</div>
