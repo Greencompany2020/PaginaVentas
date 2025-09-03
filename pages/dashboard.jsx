@@ -38,9 +38,9 @@ const Dashboard = () => {
             </div>
             <section className="grid grid-cols-2 xl:grid-cols-4 content-center gap-8">
               <DirectAccess link={parameters?.point || '/diarias/grupo'} name={'Estadisticas de ventas'} image={'/icons/sales-forecast.svg'} />
-              <DirectAccess link={'/minutas'} name={'Minutas'} image={'/icons/chat.svg'} />
+              {/* <DirectAccess link={'/minutas'} name={'Minutas'} image={'/icons/chat.svg'} /> */}
               <DirectAccess link={'/configuracion/usuarios'} name={'Configuracion'} image={'/icons/config-5.png'} />
-              <DirectAccess link={'/digitalizacion/politicas'} name={'Politicas'} image={'/icons/politicas.svg'} />
+              {/* <DirectAccess link={'/digitalizacion/politicas'} name={'Politicas'} image={'/icons/politicas.svg'} /> */}
             </section>
           </div>
 
