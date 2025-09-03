@@ -117,8 +117,6 @@ export default function ParameterAccessItem(props) {
 				idDashboard === 1114 ||
 				idDashboard === 1116)
 		) {
-			console.log(parameters.userParameters);
-			console.log(parameters.accessParameters);
 			// <<< sólo aquí añadimos el nuevo if >>>
 			if (idDashboard === 1113 || idDashboard === 1114 || idDashboard === 1116) {
 				return (

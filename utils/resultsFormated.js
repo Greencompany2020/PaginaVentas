@@ -1,5 +1,4 @@
-import { regionesTiendas, concentradoPlazas, regiones } from "./data";
-
+import { regionesTiendas, concentradoPlazas, regiones } from './data'
 
 /**
  * Formatea el número separando las unidades por comas, y
@@ -8,82 +7,100 @@ import { regionesTiendas, concentradoPlazas, regiones } from "./data";
  * @returns {JSX.Element} La etiqueta <td> con el valor formateado.
  */
 export const formatNumber = (num, isLast = false) => {
-  if (!isNaN(num)) {
-    if (num < 0) {
-      return (<td style={{
-        color: isLast ? "white" : "rgb(220 38 38)",
-        fontWeight: 700,
-        textAlign: "right",
-        fontSize: 12
-      }}>{`(${Math.abs(num).toLocaleString()})`}</td>)
-    } else {
-      return (<td style={{
-        color: isLast ? "white" : "rgb(5 150 105)",
-        fontWeight: 700,
-        textAlign: "right",
-        fontSize: 12
-      }}>{Math.abs(num).toLocaleString()}</td>)
-    }
-  }
-  return <td>0</td>
+	if (!isNaN(num)) {
+		if (num < 0) {
+			return (
+				<td
+					style={{
+						color: isLast ? 'white' : 'rgb(220 38 38)',
+						fontWeight: 700,
+						textAlign: 'right',
+						fontSize: 12
+					}}
+				>{`(${Math.abs(num).toLocaleString()})`}</td>
+			)
+		} else {
+			return (
+				<td
+					style={{
+						color: isLast ? 'white' : 'rgb(5 150 105)',
+						fontWeight: 700,
+						textAlign: 'right',
+						fontSize: 12
+					}}
+				>
+					{Math.abs(num).toLocaleString()}
+				</td>
+			)
+		}
+	}
+	return <td>0</td>
 }
 
 export const stringFormatNumber = (num) => {
-  if(!isNaN(num)){
-  
-    if(num < 0){
-      return(
-        <span
-          style={{
-            color: "rgb(220 38 38)",
-            fontWeight: 700,
-            textAlign: "right",
-            fontSize: 12
-          }}
-        >
-          {`(${Math.abs(num).toLocaleString('en-US')})`}
-        </span>
-      )
-    }
-    else {
-      return(
-        <span
-          style={{
-            color: "rgb(5 150 105)",
-            fontWeight: 700,
-            textAlign: "right",
-            fontSize: 12
-          }}
-        >
-          {Math.abs(num).toLocaleString('en-US')}
-        </span>
-      )
-    }
-  }
-  return 0
+	if (!isNaN(num)) {
+		if (num < 0) {
+			return (
+				<span
+					style={{
+						color: 'rgb(220 38 38)',
+						fontWeight: 700,
+						textAlign: 'right',
+						fontSize: 12
+					}}
+				>
+					{`(${Math.abs(num).toLocaleString('en-US')})`}
+				</span>
+			)
+		} else {
+			return (
+				<span
+					style={{
+						color: 'rgb(5 150 105)',
+						fontWeight: 700,
+						textAlign: 'right',
+						fontSize: 12
+					}}
+				>
+					{Math.abs(num).toLocaleString('en-US')}
+				</span>
+			)
+		}
+	}
+	return 0
 }
 
-export const tdFormatNumber = (num, isLast=false, font=12) => {
-  let numberText = '';
-  if (num < 0) {
-    numberText = Math.abs(num).toLocaleString('en-US');
-    if(isNaN(numberText)) numberText = 0;
-    return (<td style={{
-      color: isLast ? "black" : "rgb(220 38 38)",
-      fontWeight: 700,
-      textAlign: "right",
-      fontSize: font
-    }}>{`(${numberText})`}</td>)
-  } else {
-    numberText = Math.abs(num).toLocaleString('en-US');
-    if(isNaN(numberText)) numberText = 0;
-    return (<td style={{
-      color: isLast ? "black" : "rgb(5 150 105)",
-      fontWeight: 700,
-      textAlign: "right",
-      fontSize: font
-    }}>{numberText}</td>)
-  }
+export const tdFormatNumber = (num, isLast = false, font = 12) => {
+	let numberText = ''
+	if (num < 0) {
+		numberText = Math.abs(num).toLocaleString('en-US')
+		if (isNaN(numberText)) numberText = 0
+		return (
+			<td
+				style={{
+					color: isLast ? 'black' : 'rgb(220 38 38)',
+					fontWeight: 700,
+					textAlign: 'right',
+					fontSize: font
+				}}
+			>{`(${numberText})`}</td>
+		)
+	} else {
+		numberText = Math.abs(num).toLocaleString('en-US')
+		if (isNaN(numberText)) numberText = 0
+		return (
+			<td
+				style={{
+					color: isLast ? 'black' : 'rgb(5 150 105)',
+					fontWeight: 700,
+					textAlign: 'right',
+					fontSize: font
+				}}
+			>
+				{numberText}
+			</td>
+		)
+	}
 }
 /**
  * Formatea el número separando las unidades por comas.
@@ -91,68 +108,91 @@ export const tdFormatNumber = (num, isLast=false, font=12) => {
  * @returns {string} El valor formateado
  */
 export const numberWithCommas = (num) => {
-  if(num) return num.toLocaleString('en-US');
-  return 0;
+	if (num) return num.toLocaleString('en-US')
+	return 0
 }
 
 /**
  * Retorna el valor absoluto de un numero
  * si no es numero retorno 0
- * @param {*} num 
- * @returns 
+ * @param {*} num
+ * @returns
  */
 export const numberAbs = (num) => {
-  if(!isNaN(num)){
-    const val = (num < 0) ? `(${Math.abs(num)})` : `${Math.abs(num)}`;
-    return val;
-  } 
-  return 0;
+	if (!isNaN(num)) {
+		const val = num < 0 ? `(${Math.abs(num)})` : `${Math.abs(num)}`
+		return val
+	}
+	return 0
 }
-
 
 /**
  * Retorna un numero absoluto con commas
  * si no es numero retorna 0
- * @param {*} num 
- * @returns 
+ * @param {*} num
+ * @returns
  */
-export const numberAbsComma = num => {
-  if(!isNaN(num)){
-    const val = (num < 0) ? `(${Math.abs(num).toLocaleString('en-us')})` : `${Math.abs(num).toLocaleString()}`;
-    return val;
-  }
-  return 0;
+export const numberAbsComma = (num) => {
+	if (!isNaN(num)) {
+		const val = num < 0 ? `(${Math.abs(num).toLocaleString('en-us')})` : `${Math.abs(num).toLocaleString()}`
+		return val
+	}
+	return 0
 }
 
 export const isNegative = (num) => {
-  if(isNaN(num)) return 'positive';
-  return parseFloat(num) >= 0 ? 'positive' : 'negative';
+	if (isNaN(num)) return 'positive'
+	return parseFloat(num) >= 0 ? 'positive' : 'negative'
 }
 
-export const isRegionOrPlaza = val =>{
-  if(regiones.find(region => region === val)){
-    return 'region'
-  }
-  else if(concentradoPlazas.find(plaza => plaza === val)){
-    return 'plaza'
-  }else{
-    return 'tienda'
-  }
+// export const isRegionOrPlaza = val =>{
+//   if(regiones.find(region => region === val)){
+//     return 'region'
+//   }
+//   else if(concentradoPlazas.find(plaza => plaza === val)){
+//     return 'plaza'
+//   }else{
+//     return 'tienda'
+//   }
+// }
+
+export const isRegionOrPlaza = (val) => {
+	const norm = (s) =>
+		String(s ?? '')
+			.normalize('NFD') // quita acentos
+			.replace(/[\u0300-\u036f]/g, '')
+			.toUpperCase()
+			.replace(/\s+/g, ' ') // colapsa espacios
+			.trim()
+
+	const x = norm(val)
+	const regionesSet = new Set(regiones.map(norm))
+	const plazasSet = new Set(concentradoPlazas.map(norm))
+
+	// regiones y totales
+	if (regionesSet.has(x) || /^REGION\s+[IVX]+$/.test(x) || x === 'TOTAL') return 'region'
+
+	// plazas (incluye COZUMEL por si no estuviera en data)
+	if (plazasSet.has(x) || x === 'COZUMEL') return 'plaza'
+
+	return 'tienda'
 }
 
 /**
  * Esta funcion resalta la lienea seleccionada
- * @param {*} evt 
+ * @param {*} evt
  */
-export const selectRow = evt =>{
-  const {target:{parentElement}} = evt;
-    const {localName} = parentElement;
+export const selectRow = (evt) => {
+	const {
+		target: { parentElement }
+	} = evt
+	const { localName } = parentElement
 
-    if(localName == 'tr'){
-      if(parentElement.classList.contains('selected-row')){
-        parentElement.classList.remove('selected-row')
-      }else{
-        parentElement.classList.add('selected-row')
-      }
-    }
+	if (localName == 'tr') {
+		if (parentElement.classList.contains('selected-row')) {
+			parentElement.classList.remove('selected-row')
+		} else {
+			parentElement.classList.add('selected-row')
+		}
+	}
 }
