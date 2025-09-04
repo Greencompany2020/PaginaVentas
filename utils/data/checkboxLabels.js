@@ -72,6 +72,7 @@ export const inputNames = {
   VISTA_MOBILE: 'mobileReportView',
   PRESUPUESTO_EXTRAORDINARIO:'presupuestoExtraordinario',
   INCLUIR_WEB: 'incluirWeb',
+  USAR_FUSION: 'usarFusion',
   TIPO_VALORES: 'tipoValores'
 }
 
