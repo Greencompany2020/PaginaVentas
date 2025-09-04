@@ -106,11 +106,24 @@ function Grupo(props) {
 	Object.seal(parameters)
 
 	const WatchIncluirWeb = () => {
-		const { values } = useFormikContext()
+		const { values, setFieldValue } = useFormikContext()
 		useEffect(() => {
 			setShowWeb(!!values.incluirWeb)
-		}, [values.incluirWeb])
+
+			// si no incluye web, apaga y deshabilita usarFusion
+			if (!values.incluirWeb && values.usarFusion) {
+				setFieldValue('usarFusion', false)
+			}
+		}, [values.incluirWeb, values.usarFusion, setFieldValue])
+
 		return null
+	}
+
+	const UsarFusionCheckbox = () => {
+		const { values } = useFormikContext()
+		return (
+			<Checkbox id="usarFusion" name="usarFusion" label={checkboxLabels.USAR_FUSION} disabled={!values.incluirWeb} />
+		)
 	}
 
 	const handleSubmit = async (values) => {
@@ -143,7 +156,7 @@ function Grupo(props) {
 			return {
 				...rest,
 				agnosComparar: [a0],
-				usarFusion: params.usarFusion ? 1 : 0
+				usarFusion: params.incluirWeb && params.usarFusion ? 1 : 0
 			}
 		} else {
 			const { cbAgnosComparar, acumuladoSemanal, incluirWeb, ...rest } = params
@@ -155,7 +168,7 @@ function Grupo(props) {
 			return {
 				...rest,
 				agnosComparar: agnos,
-				usarFusion: params.usarFusion ? 1 : 0
+				usarFusion: params.incluirWeb && params.usarFusion ? 1 : 0
 			}
 		}
 	}
@@ -248,7 +261,7 @@ function Grupo(props) {
 											label={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
 										/>
 										<Checkbox id="incluirWeb" name="incluirWeb" label={checkboxLabels.INCLUIR_WEB} />
-										<Checkbox id="usarFusion" name="usarFusion" label={checkboxLabels.USAR_FUSION} />
+										<UsarFusionCheckbox />
 										<Checkbox id="acumuladoSemanal" name="acumuladoSemanal" label={checkboxLabels.ACUMULADO_SEMANAL} />
 										<Checkbox id="resultadosPesos" name="resultadosPesos" label={checkboxLabels.RESULTADO_PESOS} />
 										<Checkbox
