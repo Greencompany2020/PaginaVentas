@@ -80,14 +80,28 @@ const Plazas = (props) => {
 		incluirWeb: isBoolean(config?.incluirWeb || 'N'),
 		usarFusion: false
 	}
-
-	const WatchIncluirWeb = () => {
-		const { values } = useFormikContext()
-		useEffect(() => {
-			setShowWeb(!!values.incluirWeb)
-		}, [values.incluirWeb])
-		return null
-	}
+	
+		const WatchIncluirWeb = () => {
+			const { values, setFieldValue } = useFormikContext()
+			useEffect(() => {
+				setShowWeb(!!values.incluirWeb)
+	
+				// si no incluye web, apaga y deshabilita usarFusion
+				if (!values.incluirWeb && values.usarFusion) {
+					setFieldValue('usarFusion', false)
+				}
+			}, [values.incluirWeb, values.usarFusion, setFieldValue])
+	
+			return null
+		}
+	
+		const UsarFusionCheckbox = () => {
+			const { values } = useFormikContext()
+			return (
+				<Checkbox id="usarFusion" name="usarFusion" label={checkboxLabels.USAR_FUSION} disabled={!values.incluirWeb} />
+			)
+		}
+	
 
 	const handleSubmit = async (values) => {
 		try {
@@ -122,11 +136,12 @@ const Plazas = (props) => {
 			setReportDate((prev) => ({ ...prev, dateRange: [a] }))
 			setIsDisable(isSecondDateBlock(cbAgnosComparar))
 			return { ...rest, agnosComparar: [a],
-      usarFusion: params.usarFusion ? 1 : 0, }
+      
+				usarFusion: params.incluirWeb && params.usarFusion ? 1 : 0, }
 		} else {
 			const { cbAgnosComparar, incluirWeb, ...rest } = params
 			setReportDate((prev) => ({ ...prev, dateRange: params.agnosComparar,
-      usarFusion: params.usarFusion ? 1 : 0, }))
+				usarFusion: params.incluirWeb && params.usarFusion ? 1 : 0, }))
 			setIsDisable(isSecondDateBlock(cbAgnosComparar))
 			return rest
 		}
@@ -210,7 +225,7 @@ const Plazas = (props) => {
 											label={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
 										/>
 										<Checkbox id="incluirWeb" name="incluirWeb" label={checkboxLabels.INCLUIR_WEB} />{' '}
-										<Checkbox id="usarFusion" name="usarFusion" label={checkboxLabels.USAR_FUSION} />
+										<UsarFusionCheckbox />
 										{/* <<< agregado */}
 										<Checkbox
 											id="tipoCambioTiendas"
