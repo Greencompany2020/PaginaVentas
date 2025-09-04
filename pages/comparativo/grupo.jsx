@@ -88,6 +88,7 @@ function Grupo(props) {
 	const [displayMode, setDisplayMode] = useState(isMobile ? config?.mobileReportView : config?.desktopReportView)
 	const [incremento, setIncremento] = useState('compromiso')
 	const [showWeb, setShowWeb] = useState(true)
+	const [fusionOn, setFusionOn] = useState(isBoolean(config?.usarFusion || 'N'))
 
 	const parameters = {
 		fecha: dateHelper.getYesterdayDate(),
@@ -119,6 +120,14 @@ function Grupo(props) {
 		return null
 	}
 
+	const WatchUsarFusion = () => {
+		const { values } = useFormikContext()
+		useEffect(() => {
+			setFusionOn(!!values.usarFusion)
+		}, [values.usarFusion])
+		return null
+	}
+
 	const UsarFusionCheckbox = () => {
 		const { values } = useFormikContext()
 		return (
@@ -142,34 +151,50 @@ function Grupo(props) {
 	}
 
 	const removeParams = (params) => {
-		const agnos = Array.isArray(params.agnosComparar) ? params.agnosComparar : [params.agnosComparar].filter(Boolean)
+		// const agnos = Array.isArray(params.agnosComparar) ? params.agnosComparar : [params.agnosComparar].filter(Boolean)
 
-		const a0 = agnos[0]
+		// const a0 = agnos[0]
 
-		if (params.cbAgnosComparar === 1) {
-			const { cbAgnosComparar, agnosComparar, acumuladoSemanal, incluirWeb, ...rest } = params
+		// if (params.cbAgnosComparar === 1) {
+		// 	const { cbAgnosComparar, agnosComparar, acumuladoSemanal, incluirWeb, ...rest } = params
 
-			setReportDate({ current: params.fecha, dateRange: [a0] })
-			setIncludeSem(acumuladoSemanal)
-			setIsDisable(isSecondDateBlock(cbAgnosComparar))
+		// 	setReportDate({ current: params.fecha, dateRange: [a0] })
+		// 	setIncludeSem(acumuladoSemanal)
+		// 	setIsDisable(isSecondDateBlock(cbAgnosComparar))
 
-			return {
-				...rest,
-				agnosComparar: [a0],
-				usarFusion: params.incluirWeb && params.usarFusion ? 'Y' : 'N'
-			}
-		} else {
-			const { cbAgnosComparar, acumuladoSemanal, incluirWeb, ...rest } = params
+		// 	return {
+		// 		...rest,
+		// 		agnosComparar: [a0],
+		// 		usarFusion: params.incluirWeb && params.usarFusion ? 'Y' : 'N'
+		// 	}
+		// } else {
+		// 	const { cbAgnosComparar, acumuladoSemanal, incluirWeb, ...rest } = params
 
-			setReportDate({ current: params.fecha, dateRange: agnos })
-			setIncludeSem(acumuladoSemanal)
-			setIsDisable(isSecondDateBlock(cbAgnosComparar))
+		// 	setReportDate({ current: params.fecha, dateRange: agnos })
+		// 	setIncludeSem(acumuladoSemanal)
+		// 	setIsDisable(isSecondDateBlock(cbAgnosComparar))
 
-			return {
-				...rest,
-				agnosComparar: agnos,
-				usarFusion: params.incluirWeb && params.usarFusion ? 1 : 0
-			}
+		// 	return {
+		// 		...rest,
+		// 		agnosComparar: agnos,
+		// 		usarFusion: params.incluirWeb && params.usarFusion ? 'Y' : 'N'
+		// 	}
+		// }
+		const agnos = Array.isArray(params.agnosComparar)
+			? params.agnosComparar.filter(Boolean)
+			: [params.agnosComparar].filter(Boolean)
+		const cb = Number(params.cbAgnosComparar || 1)
+		const agnosRecortados = agnos.slice(0, cb) // <- clave: elimina el 2º año cuando cb=1
+
+		const { cbAgnosComparar, incluirWeb, acumuladoSemanal, ...rest } = params
+		setReportDate({ current: params.fecha, dateRange: agnosRecortados })
+		setIncludeSem(!!acumuladoSemanal)
+		setIsDisable(isSecondDateBlock(cb))
+
+		return {
+			...rest,
+			agnosComparar: agnosRecortados,
+			usarFusion: params.incluirWeb && params.usarFusion ? 'Y' : 'N'
 		}
 	}
 
@@ -184,6 +209,9 @@ function Grupo(props) {
 			[dateHelper.getCurrentYear(reportDate.current), reportDate.dateRange].flat(1),
 			incremento
 		)
+		const legend = fusionOn
+			? 'Las ventas en línea son reportadas por fecha de facturación.'
+			: 'Las ventas en línea son reportadas por fecha de pedido.'
 		exportExcel(
 			`Comparativo Grupo ${reportDate.current}`,
 			template.getColumns(),
@@ -191,7 +219,7 @@ function Grupo(props) {
 			template.style,
 			['Tiendas frogs', 'Tienda en linea'],
 			{ includeWeb: !!showWeb },
-			'Las ventas en línea son reportadas por fecha de pedido.'
+			legend
 		)
 	}
 
@@ -213,6 +241,7 @@ function Grupo(props) {
 								<Form>
 									<AutoSubmitToken />
 									<WatchIncluirWeb />
+									<WatchUsarFusion />
 									<fieldset className="space-y-2 mb-3">
 										<Input type={'date'} placeholder={reportDate.current} id="fecha" name="fecha" label="Fecha" />
 										<BeetWenYears
@@ -300,6 +329,7 @@ function Grupo(props) {
 										includeSem={includeSem}
 										incremento={incremento}
 										webShown={showWeb}
+										fusionOn={fusionOn}
 									/>
 								)
 							case 2:
@@ -310,6 +340,7 @@ function Grupo(props) {
 										includeSem={includeSem}
 										incremento={incremento}
 										webShown={showWeb}
+										fusionOn={fusionOn}
 									/>
 								)
 							case 3:
@@ -321,6 +352,7 @@ function Grupo(props) {
 										includeSem={includeSem}
 										incremento={incremento}
 										webShown={showWeb}
+										fusionOn={fusionOn}
 									/>
 								)
 							case 4:
@@ -331,6 +363,7 @@ function Grupo(props) {
 										includeSem={includeSem}
 										incremento={incremento}
 										webShown={showWeb}
+										fusionOn={fusionOn}
 									/>
 								)
 							default:
@@ -341,6 +374,7 @@ function Grupo(props) {
 										includeSem={includeSem}
 										incremento={incremento}
 										webShown={showWeb}
+										fusionOn={fusionOn}
 									/>
 								)
 						}
@@ -352,7 +386,7 @@ function Grupo(props) {
 }
 
 const Table = (props) => {
-	const { date, data, includeSem, incremento, webShown } = props
+	const { date, data, includeSem, incremento, webShown, fusionOn } = props
 	const dateHelper = DateHelper()
 
 	return (
@@ -625,17 +659,21 @@ const Table = (props) => {
 				})}
 
 			{/* Mensaje general debajo de las tablas */}
-			<div className="mt-3 mb-6">
-				<p className="text-xs italic text-slate-600 text-center">
-					Las ventas en línea son reportadas por fecha de pedido.
-				</p>
-			</div>
+			{webShown && (
+				<div className="mt-3 mb-6">
+					<p className="text-xs italic text-slate-600 text-center">
+						{fusionOn
+							? 'Las ventas en línea son reportadas por fecha de facturación.'
+							: 'Las ventas en línea son reportadas por fecha de pedido.'}
+					</p>
+				</div>
+			)}
 		</div>
 	)
 }
 
 const TableMovil = (props) => {
-	const { date, data, includeSem, incremento, webShown } = props
+	const { date, data, includeSem, incremento, webShown, fusionOn } = props
 	const dateHelper = DateHelper()
 
 	return (
@@ -944,17 +982,21 @@ const TableMovil = (props) => {
 				})}
 
 			{/* Mensaje general debajo de las tablas */}
-			<div className="mt-3 mb-6">
-				<p className="text-xs italic text-slate-600 text-center">
-					Las ventas en línea son reportadas por fecha de pedido.
-				</p>
-			</div>
+			{webShown && (
+				<div className="mt-3 mb-6">
+					<p className="text-xs italic text-slate-600 text-center">
+						{fusionOn
+							? 'Las ventas en línea son reportadas por fecha de facturación.'
+							: 'Las ventas en línea son reportadas por fecha de pedido.'}
+					</p>
+				</div>
+			)}
 		</div>
 	)
 }
 
 const Stat = (props) => {
-	const { date, data, includeSem, incremento, webShown } = props
+	const { date, data, includeSem, incremento, webShown, fusionOn } = props
 	const dateHelper = DateHelper()
 
 	return (
@@ -1144,17 +1186,21 @@ const Stat = (props) => {
 				})}
 
 			{/* Mensaje general debajo de las tablas */}
-			<div className="mt-3 mb-6">
-				<p className="text-xs italic text-slate-600 text-center">
-					Las ventas en línea son reportadas por fecha de pedido.
-				</p>
-			</div>
+			{webShown && (
+				<div className="mt-3 mb-6">
+					<p className="text-xs italic text-slate-600 text-center">
+						{fusionOn
+							? 'Las ventas en línea son reportadas por fecha de facturación.'
+							: 'Las ventas en línea son reportadas por fecha de pedido.'}
+					</p>
+				</div>
+			)}
 		</div>
 	)
 }
 
 const StatGroup = (props) => {
-	const { date, data, includeSem, region, incremento, webShown } = props
+	const { date, data, includeSem, region, incremento, webShown, fusionOn } = props
 	const dateHelper = DateHelper()
 
 	if (!webShown && isWebKey(region)) return <></>
@@ -1342,11 +1388,15 @@ const StatGroup = (props) => {
 					<Stats title={'Acumulado Anual'} columns={acumAnual} expand={false} />
 
 					{/* Mensaje general debajo de las tablas */}
-					<div className="mt-3 mb-6">
-						<p className="text-xs italic text-slate-600 text-center">
-							Las ventas en línea son reportadas por fecha de pedido.
-						</p>
-					</div>
+					{webShown && (
+						<div className="mt-3 mb-6">
+							<p className="text-xs italic text-slate-600 text-center">
+								{fusionOn
+									? 'Las ventas en línea son reportadas por fecha de facturación.'
+									: 'Las ventas en línea son reportadas por fecha de pedido.'}
+							</p>
+						</div>
+					)}
 				</div>
 			)
 		} else {

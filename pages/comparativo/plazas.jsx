@@ -66,6 +66,7 @@ const Plazas = (props) => {
 	const [currentRegion, setCurrentRegion] = useState(null)
 	const [displayMode, setDisplayMode] = useState(isMobile ? config?.mobileReportView : config?.desktopReportView)
 	const [showWeb, setShowWeb] = useState(true)
+	const [fusionOn, setFusionOn] = useState(isBoolean(config?.usarFusion || 'N'))
 
 	const parameters = {
 		fecha: dateHelper.getYesterdayDate(),
@@ -78,30 +79,37 @@ const Plazas = (props) => {
 		mostrarTiendas: config?.cbMostrarTiendas || 'activas',
 		incremento: config?.cbIncremento || 'compromiso',
 		incluirWeb: isBoolean(config?.incluirWeb || 'N'),
-		usarFusion: false
+		usarFusion: isBoolean(config?.usarFusion || 'N')
 	}
-	
-		const WatchIncluirWeb = () => {
-			const { values, setFieldValue } = useFormikContext()
-			useEffect(() => {
-				setShowWeb(!!values.incluirWeb)
-	
-				// si no incluye web, apaga y deshabilita usarFusion
-				if (!values.incluirWeb && values.usarFusion) {
-					setFieldValue('usarFusion', false)
-				}
-			}, [values.incluirWeb, values.usarFusion, setFieldValue])
-	
-			return null
-		}
-	
-		const UsarFusionCheckbox = () => {
-			const { values } = useFormikContext()
-			return (
-				<Checkbox id="usarFusion" name="usarFusion" label={checkboxLabels.USAR_FUSION} disabled={!values.incluirWeb} />
-			)
-		}
-	
+
+	const WatchIncluirWeb = () => {
+		const { values, setFieldValue } = useFormikContext()
+		useEffect(() => {
+			setShowWeb(!!values.incluirWeb)
+
+			// si no incluye web, apaga y deshabilita usarFusion
+			if (!values.incluirWeb && values.usarFusion) {
+				setFieldValue('usarFusion', false)
+			}
+		}, [values.incluirWeb, values.usarFusion, setFieldValue])
+
+		return null
+	}
+
+	const WatchUsarFusion = () => {
+		const { values } = useFormikContext()
+		useEffect(() => {
+			setFusionOn(!!values.usarFusion)
+		}, [values.usarFusion])
+		return null
+	}
+
+	const UsarFusionCheckbox = () => {
+		const { values } = useFormikContext()
+		return (
+			<Checkbox id="usarFusion" name="usarFusion" label={checkboxLabels.USAR_FUSION} disabled={!values.incluirWeb} />
+		)
+	}
 
 	const handleSubmit = async (values) => {
 		try {
@@ -135,13 +143,14 @@ const Plazas = (props) => {
 			} = params
 			setReportDate((prev) => ({ ...prev, dateRange: [a] }))
 			setIsDisable(isSecondDateBlock(cbAgnosComparar))
-			return { ...rest, agnosComparar: [a],
-      
-				usarFusion: params.incluirWeb && params.usarFusion ? 1 : 0, }
+			return { ...rest, agnosComparar: [a], usarFusion: params.incluirWeb && params.usarFusion ? 'Y' : 'N' }
 		} else {
 			const { cbAgnosComparar, incluirWeb, ...rest } = params
-			setReportDate((prev) => ({ ...prev, dateRange: params.agnosComparar,
-				usarFusion: params.incluirWeb && params.usarFusion ? 1 : 0, }))
+			setReportDate((prev) => ({
+				...prev,
+				dateRange: params.agnosComparar,
+				usarFusion: params.incluirWeb && params.usarFusion ? 'Y' : 'N'
+			}))
 			setIsDisable(isSecondDateBlock(cbAgnosComparar))
 			return rest
 		}
@@ -153,6 +162,9 @@ const Plazas = (props) => {
 			dataReport,
 			[dateHelper.getCurrentYear(reportDate.current), reportDate.dateRange].flat(1)
 		)
+		const legend = fusionOn
+			? 'Las ventas en línea son reportadas por fecha de facturación.'
+			: 'Las ventas en línea son reportadas por fecha de pedido.'
 		exportExcel(
 			`Comparativo plaza ${reportDate.current}`,
 			template.getColumns(),
@@ -160,7 +172,7 @@ const Plazas = (props) => {
 			template.style,
 			['Tiendas frogs', 'Tienda en linea'],
 			{ includeWeb: !!showWeb },
-			'Las ventas en línea son reportadas por fecha de pedido.'
+			legend
 		)
 	}
 
@@ -181,7 +193,8 @@ const Plazas = (props) => {
 							<Formik initialValues={parameters} onSubmit={handleSubmit} enableReinitialize>
 								<Form>
 									<AutoSubmitToken />
-									<WatchIncluirWeb /> {/* <<< agregado */}
+									<WatchIncluirWeb />
+									<WatchUsarFusion /> {/* <<< agregado */}
 									<fieldset className="space-y-2 mb-3">
 										<Input type={'date'} id="fecha" name="fecha" label="Fecha" placeholder={reportDate.current} />
 										<Select id="incremento" name="incremento" label="Formular % de incremento">
@@ -257,17 +270,23 @@ const Plazas = (props) => {
 					{(() => {
 						switch (displayMode) {
 							case 1:
-								return <Table data={dataReport} date={reportDate} webShown={showWeb} />
+								return <Table data={dataReport} date={reportDate} webShown={showWeb} fusionOn={fusionOn} />
 							case 2:
-								return <Stat data={dataReport} date={reportDate} webShown={showWeb} />
+								return <Stat data={dataReport} date={reportDate} webShown={showWeb} fusionOn={fusionOn} />
 							case 3:
 								return (
-									<StatGroup data={dataReportSeccions} date={reportDate} region={currentRegion} webShown={showWeb} />
+									<StatGroup
+										data={dataReportSeccions}
+										date={reportDate}
+										region={currentRegion}
+										webShown={showWeb}
+										fusionOn={fusionOn}
+									/>
 								)
 							case 4:
-								return <TableMobil data={dataReport} date={reportDate} webShown={showWeb} />
+								return <TableMobil data={dataReport} date={reportDate} webShown={showWeb} fusionOn={fusionOn} />
 							default:
-								return <Table data={dataReport} date={reportDate} webShown={showWeb} />
+								return <Table data={dataReport} date={reportDate} webShown={showWeb} fusionOn={fusionOn} />
 						}
 					})()}
 				</div>
@@ -277,7 +296,7 @@ const Plazas = (props) => {
 }
 
 const Table = (props) => {
-	const { data, date, webShown } = props
+	const { data, date, webShown, fusionOn } = props
 	const dateHelper = DateHelper()
 	return (
 		<div className="space-y-8">
@@ -389,17 +408,21 @@ const Table = (props) => {
 				})}
 
 			{/* Mensaje general debajo de las tablas */}
-			<div className="mt-3 mb-6">
-				<p className="text-xs italic text-slate-600 text-center">
-					Las ventas en línea son reportadas por fecha de pedido.
-				</p>
-			</div>
+			{webShown && (
+				<div className="mt-3 mb-6">
+					<p className="text-xs italic text-slate-600 text-center">
+						{fusionOn
+							? 'Las ventas en línea son reportadas por fecha de facturación.'
+							: 'Las ventas en línea son reportadas por fecha de pedido.'}
+					</p>
+				</div>
+			)}
 		</div>
 	)
 }
 
 const TableMobil = (props) => {
-	const { data, date, webShown } = props
+	const { data, date, webShown, fusionOn } = props
 	const dateHelper = DateHelper()
 	return (
 		<div className="space-y-8">
@@ -568,17 +591,21 @@ const TableMobil = (props) => {
 				})}
 
 			{/* Mensaje general debajo de las tablas */}
-			<div className="mt-3 mb-6">
-				<p className="text-xs italic text-slate-600 text-center">
-					Las ventas en línea son reportadas por fecha de pedido.
-				</p>
-			</div>
+			{webShown && (
+				<div className="mt-3 mb-6">
+					<p className="text-xs italic text-slate-600 text-center">
+						{fusionOn
+							? 'Las ventas en línea son reportadas por fecha de facturación.'
+							: 'Las ventas en línea son reportadas por fecha de pedido.'}
+					</p>
+				</div>
+			)}
 		</div>
 	)
 }
 
 const Stat = (props) => {
-	const { data, date, webShown } = props
+	const { data, date, webShown, fusionOn } = props
 	const dateHelper = DateHelper()
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -702,17 +729,21 @@ const Stat = (props) => {
 				})}
 
 			{/* Mensaje general debajo de las tablas */}
-			<div className="mt-3 mb-6">
-				<p className="text-xs italic text-slate-600 text-center">
-					Las ventas en línea son reportadas por fecha de pedido.
-				</p>
-			</div>
+			{webShown && (
+				<div className="mt-3 mb-6">
+					<p className="text-xs italic text-slate-600 text-center">
+						{fusionOn
+							? 'Las ventas en línea son reportadas por fecha de facturación.'
+							: 'Las ventas en línea son reportadas por fecha de pedido.'}
+					</p>
+				</div>
+			)}
 		</div>
 	)
 }
 
 const StatGroup = (props) => {
-	const { data, date, region, webShown } = props
+	const { data, date, region, webShown, fusionOn } = props
 	const dateHelper = DateHelper()
 
 	if (!webShown && isWebKey(region)) return <></>
@@ -974,11 +1005,15 @@ const StatGroup = (props) => {
 								)}
 
 								{/* Mensaje general debajo de las tablas */}
-								<div className="mt-3 mb-6">
-									<p className="text-xs italic text-slate-600 text-center">
-										Las ventas en línea son reportadas por fecha de pedido.
-									</p>
-								</div>
+								{webShown && (
+									<div className="mt-3 mb-6">
+										<p className="text-xs italic text-slate-600 text-center">
+											{fusionOn
+												? 'Las ventas en línea son reportadas por fecha de facturación.'
+												: 'Las ventas en línea son reportadas por fecha de pedido.'}
+										</p>
+									</div>
+								)}
 							</div>
 						</React.Fragment>
 					)
