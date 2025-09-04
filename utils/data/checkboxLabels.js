@@ -43,6 +43,7 @@ export const checkboxLabels = {
   INCLUIR_WEB: 'Incluir venta en línea',
   MOSTRAR_DETALLES: 'Ver detalle por segmento',
   INCLUIR_VENTA_EN_LINEA: 'Incluir venta en línea',
+  USAR_FUSION: 'Reportar venta en línea con fecha de entrega'
 }
 
 export const inputNames = {

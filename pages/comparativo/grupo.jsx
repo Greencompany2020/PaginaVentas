@@ -49,15 +49,13 @@ const getPercentageYear = (currentYear, comparissonYear, incremento) => {
 	return incremento === 'compromiso' ? currentYear : comparissonYear
 }
 
-// ¿El encabezado de sección es WEB / TIENDA EN LINEA?
 const isWebKey = (k) => {
 	const x = String(k || '')
-		.normalize('NFD') // normaliza
-		.replace(/[\u0300-\u036f]/g, '') // quita acentos
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
 		.toUpperCase()
-		.replace(/\s+/g, '') // sin espacios
+		.replace(/\s+/g, '')
 
-	// Coincide con: TIENDA EN LINEA, TIENDAWEB, WEB, etc.
 	return x.includes('TIENDAENLINEA') || x.includes('WEB')
 }
 
@@ -102,7 +100,8 @@ function Grupo(props) {
 		cbAgnosComparar: Number(config?.cbAgnosComparar ?? 1),
 		resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
 		mostrarTiendas: 'activas',
-		incluirWeb: isBoolean(config?.incluirWeb || 'N')
+		incluirWeb: isBoolean(config?.incluirWeb || 'N'),
+		usarFusion: false
 	}
 	Object.seal(parameters)
 
@@ -130,25 +129,34 @@ function Grupo(props) {
 	}
 
 	const removeParams = (params) => {
-		const yearsToCompare = Number(params.cbAgnosComparar)
+		const agnos = Array.isArray(params.agnosComparar) ? params.agnosComparar : [params.agnosComparar].filter(Boolean)
 
-		setIncludeSem(params.acumuladoSemanal)
-		setIsDisable(isSecondDateBlock(yearsToCompare))
+		const a0 = agnos[0]
 
-		if (yearsToCompare === 1) {
-			const {
-				cbAgnosComparar,
-				agnosComparar: [a],
-				acumuladoSemanal,
-				incluirWeb,
-				...rest
-			} = params
-			setReportDate({ current: params.fecha, dateRange: [a] })
-			return { ...rest, agnosComparar: [a] }
+		if (params.cbAgnosComparar === 1) {
+			const { cbAgnosComparar, agnosComparar, acumuladoSemanal, incluirWeb, ...rest } = params
+
+			setReportDate({ current: params.fecha, dateRange: [a0] })
+			setIncludeSem(acumuladoSemanal)
+			setIsDisable(isSecondDateBlock(cbAgnosComparar))
+
+			return {
+				...rest,
+				agnosComparar: [a0],
+				usarFusion: params.usarFusion ? 1 : 0
+			}
 		} else {
 			const { cbAgnosComparar, acumuladoSemanal, incluirWeb, ...rest } = params
-			setReportDate({ current: params.fecha, dateRange: (params.agnosComparar || []).slice(0, 2) })
-			return rest
+
+			setReportDate({ current: params.fecha, dateRange: agnos })
+			setIncludeSem(acumuladoSemanal)
+			setIsDisable(isSecondDateBlock(cbAgnosComparar))
+
+			return {
+				...rest,
+				agnosComparar: agnos,
+				usarFusion: params.usarFusion ? 1 : 0
+			}
 		}
 	}
 
@@ -240,6 +248,7 @@ function Grupo(props) {
 											label={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
 										/>
 										<Checkbox id="incluirWeb" name="incluirWeb" label={checkboxLabels.INCLUIR_WEB} />
+										<Checkbox id="usarFusion" name="usarFusion" label={checkboxLabels.USAR_FUSION} />
 										<Checkbox id="acumuladoSemanal" name="acumuladoSemanal" label={checkboxLabels.ACUMULADO_SEMANAL} />
 										<Checkbox id="resultadosPesos" name="resultadosPesos" label={checkboxLabels.RESULTADO_PESOS} />
 										<Checkbox
@@ -337,7 +346,7 @@ const Table = (props) => {
 		<div className="space-y-8">
 			{data &&
 				Object.entries(data).map(([key, values]) => {
-					if (!webShown && isWebKey(key)) return null // << no renderizar el bloque completo
+					if (!webShown && isWebKey(key)) return null
 					return (
 						<React.Fragment key={v4()}>
 							{getTableName(key)}
@@ -1135,7 +1144,6 @@ const StatGroup = (props) => {
 	const { date, data, includeSem, region, incremento, webShown } = props
 	const dateHelper = DateHelper()
 
-	// Si se eligió la región WEB pero el check está desmarcado, no mostrar nada
 	if (!webShown && isWebKey(region)) return <></>
 
 	if (data && data.hasOwnProperty(region)) {
