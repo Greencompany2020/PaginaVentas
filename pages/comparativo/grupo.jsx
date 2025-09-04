@@ -101,7 +101,7 @@ function Grupo(props) {
 		resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
 		mostrarTiendas: 'activas',
 		incluirWeb: isBoolean(config?.incluirWeb || 'N'),
-		usarFusion: false
+		usarFusion: isBoolean(config?.usarFusion || 'N')
 	}
 	Object.seal(parameters)
 
@@ -156,7 +156,7 @@ function Grupo(props) {
 			return {
 				...rest,
 				agnosComparar: [a0],
-				usarFusion: params.incluirWeb && params.usarFusion ? 1 : 0
+				usarFusion: params.incluirWeb && params.usarFusion ? 'Y' : 'N'
 			}
 		} else {
 			const { cbAgnosComparar, acumuladoSemanal, incluirWeb, ...rest } = params
