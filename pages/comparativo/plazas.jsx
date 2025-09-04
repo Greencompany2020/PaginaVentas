@@ -36,8 +36,6 @@ import exportExcel from '../../utils/excel/exportExcel'
 import comPlazas from '../../utils/excel/templates/comPlazas'
 import DateHelper from '../../utils/dateHelper'
 
-/* ====== mismo helper que en grupo ====== */
-// ¿El encabezado de sección es WEB / TIENDA EN LINEA?
 const isWebKey = (k) => {
 	const x = String(k || '')
 		.normalize('NFD')
@@ -46,7 +44,7 @@ const isWebKey = (k) => {
 		.replace(/\s+/g, '')
 	return x.includes('TIENDAENLINEA') || x.includes('WEB')
 }
-// para inicial del parámetro incluirWeb (idéntico al de grupo)
+
 const isBoolean = (data) => (data === 'N' ? false : true)
 
 const Plazas = (props) => {
@@ -67,7 +65,7 @@ const Plazas = (props) => {
 	const [seccions, setSeccions] = useState(null)
 	const [currentRegion, setCurrentRegion] = useState(null)
 	const [displayMode, setDisplayMode] = useState(isMobile ? config?.mobileReportView : config?.desktopReportView)
-	const [showWeb, setShowWeb] = useState(true) // <<< igual que en grupo
+	const [showWeb, setShowWeb] = useState(true)
 
 	const parameters = {
 		fecha: dateHelper.getYesterdayDate(),
@@ -79,10 +77,10 @@ const Plazas = (props) => {
 		cbAgnosComparar: config?.cbAgnosComparar || 1,
 		mostrarTiendas: config?.cbMostrarTiendas || 'activas',
 		incremento: config?.cbIncremento || 'compromiso',
-		incluirWeb: isBoolean(config?.incluirWeb || 'N') // <<< agregado
+		incluirWeb: isBoolean(config?.incluirWeb || 'N'),
+		usarFusion: false
 	}
 
-	// mismo watcher que en grupo para reflejar el checkbox
 	const WatchIncluirWeb = () => {
 		const { values } = useFormikContext()
 		useEffect(() => {
@@ -112,7 +110,6 @@ const Plazas = (props) => {
 		setDataReportSeccions(spliceDataObject(data, regions, 'GRUPO'))
 	}
 
-	// quitar incluirWeb del payload (igual que grupo)
 	const removeParams = (params) => {
 		setReportDate((prev) => ({ ...prev, current: params.fecha }))
 		if (params.cbAgnosComparar == 1) {
@@ -124,10 +121,12 @@ const Plazas = (props) => {
 			} = params
 			setReportDate((prev) => ({ ...prev, dateRange: [a] }))
 			setIsDisable(isSecondDateBlock(cbAgnosComparar))
-			return { ...rest, agnosComparar: [a] }
+			return { ...rest, agnosComparar: [a],
+      usarFusion: params.usarFusion ? 1 : 0, }
 		} else {
 			const { cbAgnosComparar, incluirWeb, ...rest } = params
-			setReportDate((prev) => ({ ...prev, dateRange: params.agnosComparar }))
+			setReportDate((prev) => ({ ...prev, dateRange: params.agnosComparar,
+      usarFusion: params.usarFusion ? 1 : 0, }))
 			setIsDisable(isSecondDateBlock(cbAgnosComparar))
 			return rest
 		}
@@ -211,6 +210,7 @@ const Plazas = (props) => {
 											label={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
 										/>
 										<Checkbox id="incluirWeb" name="incluirWeb" label={checkboxLabels.INCLUIR_WEB} />{' '}
+										<Checkbox id="usarFusion" name="usarFusion" label={checkboxLabels.USAR_FUSION} />
 										{/* <<< agregado */}
 										<Checkbox
 											id="tipoCambioTiendas"
@@ -269,7 +269,7 @@ const Table = (props) => {
 			{data &&
 				Object.keys(data).length > 0 &&
 				Object.entries(data).map(([key, values]) => {
-					if (!webShown && isWebKey(key)) return null // <<< igual que en grupo
+					if (!webShown && isWebKey(key)) return null
 					return (
 						<table className="table-report" key={v4()} onClick={selectRow}>
 							<caption>{getTableName(key)}</caption>
@@ -391,7 +391,7 @@ const TableMobil = (props) => {
 			{data &&
 				Object.keys(data).length > 0 &&
 				Object.entries(data).map(([key, values]) => {
-					if (!webShown && isWebKey(key)) return null // <<< igual
+					if (!webShown && isWebKey(key)) return null
 					return (
 						<React.Fragment key={v4()}>
 							{getTableName(key)}
@@ -570,7 +570,7 @@ const Stat = (props) => {
 			{data &&
 				Object.keys(data).length > 0 &&
 				Object.entries(data).map(([key, val]) => {
-					if (!webShown && isWebKey(key)) return null // <<< igual
+					if (!webShown && isWebKey(key)) return null
 					if (val && val.length > 0) {
 						const Items = val.map((item) => {
 							const acumMes = {
@@ -700,7 +700,6 @@ const StatGroup = (props) => {
 	const { data, date, region, webShown } = props
 	const dateHelper = DateHelper()
 
-	// mismo comportamiento que en grupo
 	if (!webShown && isWebKey(region)) return <></>
 
 	return (
