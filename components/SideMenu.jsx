@@ -62,7 +62,7 @@ const SideMenu = () => {
 		;(async () => {
 			try {
 				const data = await service.getUserData()
-        
+
 				// Algunos payloads vienen como {dashboards:[...]} y otros anidados; cubrimos ambos:
 				const dashboards = Array.isArray(data?.dashboards)
 					? data.dashboards
@@ -117,15 +117,21 @@ const SideMenu = () => {
 					</div>
 					<div className=" flex-[2] overflow-y-auto pl-2">
 						{/* {enlacesMenuLateral.map(({ summaryText, links }) => ( */}
-						{filteredMenu.map(({ summaryText, links }) => (
-							<DetailsSideBar
-								key={summaryText}
-								summaryText={summaryText}
-								links={links}
-								handleToggle={toggleVisible}
-								showChevron={showChevron}
-							/>
-						))}
+						{/* {filteredMenu.map(({ summaryText, links }) => ( */}
+
+						{filteredMenu.map(({ summaryText, links }) => {
+							const defaultOpen = summaryText === 'Comparativo' || summaryText === 'Participación' || summaryText === 'Top Ventas'
+							return (
+								<DetailsSideBar
+									key={summaryText}
+									summaryText={summaryText}
+									links={links}
+									handleToggle={toggleVisible}
+									showChevron={showChevron}
+									defaultOpen={defaultOpen}
+								/>
+							)
+						})}
 					</div>
 					<div className="p-3 flex flex-row">
 						<LogoutIcon width={32} className="text-sky-500" />
