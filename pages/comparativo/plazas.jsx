@@ -132,8 +132,36 @@ const Plazas = (props) => {
 		setDataReportSeccions(spliceDataObject(data, regions, 'GRUPO'))
 	}
 
+	// const removeParams = (params) => {
+	// 	const usarFusionNormalized = !!(params.incluirWeb && params.usarFusion)
+	// 	setReportDate((prev) => ({ ...prev, current: params.fecha }))
+	// 	if (params.cbAgnosComparar == 1) {
+	// 		const {
+	// 			cbAgnosComparar,
+	// 			agnosComparar: [a],
+	// 			incluirWeb,
+	// 			...rest
+	// 		} = params
+	// 		setReportDate((prev) => ({ ...prev, dateRange: [a] }))
+	// 		setIsDisable(isSecondDateBlock(cbAgnosComparar))
+	// 		return { ...rest, agnosComparar: [a], usarFusion: params.incluirWeb && params.usarFusion ? 'Y' : 'N' }
+	// 	} else {
+	// 		const { cbAgnosComparar, incluirWeb, ...rest } = params
+	// 		setReportDate((prev) => ({
+	// 			...prev,
+	// 			dateRange: params.agnosComparar,
+	// 			usarFusion: params.incluirWeb && params.usarFusion ? 'Y' : 'N'
+	// 		}))
+	// 		setIsDisable(isSecondDateBlock(cbAgnosComparar))
+	// 		return rest
+	// 	}
+	// }
 	const removeParams = (params) => {
 		setReportDate((prev) => ({ ...prev, current: params.fecha }))
+
+		// normaliza: true solo si incluye web y el checkbox de fusión está prendido
+		const usarFusionNormalized = !!(params.incluirWeb && params.usarFusion)
+
 		if (params.cbAgnosComparar == 1) {
 			const {
 				cbAgnosComparar,
@@ -143,16 +171,12 @@ const Plazas = (props) => {
 			} = params
 			setReportDate((prev) => ({ ...prev, dateRange: [a] }))
 			setIsDisable(isSecondDateBlock(cbAgnosComparar))
-			return { ...rest, agnosComparar: [a], usarFusion: params.incluirWeb && params.usarFusion ? 'Y' : 'N' }
+			return { ...rest, agnosComparar: [a], usarFusion: usarFusionNormalized }
 		} else {
 			const { cbAgnosComparar, incluirWeb, ...rest } = params
-			setReportDate((prev) => ({
-				...prev,
-				dateRange: params.agnosComparar,
-				usarFusion: params.incluirWeb && params.usarFusion ? 'Y' : 'N'
-			}))
+			setReportDate((prev) => ({ ...prev, dateRange: params.agnosComparar }))
 			setIsDisable(isSecondDateBlock(cbAgnosComparar))
-			return rest
+			return { ...rest, usarFusion: usarFusionNormalized }
 		}
 	}
 
