@@ -36,8 +36,6 @@ import exportExcel from '../../utils/excel/exportExcel'
 import comPlazas from '../../utils/excel/templates/comPlazas'
 import DateHelper from '../../utils/dateHelper'
 
-/* ====== mismo helper que en grupo ====== */
-// ¿El encabezado de sección es WEB / TIENDA EN LINEA?
 const isWebKey = (k) => {
 	const x = String(k || '')
 		.normalize('NFD')
@@ -46,7 +44,7 @@ const isWebKey = (k) => {
 		.replace(/\s+/g, '')
 	return x.includes('TIENDAENLINEA') || x.includes('WEB')
 }
-// para inicial del parámetro incluirWeb (idéntico al de grupo)
+
 const isBoolean = (data) => (data === 'N' ? false : true)
 
 const Plazas = (props) => {
@@ -67,7 +65,8 @@ const Plazas = (props) => {
 	const [seccions, setSeccions] = useState(null)
 	const [currentRegion, setCurrentRegion] = useState(null)
 	const [displayMode, setDisplayMode] = useState(isMobile ? config?.mobileReportView : config?.desktopReportView)
-	const [showWeb, setShowWeb] = useState(true) // <<< igual que en grupo
+	const [showWeb, setShowWeb] = useState(true)
+	const [fusionOn, setFusionOn] = useState(isBoolean(config?.usarFusion || 'N'))
 
 	const parameters = {
 		fecha: dateHelper.getYesterdayDate(),
@@ -79,16 +78,37 @@ const Plazas = (props) => {
 		cbAgnosComparar: config?.cbAgnosComparar || 1,
 		mostrarTiendas: config?.cbMostrarTiendas || 'activas',
 		incremento: config?.cbIncremento || 'compromiso',
-		incluirWeb: isBoolean(config?.incluirWeb || 'N') // <<< agregado
+		incluirWeb: isBoolean(config?.incluirWeb || 'N'),
+		usarFusion: isBoolean(config?.usarFusion || 'N')
 	}
 
-	// mismo watcher que en grupo para reflejar el checkbox
 	const WatchIncluirWeb = () => {
-		const { values } = useFormikContext()
+		const { values, setFieldValue } = useFormikContext()
 		useEffect(() => {
 			setShowWeb(!!values.incluirWeb)
-		}, [values.incluirWeb])
+
+			// si no incluye web, apaga y deshabilita usarFusion
+			if (!values.incluirWeb && values.usarFusion) {
+				setFieldValue('usarFusion', false)
+			}
+		}, [values.incluirWeb, values.usarFusion, setFieldValue])
+
 		return null
+	}
+
+	const WatchUsarFusion = () => {
+		const { values } = useFormikContext()
+		useEffect(() => {
+			setFusionOn(!!values.usarFusion)
+		}, [values.usarFusion])
+		return null
+	}
+
+	const UsarFusionCheckbox = () => {
+		const { values } = useFormikContext()
+		return (
+			<Checkbox id="usarFusion" name="usarFusion" label={checkboxLabels.USAR_FUSION} disabled={!values.incluirWeb} />
+		)
 	}
 
 	const handleSubmit = async (values) => {
@@ -112,9 +132,36 @@ const Plazas = (props) => {
 		setDataReportSeccions(spliceDataObject(data, regions, 'GRUPO'))
 	}
 
-	// quitar incluirWeb del payload (igual que grupo)
+	// const removeParams = (params) => {
+	// 	const usarFusionNormalized = !!(params.incluirWeb && params.usarFusion)
+	// 	setReportDate((prev) => ({ ...prev, current: params.fecha }))
+	// 	if (params.cbAgnosComparar == 1) {
+	// 		const {
+	// 			cbAgnosComparar,
+	// 			agnosComparar: [a],
+	// 			incluirWeb,
+	// 			...rest
+	// 		} = params
+	// 		setReportDate((prev) => ({ ...prev, dateRange: [a] }))
+	// 		setIsDisable(isSecondDateBlock(cbAgnosComparar))
+	// 		return { ...rest, agnosComparar: [a], usarFusion: params.incluirWeb && params.usarFusion ? 'Y' : 'N' }
+	// 	} else {
+	// 		const { cbAgnosComparar, incluirWeb, ...rest } = params
+	// 		setReportDate((prev) => ({
+	// 			...prev,
+	// 			dateRange: params.agnosComparar,
+	// 			usarFusion: params.incluirWeb && params.usarFusion ? 'Y' : 'N'
+	// 		}))
+	// 		setIsDisable(isSecondDateBlock(cbAgnosComparar))
+	// 		return rest
+	// 	}
+	// }
 	const removeParams = (params) => {
 		setReportDate((prev) => ({ ...prev, current: params.fecha }))
+
+		// normaliza: true solo si incluye web y el checkbox de fusión está prendido
+		const usarFusionNormalized = !!(params.incluirWeb && params.usarFusion)
+
 		if (params.cbAgnosComparar == 1) {
 			const {
 				cbAgnosComparar,
@@ -124,12 +171,12 @@ const Plazas = (props) => {
 			} = params
 			setReportDate((prev) => ({ ...prev, dateRange: [a] }))
 			setIsDisable(isSecondDateBlock(cbAgnosComparar))
-			return { ...rest, agnosComparar: [a] }
+			return { ...rest, agnosComparar: [a], usarFusion: usarFusionNormalized }
 		} else {
 			const { cbAgnosComparar, incluirWeb, ...rest } = params
 			setReportDate((prev) => ({ ...prev, dateRange: params.agnosComparar }))
 			setIsDisable(isSecondDateBlock(cbAgnosComparar))
-			return rest
+			return { ...rest, usarFusion: usarFusionNormalized }
 		}
 	}
 
@@ -139,6 +186,9 @@ const Plazas = (props) => {
 			dataReport,
 			[dateHelper.getCurrentYear(reportDate.current), reportDate.dateRange].flat(1)
 		)
+		const legend = fusionOn
+			? 'Las ventas en línea son reportadas por fecha de facturación.'
+			: 'Las ventas en línea son reportadas por fecha de pedido.'
 		exportExcel(
 			`Comparativo plaza ${reportDate.current}`,
 			template.getColumns(),
@@ -146,7 +196,7 @@ const Plazas = (props) => {
 			template.style,
 			['Tiendas frogs', 'Tienda en linea'],
 			{ includeWeb: !!showWeb },
-			'Las ventas en línea son reportadas por fecha de pedido.'
+			legend
 		)
 	}
 
@@ -167,7 +217,8 @@ const Plazas = (props) => {
 							<Formik initialValues={parameters} onSubmit={handleSubmit} enableReinitialize>
 								<Form>
 									<AutoSubmitToken />
-									<WatchIncluirWeb /> {/* <<< agregado */}
+									<WatchIncluirWeb />
+									<WatchUsarFusion /> {/* <<< agregado */}
 									<fieldset className="space-y-2 mb-3">
 										<Input type={'date'} id="fecha" name="fecha" label="Fecha" placeholder={reportDate.current} />
 										<Select id="incremento" name="incremento" label="Formular % de incremento">
@@ -211,6 +262,7 @@ const Plazas = (props) => {
 											label={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
 										/>
 										<Checkbox id="incluirWeb" name="incluirWeb" label={checkboxLabels.INCLUIR_WEB} />{' '}
+										<UsarFusionCheckbox />
 										{/* <<< agregado */}
 										<Checkbox
 											id="tipoCambioTiendas"
@@ -242,17 +294,23 @@ const Plazas = (props) => {
 					{(() => {
 						switch (displayMode) {
 							case 1:
-								return <Table data={dataReport} date={reportDate} webShown={showWeb} />
+								return <Table data={dataReport} date={reportDate} webShown={showWeb} fusionOn={fusionOn} />
 							case 2:
-								return <Stat data={dataReport} date={reportDate} webShown={showWeb} />
+								return <Stat data={dataReport} date={reportDate} webShown={showWeb} fusionOn={fusionOn} />
 							case 3:
 								return (
-									<StatGroup data={dataReportSeccions} date={reportDate} region={currentRegion} webShown={showWeb} />
+									<StatGroup
+										data={dataReportSeccions}
+										date={reportDate}
+										region={currentRegion}
+										webShown={showWeb}
+										fusionOn={fusionOn}
+									/>
 								)
 							case 4:
-								return <TableMobil data={dataReport} date={reportDate} webShown={showWeb} />
+								return <TableMobil data={dataReport} date={reportDate} webShown={showWeb} fusionOn={fusionOn} />
 							default:
-								return <Table data={dataReport} date={reportDate} webShown={showWeb} />
+								return <Table data={dataReport} date={reportDate} webShown={showWeb} fusionOn={fusionOn} />
 						}
 					})()}
 				</div>
@@ -262,14 +320,14 @@ const Plazas = (props) => {
 }
 
 const Table = (props) => {
-	const { data, date, webShown } = props
+	const { data, date, webShown, fusionOn } = props
 	const dateHelper = DateHelper()
 	return (
 		<div className="space-y-8">
 			{data &&
 				Object.keys(data).length > 0 &&
 				Object.entries(data).map(([key, values]) => {
-					if (!webShown && isWebKey(key)) return null // <<< igual que en grupo
+					if (!webShown && isWebKey(key)) return null
 					return (
 						<table className="table-report" key={v4()} onClick={selectRow}>
 							<caption>{getTableName(key)}</caption>
@@ -374,24 +432,28 @@ const Table = (props) => {
 				})}
 
 			{/* Mensaje general debajo de las tablas */}
-			<div className="mt-3 mb-6">
-				<p className="text-xs italic text-slate-600 text-center">
-					Las ventas en línea son reportadas por fecha de pedido.
-				</p>
-			</div>
+			{webShown && (
+				<div className="mt-3 mb-6">
+					<p className="text-xs italic text-slate-600 text-center">
+						{fusionOn
+							? 'Las ventas en línea son reportadas por fecha de facturación.'
+							: 'Las ventas en línea son reportadas por fecha de pedido.'}
+					</p>
+				</div>
+			)}
 		</div>
 	)
 }
 
 const TableMobil = (props) => {
-	const { data, date, webShown } = props
+	const { data, date, webShown, fusionOn } = props
 	const dateHelper = DateHelper()
 	return (
 		<div className="space-y-8">
 			{data &&
 				Object.keys(data).length > 0 &&
 				Object.entries(data).map(([key, values]) => {
-					if (!webShown && isWebKey(key)) return null // <<< igual
+					if (!webShown && isWebKey(key)) return null
 					return (
 						<React.Fragment key={v4()}>
 							{getTableName(key)}
@@ -553,24 +615,28 @@ const TableMobil = (props) => {
 				})}
 
 			{/* Mensaje general debajo de las tablas */}
-			<div className="mt-3 mb-6">
-				<p className="text-xs italic text-slate-600 text-center">
-					Las ventas en línea son reportadas por fecha de pedido.
-				</p>
-			</div>
+			{webShown && (
+				<div className="mt-3 mb-6">
+					<p className="text-xs italic text-slate-600 text-center">
+						{fusionOn
+							? 'Las ventas en línea son reportadas por fecha de facturación.'
+							: 'Las ventas en línea son reportadas por fecha de pedido.'}
+					</p>
+				</div>
+			)}
 		</div>
 	)
 }
 
 const Stat = (props) => {
-	const { data, date, webShown } = props
+	const { data, date, webShown, fusionOn } = props
 	const dateHelper = DateHelper()
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
 			{data &&
 				Object.keys(data).length > 0 &&
 				Object.entries(data).map(([key, val]) => {
-					if (!webShown && isWebKey(key)) return null // <<< igual
+					if (!webShown && isWebKey(key)) return null
 					if (val && val.length > 0) {
 						const Items = val.map((item) => {
 							const acumMes = {
@@ -687,20 +753,23 @@ const Stat = (props) => {
 				})}
 
 			{/* Mensaje general debajo de las tablas */}
-			<div className="mt-3 mb-6">
-				<p className="text-xs italic text-slate-600 text-center">
-					Las ventas en línea son reportadas por fecha de pedido.
-				</p>
-			</div>
+			{webShown && (
+				<div className="mt-3 mb-6">
+					<p className="text-xs italic text-slate-600 text-center">
+						{fusionOn
+							? 'Las ventas en línea son reportadas por fecha de facturación.'
+							: 'Las ventas en línea son reportadas por fecha de pedido.'}
+					</p>
+				</div>
+			)}
 		</div>
 	)
 }
 
 const StatGroup = (props) => {
-	const { data, date, region, webShown } = props
+	const { data, date, region, webShown, fusionOn } = props
 	const dateHelper = DateHelper()
 
-	// mismo comportamiento que en grupo
 	if (!webShown && isWebKey(region)) return <></>
 
 	return (
@@ -960,11 +1029,15 @@ const StatGroup = (props) => {
 								)}
 
 								{/* Mensaje general debajo de las tablas */}
-								<div className="mt-3 mb-6">
-									<p className="text-xs italic text-slate-600 text-center">
-										Las ventas en línea son reportadas por fecha de pedido.
-									</p>
-								</div>
+								{webShown && (
+									<div className="mt-3 mb-6">
+										<p className="text-xs italic text-slate-600 text-center">
+											{fusionOn
+												? 'Las ventas en línea son reportadas por fecha de facturación.'
+												: 'Las ventas en línea son reportadas por fecha de pedido.'}
+										</p>
+									</div>
+								)}
 							</div>
 						</React.Fragment>
 					)

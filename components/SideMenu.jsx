@@ -62,7 +62,7 @@ const SideMenu = () => {
 		;(async () => {
 			try {
 				const data = await service.getUserData()
-        
+
 				// Algunos payloads vienen como {dashboards:[...]} y otros anidados; cubrimos ambos:
 				const dashboards = Array.isArray(data?.dashboards)
 					? data.dashboards

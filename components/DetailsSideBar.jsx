@@ -26,7 +26,7 @@ const DetailsSideBar = ({ summaryText, links, directLink, handleToggle, showChev
   }
 
   return (
-    <details className="hover:block">
+    <details className="hover:block" {...(defaultOpen ? { open: true } : {})}>
       <summary className="cursor-pointer flex items-center pb-2 text-white">
         {showChevron && <Image src={Plus} alt="Plus" height={16} width={16} />} 
         <span className="ml-1">{summaryText}</span>
