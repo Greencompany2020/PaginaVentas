@@ -1,5 +1,5 @@
 // filepath: /Users/programador4/Documents/PaginaVentas/pages/reportes/topVentas.jsx
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { getVentasLayout } from '../../components/layout/VentasLayout'
 import { ParametersContainer, Parameters } from '../../components/containers'
 import { numberWithCommas } from '../../utils/resultsFormated'
@@ -29,6 +29,23 @@ const TopVentas = (props) => {
 
 	const [showProductModal, setShowProductModal] = useState(false)
 	const [selectedProduct, setSelectedProduct] = useState()
+	// paginación
+	const [currentPage, setCurrentPage] = useState(1)
+	const [pageSize, setPageSize] = useState(10)
+
+	const totalRecords = dataTopMayores?.length ?? 0
+	const totalPages = Math.max(1, Math.ceil(totalRecords / pageSize))
+
+	const paginatedTopMayores = useMemo(() => {
+		if (!dataTopMayores) return []
+		const start = (currentPage - 1) * pageSize
+		return dataTopMayores.slice(start, start + pageSize)
+	}, [dataTopMayores, currentPage, pageSize])
+
+	const startIndex = totalRecords ? (currentPage - 1) * pageSize + 1 : 0
+	const endIndex = Math.min(currentPage * pageSize, totalRecords)
+
+	const goToPage = (p) => setCurrentPage(Math.min(Math.max(1, p), totalPages))
 
 	const parameters = {
 		month: currentMonthValue
@@ -47,11 +64,12 @@ const TopVentas = (props) => {
 			const data = await getTopVentas({ month: monthNumber })
 
 			if (data && data.length > 0) {
-				const topMayores = data.slice(0, 15)
-
+				const topMayores = data.slice(0, 100) // si quieres paginar TODO, quita este slice
 				setDataTopMayores(topMayores)
+				setCurrentPage(1) // 👈 resetea paginación
 			} else {
 				setDataTopMayores([])
+				setCurrentPage(1)
 			}
 		} catch (error) {
 			sendNotification({
@@ -189,11 +207,66 @@ const TopVentas = (props) => {
 					<div className="">
 						{/* Tabla Top 15 Mayores Ventas */}
 						<TopVentasTable
-							title={`Top 15 Mayores Ventas ${currentMonthName}`}
-							data={dataTopMayores}
+							title={`Top 100 Mayores Ventas ${currentMonthName}`}
+							data={paginatedTopMayores} // 👈 ahora la tabla recibe el “slice” de la página
 							onProductClick={handleProductClick}
 							showImages={showImages}
 						/>
+
+						{/* Controles de paginación */}
+						<div className="mt-4 flex items-center justify-between">
+							<div className="text-sm text-gray-600">
+								Mostrando {startIndex}-{endIndex} de {totalRecords}
+							</div>
+							<div className="flex items-center gap-2">
+								<button
+									className="px-2 py-1 border rounded disabled:opacity-50"
+									onClick={() => goToPage(1)}
+									disabled={currentPage === 1}
+									title="Primera"
+								>
+									«
+								</button>
+								<button
+									className="px-2 py-1 border rounded disabled:opacity-50"
+									onClick={() => goToPage(currentPage - 1)}
+									disabled={currentPage === 1}
+								>
+									Anterior
+								</button>
+								<span className="text-sm">
+									Página {currentPage} de {totalPages}
+								</span>
+								<button
+									className="px-2 py-1 border rounded disabled:opacity-50"
+									onClick={() => goToPage(currentPage + 1)}
+									disabled={currentPage === totalPages}
+								>
+									Siguiente
+								</button>
+								<button
+									className="px-2 py-1 border rounded disabled:opacity-50"
+									onClick={() => goToPage(totalPages)}
+									disabled={currentPage === totalPages}
+									title="Última"
+								>
+									»
+								</button>
+
+								<select
+									className="ml-2 border rounded px-2 py-1"
+									value={pageSize}
+									onChange={(e) => {
+										setPageSize(Number(e.target.value))
+										setCurrentPage(1)
+									}}
+								>
+									<option value={10}>10 / pág</option>
+									<option value={20}>20 / pág</option>
+									<option value={50}>50 / pág</option>
+								</select>
+							</div>
+						</div>
 
 						{/* Modal de producto */}
 						{showProductModal && (
@@ -225,7 +298,7 @@ const TopVentasTable = ({ title, data, onProductClick, showImages }) => {
 							<th>#</th>
 							{showImages && <th>Imagen</th>}
 							<th>Producto</th>
-							<th>Piezas</th>
+							{/* <th>Piezas</th> */}
 							<th>Importe</th>
 						</tr>
 					</thead>
@@ -253,7 +326,7 @@ const TopVentasTable = ({ title, data, onProductClick, showImages }) => {
 								>
 									{item.ItemCode}
 								</td>
-								<td className="text-center">{numberWithCommas(item.ItemSales)}</td>
+								{/* <td className="text-center">{numberWithCommas(item.ItemSales)}</td> */}
 								<td className="text-center">
 									${item.AmountSales.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
 								</td>
