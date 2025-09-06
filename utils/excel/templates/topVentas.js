@@ -2,10 +2,9 @@
  * Plantilla para exportar Top Ventas a Excel
  * @param {string} monthName - Nombre del mes (ej: "Septiembre")
  * @param {Array} topMayores - Datos de top 15 mayores ventas
- * @param {Array} topMenores - Datos de top 15 menores ventas
  * @returns {Object} - Objeto con columnas, filas y estilos
  */
-export default function topVentasTemplate(monthName, topMayores, topMenores) {
+export default function topVentasTemplate(monthName, topMayores) {
 	// Definir columnas del Excel
 	const getColumns = () => [
 		{
@@ -80,31 +79,6 @@ export default function topVentasTemplate(monthName, topMayores, topMenores) {
 			piezas: '',
 			importe: ''
 		})
-
-		// Agregar encabezado para menores ventas
-		rows.push({
-			ranking: 'TOP 15 MENORES VENTAS',
-			codigo: '',
-			descripcion: '',
-			color: '',
-			piezas: '',
-			importe: ''
-		})
-
-		// Agregar datos de top menores
-		if (topMenores && topMenores.length > 0) {
-			topMenores.forEach((item) => {
-				rows.push({
-					ranking: item.Ranking,
-					codigo: item.ItemCode,
-					descripcion: item.Description,
-					color: item.Color,
-					piezas: item.ItemSales,
-					importe: item.AmountSales
-				})
-			})
-		}
-
 		return rows
 	}
 

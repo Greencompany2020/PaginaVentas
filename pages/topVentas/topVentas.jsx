@@ -11,7 +11,6 @@ import { Formik, Form } from 'formik'
 import ExcelButton from '../../components/buttons/ExcelButton'
 import DateHelper from '../../utils/dateHelper'
 import { getTopVentas } from '../../services/TopVentas'
-import ShowImage from '../../components/buttons/ShowImage'
 import LoaderComponent from '../../components/Loader'
 import topVentasTemplate from '../../utils/excel/templates/topVentas'
 import exportExcel from '../../utils/excel/exportExcel'
@@ -75,7 +74,7 @@ const TopVentas = (props) => {
 
 	const handleExport = () => {
 		try {
-			if (!dataTopMayores && !dataTopMenores) {
+			if (!dataTopMayores) {
 				sendNotification({
 					type: 'WARNING',
 					message: 'No hay datos para exportar'
@@ -83,7 +82,7 @@ const TopVentas = (props) => {
 				return
 			}
 
-			const template = topVentasTemplate(currentMonthName, dataTopMayores, dataTopMenores)
+			const template = topVentasTemplate(currentMonthName, dataTopMayores)
 
 			exportExcel(
 				`Top Ventas ${currentMonthName} ${new Date().getFullYear()}`, // Nombre del archivo
