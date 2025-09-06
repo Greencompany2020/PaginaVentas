@@ -81,9 +81,13 @@ const SideMenu = () => {
 				const nextMenu = enlacesMenuLateral
 					.map((sec) => ({
 						...sec,
-						links: sec.links.filter(({ link }) => isExternal(link) || allow.has(link))
+						links: sec.directLink
+							? [] // Si tiene directLink, mantener links vacío
+							: sec.links.filter(({ link }) => isExternal(link) || allow.has(link))
 					}))
-					.filter((sec) => sec.links.length > 0)
+					.filter((sec) => {
+						return sec.directLink || sec.links.length > 0
+					})
 
 				setFilteredMenu(nextMenu)
 			} catch (e) {
@@ -117,11 +121,12 @@ const SideMenu = () => {
 					</div>
 					<div className=" flex-[2] overflow-y-auto pl-2">
 						{/* {enlacesMenuLateral.map(({ summaryText, links }) => ( */}
-						{filteredMenu.map(({ summaryText, links }) => (
+						{filteredMenu.map(({ summaryText, links, directLink }) => (
 							<DetailsSideBar
 								key={summaryText}
 								summaryText={summaryText}
 								links={links}
+								directLink={directLink}
 								handleToggle={toggleVisible}
 								showChevron={showChevron}
 							/>

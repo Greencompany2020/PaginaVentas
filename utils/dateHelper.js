@@ -1,156 +1,162 @@
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs'
 import utc from 'dayjs/plugin/utc'
-import weekday from 'dayjs/plugin/weekday';
-import duration from 'dayjs/plugin/duration';
-import { semanaSanta } from './dateFunctions';
-
+import weekday from 'dayjs/plugin/weekday'
+import duration from 'dayjs/plugin/duration'
+import { semanaSanta } from './dateFunctions'
 
 const WEEK_DAYS = Object.freeze({
-    0: 'Domingo',
-    1: 'Lunes',
-    2: 'Martes',
-    3: 'Miercoles',
-    4: 'Jueves',
-    5: 'Viernes',
-    6: 'Sabado',
-});
+	0: 'Domingo',
+	1: 'Lunes',
+	2: 'Martes',
+	3: 'Miercoles',
+	4: 'Jueves',
+	5: 'Viernes',
+	6: 'Sabado'
+})
 
 const MONTHS = Object.freeze({
-    0: 'Enero',
-    1: 'Febrero',
-    2: 'Marzo',
-    3: 'Abril',
-    4: 'Mayo',
-    5: 'Junio',
-    6: 'Julio',
-    7: 'Agosto',
-    8: 'Septiembre',
-    9: 'Octubre',
-    10: 'Noviembre',
-    11: 'Diciembre',
-});
+	0: 'Enero',
+	1: 'Febrero',
+	2: 'Marzo',
+	3: 'Abril',
+	4: 'Mayo',
+	5: 'Junio',
+	6: 'Julio',
+	7: 'Agosto',
+	8: 'Septiembre',
+	9: 'Octubre',
+	10: 'Noviembre',
+	11: 'Diciembre'
+})
+
+const getMonths = () => {
+	return Object.entries(MONTHS).map(([value, label]) => ({
+		value: String(parseInt(value) + 1).padStart(2, '0'), // 01, 02, 03, etc.
+		label: label
+	}))
+}
 
 export default function DateHelper() {
+	dayjs.extend(utc)
+	dayjs.extend(weekday)
+	dayjs.extend(duration)
 
+	/**
+	 * Esta funcion se encarga de validar si el formato de fecha es valido y regresar la fecha
+	 * si no lo es crea una nueva fecha
+	 * @param {*} date
+	 * @returns
+	 */
+	const validDate = (date) => {
+		if (dayjs(date, 'YYYY-MM-DD', true).isValid()) return dayjs(date).utc()
+		else return dayjs().utc().local().format('YYYY-MM-DD')
+	}
 
-    dayjs.extend(utc);
-    dayjs.extend(weekday);
-    dayjs.extend(duration)
+	const getYesterdayDate = () => dayjs.utc().subtract(1, 'day').format('YYYY-MM-DD')
 
-    /**
-     * Esta funcion se encarga de validar si el formato de fecha es valido y regresar la fecha
-     * si no lo es crea una nueva fecha
-     * @param {*} date 
-     * @returns 
-     */
-    const validDate = date => {
-        if (dayjs(date, 'YYYY-MM-DD', true).isValid()) return dayjs(date).utc();
-        else return dayjs().utc().local().format('YYYY-MM-DD');
-    }
+	const getToday = () => dayjs.utc().local().format('YYYY-MM-DD')
 
-    const getYesterdayDate = () => (dayjs.utc().subtract(1, 'day').format('YYYY-MM-DD'));
+	const getWeekDate = (date) => {
+		const current = validDate(date)
+		return `${WEEK_DAYS[current.day()]} ${current.date()} - ${MONTHS[current.month()]}`
+	}
 
-    const getToday = () => (dayjs.utc().local().format('YYYY-MM-DD'));
+	const getDayName = (date) => {
+		const current = validDate(date)
+		return `${current.day()}`
+	}
 
-    const getWeekDate = date => {
-        const current = validDate(date);
-        return `${WEEK_DAYS[current.day()]} ${current.date()} - ${MONTHS[current.month()]}`;
-    }
+	const getMonthName = (date) => {
+		const current = validDate(date)
+		return `${MONTHS[current.month()]}`
+	}
 
-    const getDayName = date => {
-        const current = validDate(date);
-        return `${current.day()}`;
-    }
+	const getCurrentYear = (date) => {
+		const current = validDate(date)
+		return current.year()
+	}
 
-    const getMonthName = date => {
-        const current = validDate(date);
-        return `${MONTHS[current.month()]}`;
-    }
+	const getcurrentMonth = (date) => {
+		const current = validDate(date)
+		return current.month() + 1
+	}
 
-    const getCurrentYear = date => {
-        const current = validDate(date);
-        return current.year();
-    }
+	const getNextMonth = (date) => {
+		const current = validDate(date)
+		return current.add(1, 'month').month() + 1
+	}
 
-    const getcurrentMonth = date => {
-        const current = validDate(date);
-        return current.month() + 1;
-    }
+	const getPreviousMonth = (date) => {
+		const current = validDate(date)
+		return current.subtract(1, 'month').month() + 1
+	}
 
-    const getNextMonth = date => {
-        const current = validDate(date);
-        return current.add(1, 'month').month() + 1;
-    }
+	const getCurrentDate = (date) => {
+		const current = validDate(date)
+		return current.date()
+	}
 
-    const getPreviousMonth = date => {
-        const current = validDate(date);
-        return current.subtract(1, 'month').month() + 1;
-    }
+	const getweekRange = (date) => {
+		const current = validDate(date)
+		const begin = current.weekday(1).utc()
+		return `SEMANA DEL ${begin.date()}-${MONTHS[begin.month()]} AL ${current.date()}-${MONTHS[current.month()]}`
+	}
 
-    const getCurrentDate = date => {
-        const current = validDate(date);
-        return current.date();
-    }
+	const getYesterday = () => {
+		return dayjs().utc().local().subtract(1, 'day').format('YYYY-MM-DD')
+	}
 
-    const getweekRange = (date) => {
-        const current = validDate(date);
-        const begin = current.weekday(1).utc();
-        return `SEMANA DEL ${begin.date()}-${MONTHS[begin.month()]} AL ${current.date()}-${MONTHS[current.month()]}`;
-    }
+	const getCurrent = () => {
+		return dayjs().utc().local().format('YYYY-MM-DD')
+	}
 
-    const getYesterday = () => {
-        return dayjs().utc().local().subtract(1, 'day').format('YYYY-MM-DD')
-    }
+	const getMinusCurrent = (years = 1) => {
+		return dayjs().utc().local().subtract(years, 'year').year()
+	}
 
-    const getCurrent = () => {
-        return dayjs().utc().local().format('YYYY-MM-DD')
-    }
+	const getEasterDayWeek = (date) => {
+		if (dayjs(date, 'YYYY-MM-DD', true).isValid()) {
+			const current = validDate(date)
+			return `${WEEK_DAYS[current.day()]}-${current.date()}-${MONTHS[current.month()].substring(0, 3)}`
+		}
+		return date
+	}
 
-    const getMinusCurrent = (years = 1) => {
-        return dayjs().utc().local().subtract(years, 'year').year();
-    }
+	const getDayFromEasterWeek = (date) => {
+		if (dayjs(date, 'YYYY-MM-DD', true).isValid()) {
+			const current = validDate(date)
+			return WEEK_DAYS[current.day()]
+		}
+		return date
+	}
 
-    const getEasterDayWeek = (date) => {
-        if (dayjs(date, 'YYYY-MM-DD', true).isValid()) {
-            const current = validDate(date);
-            return `${WEEK_DAYS[current.day()]}-${current.date()}-${MONTHS[current.month()].substring(0, 3)}`
-        }
-        return date
-    }
+	const getYearFromEasterWeek = (date) => {
+		if (dayjs(date, 'YYYY-MM-DD', true).isValid()) {
+			const current = validDate(date)
+			return current.year()
+		}
+		return date
+	}
 
-    const getDayFromEasterWeek = (date) => {
-        if (dayjs(date, 'YYYY-MM-DD', true).isValid()) {
-            const current = validDate(date);
-            return WEEK_DAYS[current.day()]
-        }
-        return date
-    }
-
-    const getYearFromEasterWeek = (date) => {
-        if (dayjs(date, 'YYYY-MM-DD', true).isValid()) {
-            const current = validDate(date);
-            return current.year()
-        }
-        return date
-    }
-
-    return {
-        getYesterdayDate,
-        getToday,
-        getWeekDate,
-        getDayName,
-        getMonthName,
-        getCurrentYear,
-        getcurrentMonth,
-        getCurrentDate,
-        getweekRange,
-        getPreviousMonth,
-        getNextMonth,
-        getYesterday,
-        getEasterDayWeek,
-        getCurrent,
-        getDayFromEasterWeek,
-        getYearFromEasterWeek,
-        getMinusCurrent
-    }
+	return {
+		getYesterdayDate,
+		getToday,
+		getWeekDate,
+		getDayName,
+		getMonthName,
+		getCurrentYear,
+		getcurrentMonth,
+		getCurrentDate,
+		getweekRange,
+		getPreviousMonth,
+		getNextMonth,
+		getYesterday,
+		getEasterDayWeek,
+		getCurrent,
+		getDayFromEasterWeek,
+		getYearFromEasterWeek,
+		getMinusCurrent,
+		getMonths
+	}
 }
+
