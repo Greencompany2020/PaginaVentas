@@ -81,9 +81,13 @@ const SideMenu = () => {
 				const nextMenu = enlacesMenuLateral
 					.map((sec) => ({
 						...sec,
-						links: sec.links.filter(({ link }) => isExternal(link) || allow.has(link))
+						links: sec.directLink
+							? [] // Si tiene directLink, mantener links vacío
+							: sec.links.filter(({ link }) => isExternal(link) || allow.has(link))
 					}))
-					.filter((sec) => sec.links.length > 0)
+					.filter((sec) => {
+						return sec.directLink || sec.links.length > 0
+					})
 
 				setFilteredMenu(nextMenu)
 			} catch (e) {
@@ -117,21 +121,16 @@ const SideMenu = () => {
 					</div>
 					<div className=" flex-[2] overflow-y-auto pl-2">
 						{/* {enlacesMenuLateral.map(({ summaryText, links }) => ( */}
-						{/* {filteredMenu.map(({ summaryText, links }) => ( */}
-
-						{filteredMenu.map(({ summaryText, links }) => {
-							const defaultOpen = summaryText === 'Comparativo' || summaryText === 'Participación' || summaryText === 'Top Ventas'
-							return (
-								<DetailsSideBar
-									key={summaryText}
-									summaryText={summaryText}
-									links={links}
-									handleToggle={toggleVisible}
-									showChevron={showChevron}
-									defaultOpen={defaultOpen}
-								/>
-							)
-						})}
+						{filteredMenu.map(({ summaryText, links, directLink }) => (
+							<DetailsSideBar
+								key={summaryText}
+								summaryText={summaryText}
+								links={links}
+								directLink={directLink}
+								handleToggle={toggleVisible}
+								showChevron={showChevron}
+							/>
+						))}
 					</div>
 					<div className="p-3 flex flex-row">
 						<LogoutIcon width={32} className="text-sky-500" />
