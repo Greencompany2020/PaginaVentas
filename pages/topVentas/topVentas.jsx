@@ -25,7 +25,7 @@ const TopVentas = (props) => {
 	const [currentMonthValue, setCurrentMonthValue] = useState(dateHelper.getcurrentMonth(dateHelper.getYesterdayDate()))
 
 	const [isLoading, setIsLoading] = useState(false)
-	const [showImages, setShowImages] = useState(false)
+	const [showImages, setShowImages] = useState(true)
 
 	const [showProductModal, setShowProductModal] = useState(false)
 	const [selectedProduct, setSelectedProduct] = useState()
