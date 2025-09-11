@@ -319,12 +319,13 @@ const TopVentasTable = ({ title, data, onProductClick, showImages }) => {
 										</div>
 									</td>
 								)}
-								<td
-									className="text-center producto-cell cursor-pointer hover:underline"
-									onClick={() => onProductClick(item)}
-									title={`${item.Description} - ${item.Color}`}
-								>
-									{item.Modelo}
+								<td className="text-center producto-cell cursor-pointer hover:underline" onClick={() => onProductClick(item)} title={`${item.Description ?? ''} - ${item.Color ?? ''}`}>
+									<div className="flex flex-col items-center leading-tight">
+										<span className="font-medium">{item.Modelo}</span>
+										{item.Description && (
+											<span className="mt-1 text-xs text-gray-600 break-words">{item.Description}</span>
+										)}
+									</div>
 								</td>
 								{/* <td className="text-center">{numberWithCommas(item.ItemSales)}</td> */}
 								<td className="text-center">
