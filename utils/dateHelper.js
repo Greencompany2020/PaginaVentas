@@ -48,13 +48,17 @@ export default function DateHelper() {
 	 * @returns
 	 */
 	const validDate = (date) => {
-		if (dayjs(date, 'YYYY-MM-DD', true).isValid()) return dayjs(date).utc()
-		else return dayjs().utc().local().format('YYYY-MM-DD')
+		// if (dayjs(date, 'YYYY-MM-DD', true).isValid()) return dayjs(date).utc()
+		// else return dayjs().utc().local().format('YYYY-MM-DD')
+		if (dayjs(date, 'YYYY-MM-DD', true).isValid()) return dayjs(date)
+		else return dayjs()
 	}
 
-	const getYesterdayDate = () => dayjs.utc().subtract(1, 'day').format('YYYY-MM-DD')
+	// const getYesterdayDate = () => dayjs.utc().subtract(1, 'day').format('YYYY-MM-DD')
+	const getYesterdayDate = () => dayjs().subtract(1, 'day').format('YYYY-MM-DD')
 
-	const getToday = () => dayjs.utc().local().format('YYYY-MM-DD')
+	// const getToday = () => dayjs.utc().local().format('YYYY-MM-DD')
+	const getToday = () => dayjs().format('YYYY-MM-DD')
 
 	const getWeekDate = (date) => {
 		const current = validDate(date)
@@ -98,7 +102,7 @@ export default function DateHelper() {
 
 	const getweekRange = (date) => {
 		const current = validDate(date)
-		const begin = current.weekday(1).utc()
+		const begin = current.weekday(1)
 		return `SEMANA DEL ${begin.date()}-${MONTHS[begin.month()]} AL ${current.date()}-${MONTHS[current.month()]}`
 	}
 
@@ -159,4 +163,3 @@ export default function DateHelper() {
 		getMonths
 	}
 }
-
