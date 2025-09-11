@@ -57,13 +57,11 @@ const SideMenu = () => {
 		})()
 	}, [])
 
-	// --- Cargar accesos y filtrar por Endpoint Selected === 'Y'
 	useEffect(() => {
 		;(async () => {
 			try {
 				const data = await service.getUserData()
 
-				// Algunos payloads vienen como {dashboards:[...]} y otros anidados; cubrimos ambos:
 				const dashboards = Array.isArray(data?.dashboards)
 					? data.dashboards
 					: Array.isArray(data?.[0]?.dashboards)
@@ -82,7 +80,7 @@ const SideMenu = () => {
 					.map((sec) => ({
 						...sec,
 						links: sec.directLink
-							? [] // Si tiene directLink, mantener links vacío
+							? [] 
 							: sec.links.filter(({ link }) => isExternal(link) || allow.has(link))
 					}))
 					.filter((sec) => {
@@ -91,11 +89,9 @@ const SideMenu = () => {
 
 				setFilteredMenu(nextMenu)
 			} catch (e) {
-				// Si falla, dejamos el menú completo
 				setFilteredMenu(enlacesMenuLateral)
 			}
 		})()
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
 	return (
@@ -121,16 +117,21 @@ const SideMenu = () => {
 					</div>
 					<div className=" flex-[2] overflow-y-auto pl-2">
 						{/* {enlacesMenuLateral.map(({ summaryText, links }) => ( */}
-						{filteredMenu.map(({ summaryText, links, directLink }) => (
-							<DetailsSideBar
-								key={summaryText}
-								summaryText={summaryText}
-								links={links}
-								directLink={directLink}
-								handleToggle={toggleVisible}
-								showChevron={showChevron}
-							/>
-						))}
+						
+						{filteredMenu.map(({ summaryText, links, directLink }) => {
+							const defaultOpen = summaryText === 'Comparativo' || summaryText === 'Participación' || summaryText === 'Top Ventas'
+							return (
+								<DetailsSideBar
+									key={summaryText}
+									summaryText={summaryText}
+									links={links}
+									directLink={directLink}
+									handleToggle={toggleVisible}
+									showChevron={showChevron}
+									defaultOpen={defaultOpen}
+								/>
+							)
+						})}
 					</div>
 					<div className="p-3 flex flex-row">
 						<LogoutIcon width={32} className="text-sky-500" />
