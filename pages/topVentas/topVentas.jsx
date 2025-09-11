@@ -324,7 +324,7 @@ const TopVentasTable = ({ title, data, onProductClick, showImages }) => {
 									onClick={() => onProductClick(item)}
 									title={`${item.Description} - ${item.Color}`}
 								>
-									{item.ItemCode}
+									{item.Modelo}
 								</td>
 								{/* <td className="text-center">{numberWithCommas(item.ItemSales)}</td> */}
 								<td className="text-center">
@@ -360,14 +360,14 @@ const ProductModal = ({ product, onClose }) => {
 					<div className="mb-3 w-full flex justify-center">
 						<img
 							src={imageSrc}
-							alt={product.Description || product.ItemCode}
+							alt={product.Description || product.Modelo}
 							className="max-h-64 object-contain rounded border"
 						/>
 					</div>
 				)}
 				<p className="text-sm mb-2">Color: {product.Color}</p>
-				<p className="text-sm mb-2">Código: {product.ItemCode}</p>
-				<p className="text-sm mb-2">Piezas: {numberWithCommas(product.ItemSales)}</p>
+				<p className="text-sm mb-2">Modelo: {product.Modelo}</p>
+				{/* <p className="text-sm mb-2">Piezas: {numberWithCommas(product.ItemSales)}</p> */}
 				<p className="text-sm mb-2">
 					Importe: $
 					{product.AmountSales.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}

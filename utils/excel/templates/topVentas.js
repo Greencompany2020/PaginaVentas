@@ -40,13 +40,13 @@ export default function topVentasTemplate(monthName, topMayores) {
 			value: 'Color',
 			styles: { font: { bold: true }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0E0E0' } } }
 		},
+		// {
+		// 	cell: 'E4',
+		// 	value: 'Piezas',
+		// 	styles: { font: { bold: true }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0E0E0' } } }
+		// },
 		{
 			cell: 'E4',
-			value: 'Piezas',
-			styles: { font: { bold: true }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0E0E0' } } }
-		},
-		{
-			cell: 'F4',
 			value: 'Importe',
 			styles: { font: { bold: true }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0E0E0' } } }
 		}
@@ -64,7 +64,7 @@ export default function topVentasTemplate(monthName, topMayores) {
 					codigo: item.ItemCode,
 					descripcion: item.Description,
 					color: item.Color,
-					piezas: item.ItemSales,
+					// piezas: item.ItemSales,
 					importe: item.AmountSales
 				})
 			})
@@ -76,7 +76,7 @@ export default function topVentasTemplate(monthName, topMayores) {
 			codigo: '',
 			descripcion: '',
 			color: '',
-			piezas: '',
+			// piezas: '',
 			importe: ''
 		})
 		return rows
@@ -102,8 +102,8 @@ export default function topVentasTemplate(monthName, topMayores) {
 			B: { alignment: { horizontal: 'left' } }, // Código
 			C: { alignment: { horizontal: 'left' } }, // Descripción
 			D: { alignment: { horizontal: 'left' } }, // Color
-			E: { alignment: { horizontal: 'right' } }, // Piezas
-			F: { alignment: { horizontal: 'right' } } // Importe
+			// E: { alignment: { horizontal: 'right' } }, // Piezas
+			E: { alignment: { horizontal: 'right' } } // Importe
 		}
 	}
 

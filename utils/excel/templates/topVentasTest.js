@@ -16,7 +16,7 @@ export default function topVentasTestTemplate({ title, rows, useGlobalRanking, i
     { key: 'ranking',   label: '#',         width: 10, align: 'center' },
     ...(includeSegment ? [{ key: 'segment', label: 'SEGMENTO', width: 18, align: 'left' }] : []),
     { key: 'producto',  label: 'PRODUCTO',  width: 42, align: 'left' },
-    { key: 'piezas',    label: 'PIEZAS',    width: 12, align: 'right' },
+    // { key: 'piezas',    label: 'PIEZAS',    width: 12, align: 'right' },
     { key: 'importe',   label: 'IMPORTE',   width: 16, align: 'right' },
   ];
   const lastCol = L(headers.length - 1);
@@ -77,9 +77,9 @@ export default function topVentasTestTemplate({ title, rows, useGlobalRanking, i
             case 'producto':
               row[h.key] = r.Modelo ?? '';
               break;
-            case 'piezas':
-              row[h.key] = r.ItemSales ?? 0;
-              break;
+            // case 'piezas':
+            //   row[h.key] = r.ItemSales ?? 0;
+            //   break;
             case 'importe':
               row[h.key] = r.AmountSales ?? 0;
               break;

@@ -72,6 +72,9 @@ const TopVentasTest = () => {
 	// Nueva: vista activa para filtrar en front
 	const [viewMode, setViewMode] = useState(VIEW_MODES.GLOBAL_TOP100)
 
+	const [showProductModal, setShowProductModal] = useState(false)
+	const [selectedProduct, setSelectedProduct] = useState()
+	
 	// paginación
 	const [currentPage, setCurrentPage] = useState(1)
 	const [pageSize, setPageSize] = useState(10)
@@ -91,6 +94,11 @@ const TopVentasTest = () => {
 			// por defecto: ranking asc; números típicamente desc
 			setSortDir(key === 'ranking' ? 'asc' : 'desc')
 		}
+	}
+	
+	const handleProductClick = (producto) => {
+		setShowProductModal(true)
+		setSelectedProduct(producto)
 	}
 
 	const handleSubmit = async (values) => {
@@ -170,8 +178,8 @@ const TopVentasTest = () => {
 					return isGlobalRanking ? r.RankingGlobal ?? 0 : r.RankingSegment ?? 0
 				case 'segment':
 					return r.Segment ?? ''
-				case 'itemSales':
-					return r.ItemSales ?? 0
+				// case 'itemSales':
+				// 	return r.ItemSales ?? 0
 				case 'amountSales':
 					return r.AmountSales ?? 0
 				default:
@@ -410,6 +418,7 @@ const TopVentasTest = () => {
 							sortKey={sortKey}
 							sortDir={sortDir}
 							onSort={handleSort}
+							onProductClick={handleProductClick}
 						/>
 
 						{/* Paginación */}
@@ -494,6 +503,18 @@ const TopVentasTest = () => {
 					</>
 				)}
 			</section>
+			
+
+						{/* Modal de producto */}
+						{showProductModal && (
+							<ProductModal
+								product={selectedProduct}
+								onClose={() => {
+									setShowProductModal(false)
+									setSelectedProduct(undefined)
+								}}
+							/>
+						)}
 		</div>
 	)
 }
@@ -537,7 +558,7 @@ function SortTh({ label, active, dir, onClick }) {
 
 const TopVentasTestTable = ({
 	title,
-	data,
+	data, onProductClick,
 	showImages,
 	showSegmentColumn,
 	useGlobalRanking,
@@ -569,14 +590,14 @@ const TopVentasTestTable = ({
 							)}
 							{showImages && <th>IMAGEN</th>} {/* sin orden */}
 							<th>PRODUCTO</th> {/* sin orden */}
-							<th aria-sort={sortKey === 'itemSales' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}>
+							{/* <th aria-sort={sortKey === 'itemSales' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}>
 								<SortTh
 									label="Piezas"
 									active={sortKey === 'itemSales'}
 									dir={sortDir}
 									onClick={() => onSort('itemSales')}
 								/>
-							</th>
+							</th> */}
 							<th aria-sort={sortKey === 'amountSales' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}>
 								<SortTh
 									label="Importe"
@@ -609,10 +630,18 @@ const TopVentasTestTable = ({
 									</td>
 								)}
 
-								<td className="text-center" title={`${item.Description} - ${item.Color}`}>
+								{/* <td className="text-center" title={`${item.Description} - ${item.Color}`}>
 									{item.Modelo}
+								</td> */}
+								<td className="text-center producto-cell cursor-pointer hover:underline" onClick={() => onProductClick(item)} title={`${item.Description ?? ''} - ${item.Color ?? ''}`}>
+									<div className="flex flex-col items-center leading-tight">
+										<span className="font-medium">{item.Modelo}</span>
+										{item.Description && (
+											<span className="mt-1 text-xs text-gray-600 break-words">{item.Description}</span>
+										)}
+									</div>
 								</td>
-								<td className="text-center">{numberWithCommas(item.ItemSales)}</td>
+								{/* <td className="text-center">{numberWithCommas(item.ItemSales)}</td> */}
 								<td className="text-center">
 									${item.AmountSales.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
 								</td>
@@ -620,6 +649,47 @@ const TopVentasTestTable = ({
 						))}
 					</tbody>
 				</table>
+			</div>
+		</div>
+	)
+}
+
+const ProductModal = ({ product, onClose }) => {
+	if (!product) return null
+
+	const getImageSrc = (img) => {
+		if (!img) return null
+		if (typeof img !== 'string') return null
+		const v = img.trim()
+		if (v.startsWith('http') || v.startsWith('blob:') || v.startsWith('data:')) return v
+		// Assume raw base64 without header
+		return `data:image/jpeg;base64,${v}`
+	}
+	const imageSrc = getImageSrc(product.Image)
+
+	return (
+		<div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+			<div className="bg-white p-4 rounded shadow-lg">
+				<h2 className="text-lg font-bold mb-2">{product.Description}</h2>
+				{imageSrc && (
+					<div className="mb-3 w-full flex justify-center">
+						<img
+							src={imageSrc}
+							alt={product.Description || product.Modelo}
+							className="max-h-64 object-contain rounded border"
+						/>
+					</div>
+				)}
+				<p className="text-sm mb-2">Color: {product.Color}</p>
+				<p className="text-sm mb-2">Modelo: {product.Modelo}</p>
+				{/* <p className="text-sm mb-2">Piezas: {numberWithCommas(product.ItemSales)}</p> */}
+				<p className="text-sm mb-2">
+					Importe: $
+					{product.AmountSales.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+				</p>
+				<button onClick={onClose} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded">
+					Cerrar
+				</button>
 			</div>
 		</div>
 	)
