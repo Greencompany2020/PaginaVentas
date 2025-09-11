@@ -412,7 +412,134 @@ const TopVentasTest = () => {
 							onSort={handleSort}
 						/>
 
-						{/* …tu paginación igual que antes */}
+						{/* Controles de paginación
+						<div className="mt-4 flex items-center justify-between">
+							<div className="text-sm text-gray-600">
+								Mostrando {startIndex}-{endIndex} de {totalRecords}
+							</div>
+							<div className="flex items-center gap-2">
+								<button
+									className="px-2 py-1 border rounded disabled:opacity-50"
+									onClick={() => goToPage(1)}
+									disabled={currentPage === 1}
+									title="Primera"
+								>
+									«
+								</button>
+								<button
+									className="px-2 py-1 border rounded disabled:opacity-50"
+									onClick={() => goToPage(currentPage - 1)}
+									disabled={currentPage === 1}
+								>
+									Anterior
+								</button>
+								<span className="text-sm">
+									Página {currentPage} de {totalPages}
+								</span>
+								<button
+									className="px-2 py-1 border rounded disabled:opacity-50"
+									onClick={() => goToPage(currentPage + 1)}
+									disabled={currentPage === totalPages}
+								>
+									Siguiente
+								</button>
+								<button
+									className="px-2 py-1 border rounded disabled:opacity-50"
+									onClick={() => goToPage(totalPages)}
+									disabled={currentPage === totalPages}
+									title="Última"
+								>
+									»
+								</button>
+
+								<select
+									className="ml-2 border rounded px-2 py-1"
+									value={pageSize}
+									onChange={(e) => {
+										setPageSize(Number(e.target.value))
+										setCurrentPage(1)
+									}}
+								>
+									<option value={10}>10 / pág</option>
+									<option value={20}>20 / pág</option>
+									<option value={50}>50 / pág</option>
+								</select>
+							</div>
+						</div> */}
+						{/* Paginación */}
+<div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+  <div className="text-sm text-gray-600">
+    {totalRecords
+      ? <>Mostrando <b>{startIndex}</b>–<b>{endIndex}</b> de <b>{totalRecords}</b></>
+      : <>Sin resultados</>}
+  </div>
+
+  <div className="flex items-center gap-2">
+    <button
+      type="button"
+      onClick={() => goToPage(1)}
+      disabled={currentPage === 1}
+      className="px-2 py-1 border rounded disabled:opacity-50"
+      aria-label="Primera página"
+      title="Primera"
+    >
+      «
+    </button>
+    <button
+      type="button"
+      onClick={() => goToPage(currentPage - 1)}
+      disabled={currentPage === 1}
+      className="px-3 py-1 border rounded disabled:opacity-50"
+      aria-label="Página anterior"
+      title="Anterior"
+    >
+      Anterior
+    </button>
+
+    <span className="text-sm">
+      Página <b>{currentPage}</b> de <b>{totalPages}</b>
+    </span>
+
+    <button
+      type="button"
+      onClick={() => goToPage(currentPage + 1)}
+      disabled={currentPage === totalPages}
+      className="px-3 py-1 border rounded disabled:opacity-50"
+      aria-label="Página siguiente"
+      title="Siguiente"
+    >
+      Siguiente
+    </button>
+    <button
+      type="button"
+      onClick={() => goToPage(totalPages)}
+      disabled={currentPage === totalPages}
+      className="px-2 py-1 border rounded disabled:opacity-50"
+      aria-label="Última página"
+      title="Última"
+    >
+      »
+    </button>
+
+    <label className="ml-2 text-sm flex items-center gap-2">
+      Filas:
+      <select
+        value={pageSize}
+        onChange={(e) => {
+          setPageSize(Number(e.target.value))
+          setCurrentPage(1)
+        }}
+        className="border rounded px-2 py-1"
+        aria-label="Filas por página"
+      >
+        {[10, 25, 50, 100].map(n => (
+          <option key={n} value={n}>{n}</option>
+        ))}
+      </select>
+    </label>
+  </div>
+</div>
+
 					</>
 				)}
 			</section>
