@@ -1,115 +1,137 @@
 /**
- * Plantilla para exportar Top Ventas a Excel
- * @param {string} monthName - Nombre del mes (ej: "Septiembre")
- * @param {Array} topMayores - Datos de top 15 mayores ventas
- * @returns {Object} - Objeto con columnas, filas y estilos
+ * Plantilla Excel Top Ventas – adaptada al front y a la vista
+ * @param {Object} cfg
+ * @param {string}  cfg.title
+ * @param {Array}   cfg.rows
+ * @param {boolean} cfg.useGlobalRanking
+ * @param {boolean} cfg.includeSegment   // si true agrega la columna SEGMENTO
  */
-export default function topVentasTestTemplate(monthName, topMayores) {
-	// Definir columnas del Excel
-	const getColumns = () => [
-		{
-			cell: 'A1',
-			value: `Top Ventas ${monthName}`,
-			styles: { font: { bold: true, size: 16 }, alignment: { horizontal: 'center' } }
-		},
-		{
-			cell: 'A3',
-			value: 'TOP 15 MAYORES VENTAS',
-			styles: {
-				font: { bold: true, size: 14 },
-				fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4CAF50' } }
-			}
-		},
-		{
-			cell: 'A4',
-			value: 'Ranking',
-			styles: { font: { bold: true }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0E0E0' } } }
-		},
-		{
-			cell: 'B4',
-			value: 'Código',
-			styles: { font: { bold: true }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0E0E0' } } }
-		},
-		{
-			cell: 'C4',
-			value: 'Descripción',
-			styles: { font: { bold: true }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0E0E0' } } }
-		},
-		{
-			cell: 'D4',
-			value: 'Color',
-			styles: { font: { bold: true }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0E0E0' } } }
-		},
-		{
-			cell: 'E4',
-			value: 'Piezas',
-			styles: { font: { bold: true }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0E0E0' } } }
-		},
-		{
-			cell: 'F4',
-			value: 'Importe',
-			styles: { font: { bold: true }, fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0E0E0' } } }
-		}
-	]
+export default function topVentasTestTemplate({ title, rows, useGlobalRanking, includeSegment }) {
+  // Letras de columna A..Z (sobra)
+  const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const L = (i) => (i < letters.length ? letters[i] : 'Z');
 
-	// Preparar las filas de datos
-	const getRows = () => {
-		const rows = []
+  // Columnas como en el front
+  const headers = [
+    { key: 'ranking',   label: '#',         width: 10, align: 'center' },
+    ...(includeSegment ? [{ key: 'segment', label: 'SEGMENTO', width: 18, align: 'left' }] : []),
+    { key: 'producto',  label: 'PRODUCTO',  width: 42, align: 'left' },
+    { key: 'piezas',    label: 'PIEZAS',    width: 12, align: 'right' },
+    { key: 'importe',   label: 'IMPORTE',   width: 16, align: 'right' },
+  ];
+  const lastCol = L(headers.length - 1);
 
-		// Agregar datos de top mayores
-		if (topMayores && topMayores.length > 0) {
-			topMayores.forEach((item) => {
-				rows.push({
-					ranking: item.Ranking,
-					codigo: item.ItemCode,
-					descripcion: item.Description,
-					color: item.Color,
-					piezas: item.ItemSales,
-					importe: item.AmountSales
-				})
-			})
-		}
+  // ===== Encabezados (título + headers) =====
+  const getColumns = () => {
+    const cols = [
+      // Título centrado y mergeado
+      {
+        cell: 'A1',
+        value: title,
+        merge: `A1:${lastCol}1`,
+        styles: {
+          font: { bold: true, size: 18 },
+          alignment: { horizontal: 'center', vertical: 'middle' }
+        }
+      },
+      // Subtítulo (barra verde)
+      {
+        cell: 'A3',
+        value: 'TOP VENTAS',
+        merge: `A3:${lastCol}3`,
+        styles: {
+          font: { bold: true, size: 14, color: { argb: 'FFFFFFFF' } },
+          alignment: { horizontal: 'center', vertical: 'middle' },
+          fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4CAF50' } }
+        }
+      },
+    ];
 
-		// Agregar separador
-		rows.push({
-			ranking: '',
-			codigo: '',
-			descripcion: '',
-			color: '',
-			piezas: '',
-			importe: ''
-		})
-		return rows
-	}
+    // Header negro con texto blanco y borde blanco
+    headers.forEach((h, i) => {
+      cols.push({
+        cell: `${L(i)}4`,
+        value: String(h.label).toUpperCase(),
+        styles: headStyleBlack()
+      });
+    });
 
-	// Estilos generales
-	const styles = {
-		styles: {
-			alignment: { horizontal: 'center', vertical: 'middle' },
-			border: {
-				top: { style: 'thin' },
-				left: { style: 'thin' },
-				bottom: { style: 'thin' },
-				right: { style: 'thin' }
-			}
-		},
-		format: {
-			number: '#,##0',
-			decimal: '#,##0.00'
-		},
-		cols: {
-			A: { alignment: { horizontal: 'center' } }, // Ranking
-			B: { alignment: { horizontal: 'left' } }, // Código
-			C: { alignment: { horizontal: 'left' } }, // Descripción
-			D: { alignment: { horizontal: 'left' } }, // Color
-			E: { alignment: { horizontal: 'right' } }, // Piezas
-			F: { alignment: { horizontal: 'right' } } // Importe
-		}
-	}
+    return cols;
+  };
 
-	return {
-		getColumns,
-		getRows,
-		style: styles
-	}
+  // ===== Filas (EN EL MISMO ORDEN QUE headers) =====
+  const getRows = () => {
+    const out = [];
+
+    if (Array.isArray(rows) && rows.length) {
+      rows.forEach((r) => {
+        const row = {};
+        headers.forEach((h) => {
+          switch (h.key) {
+            case 'ranking':
+              row[h.key] = useGlobalRanking ? (r.RankingGlobal ?? '') : (r.RankingSegment ?? '');
+              break;
+            case 'segment':
+              row[h.key] = r.Segment ?? '';
+              break;
+            case 'producto':
+              row[h.key] = r.Modelo ?? '';
+              break;
+            case 'piezas':
+              row[h.key] = r.ItemSales ?? 0;
+              break;
+            case 'importe':
+              row[h.key] = r.AmountSales ?? 0;
+              break;
+            default:
+              row[h.key] = '';
+          }
+        });
+        out.push(row);
+      });
+    }
+
+    // Fila en blanco final (opcional) respetando el orden de headers
+    const empty = {};
+    headers.forEach(h => { empty[h.key] = ''; });
+    out.push(empty);
+
+    return out;
+  };
+
+  // ===== Estilos/ajustes globales =====
+  const style = {
+    styles: {
+      alignment: { vertical: 'middle' },
+      border: { top:{style:'thin'}, left:{style:'thin'}, bottom:{style:'thin'}, right:{style:'thin'} }
+    },
+    format: { number: '#,##0', decimal: '#,##0.00' },
+    cols: Object.fromEntries(
+      headers.map((h, i) => [
+        L(i),
+        { width: h.width, alignment: { horizontal: h.align } }
+      ])
+    ),
+    freeze: { row: 4, col: 1 },
+    autoFilter: { from: `A4`, to: `${lastCol}4` },
+    rows: { 1: { height: 24 }, 3: { height: 20 }, 4: { height: 18 } }
+  };
+
+  return { getColumns, getRows, style };
+}
+
+// Header negro, texto blanco, bold, borde blanco
+function headStyleBlack() {
+  const white = { argb: 'FFFFFFFF' };
+  return {
+    font: { bold: true, color: white },
+    alignment: { horizontal: 'center', vertical: 'middle' },
+    fill: { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF000000' } },
+    border: {
+      top:    { style: 'thin', color: white },
+      left:   { style: 'thin', color: white },
+      bottom: { style: 'thin', color: white },
+      right:  { style: 'thin', color: white }
+    }
+  };
 }
