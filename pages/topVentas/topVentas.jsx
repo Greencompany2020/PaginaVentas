@@ -1,5 +1,5 @@
 // filepath: /Users/programador4/Documents/PaginaVentas/pages/reportes/topVentas.jsx
-import { useEffect, useState, useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { getVentasLayout } from '../../components/layout/VentasLayout'
 import { ParametersContainer, Parameters } from '../../components/containers'
 import { numberWithCommas } from '../../utils/resultsFormated'
@@ -13,129 +13,324 @@ import DateHelper from '../../utils/dateHelper'
 import { getTopVentas } from '../../services/TopVentas'
 import LoaderComponent from '../../components/Loader'
 import topVentasTemplate from '../../utils/excel/templates/topVentas'
-import exportExcel from '../../utils/excel/exportExcel'
+import exportExcelMulti from '../../utils/excel/exportExcelMulti'
 
-const TopVentas = (props) => {
+/** Vistas disponibles para filtrar en cliente */
+const VIEW_MODES = {
+	GLOBAL_TOP100: 'GLOBAL_TOP100', // IsGlobalTop100 === true
+	LINEA: 'LINEA', // SegmentKey = 1 y RN_Seg <= 100
+	MODA: 'MODA', // SegmentKey = 2 y RN_Seg <= 100
+	ACCESORIO: 'ACCESORIO' // SegmentKey = 3 y RN_Seg <= 100  ← ojo: singular
+}
+
+const VIEW_OPTIONS = [
+	{ id: VIEW_MODES.GLOBAL_TOP100, label: 'Global' },
+	// { id: VIEW_MODES.ALL_300, label: 'Todos (300)' },
+	{ id: VIEW_MODES.LINEA, label: 'Línea' },
+	{ id: VIEW_MODES.MODA, label: 'Moda' },
+	{ id: VIEW_MODES.ACCESORIO, label: 'Accesorio' }
+]
+
+function ViewButtons({ value, onChange }) {
+	return (
+		<div className="flex flex-wrap gap-2">
+			{VIEW_OPTIONS.map((opt) => {
+				const active = value === opt.id
+				return (
+					<button
+						key={opt.id}
+						type="button"
+						aria-pressed={active}
+						onClick={() => onChange(opt.id)}
+						className={`inline-flex items-center px-3 py-2 rounded-md border text-sm shadow-sm
+              ${
+								active
+									? 'bg-blue-600 text-white border-blue-600'
+									: 'bg-gray-100 text-gray-700 border-gray-200 hover:bg-gray-200'
+							}`}
+						title={opt.label}
+					>
+						{opt.label}
+					</button>
+				)
+			})}
+		</div>
+	)
+}
+
+const TopVentas = () => {
 	const sendNotification = useNotification()
 	const dateHelper = DateHelper()
 
-	// Estados de los reportes
-	const [dataTopMayores, setDataTopMayores] = useState(null)
-	const [currentMonthName, setCurrentMonthName] = useState(dateHelper.getMonthName(dateHelper.getYesterdayDate()))
-	const [currentMonthValue, setCurrentMonthValue] = useState(dateHelper.getcurrentMonth(dateHelper.getYesterdayDate()))
-
+	const [data, setData] = useState([]) // ← ahora guardamos las 300 filas
 	const [isLoading, setIsLoading] = useState(false)
+
+	const [currentMonthName, setCurrentMonthName] = useState(dateHelper.getMonthName(dateHelper.getYesterdayDate()))
 	const [showImages, setShowImages] = useState(true)
+
+	// Nueva: vista activa para filtrar en front
+	const [viewMode, setViewMode] = useState(VIEW_MODES.GLOBAL_TOP100)
 
 	const [showProductModal, setShowProductModal] = useState(false)
 	const [selectedProduct, setSelectedProduct] = useState()
+	
 	// paginación
 	const [currentPage, setCurrentPage] = useState(1)
 	const [pageSize, setPageSize] = useState(10)
 
-	const totalRecords = dataTopMayores?.length ?? 0
-	const totalPages = Math.max(1, Math.ceil(totalRecords / pageSize))
+	// 👇 estados nuevos
+	const [sortKey, setSortKey] = useState('none') // 'none' | 'ranking' | 'segment' | 'itemSales' | 'amountSales'
+	const [sortDir, setSortDir] = useState('asc') // 'asc' | 'desc'
 
-	const paginatedTopMayores = useMemo(() => {
-		if (!dataTopMayores) return []
-		const start = (currentPage - 1) * pageSize
-		return dataTopMayores.slice(start, start + pageSize)
-	}, [dataTopMayores, currentPage, pageSize])
-
-	const startIndex = totalRecords ? (currentPage - 1) * pageSize + 1 : 0
-	const endIndex = Math.min(currentPage * pageSize, totalRecords)
-
-	const goToPage = (p) => setCurrentPage(Math.min(Math.max(1, p), totalPages))
-
-	const parameters = {
-		month: currentMonthValue
-	}
-	Object.seal(parameters)
-
-	const handleSubmit = async (values) => {
-		try {
-			setIsLoading(true)
-
-			const monthNumber = parseInt(values.month)
-
-			const selectedMonth = dateHelper.getMonths().find((m) => m.value === values.month)
-			setCurrentMonthName(selectedMonth.label)
-
-			const data = await getTopVentas({ month: monthNumber })
-
-			if (data && data.length > 0) {
-				const topMayores = data.slice(0, 100) // si quieres paginar TODO, quita este slice
-				setDataTopMayores(topMayores)
-				setCurrentPage(1) // 👈 resetea paginación
-			} else {
-				setDataTopMayores([])
-				setCurrentPage(1)
-			}
-		} catch (error) {
-			sendNotification({
-				type: 'ERROR',
-				message: error.response?.data?.message || error.message
-			})
-		} finally {
-			setIsLoading(false)
+	// 👇 alterna orden al hacer clic en un header
+	function handleSort(key) {
+		if (!key) return
+		setCurrentPage(1)
+		if (sortKey === key) {
+			setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+		} else {
+			setSortKey(key)
+			// por defecto: ranking asc; números típicamente desc
+			setSortDir(key === 'ranking' ? 'asc' : 'desc')
 		}
 	}
-
-	const handleToggleImages = () => {
-		setShowImages(!showImages)
-	}
-
+	
 	const handleProductClick = (producto) => {
 		setShowProductModal(true)
 		setSelectedProduct(producto)
 	}
 
-	const handleExport = () => {
+	const handleSubmit = async (values) => {
 		try {
-			if (!dataTopMayores) {
-				sendNotification({
-					type: 'WARNING',
-					message: 'No hay datos para exportar'
-				})
-				return
-			}
+			setIsLoading(true)
+			const monthNumber = parseInt(values.month, 10)
+			const selectedMonth = dateHelper.getMonths().find((m) => m.value === values.month)
+			setCurrentMonthName(selectedMonth.label)
 
-			const template = topVentasTemplate(currentMonthName, dataTopMayores)
-
-			exportExcel(
-				`Top Ventas ${currentMonthName} ${new Date().getFullYear()}`, // Nombre del archivo
-				template.getColumns(), // Columnas
-				template.getRows(), // Filas
-				template.style, // Estilos
-				[`Top Ventas ${currentMonthName}`], // Nombre de la hoja
-				{ includeWeb: true }, // Configuración
-				`Reporte generado el ${new Date().toLocaleDateString('es-ES')}` // Nota al pie
-			)
-
-			sendNotification({
-				type: 'SUCCESS',
-				message: 'Excel exportado exitosamente'
-			})
+			const rows = await getTopVentas({ month: monthNumber }) // ← ahora trae 300 filas
+			setData(rows || [])
+			setCurrentPage(1)
 		} catch (error) {
-			console.error('Error al exportar:', error)
 			sendNotification({
 				type: 'ERROR',
-				message: 'Error al exportar a Excel'
+				message: error.response?.data?.message || error.message
 			})
+			setData([])
+		} finally {
+			setIsLoading(false)
 		}
 	}
 
-	useEffect(() => {
-		const initialMonthValue = String(dateHelper.getcurrentMonth(dateHelper.getYesterdayDate())).padStart(2, '0')
-		handleSubmit({ month: initialMonthValue })
-	}, [])
+	const initialMonthValue = useMemo(
+		() => String(dateHelper.getcurrentMonth(dateHelper.getYesterdayDate())).padStart(2, '0'),
+		[dateHelper]
+	)
 
-	// Valor inicial del select (formato "09")
-	const initialMonthValue = String(dateHelper.getcurrentMonth(dateHelper.getYesterdayDate())).padStart(2, '0')
+	useEffect(() => {
+		handleSubmit({ month: initialMonthValue })
+	}, [initialMonthValue])
+
+	// Filtrado en cliente según vista seleccionada
+	const filtered = useMemo(() => {
+		if (!Array.isArray(data)) return []
+
+		switch (viewMode) {
+			case VIEW_MODES.GLOBAL_TOP100:
+				// Top 100 global por RankingGlobal
+				return data.filter((r) => r.IsGlobalTop100).sort((a, b) => a.RankingGlobal - b.RankingGlobal)
+
+			case VIEW_MODES.LINEA:
+				return data
+					.filter((r) => r.SegmentKey === 1 && r.RankingSegment <= 100)
+					.sort((a, b) => a.RankingSegment - b.RankingSegment)
+
+			case VIEW_MODES.MODA:
+				return data
+					.filter((r) => r.SegmentKey === 2 && r.RankingSegment <= 100)
+					.sort((a, b) => a.RankingSegment - b.RankingSegment)
+
+			case VIEW_MODES.ACCESORIO:
+				return data
+					.filter((r) => r.SegmentKey === 3 && r.RankingSegment <= 100)
+					.sort((a, b) => a.RankingSegment - b.RankingSegment)
+
+			default:
+				return []
+		}
+	}, [data, viewMode])
+
+	const isGlobalRanking = viewMode === VIEW_MODES.GLOBAL_TOP100
+
+	const sorted = useMemo(() => {
+		if (sortKey === 'none') return filtered
+		const arr = [...filtered]
+
+		const val = (r) => {
+			switch (sortKey) {
+				case 'ranking':
+					return isGlobalRanking ? r.RankingGlobal ?? 0 : r.RankingSegment ?? 0
+				case 'segment':
+					return r.Segment ?? ''
+				// case 'itemSales':
+				// 	return r.ItemSales ?? 0
+				case 'amountSales':
+					return r.AmountSales ?? 0
+				default:
+					return 0
+			}
+		}
+
+		arr.sort((a, b) => {
+			const av = val(a),
+				bv = val(b)
+			const isText = typeof av === 'string' || typeof bv === 'string'
+			if (isText) {
+				return sortDir === 'asc' ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av))
+			}
+			const diff = Number(av) - Number(bv)
+			return sortDir === 'asc' ? diff : -diff
+		})
+
+		return arr
+	}, [filtered, sortKey, sortDir, isGlobalRanking])
+
+	// Paginación sobre el filtrado
+	const totalRecords = sorted.length
+	const totalPages = Math.max(1, Math.ceil(totalRecords / pageSize))
+	const start = (currentPage - 1) * pageSize
+	const pageRows = useMemo(() => sorted.slice(start, start + pageSize), [sorted, start, pageSize])
+	const startIndex = totalRecords ? start + 1 : 0
+	const endIndex = Math.min(currentPage * pageSize, totalRecords)
+
+	const goToPage = (p) => setCurrentPage(Math.min(Math.max(1, p), totalPages))
+
+	// arriba, dentro del componente:
+	const maxMonth = parseInt(initialMonthValue, 10)
+	const monthsToShow = useMemo(
+		() => dateHelper.getMonths().filter((m) => parseInt(m.value, 10) <= maxMonth),
+		[dateHelper, maxMonth]
+	)
+
+	// 	const handleExport = () => {
+	//   const rowsToExport = sorted; // todo lo visible (sin paginación)
+	//   if (!rowsToExport.length) {
+	//     sendNotification({ type: 'WARNING', message: 'No hay datos para exportar' })
+	//     return
+	//   }
+
+	//   const title = titleByView(viewMode, currentMonthName)
+	//   const isGlobalRanking = viewMode === VIEW_MODES.GLOBAL_TOP100
+	//   const includeSegment = viewMode === VIEW_MODES.GLOBAL_TOP100 || viewMode === VIEW_MODES.ALL_300
+
+	//   const template = topVentasTemplate({
+	//     title,
+	//     rows: rowsToExport,
+	//     useGlobalRanking: isGlobalRanking,
+	//     includeSegment
+	//   })
+
+	//   const fileName = `${title} ${new Date().getFullYear()}`
+	//   const sheetName = title.slice(0, 31)
+
+	//   exportExcel(
+	//     fileName,
+	//     template.getColumns(),
+	//     template.getRows(),
+	//     template.style,
+	//     [sheetName],
+	//     { includeWeb: true },
+	//     `Reporte generado el ${new Date().toLocaleDateString('es-ES')}`
+	//   )
+
+	//   sendNotification({ type: 'SUCCESS', message: 'Excel exportado exitosamente' })
+	// }
+
+	const rowsByView = (mode, allData) => {
+		if (!Array.isArray(allData)) return []
+		switch (mode) {
+			case VIEW_MODES.GLOBAL_TOP100:
+				return allData.filter((r) => r.IsGlobalTop100).sort((a, b) => a.RankingGlobal - b.RankingGlobal)
+
+			case VIEW_MODES.LINEA:
+				return allData
+					.filter((r) => r.SegmentKey === 1 && r.RankingSegment <= 100)
+					.sort((a, b) => a.RankingSegment - b.RankingSegment)
+
+			case VIEW_MODES.MODA:
+				return allData
+					.filter((r) => r.SegmentKey === 2 && r.RankingSegment <= 100)
+					.sort((a, b) => a.RankingSegment - b.RankingSegment)
+
+			case VIEW_MODES.ACCESORIO:
+				return allData
+					.filter((r) => r.SegmentKey === 3 && r.RankingSegment <= 100)
+					.sort((a, b) => a.RankingSegment - b.RankingSegment)
+
+			default:
+				return []
+		}
+	}
+
+	const handleExport = () => {
+		if (!data.length) {
+			sendNotification({ type: 'WARNING', message: 'No hay datos para exportar' })
+			return
+		}
+
+		// 1 hoja por vista
+		const modes = [
+			VIEW_MODES.GLOBAL_TOP100,
+			VIEW_MODES.LINEA,
+			VIEW_MODES.MODA,
+			VIEW_MODES.ACCESORIO
+		]
+
+		const sheets = modes.map((mode) => {
+			const title = titleByView(mode, currentMonthName)
+			const rows = rowsByView(mode, data)
+
+			const template = topVentasTemplate({
+				title,
+				rows,
+				useGlobalRanking: mode === VIEW_MODES.GLOBAL_TOP100,
+				includeSegment: mode === VIEW_MODES.GLOBAL_TOP100
+			})
+
+			return {
+				name: title.slice(0, 31), // Excel: máx 31
+				columns: template.getColumns(),
+				rows: template.getRows(),
+				style: template.style
+			}
+		})
+
+		// Archivo final con todas las hojas
+		const fileName = `Top Ventas ${currentMonthName} ${new Date().getFullYear()}`
+		const footerMsg = `Reporte generado el ${new Date().toLocaleDateString('es-ES')}`
+
+		// NUEVO helper multi-hoja
+		exportExcelMulti(fileName, sheets, { includeWeb: true }, footerMsg)
+
+		sendNotification({ type: 'SUCCESS', message: 'Excel exportado (todas las vistas)' })
+	}
 
 	return (
 		<div className="flex flex-col h-full">
 			<TitleReport title={`Top Ventas ${currentMonthName}`} />
+
+			{/* Toolbar superior: botones de vista (izquierda) + Excel (derecha) */}
+			<div className="p-4">
+				<div className="flex items-center justify-between gap-3">
+					<ViewButtons
+						value={viewMode}
+						onChange={(mode) => {
+							setViewMode(mode)
+							setCurrentPage(1)
+						}}
+					/>
+					<ExcelButton handleClick={handleExport} />
+				</div>
+			</div>
 
 			{isLoading && (
 				<div className="absolute inset-0 flex items-center justify-center z-10">
@@ -143,130 +338,159 @@ const TopVentas = (props) => {
 				</div>
 			)}
 
-			<section className="p-4 space-y-2">
-				<div className="flex justify-between items-center">
-					<ParametersContainer>
-						<Parameters>
-							<Formik initialValues={{ month: initialMonthValue }} onSubmit={handleSubmit}>
-								{({ values, setFieldValue }) => (
-									<Form>
-										<fieldset className="space-y-2 mb-3">
-											<div className="flex flex-col">
-												<label htmlFor="month" className="text-sm font-medium mb-1">
-													Mes
-												</label>
-												<select
-													id="month"
-													name="month"
-													value={values.month}
-													onChange={(e) => {
-														setFieldValue('month', e.target.value)
-														const selectedMonth = dateHelper.getMonths().find((m) => m.value === e.target.value)
-														setCurrentMonthName(selectedMonth.label)
-														setCurrentMonthValue(parseInt(e.target.value))
-														handleSubmit({ month: e.target.value })
-													}}
-													className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-												>
-													{dateHelper.getMonths().map((month) => (
-														<option key={month.value} value={month.value}>
-															{month.label}
-														</option>
-													))}
-												</select>
-											</div>
+			{/* Filtros (solo Mes + Mostrar imágenes) */}
+			<section className="px-4 space-y-2">
+				<ParametersContainer>
+					<Parameters>
+						<Formik initialValues={{ month: initialMonthValue }} enableReinitialize onSubmit={handleSubmit}>
+							{({ values, setFieldValue }) => (
+								<Form>
+									<fieldset className="space-y-2 mb-3">
+										<div className="flex flex-col">
+											<label htmlFor="month" className="text-sm font-medium mb-1">
+												Mes
+											</label>
+											<select
+												id="month"
+												name="month"
+												value={values.month}
+												onChange={(e) => {
+													setFieldValue('month', e.target.value)
+													const m = dateHelper.getMonths().find((mm) => mm.value === e.target.value)
+													setCurrentMonthName(m.label)
+													handleSubmit({ month: e.target.value })
+												}}
+												className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+											>
+												{monthsToShow.map((m) => (
+													<option key={m.value} value={m.value}>
+														{m.label}
+													</option>
+												))}
+											</select>
+										</div>
 
-											{/* Checkbox para mostrar/ocultar imágenes */}
-											<div className="flex items-center mt-2">
-												<input
-													type="checkbox"
-													id="showImages"
-													checked={showImages}
-													onChange={(e) => setShowImages(e.target.checked)}
-													className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-												/>
-												<label htmlFor="showImages" className="text-sm font-medium text-gray-700">
-													Mostrar imágenes
-												</label>
-											</div>
-										</fieldset>
-									</Form>
-								)}
-							</Formik>
-						</Parameters>
-					</ParametersContainer>
-
-					{/* Solo el botón de Excel */}
-					<div className="flex space-x-2">
-						<ExcelButton handleClick={handleExport} />
-					</div>
-				</div>
+										<div className="flex items-center mt-2">
+											<input
+												type="checkbox"
+												id="showImages"
+												checked={showImages}
+												onChange={(e) => setShowImages(e.target.checked)}
+												className="mr-2 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+											/>
+											<label htmlFor="showImages" className="text-sm font-medium text-gray-700">
+												Mostrar imágenes
+											</label>
+										</div>
+									</fieldset>
+								</Form>
+							)}
+						</Formik>
+					</Parameters>
+				</ParametersContainer>
 			</section>
-			<section className={`flex-1 p-4 overflow-y-auto relative`}>
+
+			{/* Panel de contenido */}
+			<section className="flex-1 p-4 overflow-y-auto relative">
 				{!isLoading && (
-					<div className="">
-						{/* Tabla Top 15 Mayores Ventas */}
+					<>
 						<TopVentasTable
-							title={`Top 100 Mayores Ventas ${currentMonthName}`}
-							data={paginatedTopMayores} // 👈 ahora la tabla recibe el “slice” de la página
-							onProductClick={handleProductClick}
+							title={titleByView(viewMode, currentMonthName)}
+							data={pageRows}
 							showImages={showImages}
+							showSegmentColumn={
+								viewMode !== VIEW_MODES.LINEA && viewMode !== VIEW_MODES.MODA && viewMode !== VIEW_MODES.ACCESORIO
+							}
+							useGlobalRanking={isGlobalRanking}
+							sortKey={sortKey}
+							sortDir={sortDir}
+							onSort={handleSort}
+							onProductClick={handleProductClick}
 						/>
 
-						{/* Controles de paginación */}
-						<div className="mt-4 flex items-center justify-between">
+						{/* Paginación */}
+						<div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3">
 							<div className="text-sm text-gray-600">
-								Mostrando {startIndex}-{endIndex} de {totalRecords}
+								{totalRecords ? (
+									<>
+										Mostrando <b>{startIndex}</b>–<b>{endIndex}</b> de <b>{totalRecords}</b>
+									</>
+								) : (
+									<>Sin resultados</>
+								)}
 							</div>
+
 							<div className="flex items-center gap-2">
 								<button
-									className="px-2 py-1 border rounded disabled:opacity-50"
+									type="button"
 									onClick={() => goToPage(1)}
 									disabled={currentPage === 1}
+									className="px-2 py-1 border rounded disabled:opacity-50"
+									aria-label="Primera página"
 									title="Primera"
 								>
 									«
 								</button>
 								<button
-									className="px-2 py-1 border rounded disabled:opacity-50"
+									type="button"
 									onClick={() => goToPage(currentPage - 1)}
 									disabled={currentPage === 1}
+									className="px-3 py-1 border rounded disabled:opacity-50"
+									aria-label="Página anterior"
+									title="Anterior"
 								>
 									Anterior
 								</button>
+
 								<span className="text-sm">
-									Página {currentPage} de {totalPages}
+									Página <b>{currentPage}</b> de <b>{totalPages}</b>
 								</span>
+
 								<button
-									className="px-2 py-1 border rounded disabled:opacity-50"
+									type="button"
 									onClick={() => goToPage(currentPage + 1)}
 									disabled={currentPage === totalPages}
+									className="px-3 py-1 border rounded disabled:opacity-50"
+									aria-label="Página siguiente"
+									title="Siguiente"
 								>
 									Siguiente
 								</button>
 								<button
-									className="px-2 py-1 border rounded disabled:opacity-50"
+									type="button"
 									onClick={() => goToPage(totalPages)}
 									disabled={currentPage === totalPages}
+									className="px-2 py-1 border rounded disabled:opacity-50"
+									aria-label="Última página"
 									title="Última"
 								>
 									»
 								</button>
 
-								<select
-									className="ml-2 border rounded px-2 py-1"
-									value={pageSize}
-									onChange={(e) => {
-										setPageSize(Number(e.target.value))
-										setCurrentPage(1)
-									}}
-								>
-									<option value={10}>10 / pág</option>
-									<option value={20}>20 / pág</option>
-									<option value={50}>50 / pág</option>
-								</select>
+								<label className="ml-2 text-sm flex items-center gap-2">
+									Filas:
+									<select
+										value={pageSize}
+										onChange={(e) => {
+											setPageSize(Number(e.target.value))
+											setCurrentPage(1)
+										}}
+										className="border rounded px-2 py-1"
+										aria-label="Filas por página"
+									>
+										{[10, 25, 50, 100].map((n) => (
+											<option key={n} value={n}>
+												{n}
+											</option>
+										))}
+									</select>
+								</label>
 							</div>
 						</div>
+					</>
+				)}
+			</section>
+			
 
 						{/* Modal de producto */}
 						{showProductModal && (
@@ -278,14 +502,55 @@ const TopVentas = (props) => {
 								}}
 							/>
 						)}
-					</div>
-				)}
-			</section>
 		</div>
 	)
 }
 
-const TopVentasTable = ({ title, data, onProductClick, showImages }) => {
+function titleByView(viewMode, monthName) {
+	switch (viewMode) {
+		case VIEW_MODES.GLOBAL_TOP100:
+			return `Top 100 Global ${monthName}`
+		case VIEW_MODES.LINEA:
+			return `Top 100 Línea - ${monthName}`
+		case VIEW_MODES.MODA:
+			return `Top 100 Moda - ${monthName}`
+		case VIEW_MODES.ACCESORIO:
+			return `Top 100 Accesorios - ${monthName}`
+		default:
+			return `Top Ventas ${monthName}`
+	}
+}
+
+function SortTh({ label, active, dir, onClick }) {
+	return (
+		<button
+			type="button"
+			onClick={onClick}
+			// hereda el estilo del <th>: sin fondo/borde, texto igual que los no ordenables
+			className="w-full h-full bg-transparent border-0 px-0 py-0 
+                 text-inherit font-inherit uppercase tracking-wide
+                 flex items-center justify-center gap-1
+                 focus:outline-none"
+			title={`Ordenar por ${label}`}
+		>
+			<span className="whitespace-nowrap font-bold">{label}</span>
+			<span className={`text-[10px] ${active ? 'opacity-90' : 'opacity-50'}`}>
+				{active ? (dir === 'asc' ? '▲' : '▼') : '↕'}
+			</span>
+		</button>
+	)
+}
+
+const TopVentasTable = ({
+	title,
+	data, onProductClick,
+	showImages,
+	showSegmentColumn,
+	useGlobalRanking,
+	sortKey,
+	sortDir,
+	onSort
+}) => {
 	if (!data) return null
 
 	return (
@@ -295,30 +560,64 @@ const TopVentasTable = ({ title, data, onProductClick, showImages }) => {
 				<table className="table-report-top-ventas">
 					<thead>
 						<tr className="text-center">
-							<th>#</th>
-							{showImages && <th>Imagen</th>}
-							<th>Producto</th>
-							{/* <th>Piezas</th> */}
-							<th>Importe</th>
+							<th aria-sort={sortKey === 'ranking' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}>
+								<SortTh label="#" active={sortKey === 'ranking'} dir={sortDir} onClick={() => onSort('ranking')} />
+							</th>
+							{showSegmentColumn && (
+								<th aria-sort={sortKey === 'segment' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}>
+									<SortTh
+										label="Segmento"
+										active={sortKey === 'segment'}
+										dir={sortDir}
+										onClick={() => onSort('segment')}
+									/>
+								</th>
+							)}
+							{showImages && <th>IMAGEN</th>} {/* sin orden */}
+							<th>PRODUCTO</th> {/* sin orden */}
+							{/* <th aria-sort={sortKey === 'itemSales' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}>
+								<SortTh
+									label="Piezas"
+									active={sortKey === 'itemSales'}
+									dir={sortDir}
+									onClick={() => onSort('itemSales')}
+								/>
+							</th> */}
+							<th aria-sort={sortKey === 'amountSales' ? (sortDir === 'asc' ? 'ascending' : 'descending') : 'none'}>
+								<SortTh
+									label="Importe"
+									active={sortKey === 'amountSales'}
+									dir={sortDir}
+									onClick={() => onSort('amountSales')}
+								/>
+							</th>
 						</tr>
 					</thead>
+
 					<tbody>
 						{data.map((item) => (
 							<tr key={v4()}>
-								<td className="text-center">{item.Ranking}</td>
+								<td className="text-center">{useGlobalRanking ? item.RankingGlobal : item.RankingSegment}</td>
+
+								{showSegmentColumn && <td className="text-center">{item.Segment}</td>}
+
 								{showImages && (
 									<td className="text-center">
 										<div className="flex justify-center items-center">
 											<img
-												src={`${item.Image}`}
-												width={100}
-												height={100}
-												alt="Icono de producto"
+												src={safeImg(item.Image)}
+												width={90}
+												height={90}
+												alt={item.Description || item.Modelo}
 												className="object-cover rounded"
 											/>
 										</div>
 									</td>
 								)}
+
+								{/* <td className="text-center" title={`${item.Description} - ${item.Color}`}>
+									{item.Modelo}
+								</td> */}
 								<td className="text-center producto-cell cursor-pointer hover:underline" onClick={() => onProductClick(item)} title={`${item.Description ?? ''} - ${item.Color ?? ''}`}>
 									<div className="flex flex-col items-center leading-tight">
 										<span className="font-medium">{item.Modelo}</span>
@@ -379,6 +678,13 @@ const ProductModal = ({ product, onClose }) => {
 			</div>
 		</div>
 	)
+}
+
+function safeImg(img) {
+	if (!img || typeof img !== 'string') return ''
+	const v = img.trim()
+	if (v.startsWith('http') || v.startsWith('blob:') || v.startsWith('data:')) return v
+	return `data:image/jpeg;base64,${v}`
 }
 
 const TopVentasWithAuth = withAuth(TopVentas)
