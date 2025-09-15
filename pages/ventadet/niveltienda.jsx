@@ -1,5 +1,5 @@
 // pages/reportes/VentaDetNivelTienda.jsx
-import React, { useMemo, useState, useEffect } from 'react'
+import React, { useMemo, useState, useEffect, useCallback } from 'react'
 import { Formik, Form } from 'formik'
 
 import withAuth from '../../components/withAuth'
@@ -8,14 +8,8 @@ import TitleReport from '../../components/TitleReport'
 import { useNotification } from '../../components/notifications/NotificationsProvider'
 import { isMobile } from 'react-device-detect'
 import ViewFilter from '../../components/ViewFilter'
-import {
-	getTableName,
-	parseNumberToBoolean,
-} from '../../utils/functions'
-import {
-	numberWithCommas,
-	selectRow
-} from '../../utils/resultsFormated'
+import { getTableName, parseNumberToBoolean } from '../../utils/functions'
+import { numberWithCommas, selectRow } from '../../utils/resultsFormated'
 import Stats from '../../components/Stats'
 
 import { ParametersContainer, Parameters } from '../../components/containers'
@@ -129,74 +123,145 @@ function VentaDetNivelTienda(props) {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [])
 
-	// --- Construir UNA sola lista con: REGION (row sintética), PLAZA (TOT), TIENDAS y TOTAL ---
-	const flat = useMemo(() => {
-		if (!rows?.length) return []
+	// // --- Construir UNA sola lista con: REGION (row sintética), PLAZA (TOT), TIENDAS y TOTAL ---
+	// const flat = useMemo(() => {
+	// 	if (!rows?.length) return []
 
-		// total global (para % venta de filas sintéticas)
-		const totalRow = rows.find((r) => r.Tienda === 'TOTAL')
-		const totalGlobal = Number(totalRow?.Venta || 0)
+	// 	// total global (para % venta de filas sintéticas)
+	// 	const totalRow = rows.find((r) => r.Tienda === 'TOTAL')
+	// 	const totalGlobal = Number(totalRow?.Venta || 0)
 
-		// agrupar por región y plaza
-		const byRegPlaza = new Map()
-		for (const r of rows) {
-			const reg = String(r.Region || 'SIN REGION')
-			const plz = String(r.Plaza || '')
-			const key = `${reg}||${plz}`
-			if (!byRegPlaza.has(key)) byRegPlaza.set(key, [])
-			byRegPlaza.get(key).push(r)
-		}
+	// 	// agrupar por región y plaza
+	// 	const byRegPlaza = new Map()
+	// 	for (const r of rows) {
+	// 		const reg = String(r.Region || 'SIN REGION')
+	// 		const plz = String(r.Plaza || '')
+	// 		const key = `${reg}||${plz}`
+	// 		if (!byRegPlaza.has(key)) byRegPlaza.set(key, [])
+	// 		byRegPlaza.get(key).push(r)
+	// 	}
+
+	// 	// regiones en orden
+	// 	const regiones = Array.from(new Set(rows.map((r) => String(r.Region || 'SIN REGION')))).sort(
+	// 		(a, b) => regionIndex(a) - regionIndex(b)
+	// 	)
+
+	// 	const out = []
+
+	// 	for (const region of regiones) {
+	// 		// tiendas de la región (evitar duplicar con TOT plaza o TOTAL)
+	// 		const deRegion = rows.filter((r) => String(r.Region || 'SIN REGION') === region && r.Tienda !== 'TOTAL')
+
+	// 		// región: crear fila sintética SUMA de tiendas (excluye TOT plaza)
+	// 		const soloTiendas = deRegion.filter((r) => !/^TOT\s+/i.test(String(r.Tienda || '')))
+	// 		const regSum = (field) => soloTiendas.reduce((a, b) => a + Number(b[field] || 0), 0)
+
+	// 		const regionRow = {
+	// 			_level: 'region',
+	// 			Region: region,
+	// 			Plaza: null,
+	// 			Tienda: region,
+	// 			Venta: regSum('Venta'),
+	// 			PartVenta:
+	// 				rows.find((r) => r.Tienda === 'TOTAL')?.Venta || 0
+	// 					? regSum('Venta') / Number(rows.find((r) => r.Tienda === 'TOTAL')?.Venta || 0)
+	// 					: 0,
+	// 			VentaLinea: regSum('VentaLinea'),
+	// 			PartVentaLinea: regSum('Venta') ? regSum('VentaLinea') / regSum('Venta') : 0,
+	// 			VentaModa: regSum('VentaModa'),
+	// 			PartVentaModa: regSum('Venta') ? regSum('VentaModa') / regSum('Venta') : 0,
+	// 			VentaAccesorio: regSum('VentaAccesorio'),
+	// 			PartVentaAcc: regSum('Venta') ? regSum('VentaAccesorio') / regSum('Venta') : 0,
+	// 			VentaFrogs: regSum('VentaFrogs'),
+	// 			PartVentaFrogs: regSum('Venta') ? regSum('VentaFrogs') / regSum('Venta') : 0,
+	// 			VentaMika: regSum('VentaMika'),
+	// 			PartMika: regSum('Venta') ? regSum('VentaMika') / regSum('Venta') : 0
+	// 		}
+
+	// 		// plazas de la región en orden
+	// 		const plazasReg = Array.from(new Set(deRegion.map((r) => r.Plaza))).sort((a, b) => plazaIndex(a) - plazaIndex(b))
+
+	// 		for (const plaza of plazasReg) {
+	// 			const key = `${region}||${plaza}`
+	// 			const pack = (byRegPlaza.get(key) || []).slice()
+
+	// 			// separar tiendas normales y TOT plaza
+	// 			const totPlaza = pack.find((r) => /^TOT\s+/i.test(String(r.Tienda || '')))
+	// 			const tiendas = pack.filter((r) => !/^TOT\s+/i.test(String(r.Tienda || '')))
+
+	// 			// ordenar tiendas por sufijo (y casos especiales de Cancún)
+	// 			tiendas.sort((a, b) => {
+	// 				const la = String(a.Tienda || '')
+	// 				const lb = String(b.Tienda || '')
+	// 				if (String(a.Plaza).toUpperCase() === 'CANCUN' || String(b.Plaza).toUpperCase() === 'CANCUN') {
+	// 					const special = (s) => {
+	// 						const u = s.toUpperCase()
+	// 						if (u.startsWith('IS-5')) return 998
+	// 						if (u.startsWith('OUTLET MCD')) return 999
+	// 						if (u.startsWith('FORUM')) return 1000
+	// 						return null
+	// 					}
+	// 					const sa = special(la)
+	// 					const sb = special(lb)
+	// 					if (sa !== null || sb !== null) return (sa ?? 0) - (sb ?? 0)
+	// 				}
+	// 				const na = numSufijo(la)
+	// 				const nb = numSufijo(lb)
+	// 				if (na === null && nb === null) return la.localeCompare(lb)
+	// 				if (na === null) return 1
+	// 				if (nb === null) return -1
+	// 				return na - nb
+	// 			})
+
+	// 			// primero todas las tiendas
+	// 			for (const t of tiendas) out.push({ ...t, _level: 'store' })
+
+	// 			// luego el TOT de la plaza
+	// 			if (totPlaza) out.push({ ...totPlaza, _level: 'plaza' })
+	// 		}
+
+	// 		// FINALMENTE la fila de la REGIÓN (después de su contenido)
+	// 		out.push(regionRow)
+	// 	}
+
+	// 	// TOTAL global al final
+	// 	const total = rows.find((r) => r.Tienda === 'TOTAL')
+	// 	if (total) out.push({ ...total, _level: 'grand' })
+
+	// 	return out
+	// }, [rows])
+
+	// -------- helpers para construir la tabla visual (con totales y % recalculados) --------
+	const makeFlat = useCallback((src) => {
+		if (!src?.length) return []
+
+		// total del conjunto (solo tiendas; sin "TOTAL" ni "TOT plaza" para no duplicar)
+		const isTotPlaza = (r) => /^TOT\s+/i.test(String(r.Tienda || ''))
+		const isTotal = (r) => String(r.Tienda || '') === 'TOTAL'
+		const tiendas = src.filter((r) => !isTotPlaza(r) && !isTotal(r))
+		const sum = (arr, f) => arr.reduce((a, b) => a + Number(b[f] || 0), 0)
+		const totalGlobal = sum(tiendas, 'Venta')
 
 		// regiones en orden
-		const regiones = Array.from(new Set(rows.map((r) => String(r.Region || 'SIN REGION')))).sort(
+		const regiones = Array.from(new Set(src.map((r) => String(r.Region || 'SIN REGION')))).sort(
 			(a, b) => regionIndex(a) - regionIndex(b)
 		)
 
 		const out = []
-
 		for (const region of regiones) {
-			// tiendas de la región (evitar duplicar con TOT plaza o TOTAL)
-			const deRegion = rows.filter((r) => String(r.Region || 'SIN REGION') === region && r.Tienda !== 'TOTAL')
-
-			// región: crear fila sintética SUMA de tiendas (excluye TOT plaza)
+			const deRegion = src.filter((r) => String(r.Region || 'SIN REGION') === region && r.Tienda !== 'TOTAL')
 			const soloTiendas = deRegion.filter((r) => !/^TOT\s+/i.test(String(r.Tienda || '')))
-			const regSum = (field) => soloTiendas.reduce((a, b) => a + Number(b[field] || 0), 0)
+			const regSum = (f) => sum(soloTiendas, f)
 
-			const regionRow = {
-				_level: 'region',
-				Region: region,
-				Plaza: null,
-				Tienda: region,
-				Venta: regSum('Venta'),
-				PartVenta:
-					rows.find((r) => r.Tienda === 'TOTAL')?.Venta || 0
-						? regSum('Venta') / Number(rows.find((r) => r.Tienda === 'TOTAL')?.Venta || 0)
-						: 0,
-				VentaLinea: regSum('VentaLinea'),
-				PartVentaLinea: regSum('Venta') ? regSum('VentaLinea') / regSum('Venta') : 0,
-				VentaModa: regSum('VentaModa'),
-				PartVentaModa: regSum('Venta') ? regSum('VentaModa') / regSum('Venta') : 0,
-				VentaAccesorio: regSum('VentaAccesorio'),
-				PartVentaAcc: regSum('Venta') ? regSum('VentaAccesorio') / regSum('Venta') : 0,
-				VentaFrogs: regSum('VentaFrogs'),
-				PartVentaFrogs: regSum('Venta') ? regSum('VentaFrogs') / regSum('Venta') : 0,
-				VentaMika: regSum('VentaMika'),
-				PartMika: regSum('Venta') ? regSum('VentaMika') / regSum('Venta') : 0
-			}
-
-			// plazas de la región en orden
+			// plazas en orden
 			const plazasReg = Array.from(new Set(deRegion.map((r) => r.Plaza))).sort((a, b) => plazaIndex(a) - plazaIndex(b))
 
 			for (const plaza of plazasReg) {
-				const key = `${region}||${plaza}`
-				const pack = (byRegPlaza.get(key) || []).slice()
-
-				// separar tiendas normales y TOT plaza
+				const pack = deRegion.filter((r) => r.Plaza === plaza)
 				const totPlaza = pack.find((r) => /^TOT\s+/i.test(String(r.Tienda || '')))
-				const tiendas = pack.filter((r) => !/^TOT\s+/i.test(String(r.Tienda || '')))
-
-				// ordenar tiendas por sufijo (y casos especiales de Cancún)
-				tiendas.sort((a, b) => {
+				const tiendasPlaza = pack.filter((r) => !/^TOT\s+/i.test(String(r.Tienda || '')))
+				// ordenar tiendas (misma lógica que tenías)
+				tiendasPlaza.sort((a, b) => {
 					const la = String(a.Tienda || '')
 					const lb = String(b.Tienda || '')
 					if (String(a.Plaza).toUpperCase() === 'CANCUN' || String(b.Plaza).toUpperCase() === 'CANCUN') {
@@ -211,31 +276,102 @@ function VentaDetNivelTienda(props) {
 						const sb = special(lb)
 						if (sa !== null || sb !== null) return (sa ?? 0) - (sb ?? 0)
 					}
-					const na = numSufijo(la)
-					const nb = numSufijo(lb)
+					const ns = (s) => {
+						const rev = `${s}`.split('').reverse().join('')
+						const cut = rev.search(/[^0-9]/)
+						if (cut <= 0) return null
+						const digits = rev.slice(0, cut).split('').reverse().join('')
+						const n = parseInt(digits, 10)
+						return Number.isFinite(n) ? n : null
+					}
+					const na = ns(la)
+					const nb = ns(lb)
 					if (na === null && nb === null) return la.localeCompare(lb)
 					if (na === null) return 1
 					if (nb === null) return -1
 					return na - nb
 				})
 
-				// primero todas las tiendas
-				for (const t of tiendas) out.push({ ...t, _level: 'store' })
-
-				// luego el TOT de la plaza
-				if (totPlaza) out.push({ ...totPlaza, _level: 'plaza' })
+				// tiendas (recalcula % vs total del conjunto)
+				for (const t of tiendasPlaza) {
+					out.push({
+						...t,
+						_level: 'store',
+						PartVenta: totalGlobal ? Number(t.Venta || 0) / totalGlobal : 0
+					})
+				}
+				// TOT plaza al final de la plaza
+				if (totPlaza) {
+					out.push({
+						...totPlaza,
+						_level: 'plaza',
+						PartVenta: totalGlobal ? Number(totPlaza.Venta || 0) / totalGlobal : 0
+					})
+				}
 			}
 
-			// FINALMENTE la fila de la REGIÓN (después de su contenido)
-			out.push(regionRow)
+			// fila de región al final de su bloque
+			const regVenta = regSum('Venta')
+			out.push({
+				_level: 'region',
+				Region: region,
+				Plaza: null,
+				Tienda: region,
+				Venta: regVenta,
+				PartVenta: totalGlobal ? regVenta / totalGlobal : 0,
+				VentaLinea: regSum('VentaLinea'),
+				PartVentaLinea: regVenta ? regSum('VentaLinea') / regVenta : 0,
+				VentaModa: regSum('VentaModa'),
+				PartVentaModa: regVenta ? regSum('VentaModa') / regVenta : 0,
+				VentaAccesorio: regSum('VentaAccesorio'),
+				PartVentaAcc: regVenta ? regSum('VentaAccesorio') / regVenta : 0,
+				VentaFrogs: regSum('VentaFrogs'),
+				PartVentaFrogs: regVenta ? regSum('VentaFrogs') / regVenta : 0,
+				VentaMika: regSum('VentaMika'),
+				PartMika: regVenta ? regSum('VentaMika') / regVenta : 0
+			})
 		}
 
-		// TOTAL global al final
-		const total = rows.find((r) => r.Tienda === 'TOTAL')
-		if (total) out.push({ ...total, _level: 'grand' })
-
+		// TOTAL del conjunto
+		const g = {
+			_level: 'grand',
+			Tienda: 'TOTAL',
+			Plaza: null,
+			Region: null,
+			Venta: totalGlobal,
+			PartVenta: totalGlobal ? 1 : 0,
+			VentaLinea: sum(tiendas, 'VentaLinea'),
+			PartVentaLinea: totalGlobal ? sum(tiendas, 'VentaLinea') / totalGlobal : 0,
+			VentaModa: sum(tiendas, 'VentaModa'),
+			PartVentaModa: totalGlobal ? sum(tiendas, 'VentaModa') / totalGlobal : 0,
+			VentaAccesorio: sum(tiendas, 'VentaAccesorio'),
+			PartVentaAcc: totalGlobal ? sum(tiendas, 'VentaAccesorio') / totalGlobal : 0,
+			VentaFrogs: sum(tiendas, 'VentaFrogs'),
+			PartVentaFrogs: totalGlobal ? sum(tiendas, 'VentaFrogs') / totalGlobal : 0,
+			VentaMika: sum(tiendas, 'VentaMika'),
+			PartMika: totalGlobal ? sum(tiendas, 'VentaMika') / totalGlobal : 0
+		}
+		out.push(g)
 		return out
-	}, [rows])
+	}, [])
+
+	// split: normal vs WEB (si existe)
+	const hasWeb = useMemo(() => rows.some((r) => String(r.Region || r.Plaza || '').toUpperCase() === 'WEB'), [rows])
+
+	const flatMain = useMemo(
+		() => makeFlat(rows.filter((r) => String(r.Region || r.Plaza || '').toUpperCase() !== 'WEB')),
+		[rows, makeFlat]
+	)
+	const flatWeb = useMemo(
+		() => (hasWeb ? makeFlat(rows.filter((r) => String(r.Region || r.Plaza || '').toUpperCase() === 'WEB')) : []),
+		[rows, hasWeb, makeFlat]
+	)
+
+	// objeto que consume <Table /> para renderizar 1 o 2 tablas
+	const tablesData = useMemo(
+		() => (hasWeb ? { ventadetalle: flatMain, ventadetalle_web: flatWeb } : { ventadetalle: flatMain }),
+		[hasWeb, flatMain, flatWeb]
+	)
 
 	const title = `VENTA TIENDAS CON DETALLADO POR SEGMENTO & MARCA (
     ${dateHelper.getCurrentDate(range.ini)} ${dateHelper
@@ -251,7 +387,8 @@ function VentaDetNivelTienda(props) {
 	// exportación a Excel (con título, periodo, estilos y filtros)
 	const handleExport = async () => {
 		try {
-			if (!flat.length) {
+			const allRowsForExport = Object.values(tablesData).flat()
+			if (!allRowsForExport.length) {
 				sendNotification({ type: 'ERROR', message: 'No hay datos para exportar.' })
 				return
 			}
@@ -324,7 +461,7 @@ function VentaDetNivelTienda(props) {
 			// ---------- Datos ----------
 
 			const startRow = 5
-			const toExport = flat.filter(
+			const toExport = allRowsForExport.filter(
 				(r) => !(r._level === 'region' && String(r.Region || '').toUpperCase() === 'SIN REGION')
 			)
 
@@ -377,7 +514,7 @@ function VentaDetNivelTienda(props) {
 
 			const noteRow = ws.lastRow.number + 2
 			ws.mergeCells(`A${noteRow}:M${noteRow}`)
-			ws.getCell(`A${noteRow}`).value = 'Las ventas en línea son reportadas por fecha de facturación.'
+			// ws.getCell(`A${noteRow}`).value = 'Las ventas en línea son reportadas por fecha de facturación.'
 			ws.getCell(`A${noteRow}`).font = { italic: true, color: { argb: '555555' } }
 			ws.getCell(`A${noteRow}`).alignment = { horizontal: 'center' }
 
@@ -507,15 +644,15 @@ function VentaDetNivelTienda(props) {
 						{(() => {
 							switch (displayMode) {
 								case 1:
-									return <Table data={{ ventadetalle: flat }} />
+									return <Table data={tablesData} />
 								case 2:
-									return <Stat data={{ ventadetalle: flat }} />
+									return <Stat data={tablesData} />
 								case 3:
-									return <StatGroup data={{ ventadetalle: flat }} region={currentRegion} />
+									return <StatGroup data={tablesData} region={currentRegion} />
 								case 4:
-									return <TableMovil data={{ ventadetalle: flat }} />
+									return <TableMovil data={tablesData} />
 								default:
-									return <Table data={{ ventadetalle: flat }} />
+									return <Table data={tablesData} />
 							}
 						})()}
 					</div>
@@ -626,11 +763,11 @@ const Table = (props) => {
 				))}
 
 			{/* Mensaje general debajo de las tablas */}
-			<div className="mt-3 mb-6">
+			{/* <div className="mt-3 mb-6">
 				<p className="text-xs italic text-slate-600 text-center">
 					Las ventas en línea son reportadas por fecha de facturación.
 				</p>
-			</div>
+			</div> */}
 		</div>
 	)
 }
@@ -700,11 +837,11 @@ const Stat = ({ data }) => {
 				})}
 
 			{/* Mensaje general debajo de las tarjetas */}
-			<div className="mt-3 mb-6 col-span-full">
+			{/* <div className="mt-3 mb-6 col-span-full">
 				<p className="text-xs italic text-slate-600 text-center">
 					Las ventas en línea son reportadas por fecha de facturación.
 				</p>
-			</div>
+			</div> */}
 		</div>
 	)
 }
@@ -785,11 +922,11 @@ const StatGroup = ({ data, region = 'TOTAL' }) => {
 			<Stats title="MARCA" columns={marcaCols} expand={false} />
 
 			{/* Mensaje general debajo de las tarjetas */}
-			<div className="mt-3 mb-6">
+			{/* <div className="mt-3 mb-6">
 				<p className="text-xs italic text-slate-600 text-center">
 					Las ventas en línea son reportadas por fecha de facturación.
 				</p>
-			</div>
+			</div> */}
 		</div>
 	)
 }
@@ -922,11 +1059,11 @@ const TableMovil = ({ data }) => {
 			</table>
 
 			{/* Mensaje final */}
-			<div className="mt-3 mb-6">
+			{/* <div className="mt-3 mb-6">
 				<p className="text-xs italic text-slate-600 text-center">
 					Las ventas en línea son reportadas por fecha de facturación.
 				</p>
-			</div>
+			</div> */}
 		</div>
 	)
 }

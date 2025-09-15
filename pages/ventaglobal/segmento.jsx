@@ -287,8 +287,8 @@ function Segmento({ config }) {
 			const startRow = ws.lastRow.number + 3
 			const leftCol = 0 // ~columna B (0=A,1=B,...)
 			const rightCol = 10 // ~columna K
-			const imgW = 750,
-				imgH = 350 // tamaño aprox. en px
+			const imgW = 1000,
+				imgH = 400 // tamaño aprox. en px
 
 			const monthTitle = `MENSUAL ${dateHelper.getMonthName(reportDate.current).toUpperCase()} ${dateHelper.getCurrentYear(reportDate.current)}`
 			const yearTitle = `ACUMULADO ${dateHelper.getCurrentYear(reportDate.current)}`

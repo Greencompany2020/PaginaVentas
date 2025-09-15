@@ -329,7 +329,7 @@ function Marca({ config }) {
 			]
 			ws.addRows(
 				rows.map((r) => ({
-					marca: String(nameOf(r)),
+					marca: pretty(rawNameOf(r)),
 					mes: Number(r.MonthSale ?? 0),
 					mpct: Number(r.MonthParticipation ?? 0),
 					ano: Number(r.AnualSale ?? 0),
@@ -359,8 +359,8 @@ function Marca({ config }) {
 			const startRow = ws.lastRow.number + 3
 			const leftCol = 1 // B
 			const rightCol = 15 // P
-			const imgW = 820,
-				imgH = 420
+			const imgW = 1000,
+				imgH = 400
 
 			const monthTitle = `MENSUAL ${dateHelper.getMonthName(reportDate.current).toUpperCase()} ${dateHelper.getCurrentYear(reportDate.current)}`
 			const yearTitle = `ACUMULADO ${dateHelper.getCurrentYear(reportDate.current)}`
