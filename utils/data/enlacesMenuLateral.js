@@ -94,10 +94,10 @@ export const enlaces = [
 			} */
 		]
 	},
-	{
+	/* {
 		summaryText: 'Top Ventas Test',
 		directLink: '/topVentasTest/topVentasTest'
-	},
+	}, */
 	{
 		summaryText: 'Participación',
 		links: [
