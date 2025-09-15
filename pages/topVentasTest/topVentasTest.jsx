@@ -18,15 +18,14 @@ import exportExcelMulti from '../../utils/excel/exportExcelMulti'
 /** Vistas disponibles para filtrar en cliente */
 const VIEW_MODES = {
 	GLOBAL_TOP100: 'GLOBAL_TOP100', // IsGlobalTop100 === true
-	ALL_300: 'ALL_300', // RN_Seg <= 100 para los 3 segmentos (300 filas)
 	LINEA: 'LINEA', // SegmentKey = 1 y RN_Seg <= 100
 	MODA: 'MODA', // SegmentKey = 2 y RN_Seg <= 100
 	ACCESORIO: 'ACCESORIO' // SegmentKey = 3 y RN_Seg <= 100  ← ojo: singular
 }
 
 const VIEW_OPTIONS = [
-	{ id: VIEW_MODES.GLOBAL_TOP100, label: 'Todos (global)' },
-	{ id: VIEW_MODES.ALL_300, label: 'Todos (300)' },
+	{ id: VIEW_MODES.GLOBAL_TOP100, label: 'Global' },
+	// { id: VIEW_MODES.ALL_300, label: 'Todos (300)' },
 	{ id: VIEW_MODES.LINEA, label: 'Línea' },
 	{ id: VIEW_MODES.MODA, label: 'Moda' },
 	{ id: VIEW_MODES.ACCESORIO, label: 'Accesorio' }
@@ -140,12 +139,6 @@ const TopVentasTest = () => {
 				// Top 100 global por RankingGlobal
 				return data.filter((r) => r.IsGlobalTop100).sort((a, b) => a.RankingGlobal - b.RankingGlobal)
 
-			case VIEW_MODES.ALL_300:
-				// Top 100 por segmento (las 300 filas), orden: segmento, ranking segmental
-				return data
-					.filter((r) => r.RankingSegment && r.RankingSegment <= 100)
-					.sort((a, b) => a.SegmentKey - b.SegmentKey || a.RankingSegment - b.RankingSegment)
-
 			case VIEW_MODES.LINEA:
 				return data
 					.filter((r) => r.SegmentKey === 1 && r.RankingSegment <= 100)
@@ -258,11 +251,6 @@ const TopVentasTest = () => {
 			case VIEW_MODES.GLOBAL_TOP100:
 				return allData.filter((r) => r.IsGlobalTop100).sort((a, b) => a.RankingGlobal - b.RankingGlobal)
 
-			case VIEW_MODES.ALL_300:
-				return allData
-					.filter((r) => r.RankingSegment && r.RankingSegment <= 100)
-					.sort((a, b) => a.SegmentKey - b.SegmentKey || a.RankingSegment - b.RankingSegment)
-
 			case VIEW_MODES.LINEA:
 				return allData
 					.filter((r) => r.SegmentKey === 1 && r.RankingSegment <= 100)
@@ -292,7 +280,6 @@ const TopVentasTest = () => {
 		// 1 hoja por vista
 		const modes = [
 			VIEW_MODES.GLOBAL_TOP100,
-			VIEW_MODES.ALL_300,
 			VIEW_MODES.LINEA,
 			VIEW_MODES.MODA,
 			VIEW_MODES.ACCESORIO
@@ -306,7 +293,7 @@ const TopVentasTest = () => {
 				title,
 				rows,
 				useGlobalRanking: mode === VIEW_MODES.GLOBAL_TOP100,
-				includeSegment: mode === VIEW_MODES.GLOBAL_TOP100 || mode === VIEW_MODES.ALL_300
+				includeSegment: mode === VIEW_MODES.GLOBAL_TOP100
 			})
 
 			return {
@@ -523,8 +510,6 @@ function titleByView(viewMode, monthName) {
 	switch (viewMode) {
 		case VIEW_MODES.GLOBAL_TOP100:
 			return `Top 100 Global ${monthName}`
-		case VIEW_MODES.ALL_300:
-			return `Top 100 por Segmento (300) - ${monthName}`
 		case VIEW_MODES.LINEA:
 			return `Top 100 Línea - ${monthName}`
 		case VIEW_MODES.MODA:
