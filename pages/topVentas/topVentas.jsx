@@ -272,47 +272,50 @@ const TopVentas = () => {
 	}
 
 	const handleExport = () => {
-		if (!data.length) {
-			sendNotification({ type: 'WARNING', message: 'No hay datos para exportar' })
-			return
-		}
+  if (!data.length) {
+    sendNotification({ type: 'WARNING', message: 'No hay datos para exportar' });
+    return;
+  }
 
-		// 1 hoja por vista
-		const modes = [
-			VIEW_MODES.GLOBAL_TOP100,
-			VIEW_MODES.LINEA,
-			VIEW_MODES.MODA,
-			VIEW_MODES.ACCESORIO
-		]
+  const modes = [
+    VIEW_MODES.GLOBAL_TOP100,
+    VIEW_MODES.LINEA,
+    VIEW_MODES.MODA,
+    VIEW_MODES.ACCESORIO
+  ];
 
-		const sheets = modes.map((mode) => {
-			const title = titleByView(mode, currentMonthName)
-			const rows = rowsByView(mode, data)
+  const sheets = modes.map((mode) => {
+    const title = titleByView(mode, currentMonthName);
+    const rows  = rowsByView(mode, data);
 
-			const template = topVentasTemplate({
-				title,
-				rows,
-				useGlobalRanking: mode === VIEW_MODES.GLOBAL_TOP100,
-				includeSegment: mode === VIEW_MODES.GLOBAL_TOP100
-			})
+    const useGlobal = mode === VIEW_MODES.GLOBAL_TOP100;
 
-			return {
-				name: title.slice(0, 31), // Excel: máx 31
-				columns: template.getColumns(),
-				rows: template.getRows(),
-				style: template.style
-			}
-		})
+    const topMayores = rows.map(r => ({
+      Ranking: useGlobal ? (r.RankingGlobal ?? '') : (r.RankingSegment ?? ''),
+      ItemCode: r.Modelo ?? '',
+      Description: r.Description ?? '',
+      Color: r.Color ?? '',
+      AmountSales: Number(r.AmountSales ?? 0)
+    }));
 
-		// Archivo final con todas las hojas
-		const fileName = `Top Ventas ${currentMonthName} ${new Date().getFullYear()}`
-		const footerMsg = `Reporte generado el ${new Date().toLocaleDateString('es-ES')}`
+    const template = topVentasTemplate(currentMonthName, topMayores);
 
-		// NUEVO helper multi-hoja
-		exportExcelMulti(fileName, sheets, { includeWeb: true }, footerMsg)
+    return {
+      name: title.slice(0, 31),     // Excel limita a 31
+      columns: template.getColumns(),
+      rows: template.getRows(),      // objetos {ranking,codigo,...,importe}
+      style: template.style
+    };
+  });
 
-		sendNotification({ type: 'SUCCESS', message: 'Excel exportado (todas las vistas)' })
-	}
+  const fileName = `Top Ventas ${currentMonthName} ${new Date().getFullYear()}`;
+  const footerMsg = `Reporte generado el ${new Date().toLocaleDateString('es-ES')}`;
+
+  // ✅ Orden correcto de parámetros: (fileName, sheets, footerNote, options)
+  exportExcelMulti(fileName, sheets, footerMsg, { includeWeb: true });
+
+  sendNotification({ type: 'SUCCESS', message: 'Excel exportado (todas las vistas)' });
+};
 
 	return (
 		<div className="flex flex-col h-full">

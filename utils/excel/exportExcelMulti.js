@@ -7,7 +7,7 @@ const toColLetter = (n) => {
   return String.fromCharCode(64 + n)
 }
 
-export default async function exportExcelMulti(fileName, sheets, options = {}, footerNote) {
+export default async function exportExcelMulti(fileName, sheets, footerNote, options = {}) {
   const wb = new ExcelJS.Workbook()
   wb.creator = 'TopVentasTest'
   wb.created = new Date()
