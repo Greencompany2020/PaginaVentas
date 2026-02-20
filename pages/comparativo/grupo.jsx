@@ -69,13 +69,13 @@ const isBoolean = (data) => {
 
 // Muestra '-' si el valor numérico es 0; en otro caso aplica el formateador
 const dashIfZero = (value, formatter) => {
-  const n = Number(value ?? 0);
-  return Number.isFinite(n) && n === 0 ? '-' : formatter(value);
-};
+	const n = Number(value ?? 0)
+	return Number.isFinite(n) && n === 0 ? '-' : formatter(value)
+}
 
 // Atajos para tus formateadores actuales
-const fmtAmount = (v) => dashIfZero(v, numberWithCommas);   // para importes normales
-const fmtDiff   = (v) => dashIfZero(v, numberAbsComma);     // para columnas (-) con signo/abs y coma
+const fmtAmount = (v) => dashIfZero(v, numberWithCommas) // para importes normales
+const fmtDiff = (v) => dashIfZero(v, numberAbsComma) // para columnas (-) con signo/abs y coma
 
 function Grupo(props) {
 	const { config } = props
@@ -482,7 +482,9 @@ const Table = (props) => {
 												{/* <td className="priority-cell">
 													{numberWithCommas(item['ventasActuales' + dateHelper.getCurrentYear(date.current)])}
 												</td> */}
-												<td className="priority-cell">{fmtAmount(item['ventasActuales' + dateHelper.getCurrentYear(date.current)])}</td>
+												<td className="priority-cell">
+													{fmtAmount(item['ventasActuales' + dateHelper.getCurrentYear(date.current)])}
+												</td>
 												{/* <td>{numberWithCommas(item['ventasActuales' + date.dateRange[0]])}</td> */}
 												<td>{fmtAmount(item['ventasActuales' + date.dateRange[0]])}</td>
 												{/* <td>{numberWithCommas(item['presupuesto' + dateHelper.getCurrentYear(date.current)])}</td> */}
@@ -511,14 +513,36 @@ const Table = (props) => {
 													)}
 												</td> */}
 
-												<td data-porcent-format={isNegative(item['diferenciaMensual' + date.dateRange[0]] || item['diferenciaMensual'])}>
+												{/* <td data-porcent-format={isNegative(item['diferenciaMensual' + date.dateRange[0]] || item['diferenciaMensual'])}>
 												{fmtDiff(item['diferenciaMensual' + date.dateRange[0]] || item['diferenciaMensual'])}
+												</td> */}
+
+												<td
+													data-porcent-format={isNegative(
+														item[
+															'porcentaje' +
+																getPercentageYear(
+																	dateHelper.getCurrentYear(date.current),
+																	date.dateRange[0],
+																	incremento
+																)
+														]
+													)}
+												>
+													{numberAbs(
+														item[
+															'porcentaje' +
+																getPercentageYear(
+																	dateHelper.getCurrentYear(date.current),
+																	date.dateRange[0],
+																	incremento
+																)
+														]
+													)}
 												</td>
 												{date.dateRange[1] && (
 													<React.Fragment key={v4()}>
-														<td className="priority-cell">
-															{fmtAmount(item['ventasActuales' + date.dateRange[1]])}
-														</td>
+														<td className="priority-cell">{fmtAmount(item['ventasActuales' + date.dateRange[1]])}</td>
 														<td data-porcent-format={isNegative(item['porcentaje' + date.dateRange[1]])}>
 															{numberAbs(item['porcentaje' + date.dateRange[1]])}
 														</td>
@@ -528,14 +552,10 @@ const Table = (props) => {
 												{includeSem && (
 													<React.Fragment key={v4()}>
 														<td className="priority-cell">
-															{fmtAmount(
-																item['ventasSemanalesActual' + dateHelper.getCurrentYear(date.current)]
-															)}
+															{fmtAmount(item['ventasSemanalesActual' + dateHelper.getCurrentYear(date.current)])}
 														</td>
 														<td>{fmtAmount(item['ventasSemanalesActual' + date.dateRange[0]])}</td>
-														<td>
-															{fmtAmount(item['presupuestoSemanal' + dateHelper.getCurrentYear(date.current)])}
-														</td>
+														<td>{fmtAmount(item['presupuestoSemanal' + dateHelper.getCurrentYear(date.current)])}</td>
 														<td
 															data-porcent-format={isNegative(
 																item[
@@ -574,9 +594,7 @@ const Table = (props) => {
 													{fmtAmount(item['ventasMensualesActual' + dateHelper.getCurrentYear(date.current)])}
 												</td>
 												<td>{fmtAmount(item['ventasMensualesActual' + date.dateRange[0]])}</td>
-												<td>
-													{fmtAmount(item['presupuestoMensual' + dateHelper.getCurrentYear(date.current)])}
-												</td>
+												<td>{fmtAmount(item['presupuestoMensual' + dateHelper.getCurrentYear(date.current)])}</td>
 												<td
 													data-porcent-format={isNegative(
 														item['diferenciaMensual' + date.dateRange[0]] || item['diferenciaMensual']
@@ -643,15 +661,17 @@ const Table = (props) => {
 														]
 													)}
 												>
-													{numberAbs(
-														item[
-															'porcentajeAnual' +
-																getPercentageYear(
-																	dateHelper.getCurrentYear(date.current),
-																	date.dateRange[0],
-																	incremento
-																)
-														]
+													{Math.abs(
+														Math.round(
+															item[
+																'porcentajeAnual' +
+																	getPercentageYear(
+																		dateHelper.getCurrentYear(date.current),
+																		date.dateRange[0],
+																		incremento
+																	)
+															] ?? 0
+														)
 													)}
 												</td>
 												{date.dateRange[1] && (
@@ -755,9 +775,7 @@ const TableMovil = (props) => {
 													</td>
 													{date.dateRange[1] && (
 														<React.Fragment key={v4()}>
-															<td className="priority-cell">
-																{fmtAmount(item['ventasActuales' + date.dateRange[1]])}
-															</td>
+															<td className="priority-cell">{fmtAmount(item['ventasActuales' + date.dateRange[1]])}</td>
 															<td data-porcent-format={isNegative(item['porcentaje' + date.dateRange[1]])}>
 																{numberAbs(item['porcentaje' + date.dateRange[1]])}
 															</td>
@@ -793,14 +811,10 @@ const TableMovil = (props) => {
 													<tr key={v4()} data-row-format={isRegionOrPlaza(item.tienda)}>
 														<td className="priority-cell text-left">{item.tienda}</td>
 														<td className="priority-cell">
-															{fmtAmount(
-																item['ventasSemanalesActual' + dateHelper.getCurrentYear(date.current)]
-															)}
+															{fmtAmount(item['ventasSemanalesActual' + dateHelper.getCurrentYear(date.current)])}
 														</td>
 														<td>{fmtAmount(item['ventasSemanalesActual' + date.dateRange[0]])}</td>
-														<td>
-															{fmtAmount(item['presupuestoSemanal' + dateHelper.getCurrentYear(date.current)])}
-														</td>
+														<td>{fmtAmount(item['presupuestoSemanal' + dateHelper.getCurrentYear(date.current)])}</td>
 														<td
 															data-porcent-format={isNegative(
 																item[
@@ -867,9 +881,7 @@ const TableMovil = (props) => {
 														{fmtAmount(item['ventasMensualesActual' + dateHelper.getCurrentYear(date.current)])}
 													</td>
 													<td>{fmtAmount(item['ventasMensualesActual' + date.dateRange[0]])}</td>
-													<td>
-														{fmtAmount(item['presupuestoMensual' + dateHelper.getCurrentYear(date.current)])}
-													</td>
+													<td>{fmtAmount(item['presupuestoMensual' + dateHelper.getCurrentYear(date.current)])}</td>
 													<td
 														data-porcent-format={isNegative(
 															item['diferenciaMensual' + date.dateRange[0]] || item['diferenciaMensual']
@@ -945,9 +957,7 @@ const TableMovil = (props) => {
 														{fmtAmount(item['ventasAnualActual' + dateHelper.getCurrentYear(date.current)])}
 													</td>
 													<td>{fmtAmount(item['ventasAnualActual' + date.dateRange[0]])}</td>
-													<td>
-														{fmtAmount(item['presupuestoAnual' + dateHelper.getCurrentYear(date.current)])}
-													</td>
+													<td>{fmtAmount(item['presupuestoAnual' + dateHelper.getCurrentYear(date.current)])}</td>
 													<td
 														data-porcent-format={isNegative(
 															item['diferenciaAnual' + date.dateRange[0]] || item['diferenciaAnual']
