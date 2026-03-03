@@ -29,7 +29,7 @@ export const formatNumber = (num, isLast = false) => {
 						fontSize: 12
 					}}
 				>
-					{Math.abs(num).toLocaleString()}
+					{Math.abs(num).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}
 				</td>
 			)
 		}
@@ -37,7 +37,7 @@ export const formatNumber = (num, isLast = false) => {
 	return <td>0</td>
 }
 
-export const stringFormatNumber = (num) => {
+export const stringFormatNumber = (num, isPercentage = false) => {
 	if (!isNaN(num)) {
 		if (num < 0) {
 			return (
@@ -49,7 +49,7 @@ export const stringFormatNumber = (num) => {
 						fontSize: 12
 					}}
 				>
-					{`(${Math.abs(num).toLocaleString('en-US')})`}
+					{`(${Math.abs(num).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: isPercentage ? 1 : 0 })})`}
 				</span>
 			)
 		} else {
@@ -62,7 +62,7 @@ export const stringFormatNumber = (num) => {
 						fontSize: 12
 					}}
 				>
-					{Math.abs(num).toLocaleString('en-US')}
+					{Math.abs(num).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: isPercentage ? 1 : 0 })}
 				</span>
 			)
 		}
@@ -108,7 +108,7 @@ export const tdFormatNumber = (num, isLast = false, font = 12) => {
  * @returns {string} El valor formateado
  */
 export const numberWithCommas = (num) => {
-	if (num) return num.toLocaleString('en-US')
+	if (num) return num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })
 	return 0
 }
 
@@ -134,7 +134,7 @@ export const numberAbs = (num) => {
  */
 export const numberAbsComma = (num) => {
 	if (!isNaN(num)) {
-		const val = num < 0 ? `(${Math.abs(num).toLocaleString('en-us')})` : `${Math.abs(num).toLocaleString()}`
+		const val = num < 0 ? `(${Math.abs(num).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })})` : `${Math.abs(num).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
 		return val
 	}
 	return 0
@@ -195,4 +195,17 @@ export const selectRow = (evt) => {
 			parentElement.classList.add('selected-row')
 		}
 	}
+}
+
+/**
+ * Formatea el número a porcentaje con un solo decimal. 
+ * Retorna '0.0' si es NaN o undefined.
+ * @param {number} num 
+ * @returns {string}
+ */
+export const formatPercentage = (num) => {
+	if (isNaN(num) || num === null || num === undefined) return '0'
+	const n = Number(num)
+	const formatted = Math.abs(n).toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 1 })
+	return n < 0 ? `(${formatted})` : formatted
 }

@@ -110,8 +110,12 @@ export const enlaces = [
 				linkText: 'Por Marca'
 			},
 			{
+				link: '/ventaglobal/plaza',
+				linkText: 'Por Plaza'
+			},
+			{
 				link: '/ventadet/niveltienda',
-				linkText: 'Por Tienda'
+				linkText: 'Global'
 			}
 		]
 	},
