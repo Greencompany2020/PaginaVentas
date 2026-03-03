@@ -95,7 +95,7 @@ export const comboValues = {
     {text:'2', value:2}
   ],
   CBINCREMENTO:[
-    {text:'% Vs Porcentaje',value:'compromiso'},
+    {text:'% Vs Compromiso',value:'compromiso'},
     {text:'% Vs Año a revisar', value:'comparacion'}
   ],
   CBMOSTRARTIENDAS:[

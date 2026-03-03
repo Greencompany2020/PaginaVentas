@@ -79,9 +79,7 @@ const SideMenu = () => {
 				const nextMenu = enlacesMenuLateral
 					.map((sec) => ({
 						...sec,
-						links: sec.directLink
-							? [] 
-							: sec.links.filter(({ link }) => isExternal(link) || allow.has(link))
+						links: sec.directLink ? [] : sec.links.filter(({ link }) => isExternal(link) || allow.has(link))
 					}))
 					.filter((sec) => {
 						return sec.directLink || sec.links.length > 0
@@ -117,9 +115,10 @@ const SideMenu = () => {
 					</div>
 					<div className=" flex-[2] overflow-y-auto pl-2">
 						{/* {enlacesMenuLateral.map(({ summaryText, links }) => ( */}
-						
+
 						{filteredMenu.map(({ summaryText, links, directLink }) => {
-							const defaultOpen = summaryText === 'Comparativo' || summaryText === 'Participación' || summaryText === 'Top Ventas'
+							const defaultOpen =
+								summaryText === 'Comparativo' || summaryText === 'Participación' || summaryText === 'Top Ventas'
 							return (
 								<DetailsSideBar
 									key={summaryText}

@@ -19,7 +19,8 @@ import {
 	numberAbs,
 	isNegative,
 	selectRow,
-	numberAbsComma
+	numberAbsComma,
+	formatPercentage
 } from '../../utils/resultsFormated'
 import withAuth from '../../components/withAuth'
 import TitleReport from '../../components/TitleReport'
@@ -385,7 +386,7 @@ const Table = (props) => {
 												{numberAbsComma(item['diferenciaMensual' + date.dateRange[0]])}
 											</td>
 											<td data-porcent-format={isNegative(item['porcentajeMensual' + date.dateRange[0]])}>
-												{numberAbs(item['porcentajeMensual' + date.dateRange[0]])}
+												{formatPercentage(item['porcentajeMensual' + date.dateRange[0]])}
 											</td>
 											{date.dateRange[1] && (
 												<td>{numberWithCommas(item['ventasMensualesActual' + date.dateRange[1]])}</td>
@@ -397,7 +398,7 @@ const Table = (props) => {
 											)}
 											{date.dateRange[1] && (
 												<td data-porcent-format={isNegative(item['porcentajeMensual' + date.dateRange[1]])}>
-													{numberAbs(item['porcentajeMensual' + date.dateRange[1]])}
+													{formatPercentage(item['porcentajeMensual' + date.dateRange[1]])}
 												</td>
 											)}
 
@@ -410,7 +411,7 @@ const Table = (props) => {
 												{numberAbsComma(item['diferenciaAnual' + date.dateRange[0]])}
 											</td>
 											<td data-porcent-format={isNegative(item['porcentajeAnual' + date.dateRange[0]])}>
-												{numberAbs(item['porcentajeAnual' + date.dateRange[0]])}
+												{formatPercentage(item['porcentajeAnual' + date.dateRange[0]])}
 											</td>
 											{date.dateRange[1] && <td>{numberWithCommas(item['ventasAnualActual' + date.dateRange[1]])}</td>}
 											{/* {date.dateRange[1] && <td>{ numberWithCommas(item['diferenciaAnual'+ date.dateRange[1]])}</td>} */}
@@ -421,7 +422,7 @@ const Table = (props) => {
 											)}
 											{date.dateRange[1] && (
 												<td data-porcent-format={isNegative(item['porcentajeAnual' + date.dateRange[1]])}>
-													{numberAbs(item['porcentajeAnual' + date.dateRange[1]])}
+													{formatPercentage(item['porcentajeAnual' + date.dateRange[1]])}
 												</td>
 											)}
 										</tr>
@@ -488,7 +489,7 @@ const TableMobil = (props) => {
 													{numberAbsComma(item['diferenciaMensual' + date.dateRange[0]])}
 												</td>
 												<td data-porcent-format={isNegative(item['porcentajeMensual' + date.dateRange[0]])}>
-													{numberAbs(item['porcentajeMensual' + date.dateRange[0]])}
+													{formatPercentage(item['porcentajeMensual' + date.dateRange[0]])}
 												</td>
 											</tr>
 										))}
@@ -524,7 +525,7 @@ const TableMobil = (props) => {
 													{numberAbsComma(item['diferenciaAnual' + date.dateRange[0]])}
 												</td>
 												<td data-porcent-format={isNegative(item['porcentajeAnual' + date.dateRange[0]])}>
-													{numberAbs(item['porcentajeAnual' + date.dateRange[0]])}
+													{formatPercentage(item['porcentajeAnual' + date.dateRange[0]])}
 												</td>
 											</tr>
 										))}
@@ -563,7 +564,7 @@ const TableMobil = (props) => {
 														{numberAbsComma(item['diferenciaMensual' + date.dateRange[1]])}
 													</td>
 													<td data-porcent-format={isNegative(item['porcentajeMensual' + date.dateRange[1]])}>
-														{numberAbs(item['porcentajeMensual' + date.dateRange[1]])}
+														{formatPercentage(item['porcentajeMensual' + date.dateRange[1]])}
 													</td>
 												</tr>
 											))}
@@ -603,7 +604,7 @@ const TableMobil = (props) => {
 														{numberAbsComma(item['diferenciaAnual' + date.dateRange[1]])}
 													</td>
 													<td data-porcent-format={isNegative(item['porcentajeAnual' + date.dateRange[1]])}>
-														{numberAbs(item['porcentajeMensual' + date.dateRange[1]])}
+														{formatPercentage(item['porcentajeAnual' + date.dateRange[1]])}
 													</td>
 												</tr>
 											))}
@@ -656,11 +657,11 @@ const Stat = (props) => {
 									},
 									{
 										caption: '(-)',
-										value: stringFormatNumber(item['diferenciaMensual' + date.dateRange[0]])
+										value: stringFormatNumber(item['diferenciaMensual' + date.dateRange[0]], false)
 									},
 									{
 										caption: '%',
-										value: stringFormatNumber(item['porcentajeMensual' + date.dateRange[0]])
+										value: stringFormatNumber(item['porcentajeMensual' + date.dateRange[0]], true)
 									}
 								]
 							}
@@ -682,11 +683,11 @@ const Stat = (props) => {
 									},
 									{
 										caption: '(-)',
-										value: stringFormatNumber(item['diferenciaMensual' + date.dateRange[1]])
+										value: stringFormatNumber(item['diferenciaMensual' + date.dateRange[1]], false)
 									},
 									{
 										caption: '%',
-										value: stringFormatNumber(item['porcentajeMensual' + date.dateRange[1]])
+										value: stringFormatNumber(item['porcentajeMensual' + date.dateRange[1]], true)
 									}
 								]
 							}
@@ -712,7 +713,7 @@ const Stat = (props) => {
 									},
 									{
 										caption: '%',
-										value: stringFormatNumber(item['porcentajeAnual' + date.dateRange[0]], false)
+										value: stringFormatNumber(item['porcentajeAnual' + date.dateRange[0]], true)
 									}
 								]
 							}
@@ -738,7 +739,7 @@ const Stat = (props) => {
 									},
 									{
 										caption: '%',
-										value: stringFormatNumber(item['porcentajeAnual' + date.dateRange[1]], false)
+										value: stringFormatNumber(item['porcentajeAnual' + date.dateRange[1]], true)
 									}
 								]
 							}

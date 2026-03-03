@@ -86,6 +86,7 @@ function VentaDetNivelTienda(props) {
 	const initialParams = {
 		fechaIni: range.ini,
 		fechaFin: range.fin,
+		verAcumulado: false,
 		conVentasEventos: parseNumberToBoolean(config?.conVentasEventos || 0),
 		conVentasEnLinea: isBoolean(config?.incluirWeb || 'N')
 	}
@@ -95,8 +96,14 @@ function VentaDetNivelTienda(props) {
 			setLoading(true)
 			setRows([])
 
+			let fIni = values.fechaIni
+			if (values.verAcumulado) {
+				const d = new Date(values.fechaFin + 'T12:00:00')
+				fIni = `${d.getFullYear()}-01-01`
+			}
+
 			const payload = {
-				fechaIni: values.fechaIni,
+				fechaIni: fIni,
 				fechaFin: values.fechaFin,
 				conVentasEventos: values.conVentasEventos ? '1' : '2',
 				conVentasEnLinea: values.conVentasEnLinea ? 'Y' : 'N'
@@ -107,7 +114,7 @@ function VentaDetNivelTienda(props) {
 			setDataReport(data)
 
 			setRows(Array.isArray(data) ? data : [])
-			setRange({ ini: values.fechaIni, fin: values.fechaFin })
+			setRange({ ini: fIni, fin: values.fechaFin, isAcum: values.verAcumulado })
 		} catch (err) {
 			sendNotification({
 				type: 'ERROR',
@@ -232,7 +239,7 @@ function VentaDetNivelTienda(props) {
 	// }, [rows])
 
 	// -------- helpers para construir la tabla visual (con totales y % recalculados) --------
-	const makeFlat = useCallback((src) => {
+	const makeFlat = useCallback((src, currentValues) => {
 		if (!src?.length) return []
 
 		// total del conjunto (solo tiendas; sin "TOTAL" ni "TOT plaza" para no duplicar)
@@ -373,15 +380,13 @@ function VentaDetNivelTienda(props) {
 		[hasWeb, flatMain, flatWeb]
 	)
 
-	const title = `VENTA TIENDAS CON DETALLADO POR SEGMENTO & MARCA (
-    ${dateHelper.getCurrentDate(range.ini)} ${dateHelper
-			.getMonthName(range.ini)
-			.toUpperCase()} ${dateHelper.getCurrentYear(range.ini)}
-    -
-    ${dateHelper.getCurrentDate(range.fin)} ${dateHelper
-			.getMonthName(range.fin)
-			.toUpperCase()} ${dateHelper.getCurrentYear(range.fin)}
-    )`
+	const title = range.isAcum
+		? `VENTA TIENDAS CON DETALLADO POR SEGMENTO & MARCA (ACUMULADO ${dateHelper.getCurrentYear(range.fin)})`
+		: `VENTA TIENDAS CON DETALLADO POR SEGMENTO & MARCA (${dateHelper.getCurrentDate(range.ini)} ${dateHelper
+				.getMonthName(range.ini)
+				.toUpperCase()} ${dateHelper.getCurrentYear(range.ini)} - ${dateHelper.getCurrentDate(range.fin)} ${dateHelper
+				.getMonthName(range.fin)
+				.toUpperCase()} ${dateHelper.getCurrentYear(range.fin)})`
 
 	// exportación rápida (misma estructura visual)
 	// exportación a Excel (con título, periodo, estilos y filtros)
@@ -398,8 +403,13 @@ function VentaDetNivelTienda(props) {
 			const ws = wb.addWorksheet('VENTA DETALLADA')
 
 			// ---------- Título y periodo ----------
-			const titulo = 'VENTA TIENDAS CON DETALLADO POR SEGMENTO & MARCA'
-			const periodo = `Datos del ${dateHelper.getCurrentDate(range.ini)} ${dateHelper.getMonthName(range.ini)} ${dateHelper.getCurrentYear(range.ini)} al ${dateHelper.getCurrentDate(range.fin)} ${dateHelper.getMonthName(range.fin)} ${dateHelper.getCurrentYear(range.fin)}`
+			const titulo = range.isAcum
+				? `VENTA TIENDAS CON DETALLADO POR SEGMENTO & MARCA (ACUMULADO ${dateHelper.getCurrentYear(range.fin)})`
+				: 'VENTA TIENDAS CON DETALLADO POR SEGMENTO & MARCA'
+
+			const periodo = range.isAcum
+				? `Acumulado al ${dateHelper.getCurrentDate(range.fin)} ${dateHelper.getMonthName(range.fin)} ${dateHelper.getCurrentYear(range.fin)}`
+				: `Datos del ${dateHelper.getCurrentDate(range.ini)} ${dateHelper.getMonthName(range.ini)} ${dateHelper.getCurrentYear(range.ini)} al ${dateHelper.getCurrentDate(range.fin)} ${dateHelper.getMonthName(range.fin)} ${dateHelper.getCurrentYear(range.fin)}`
 
 			ws.mergeCells('A3:A4')
 			ws.getCell('A3').value = 'TIENDA'
@@ -428,24 +438,30 @@ function VentaDetNivelTienda(props) {
 			ws.getCell('M4').value = '% MK'
 
 			// Formato del header
-			const thinWhite = { style: 'thin', color: { argb: 'FFFFFFFF' } } // borde blanco
+			const thinWhite = { style: 'thin', color: { argb: 'FFFFFFFF' } }
+			const blackFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '000000' } }
+			const blueFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '1E3A8A' } }
+			const greenFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '064E3B' } }
 
 			for (const r of [3, 4]) {
 				const row = ws.getRow(r)
-				row.height = 22
-				row.font = { bold: true, color: { argb: 'FFFFFFFF' } } // letra blanca
+				row.height = 25
+				row.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 10 }
 				row.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }
 				row.eachCell({ includeEmpty: true }, (c) => {
-					c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '000000' } } // fondo negro
-					c.border = { top: thinWhite, left: thinWhite, bottom: thinWhite, right: thinWhite } // bordes blancos
+					const col = c.col
+					if (col >= 4 && col <= 9) c.fill = blueFill
+					else if (col >= 10 && col <= 13) c.fill = greenFill
+					else c.fill = blackFill
+					c.border = { top: thinWhite, left: thinWhite, bottom: thinWhite, right: thinWhite }
 				})
 			}
 
 			// Columnas (ancho + formato)
 			ws.columns = [
-				{ key: 'label', width: 26 },
-				{ key: 'Venta', width: 14, style: { numFmt: '$#,##0.00' } },
-				{ key: 'PartVenta', width: 12, style: { numFmt: '0.0%' } }, // % angosto
+				{ key: 'label', width: 28 },
+				{ key: 'Venta', width: 15, style: { numFmt: '$#,##0.00' } },
+				{ key: 'PartVenta', width: 12, style: { numFmt: '0.0%' } },
 				{ key: 'VentaLinea', width: 15, style: { numFmt: '$#,##0.00' } },
 				{ key: 'PartVentaLinea', width: 9, style: { numFmt: '0.0%' } },
 				{ key: 'VentaModa', width: 15, style: { numFmt: '$#,##0.00' } },
@@ -459,7 +475,6 @@ function VentaDetNivelTienda(props) {
 			]
 
 			// ---------- Datos ----------
-
 			const startRow = 5
 			const toExport = allRowsForExport.filter(
 				(r) => !(r._level === 'region' && String(r.Region || '').toUpperCase() === 'SIN REGION')
@@ -485,15 +500,26 @@ function VentaDetNivelTienda(props) {
 				// Estilos por nivel
 				const lvl =
 					r._level || (r.Tienda === 'TOTAL' ? 'grand' : /^TOT\s+/i.test(String(r.Tienda || '')) ? 'plaza' : 'store')
+
 				if (lvl === 'grand') {
-					row.font = { bold: true, color: { argb: '000000' } }
-					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'C8CBD0' } }))
+					row.font = { bold: true, color: { argb: 'FFFFFFFF' } }
+					row.eachCell((c) => (c.fill = blackFill))
 				} else if (lvl === 'region') {
 					row.font = { bold: true }
-					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'DCE0E5' } }))
+					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '9CA3AF' } }))
 				} else if (lvl === 'plaza') {
 					row.font = { bold: true }
-					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'EDEFF2' } }))
+					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'D1D5DB' } }))
+				} else if (lvl === 'store') {
+					// Tintes de color para segmentos y marcas
+					row.eachCell((c) => {
+						const col = c.col
+						if (col >= 4 && col <= 9) {
+							c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'D9EFFF' } }
+						} else if (col >= 10 && col <= 13) {
+							c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'E6FFED' } }
+						}
+					})
 				}
 			})
 
@@ -523,7 +549,8 @@ function VentaDetNivelTienda(props) {
 			ws.autoFilter = { from: 'A4', to: 'M4' }
 
 			// ---------- Descargar ----------
-			const fn = `Venta Tiendas Con Detallado_${range.ini}_a_${range.fin}.xlsx`
+			const prefix = range.isAcum ? 'ACUMULADO_' : 'Venta_Tiendas_'
+			const fn = `${prefix}${range.ini}_a_${range.fin}.xlsx`
 			const buf = await wb.xlsx.writeBuffer()
 			const blob = new Blob([buf], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
 			const url = URL.createObjectURL(blob)
@@ -547,25 +574,28 @@ function VentaDetNivelTienda(props) {
 					<ParametersContainer>
 						<Parameters>
 							<Formik initialValues={initialParams} onSubmit={handleSubmit} enableReinitialize>
-								{({ isSubmitting }) => (
+								{({ isSubmitting, values }) => (
 									<Form>
 										<fieldset className="space-y-2 mb-[14rem]">
-											<Input
-												type="date"
-												id="fechaIni"
-												name="fechaIni"
-												label="Fecha inicial"
-												placeholder={range.ini}
-												disabled={loading}
-											/>
+											{!values.verAcumulado && (
+												<Input
+													type="date"
+													id="fechaIni"
+													name="fechaIni"
+													label="Fecha inicial"
+													placeholder={range.ini}
+													disabled={loading}
+												/>
+											)}
 											<Input
 												type="date"
 												id="fechaFin"
 												name="fechaFin"
-												label="Fecha final"
+												label={values.verAcumulado ? 'Fecha (al)' : 'Fecha final'}
 												placeholder={range.fin}
 												disabled={loading}
 											/>
+											<Checkbox id="verAcumulado" name="verAcumulado" label="Ver Acumulado Anual" disabled={loading} />
 											<Checkbox
 												id="conVentasEventos"
 												name="conVentasEventos"
@@ -611,7 +641,9 @@ function VentaDetNivelTienda(props) {
 
 			{/* Subtítulo centrado */}
 			<h2 className="text-center text-base md:text-base font-bold text-black-mt-2">
-				{`Datos del 
+				{range.isAcum
+					? `Acumulado al ${dateHelper.getCurrentDate(range.fin)} ${dateHelper.getMonthName(range.fin)} ${dateHelper.getCurrentYear(range.fin)}`
+					: `Datos del 
           ${dateHelper.getCurrentDate(range.ini)} ${dateHelper.getMonthName(range.ini)} ${dateHelper.getCurrentYear(range.ini)}
           al 
           ${dateHelper.getCurrentDate(range.fin)} ${dateHelper.getMonthName(range.fin)} ${dateHelper.getCurrentYear(range.fin)}
@@ -690,20 +722,24 @@ const Table = (props) => {
 									<th rowSpan={2} className="w-20 whitespace-nowrap">
 										% PART. VS. VTA. TOT.
 									</th>
-									<th colSpan={6}>VENTA POR SEGMENTO & PORC.PARTICIPACION POR ENTIDAD</th>
-									<th colSpan={4}>VENTA POR MARCA & PORC. PARTICIPACION</th>
+									<th colSpan={6} className="!bg-blue-900 text-white">
+										VENTA POR SEGMENTO & PORC.PARTICIPACION POR ENTIDAD
+									</th>
+									<th colSpan={4} className="!bg-green-800 text-white">
+										VENTA POR MARCA & PORC. PARTICIPACION
+									</th>
 								</tr>
 								<tr className="text-center">
-									<th>Línea ($)</th>
-									<th>% L</th>
-									<th>Moda ($)</th>
-									<th>% M</th>
-									<th>Accesorio ($)</th>
-									<th>% A</th>
-									<th>Frogs ($)</th>
-									<th>% SF</th>
-									<th>Mika ($)</th>
-									<th>% MK</th>
+									<th className="!bg-blue-900 text-white">Línea ($)</th>
+									<th className="!bg-blue-900 text-white">% L</th>
+									<th className="!bg-blue-900 text-white">Moda ($)</th>
+									<th className="!bg-blue-900 text-white">% M</th>
+									<th className="!bg-blue-900 text-white">Accesorio ($)</th>
+									<th className="!bg-blue-900 text-white">% A</th>
+									<th className="!bg-green-800 text-white">Frogs ($)</th>
+									<th className="!bg-green-800 text-white">% SF</th>
+									<th className="!bg-green-800 text-white">Mika ($)</th>
+									<th className="!bg-green-800 text-white">% MK</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -717,12 +753,28 @@ const Table = (props) => {
 										// Colores tipo la 2da imagen (texto negro)
 										const rowClass =
 											level === 'grand'
-												? 'bg-gray-400 font-bold text-black' // TOTAL
+												? 'bg-black font-bold text-white' // TOTAL final en negro
 												: level === 'region'
-													? 'bg-gray-300 font-semibold text-black' // REGIÓN
+													? 'bg-gray-400 font-bold' // REGIÓN
 													: level === 'plaza'
-														? 'bg-gray-200 font-medium text-black' // PLAZA (TOT ...)
+														? 'bg-gray-300 font-bold' // PLAZA (TOT ...)
 														: '' // Tienda
+
+										// Clases para las celdas de la sección "Segmento"
+										const segmentCellClass =
+											level === 'grand'
+												? '!bg-blue-900 text-white' // Total final: Azul fuerte
+												: level === 'store'
+													? 'bg-blue-200/60' // Tiendas: Azul más notable
+													: '' // Otros (Región/Plaza): Sin fondo especial para no sobrecargar
+
+										// Clases para las celdas de la sección "Marca"
+										const brandCellClass =
+											level === 'grand'
+												? '!bg-green-800 text-white' // Total final: Verde fuerte
+												: level === 'store'
+													? 'bg-green-200/60' // Tiendas: Verde más notable
+													: ''
 
 										const label =
 											r.Tienda === 'TOTAL'
@@ -740,20 +792,20 @@ const Table = (props) => {
 												<td className="text-right">{numberWithCommas(r.Venta)}</td>
 												<td className={`text-right w-20 whitespace-nowrap`}>{pct(r.PartVenta)}</td>
 
-												<td className="text-right">{numberWithCommas(r.VentaLinea)}</td>
-												<td className={`text-right`}>{pct(r.PartVentaLinea)}</td>
+												<td className={`text-right ${segmentCellClass}`}>{numberWithCommas(r.VentaLinea)}</td>
+												<td className={`text-right ${segmentCellClass}`}>{pct(r.PartVentaLinea)}</td>
 
-												<td className="text-right">{numberWithCommas(r.VentaModa)}</td>
-												<td className={`text-right`}>{pct(r.PartVentaModa)}</td>
+												<td className={`text-right ${segmentCellClass}`}>{numberWithCommas(r.VentaModa)}</td>
+												<td className={`text-right ${segmentCellClass}`}>{pct(r.PartVentaModa)}</td>
 
-												<td className="text-right">{numberWithCommas(r.VentaAccesorio)}</td>
-												<td className={`text-right`}>{pct(r.PartVentaAcc)}</td>
+												<td className={`text-right ${segmentCellClass}`}>{numberWithCommas(r.VentaAccesorio)}</td>
+												<td className={`text-right ${segmentCellClass}`}>{pct(r.PartVentaAcc)}</td>
 
-												<td className="text-right">{numberWithCommas(r.VentaFrogs)}</td>
-												<td className={`text-right`}>{pct(r.PartVentaFrogs)}</td>
+												<td className={`text-right ${brandCellClass}`}>{numberWithCommas(r.VentaFrogs)}</td>
+												<td className={`text-right ${brandCellClass}`}>{pct(r.PartVentaFrogs)}</td>
 
-												<td className="text-right">{numberWithCommas(r.VentaMika)}</td>
-												<td className={`text-right`}>{pct(r.PartMika)}</td>
+												<td className={`text-right ${brandCellClass}`}>{numberWithCommas(r.VentaMika)}</td>
+												<td className={`text-right ${brandCellClass}`}>{pct(r.PartMika)}</td>
 											</tr>
 										)
 									})}
