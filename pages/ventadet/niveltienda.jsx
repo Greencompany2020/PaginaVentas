@@ -440,8 +440,9 @@ function VentaDetNivelTienda(props) {
 			// Formato del header
 			const thinWhite = { style: 'thin', color: { argb: 'FFFFFFFF' } }
 			const blackFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '000000' } }
-			const blueFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '1E3A8A' } }
-			const greenFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '064E3B' } }
+			const grayFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'D1D5DB' } } // Darker gray shading (Gray 300)
+			const thickBorder = { style: 'thick', color: { argb: 'FF000000' } }
+			const thickWhiteBorder = { style: 'thick', color: { argb: 'FFFFFFFF' } }
 
 			for (const r of [3, 4]) {
 				const row = ws.getRow(r)
@@ -449,11 +450,13 @@ function VentaDetNivelTienda(props) {
 				row.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 10 }
 				row.alignment = { horizontal: 'center', vertical: 'middle', wrapText: true }
 				row.eachCell({ includeEmpty: true }, (c) => {
-					const col = c.col
-					if (col >= 4 && col <= 9) c.fill = blueFill
-					else if (col >= 10 && col <= 13) c.fill = greenFill
-					else c.fill = blackFill
+					c.fill = blackFill
 					c.border = { top: thinWhite, left: thinWhite, bottom: thinWhite, right: thinWhite }
+
+					// Aplicar borde grueso blanco a las columnas 3 (% Part) y 9 (% A)
+					if ([3, 9].includes(c.col)) {
+						c.border.right = thickWhiteBorder
+					}
 				})
 			}
 
@@ -506,33 +509,43 @@ function VentaDetNivelTienda(props) {
 					row.eachCell((c) => (c.fill = blackFill))
 				} else if (lvl === 'region') {
 					row.font = { bold: true }
-					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '9CA3AF' } }))
+					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '6B7280' } }))
 				} else if (lvl === 'plaza') {
 					row.font = { bold: true }
-					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'D1D5DB' } }))
-				} else if (lvl === 'store') {
-					// Tintes de color para segmentos y marcas
-					row.eachCell((c) => {
-						const col = c.col
-						if (col >= 4 && col <= 9) {
-							c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'D9EFFF' } }
-						} else if (col >= 10 && col <= 13) {
-							c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'E6FFED' } }
-						}
-					})
+					row.eachCell((c) => (c.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '9CA3AF' } }))
 				}
 			})
 
-			// Bordes finos para el bloque de datos
-			const lastRow = ws.lastRow.number
-			for (let r = startRow; r <= lastRow; r++) {
-				ws.getRow(r).eachCell((c) => {
+			// Bordes finos para el bloque de datos y bordes gruesos para separadores
+			const lastAllRow = ws.lastRow.number
+			for (let r = startRow; r <= lastAllRow; r++) {
+				const row = ws.getRow(r)
+				const lvl = toExport[r - startRow]?._level || (toExport[r - startRow]?.Tienda === 'TOTAL' ? 'grand' : 'store')
+
+				row.eachCell((c) => {
 					c.border = {
 						top: { style: 'thin' },
 						left: { style: 'thin' },
 						bottom: { style: 'thin' },
 						right: { style: 'thin' }
 					}
+
+					// Aplicar borde grueso a las columnas 3 (% Part) y 9 (% A)
+					if ([3, 9].includes(c.col)) {
+						const isHeaderFooter = lvl === 'grand'
+						c.border.right = isHeaderFooter ? thickWhiteBorder : thickBorder
+
+						// Sombreado para estas columnas (SOLO para tiendas, no regiones/plazas para no tapar su color)
+						if (lvl === 'store') {
+							c.fill = grayFill
+						}
+					}
+
+					// Sombreado también para la columna 13 (% MK) - SOLO tienda
+					if (c.col === 13 && lvl === 'store') {
+						c.fill = grayFill
+					}
+
 					if (c.col === 1) c.alignment = { horizontal: 'left' }
 					else c.alignment = { horizontal: 'right' }
 				})
@@ -719,27 +732,23 @@ const Table = (props) => {
 								<tr className="text-center">
 									<th rowSpan={2}>Tienda</th>
 									<th rowSpan={2}>Venta ($)</th>
-									<th rowSpan={2} className="w-20 whitespace-nowrap">
+									<th rowSpan={2} className="w-20 whitespace-nowrap border-r-4 border-r-white">
 										% PART. VS. VTA. TOT.
 									</th>
-									<th colSpan={6} className="!bg-blue-900 text-white">
-										VENTA POR SEGMENTO & PORC.PARTICIPACION POR ENTIDAD
-									</th>
-									<th colSpan={4} className="!bg-green-800 text-white">
-										VENTA POR MARCA & PORC. PARTICIPACION
-									</th>
+									<th colSpan={6}>VENTA POR SEGMENTO & PORC.PARTICIPACION POR ENTIDAD</th>
+									<th colSpan={4}>VENTA POR MARCA & PORC. PARTICIPACION</th>
 								</tr>
 								<tr className="text-center">
-									<th className="!bg-blue-900 text-white">Línea ($)</th>
-									<th className="!bg-blue-900 text-white">% L</th>
-									<th className="!bg-blue-900 text-white">Moda ($)</th>
-									<th className="!bg-blue-900 text-white">% M</th>
-									<th className="!bg-blue-900 text-white">Accesorio ($)</th>
-									<th className="!bg-blue-900 text-white">% A</th>
-									<th className="!bg-green-800 text-white">Frogs ($)</th>
-									<th className="!bg-green-800 text-white">% SF</th>
-									<th className="!bg-green-800 text-white">Mika ($)</th>
-									<th className="!bg-green-800 text-white">% MK</th>
+									<th>Línea ($)</th>
+									<th>% L</th>
+									<th>Moda ($)</th>
+									<th>% M</th>
+									<th>Accesorio ($)</th>
+									<th className="border-r-4 border-r-white">% A</th>
+									<th>Frogs ($)</th>
+									<th>% SF</th>
+									<th>Mika ($)</th>
+									<th>% MK</th>
 								</tr>
 							</thead>
 							<tbody>
@@ -755,26 +764,10 @@ const Table = (props) => {
 											level === 'grand'
 												? 'bg-black font-bold text-white' // TOTAL final en negro
 												: level === 'region'
-													? 'bg-gray-400 font-bold' // REGIÓN
+													? 'bg-gray-600 font-bold' // REGIÓN (Gris muy oscuro, texto negro)
 													: level === 'plaza'
-														? 'bg-gray-300 font-bold' // PLAZA (TOT ...)
+														? 'bg-gray-500 font-bold' // PLAZA (Gris oscuro, texto negro)
 														: '' // Tienda
-
-										// Clases para las celdas de la sección "Segmento"
-										const segmentCellClass =
-											level === 'grand'
-												? '!bg-blue-900 text-white' // Total final: Azul fuerte
-												: level === 'store'
-													? 'bg-blue-200/60' // Tiendas: Azul más notable
-													: '' // Otros (Región/Plaza): Sin fondo especial para no sobrecargar
-
-										// Clases para las celdas de la sección "Marca"
-										const brandCellClass =
-											level === 'grand'
-												? '!bg-green-800 text-white' // Total final: Verde fuerte
-												: level === 'store'
-													? 'bg-green-200/60' // Tiendas: Verde más notable
-													: ''
 
 										const label =
 											r.Tienda === 'TOTAL'
@@ -790,22 +783,30 @@ const Table = (props) => {
 
 												{/* demás columnas: derecha */}
 												<td className="text-right">{numberWithCommas(r.Venta)}</td>
-												<td className={`text-right w-20 whitespace-nowrap`}>{pct(r.PartVenta)}</td>
+												<td
+													className={`text-right w-20 whitespace-nowrap border-r-4 ${level === 'grand' ? 'border-r-white' : level === 'store' ? 'border-r-slate-700 bg-gray-300/60' : 'border-r-slate-700'}`}
+												>
+													{pct(r.PartVenta)}
+												</td>
 
-												<td className={`text-right ${segmentCellClass}`}>{numberWithCommas(r.VentaLinea)}</td>
-												<td className={`text-right ${segmentCellClass}`}>{pct(r.PartVentaLinea)}</td>
+												<td className="text-right">{numberWithCommas(r.VentaLinea)}</td>
+												<td className="text-right">{pct(r.PartVentaLinea)}</td>
 
-												<td className={`text-right ${segmentCellClass}`}>{numberWithCommas(r.VentaModa)}</td>
-												<td className={`text-right ${segmentCellClass}`}>{pct(r.PartVentaModa)}</td>
+												<td className="text-right">{numberWithCommas(r.VentaModa)}</td>
+												<td className="text-right">{pct(r.PartVentaModa)}</td>
 
-												<td className={`text-right ${segmentCellClass}`}>{numberWithCommas(r.VentaAccesorio)}</td>
-												<td className={`text-right ${segmentCellClass}`}>{pct(r.PartVentaAcc)}</td>
+												<td className="text-right">{numberWithCommas(r.VentaAccesorio)}</td>
+												<td
+													className={`text-right border-r-4 ${level === 'grand' ? 'border-r-white' : level === 'store' ? 'border-r-slate-700 bg-gray-300/60' : 'border-r-slate-700'}`}
+												>
+													{pct(r.PartVentaAcc)}
+												</td>
 
-												<td className={`text-right ${brandCellClass}`}>{numberWithCommas(r.VentaFrogs)}</td>
-												<td className={`text-right ${brandCellClass}`}>{pct(r.PartVentaFrogs)}</td>
+												<td className="text-right">{numberWithCommas(r.VentaFrogs)}</td>
+												<td className="text-right">{pct(r.PartVentaFrogs)}</td>
 
-												<td className={`text-right ${brandCellClass}`}>{numberWithCommas(r.VentaMika)}</td>
-												<td className={`text-right ${brandCellClass}`}>{pct(r.PartMika)}</td>
+												<td className="text-right">{numberWithCommas(r.VentaMika)}</td>
+												<td className={`text-right ${level === 'store' ? 'bg-gray-300/60' : ''}`}>{pct(r.PartMika)}</td>
 											</tr>
 										)
 									})}
@@ -1011,15 +1012,9 @@ const TableMovil = ({ data }) => {
 	const levelOf = (r) =>
 		r._level || (r.Tienda === 'TOTAL' ? 'grand' : /^TOT\s+/i.test(String(r.Tienda || '')) ? 'plaza' : 'store')
 
-	// Clases al estilo de la segunda imagen (grises, texto negro)
+	// Clases base (la mayoría vienen de table-report-mobile en CSS)
 	const rowClassOf = (level) =>
-		level === 'grand'
-			? 'bg-gray-400 font-bold text-black'
-			: level === 'region'
-				? 'bg-gray-300 font-semibold text-black'
-				: level === 'plaza'
-					? 'bg-gray-200 font-medium text-black'
-					: ''
+		level === 'region' ? 'bg-gray-600 font-bold' : level === 'plaza' ? 'bg-gray-500 font-bold' : ''
 
 	// Render helpers (una fila para un r y un set de celdas)
 	const RowVenta = (r, i) => {
