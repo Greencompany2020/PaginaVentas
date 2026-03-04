@@ -44,7 +44,7 @@ const DoughnutSmartLabels = {
 
 		const amounts = opts?.amounts || []
 		const money = opts?.money || ((n) => `${n}`)
-		const gap = opts?.gap ?? 16 // px entre etiquetas
+		const gap = opts?.gap ?? 24 // px entre etiquetas
 		const clampY = (y) => Math.min(chartArea.bottom - 8, Math.max(chartArea.top + 8, y))
 
 		const left = [],
@@ -125,17 +125,7 @@ const CornerNote = {
 	}
 }
 
-ChartJS.register(
-	ArcElement,
-	Tooltip,
-	Legend,
-	CategoryScale,
-	LinearScale,
-	BarElement,
-	ChartTitle,
-	DoughnutSmartLabels,
-	CornerNote
-)
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, ChartTitle)
 
 const toDMY = (raw) => {
 	if (!raw) return ''
@@ -372,7 +362,7 @@ function Segmento({ config }) {
 			doughnutSmartLabels: {
 				amounts: sales,
 				money: fmtMoney,
-				gap: 18,
+				gap: 24,
 				lineColor: '#CBD5E1',
 				lineWidth: 1
 			},
@@ -475,6 +465,7 @@ function Segmento({ config }) {
 							<Doughnut
 								ref={monthChartRef}
 								data={doughnutDataMonth}
+								plugins={[DoughnutSmartLabels, CornerNote]}
 								options={makeOptions(
 									`MENSUAL ${dateHelper.getMonthName(reportDate.current).toUpperCase()} ${dateHelper.getCurrentYear(reportDate.current)}`,
 									monthPart,
@@ -487,6 +478,7 @@ function Segmento({ config }) {
 							<Doughnut
 								ref={yearChartRef}
 								data={doughnutDataAnual}
+								plugins={[DoughnutSmartLabels, CornerNote]}
 								options={makeOptions(
 									`ACUMULADO ${dateHelper.getCurrentYear(reportDate.current)}`,
 									anualPart,

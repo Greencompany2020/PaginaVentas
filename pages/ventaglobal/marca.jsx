@@ -39,7 +39,7 @@ const DoughnutSmartLabels = {
 
 		const amounts = opts?.amounts || []
 		const money = opts?.money || ((n) => `${n}`)
-		const gap = opts?.gap ?? 16
+		const gap = opts?.gap ?? 24
 		const clampY = (y) => Math.min(chartArea.bottom - 8, Math.max(chartArea.top + 8, y))
 
 		const left = [],
@@ -111,17 +111,7 @@ const CornerNote = {
 	}
 }
 
-ChartJS.register(
-	ArcElement,
-	Tooltip,
-	Legend,
-	CategoryScale,
-	LinearScale,
-	BarElement,
-	ChartTitle,
-	DoughnutSmartLabels,
-	CornerNote
-)
+ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, ChartTitle)
 
 // util: fecha a DD-MM-YYYY
 const toDMY = (raw) => {
@@ -290,7 +280,7 @@ function Marca({ config }) {
 			doughnutSmartLabels: {
 				amounts: sales,
 				money: fmtMoney,
-				gap: 18,
+				gap: 24,
 				lineColor: '#CBD5E1',
 				lineWidth: 1
 			},
@@ -479,6 +469,7 @@ function Marca({ config }) {
 								key={`m-${labels.join('|')}-${colors.join('|')}`} // <-- fuerza remount si cambian
 								ref={monthChartRef}
 								data={doughnutDataMonth}
+								plugins={[DoughnutSmartLabels, CornerNote]}
 								options={makeOptions(
 									`MENSUAL ${dateHelper.getMonthName(reportDate.current).toUpperCase()} ${dateHelper.getCurrentYear(reportDate.current)}`,
 									monthPart,
@@ -492,6 +483,7 @@ function Marca({ config }) {
 								key={`y-${labels.join('|')}-${colors.join('|')}`}
 								ref={yearChartRef}
 								data={doughnutDataAnual}
+								plugins={[DoughnutSmartLabels, CornerNote]}
 								options={makeOptions(
 									`ACUMULADO ${dateHelper.getCurrentYear(reportDate.current)}`,
 									anualPart,
