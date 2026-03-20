@@ -3,11 +3,12 @@ import {
   TrashIcon,
   PencilAltIcon,
   LockOpenIcon,
+  BellIcon,
 } from "@heroicons/react/outline";
 import {v4} from 'uuid'
 
 export default function UserTable(props) {
-  const {items,handleSelect,handleShowModal, handleShowAccess, deleteUser} = props;
+  const {items,handleSelect,handleShowModal, handleShowAccess, handleShowNotifications, deleteUser} = props;
   return (
     <div className="h-[400px] md:h-[400px] overflow-y-auto">
       <table className="min-w-full table-fixed">
@@ -40,6 +41,11 @@ export default function UserTable(props) {
               <td className="hidden lg:table-cell">{item.NombreGrupo}</td>
               <td className="hidden lg:table-cell">{(item.Rol !== null) ? item.Rol : 'Sin rol'}</td>
               <td className="flex justify-center space-x-1">
+                <BellIcon
+                  width={26}
+                  className="cursor-pointer hover:text-blue-500"
+                  onClick={handleShowNotifications}
+                />
                 <LockOpenIcon
                   width={26}
                   className="cursor-pointer hover:text-blue-500"

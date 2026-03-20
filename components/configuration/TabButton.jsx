@@ -1,6 +1,7 @@
 import React from "react";
 import { UserIcon, UserGroupIcon, LockOpenIcon, GlobeIcon } from "@heroicons/react/solid";
 import Link from "next/link";
+import { BellIcon } from '@heroicons/react/outline'
 export default function TabButton(props) {
   return (
     <div className="flex space-x-2">
@@ -24,6 +25,11 @@ export default function TabButton(props) {
           <GlobeIcon width={32} className=""/>
         </a>
       </Link>
+			<Link href="/configuracion/notificaciones">
+				<a className="secondary-btn w-20 flex justify-center">
+					<BellIcon width={32} className="" />
+				</a>
+			</Link>
     </div>
   );
 }
