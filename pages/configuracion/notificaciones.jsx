@@ -40,12 +40,10 @@ const NotificationsPage = (props) => {
     };
 
     const updateNotification = async (id, values) => {
-        // La actualización de notificaciones no está en el service, usamos create por ahora o mostramos error.
         try {
-            sendNotification({
-                type: 'ERROR',
-                message: 'Ruta de actualización de notificaciones no disponible'
-            });
+            await service.updateNotification(id, values);
+            const response = await service.getNotifications();
+            setNotifications(response);
         } catch (error) {
             sendNotification({
                 type: 'ERROR',

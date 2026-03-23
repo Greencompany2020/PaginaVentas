@@ -178,3 +178,26 @@ export const TextAreaInput = ({ label, ...props }) => {
 		</label>
 	)
 }
+
+export const ToggleInput = ({ label, ...props }) => {
+	const [field, meta] = useField({ ...props, type: 'checkbox' })
+	return (
+		<label
+			className={`flex items-center space-x-2 font-semibold text-sm text-gray-600 cursor-pointer ${props.disabled && 'opacity-50'}`}
+			htmlFor={props?.id || props?.name}
+		>
+			<div className="relative">
+				<input 
+					type="checkbox" 
+					className="sr-only peer" 
+					id={props?.id || props?.name}
+					{...field} 
+					{...props} 
+					checked={field.value ?? false} 
+				/>
+				<div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+			</div>
+			<span className="normal-case">{label}</span>
+		</label>
+	)
+}

@@ -84,6 +84,7 @@ export default function configuratorService() {
    * @typedef {Object} CreateNotificationRequest
    * @property {string} nombre
    * @property {string} medio
+   * @property {number} activa
    */
 
   /**
@@ -101,10 +102,33 @@ export default function configuratorService() {
   }
 
   /**
+   * @typedef {Object} UpdateNotificationRequest
+   * @property {string} nombre
+   * @property {string} medio
+   * @property {number} activa
+   */
+
+  /**
+   * Actualizar una notificación
+   * @param {number} id
+   * @param {UpdateNotificationRequest} values
+   * @return {Promise<Notification>}
+   */
+  const updateNotification = async (id, values) => {
+    try {
+      const { /** @type Notification */ data } = await configuradorProvider.put(`/notificaciones/${id}`, values)
+      return data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  /**
    * @typedef {Object} Notification
    * @property {number} id
    * @property {string} nomber
    * @property {string} medio
+   * @property {number} activa
    */
 
   /**
@@ -569,6 +593,7 @@ export default function configuratorService() {
 		updateProyect,
 		deleteProyect,
 		setUserLocalityShop,
-		getUserShops
+		getUserShops,
+    updateNotification
 	}
 }

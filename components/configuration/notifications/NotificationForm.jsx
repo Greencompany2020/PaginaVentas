@@ -1,13 +1,14 @@
 import React from "react";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
-import { TextInput } from "../../FormInputs";
+import { TextInput, ToggleInput } from "../../FormInputs";
 
 /**
  * @typedef {Object} NotificationFormItem
  * @property {number} [id] - The notification ID (if editing)
  * @property {string} [nombre] - The notification name
  * @property {string} [medio] - The notification medium
+ * @property {number} [activa] - The notification status
  */
 
 /**
@@ -21,7 +22,7 @@ import { TextInput } from "../../FormInputs";
 /**
  * Form for creating or updating a notification.
  * @param {NotificationFormProps} props - The component props
- * @returns {JSX.Element} The rendered form form
+ * @returns {JSX.Element} The rendered form
  */
 export default function NotificationForm(props) {
   const { item, updateNotification, addNewNotification, handleModal } = props;
@@ -29,6 +30,7 @@ export default function NotificationForm(props) {
   const initialValues = {
     nombre: item?.nombre || "",
     medio: item?.medio || "",
+    activa: !!item?.activa,
   };
 
   const validateSchema = Yup.object().shape({
@@ -37,10 +39,11 @@ export default function NotificationForm(props) {
   });
 
   const handleOnsubmit = async (values, { resetForm }) => {
+    const payload = { ...values, activa: values.activa ? 1 : 0 };
     if (item && item.id) {
-      await updateNotification(item.id, values);
+      await updateNotification(item.id, payload);
     } else {
-      await addNewNotification(values);
+      await addNewNotification(payload);
     }
     handleModal();
     resetForm({});
@@ -52,6 +55,9 @@ export default function NotificationForm(props) {
         <div className="space-y-1">
           <TextInput label='Nombre' name='nombre' />
           <TextInput label='Medio' name='medio' />
+          <div className="pt-2">
+            <ToggleInput label="Activa" name="activa" />
+          </div>
         </div>
         <div className="flex flex-row justify-end space-x-2 mt-6">
           <input type='reset' value='Cancelar' className="secondary-btn w-28" onClick={handleModal} />
