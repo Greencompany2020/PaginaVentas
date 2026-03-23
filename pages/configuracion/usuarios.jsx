@@ -8,6 +8,7 @@ import UserForm from '../../components/configuration/users/UserForm'
 import { getBaseLayout } from 'components/layout/BaseLayout'
 import useToggle from '../../hooks/useToggle'
 import UserAccessTable from '../../components/configuration/users/UserAccessTable'
+import UserNotificationTable from '../../components/configuration/notifications/UserNotificationTable'
 import { ConfirmModal } from '../../components/modals/'
 import witAuth from '../../components/withAuth'
 import UserInfo from 'components/configuration/users/UserInfo'
@@ -56,6 +57,7 @@ const Users = (props) => {
 	const [userDetails, setUserDetail] = useState(/** @type {UserDetail} */ {})
 	const [showModal, setShowModal] = useToggle(false)
 	const [showRetrieve, setShowRetrieve] = useToggle(false)
+	const [showNotifications, setShowNotifications] = useToggle(false)
 	const confirmModalRef = useRef(null)
 	const [digitalGroups, setDigitalGroups] = useState([])
 	const [locations, setLocations] = useState(/** @type {Array<Location>} */ [])
@@ -143,7 +145,27 @@ const Users = (props) => {
 			} catch (error) {
 				sendNotification({
 					type: 'ERROR',
-					message: error.response.data.message || error.message
+					message: error.response?.data?.message || error.message
+				})
+			}
+		}
+	}
+
+	const assignNotificationToUser = async (item) => {
+		if (selectedUser && item) {
+			try {
+				const body = {
+					userId: selectedUser.Id,
+					notificacionId: item.id,
+					activo: item.activo ? 0 : 1
+				}
+				await service.assignNotification(body)
+				const response = await service.getUserDetail(selectedUser.Id)
+				setUserDetail(response)
+			} catch (error) {
+				sendNotification({
+					type: 'ERROR',
+					message: error.response?.data?.message || error.message
 				})
 			}
 		}
@@ -239,6 +261,7 @@ const Users = (props) => {
 							handleSelect={handleSelect}
 							handleShowModal={setShowModal}
 							handleShowAccess={setShowRetrieve}
+							handleShowNotifications={setShowNotifications}
 							deleteUser={deleteUser}
 						/>
 					</Paginate>
@@ -260,7 +283,7 @@ const Users = (props) => {
 					handleToggle={setShowModal}
 					digitalGroups={digitalGroups}
 					addUserToGroup={adduserToDigitalGroup}
-					locatities={locations}
+					locations={locations}
 					sapUsers={sapUsers}
 					shops={shops}
 					setShopsToUser={setShopsToUser}
@@ -281,6 +304,22 @@ const Users = (props) => {
 						}}
 					>
 						<UserAccessTable assignAccessToUser={assignAccessToUser} />
+					</Paginate>
+				</div>
+			</FormModal>
+
+			<FormModal key={3} active={showNotifications} handleToggle={setShowNotifications} name="Asignar Notificación">
+				<div className=" p-8  h-[500px] w-[400px] md:h-[570px] md:w-[500px] lg:w-[1000px] overflow-y-auto">
+					<Paginate
+						data={userDetails?.notificaciones}
+						showItems={5}
+						options={{
+							labelSelector: 'Mostrar',
+							optionRange: [20, 50, 100],
+							searchBy: ['nombre', 'medio']
+						}}
+					>
+						<UserNotificationTable assignNotificationToUser={assignNotificationToUser} />
 					</Paginate>
 				</div>
 			</FormModal>

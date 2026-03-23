@@ -80,6 +80,107 @@ export default function configuratorService() {
 		}
 	}
 
+  /**
+   * @typedef {Object} CreateNotificationRequest
+   * @property {string} nombre
+   * @property {string} medio
+   * @property {number} activa
+   */
+
+  /**
+   * Crea una nueva notificación
+   * @param {CreateNotificationRequest} body
+   * @return {Promise<Notification>}
+   */
+  const createNotification = async (body) => {
+    try {
+      const { /** @type Notification */ data } = await configuradorProvider.post('/notificaciones', body)
+      return data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  /**
+   * @typedef {Object} UpdateNotificationRequest
+   * @property {string} nombre
+   * @property {string} medio
+   * @property {number} activa
+   */
+
+  /**
+   * Actualizar una notificación
+   * @param {number} id
+   * @param {UpdateNotificationRequest} values
+   * @return {Promise<Notification>}
+   */
+  const updateNotification = async (id, values) => {
+    try {
+      const { /** @type Notification */ data } = await configuradorProvider.put(`/notificaciones/${id}`, values)
+      return data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const deleteNotification = async (id) => {
+    try {
+      await configuradorProvider.delete(`/notificaciones/${id}`)
+    } catch (error) {
+      throw error
+    }
+  }
+
+  /**
+   * @typedef {Object} Notification
+   * @property {number} id
+   * @property {string} nomber
+   * @property {string} medio
+   * @property {number} activa
+   */
+
+  /**
+   * Obtiene las notificaciones
+   * @return {Promise<Array<Notification>>}
+   */
+  const getNotifications = async () => {
+    try {
+      const { /** @type Array<Notification> */ data } = await configuradorProvider.get('/notificaciones')
+      return data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  /**
+   * @typedef {Object} AssignNotificationRequest
+   * @property {number} userId
+   * @property {number} notificacionId
+   * @property {number} activo
+   */
+
+  /**
+   * @typedef {Object} NotificationUser
+   * @property {number} id
+   * @property {number} userId
+   * @property {number} notificacionId
+   * @property {boolean} activo
+   */
+
+  /**
+   * Asigna/actualiza la notificación
+   * @param {AssignNotificationRequest} body
+   * @return {Promise<NotificationUser>}
+   */
+  const assignNotification = async (body) => {
+    try {
+      const { /** @type NotificationUser */ data } = await configuradorProvider.post('/notificaciones/usuario', body)
+      return data
+    } catch (error) {
+      throw error
+    }
+  }
+
 	/**
 	 * @typedef {Object} UserLocations
 	 * @property {number} Codigo
@@ -105,6 +206,14 @@ export default function configuratorService() {
 	 */
 
 	/**
+	 * @typedef {Object} UserProfileNotification
+	 * @property {number} id
+	 * @property {string} nombre
+	 * @property {string} medio
+	 * @property {boolean} activo
+	 */
+
+	/**
 	 * @typedef {Object} UserProfileWithAccess
 	 * @property {number} Id
 	 * @property {string} UserCode
@@ -118,10 +227,12 @@ export default function configuratorService() {
 	 * @property {number} DefaultReposicion
 	 * @property {string} Email
 	 * @property {number} IdGrupo
+   * @property {string} Telefono
 	 * @property {number} IdGrupoDigitalizacion
 	 * @property {Array<UserLocations>} Localidades
 	 * @property {Array<UserAccess>} Accesos
 	 * @property {UserProfileGlobalParameters} Parametros
+	 * @property {Array<Notification>} Notificaciones
 	 */
 
   /**
@@ -143,13 +254,16 @@ export default function configuratorService() {
 		try {
 			const { /** @type {UserProfileWithAccess} */ data } = await configuradorProvider.get(`/accesos/perfil/${userId}`)
 			const response = await getAccess()
-			const { Accesos, ...usuario } = data
-			const formatedData = replaceAccess(response, Accesos)
+			const notifResponse = await getNotifications()
+			const { Accesos, Notificaciones, notificaciones, ...usuario } = data
+			const formatedData = replaceAccess(response, Accesos || [])
+			const formatedNotif = replaceNotification(notifResponse, Notificaciones || notificaciones || [])
 
       /** @type {UserDetail} */
 			const newData = {
 				usuario,
-				accesos: formatedData
+				accesos: formatedData,
+				notificaciones: formatedNotif
 			}
 			return newData
 		} catch (error) {
@@ -285,6 +399,24 @@ export default function configuratorService() {
 			})
 			if (Object.keys(modify).length > 0) return modify
 			return { ...item, acceso: false }
+		})
+		return modified
+	}
+
+	/**
+	 * Sobreescribe el estado activo de la notificación a partir
+	 * de las notificaciones asignadas del usuario.
+	 */
+	const replaceNotification = (current, next) => {
+		const modified = current.map((item) => {
+			let modify = {}
+			next.forEach((userNotif) => {
+				if (item.id === userNotif.notificacionId || item.id === userNotif.id) {
+					modify = { ...item, activo: !!userNotif.activo }
+				}
+			})
+			if (Object.keys(modify).length > 0) return modify
+			return { ...item, activo: false }
 		})
 		return modified
 	}
@@ -441,6 +573,9 @@ export default function configuratorService() {
 		getGroups,
 		getAccess,
 		getUserDetail,
+		createNotification,
+		getNotifications,
+		assignNotification,
 		createUser,
 		updateUser,
 		deleteUser,
@@ -454,6 +589,7 @@ export default function configuratorService() {
 		configureParameters,
 		getParameters,
 		replaceAccess,
+		replaceNotification,
 		getGruposDigitalizacion,
 		setUserToGrupoDigitalizacion,
 		createDigitalizacionGrupo,
@@ -466,6 +602,8 @@ export default function configuratorService() {
 		updateProyect,
 		deleteProyect,
 		setUserLocalityShop,
-		getUserShops
+		getUserShops,
+    updateNotification,
+    deleteNotification
 	}
 }
