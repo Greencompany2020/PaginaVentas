@@ -219,6 +219,7 @@ export default function configuratorService() {
 	 * @property {number} DefaultReposicion
 	 * @property {string} Email
 	 * @property {number} IdGrupo
+   * @property {string} Telefono
 	 * @property {number} IdGrupoDigitalizacion
 	 * @property {Array<UserLocations>} Localidades
 	 * @property {Array<UserAccess>} Accesos

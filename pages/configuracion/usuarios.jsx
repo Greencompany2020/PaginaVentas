@@ -283,7 +283,7 @@ const Users = (props) => {
 					handleToggle={setShowModal}
 					digitalGroups={digitalGroups}
 					addUserToGroup={adduserToDigitalGroup}
-					locatities={locations}
+					locations={locations}
 					sapUsers={sapUsers}
 					shops={shops}
 					setShopsToUser={setShopsToUser}

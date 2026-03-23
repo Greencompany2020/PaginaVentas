@@ -36,7 +36,7 @@ export default function UserForm({
 	handleToggle,
 	digitalGroups,
 	addUserToGroup,
-	locatities,
+	locations,
 	sapUsers,
 	shops,
 	setShopsToUser,
@@ -44,11 +44,11 @@ export default function UserForm({
 	reportsCatalog
 }) {
 	const getUserLocations = () => {
-		const localidades = locatities.reduce((obj, item) => Object.assign(obj, { [item.Localidad]: '' }), {})
+		const localidades = locations.reduce((obj, item) => Object.assign(obj, { [item.Localidad]: '' }), {})
 
 		if (item) {
 			const userLocalidades = item.Localidades.flatMap((item) => item.Codigo)
-			const userLocalidadesFilter = locatities.filter((item) => userLocalidades.includes(item.Codigo))
+			const userLocalidadesFilter = locations.filter((item) => userLocalidades.includes(item.Codigo))
 			const userPlaces = userLocalidadesFilter.flatMap((item) => item.Localidad)
 			if (userPlaces) {
 				const newLocalidades = {}
@@ -85,6 +85,7 @@ export default function UserForm({
 		Apellidos: item?.Apellidos || '',
 		password: '',
 		idGrupo: item?.IdGrupo || groups[0]?.Id,
+    telefono: item?.Telefono || '',
 		idGrupoDigital: item?.IdGrupoDigitalizacion || 0,
 		localidades: getUserLocations(),
 		UserSAP: item?.UserSAP || '',
@@ -110,6 +111,7 @@ export default function UserForm({
 		Apellidos: Yup.string().required('Requerido'),
 		password: !item && Yup.string().required('Requerido'),
 		idGrupo: Yup.number().transform((v) => parseInt(v)),
+    telefono: Yup.string(),
     UserSAP: Yup.string().ensure().when(['PasswordSAP'],{
       is: (PasswordSAP) => PasswordSAP,
       then: Yup.string().required('Es necesario elegir un usuario de SAP')
@@ -126,7 +128,7 @@ export default function UserForm({
 			if (data[property] === true) places = [...places, property]
 		}
 		if (places) {
-			const filter = locatities.filter((val) => places.includes(val.Localidad))
+			const filter = locations.filter((val) => places.includes(val.Localidad))
 			const placesFilter = filter.flatMap((val) => val.Codigo)
 			return placesFilter
 		}
@@ -134,20 +136,20 @@ export default function UserForm({
 	}
 
 	const getShopsFromValues = (data) => {
-		let shopsIntrue = []
+		let shopsInTrue = []
 		for (const property in data) {
-			if (data[property] === true) shopsIntrue = [...shopsIntrue, property]
+			if (data[property] === true) shopsInTrue = [...shopsInTrue, property]
 		}
-		return shopsIntrue
+		return shopsInTrue
 	}
 
 	const handleOnSubmit = async (values, { resetForm }) => {
 		const { idGrupoDigital, localidades, shops, ...rest } = values
-		const localitities = getIdFromLocations(localidades)
+		const localitions = getIdFromLocations(localidades)
 
 		if (item) {
 			const { password,...params } = rest
-			const body = { ...params, localidades: localitities, idProyect: 1 }
+			const body = { ...params, localidades: localitions, idProyect: 1 }
 			await updateUser(item?.Id, body)
 			await addUserToGroup({
 				idUser: item?.Id,
@@ -155,7 +157,7 @@ export default function UserForm({
 			})
 			await setShopsToUser(item?.Id, getShopsFromValues(values.shops))
 		} else {
-			const body = { ...rest, localidades: localitities }
+			const body = { ...rest, localidades: localitions }
 			await addNewUser(body)
 		}
 		resetForm({})
@@ -200,6 +202,10 @@ export default function UserForm({
 					</div>
 				</div>
 
+        <fieldset className="mt-4">
+          <TextInput label='Teléfono' name='telefono' />
+        </fieldset>
+
 				<fieldset className="mt-4">
 					<SelectInput label="Rol digitalizado" name="idGrupoDigital" disabled={!item}>
 						<option value={0}>Elegir grupo</option>
@@ -210,8 +216,8 @@ export default function UserForm({
 				<fieldset className="mt-4">
 					<legend className="font-semibold text-sm text-gray-600 mb-1">Localidades</legend>
 					<ul className="space-y-2">
-						{locatities &&
-							locatities.map((item) => <LocationsSection key={item.Codigo} locality={item} shops={shops} />)}
+						{locations &&
+							locations.map((item) => <LocationsSection key={item.Codigo} locality={item} shops={shops} />)}
 					</ul>
 				</fieldset>
 
