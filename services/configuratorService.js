@@ -123,6 +123,14 @@ export default function configuratorService() {
     }
   }
 
+  const deleteNotification = async (id) => {
+    try {
+      await configuradorProvider.delete(`/notificaciones/${id}`)
+    } catch (error) {
+      throw error
+    }
+  }
+
   /**
    * @typedef {Object} Notification
    * @property {number} id
@@ -595,6 +603,7 @@ export default function configuratorService() {
 		deleteProyect,
 		setUserLocalityShop,
 		getUserShops,
-    updateNotification
+    updateNotification,
+    deleteNotification
 	}
 }

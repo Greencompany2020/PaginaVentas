@@ -1,4 +1,4 @@
-import { PencilAltIcon } from "@heroicons/react/outline";
+import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
 import { v4 } from "uuid";
 
 /**
@@ -13,10 +13,11 @@ import { v4 } from "uuid";
  * @property {Array<NotificationItem>} items
  * @property {(item: NotificationItem) => void} handleSelect
  * @property {() => void} handleShowModal
+ * @property {(item: NotificationItem) => void} handleDelete
  */
 
 export default function NotificationTable(props) {
-  const { items, handleSelect, handleShowModal } = props;
+  const { items, handleSelect, handleShowModal, handleDelete } = props;
   return (
     <div className="h-[500px] w-full overflow-auto">
       <table className="w-full overflow-auto">
@@ -39,6 +40,14 @@ export default function NotificationTable(props) {
                   width={26}
                   className="cursor-pointer hover:text-blue-500"
                   onClick={handleShowModal}
+                />
+                <TrashIcon
+                  width={26}
+                  className="cursor-pointer hover:text-red-500"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(item);
+                  }}
                 />
               </td>
             </tr>

@@ -22,7 +22,7 @@ import {PlusIcon, MinusIcon} from "@heroicons/react/outline";
  */
 export default function UserNotificationTable(props) {
   const { items, assignNotificationToUser } = props;
-	console.log(items);
+
   return (
     <div className="h-[330px] md:h-[420px] overflow-y-auto">
       <table className="w-full">

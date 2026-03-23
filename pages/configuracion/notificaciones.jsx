@@ -52,6 +52,22 @@ const NotificationsPage = (props) => {
         }
     };
 
+    const deleteNotification = async (item) => {
+        const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar la notificación "${item.nombre}"?`);
+        if (!confirmDelete) return;
+
+        try {
+            await service.deleteNotification(item.id);
+            const response = await service.getNotifications();
+            setNotifications(response);
+        } catch (error) {
+            sendNotification({
+                type: 'ERROR',
+                message: error.response?.data?.message || error.message
+            });
+        }
+    };
+
     useEffect(() => {
         (async () => {
             try {
@@ -93,6 +109,7 @@ const NotificationsPage = (props) => {
                         <NotificationTable
                             handleSelect={handleSelect}
                             handleShowModal={setShowModal}
+                            handleDelete={deleteNotification}
                         />
                     </Paginate>
                 </div>
