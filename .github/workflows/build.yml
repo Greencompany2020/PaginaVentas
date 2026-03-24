@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - 'Desarrollo_productivo'
+      - 'dependencies'
 # Para testing con Act
 #on:
 #  push:

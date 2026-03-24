@@ -1,0 +1,38 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    target-branch: dependencies
+    schedule:
+      interval: "weekly"
+
+  - package-ecosystem: "npm"
+    directory: "/"
+    target-branch: dependencies
+    schedule:
+      interval: "weekly"
+    labels:
+      - "npm"
+      - "dependencies"
+    ignore:
+      - dependency-name: "next"
+        update-types: [ "version-update:semver-major" ]
+      - dependency-name: "react"
+        update-types: [ "version-update:semver-major" ]
+      - dependency-name: "@reduxjs/toolkit"
+        update-types: [ "version-update:semver-major" ]
+      - dependency-name: "axios-auth-refresh"
+        update-types: [ "version-update:semver-major" ]
+      - dependency-name: "chart.js"
+        update-types: [ "version-update:semver-major" ]
+      - dependency-name: "chartjs-plugin-datalabels"
+        update-types: [ "version-update:semver-major" ]
+      - dependency-name: "date-fns"
+        update-types: [ "version-update:semver-major" ]
+      - dependency-name: "@heroicons/react"
+        update-types: [ "version-update:semver-major" ]
+    groups:
+      prod-dependencies:
+        dependency-type: "production"
+      dev-dependencies:
+        dependency-type: "development"

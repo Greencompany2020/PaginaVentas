@@ -1,0 +1,19 @@
+name: Automatic Rebase
+on:
+  push:
+    branches:
+      - Desarrollo_productivo
+jobs:
+  rebase:
+    name: Rebase `dependencies` with `Desarollo_productivo`
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          ref: dependencies
+      - run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git rebase origin/Desarrollo_productivo
+          git push origin dependencies --force-with-lease

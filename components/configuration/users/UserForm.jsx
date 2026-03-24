@@ -203,7 +203,7 @@ export default function UserForm({
 				</div>
 
         <fieldset className="mt-4">
-          <TextInput label='Teléfono' name='telefono' />
+          <TextInput label='Teléfono' name='telefono' placeholder='Ej. 526691123456' />
         </fieldset>
 
 				<fieldset className="mt-4">
