@@ -1,29 +1,29 @@
 import configuradorProvider from './providers/configuradorProvider'
 
 export default function configuratorService() {
-  /**
-   * @typedef {Object} User
-   * @property {number} Id
-   * @property {string} UserCode
-   * @property {string} Email
-   * @property {number} NoEmpleado
-   * @property {number} Level
-   * @property {number} Clase
-   * @property {string} Nombre
-   * @property {string} Apellidos
-   * @property {string} UserSAP
-   * @property {number} IdGrupo
-   * @property {string} NombreGrupo
-   * @property {string} Rol
-   * @property {number} idProyect
-   * @property {string | null} PasswordSAP
-   * @property {string | null} DefaultReposicion
-   */
+	/**
+	 * @typedef {Object} User
+	 * @property {number} Id
+	 * @property {string} UserCode
+	 * @property {string} Email
+	 * @property {number} NoEmpleado
+	 * @property {number} Level
+	 * @property {number} Clase
+	 * @property {string} Nombre
+	 * @property {string} Apellidos
+	 * @property {string} UserSAP
+	 * @property {number} IdGrupo
+	 * @property {string} NombreGrupo
+	 * @property {string} Rol
+	 * @property {number} idProyect
+	 * @property {string | null} PasswordSAP
+	 * @property {string | null} DefaultReposicion
+	 */
 
-  /**
-   * Obtiene los usuarios registrados
-   * @returns {Promise<Array<User>>}
-   */
+	/**
+	 * Obtiene los usuarios registrados
+	 * @returns {Promise<Array<User>>}
+	 */
 
 	const getUsers = async () => {
 		try {
@@ -34,18 +34,18 @@ export default function configuratorService() {
 		}
 	}
 
-  /**
-   * @typedef {Object} UserGroup
-   * @property {number} Id
-   * @property {string} Nombre
-   * @property {number} IdProyecto
-   * @property {string} NombreProyecto
-   */
+	/**
+	 * @typedef {Object} UserGroup
+	 * @property {number} Id
+	 * @property {string} Nombre
+	 * @property {number} IdProyecto
+	 * @property {string} NombreProyecto
+	 */
 
-  /**
-   * Obtiene la lista de grupos de usuario
-   * @returns {Promise<Array<UserGroup>>}
-   */
+	/**
+	 * Obtiene la lista de grupos de usuario
+	 * @returns {Promise<Array<UserGroup>>}
+	 */
 	const getGroups = async () => {
 		try {
 			const { data } = await configuradorProvider.get('/grupos')
@@ -80,106 +80,131 @@ export default function configuratorService() {
 		}
 	}
 
-  /**
-   * @typedef {Object} CreateNotificationRequest
-   * @property {string} nombre
-   * @property {string} medio
-   * @property {number} activa
-   */
+	/**
+	 * @typedef {Object} CreateNotificationRequest
+	 * @property {string} nombre
+	 * @property {string} medio
+	 * @property {number} activa
+	 */
 
-  /**
-   * Crea una nueva notificación
-   * @param {CreateNotificationRequest} body
-   * @return {Promise<Notification>}
-   */
-  const createNotification = async (body) => {
-    try {
-      const { /** @type Notification */ data } = await configuradorProvider.post('/notificaciones', body)
-      return data
-    } catch (error) {
-      throw error
-    }
-  }
+	/**
+	 * Crea una nueva notificación
+	 * @param {CreateNotificationRequest} body
+	 * @return {Promise<Notification>}
+	 */
+	const createNotification = async (body) => {
+		try {
+			const { /** @type Notification */ data } = await configuradorProvider.post('/notificaciones', body)
+			return data
+		} catch (error) {
+			throw error
+		}
+	}
 
-  /**
-   * @typedef {Object} UpdateNotificationRequest
-   * @property {string} nombre
-   * @property {string} medio
-   * @property {number} activa
-   */
+	/**
+	 * @typedef {Object} UpdateNotificationRequest
+	 * @property {string} nombre
+	 * @property {string} medio
+	 * @property {number} activa
+	 */
 
-  /**
-   * Actualizar una notificación
-   * @param {number} id
-   * @param {UpdateNotificationRequest} values
-   * @return {Promise<Notification>}
-   */
-  const updateNotification = async (id, values) => {
-    try {
-      const { /** @type Notification */ data } = await configuradorProvider.put(`/notificaciones/${id}`, values)
-      return data
-    } catch (error) {
-      throw error
-    }
-  }
+	/**
+	 * Actualizar una notificación
+	 * @param {number} id
+	 * @param {UpdateNotificationRequest} values
+	 * @return {Promise<Notification>}
+	 */
+	const updateNotification = async (id, values) => {
+		try {
+			const { /** @type Notification */ data } = await configuradorProvider.put(`/notificaciones/${id}`, values)
+			return data
+		} catch (error) {
+			throw error
+		}
+	}
 
-  const deleteNotification = async (id) => {
-    try {
-      await configuradorProvider.delete(`/notificaciones/${id}`)
-    } catch (error) {
-      throw error
-    }
-  }
+	const deleteNotification = async (id) => {
+		try {
+			await configuradorProvider.delete(`/notificaciones/${id}`)
+		} catch (error) {
+			throw error
+		}
+	}
 
-  /**
-   * @typedef {Object} Notification
-   * @property {number} id
-   * @property {string} nomber
-   * @property {string} medio
-   * @property {number} activa
-   */
+	/**
+	 * @typedef {Object} Notification
+	 * @property {number} id
+	 * @property {string} nomber
+	 * @property {string} medio
+	 * @property {number} activa
+	 */
 
-  /**
-   * Obtiene las notificaciones
-   * @return {Promise<Array<Notification>>}
-   */
-  const getNotifications = async () => {
-    try {
-      const { /** @type Array<Notification> */ data } = await configuradorProvider.get('/notificaciones')
-      return data
-    } catch (error) {
-      throw error
-    }
-  }
+	/**
+	 * Obtiene las notificaciones
+	 * @return {Promise<Array<Notification>>}
+	 */
+	const getNotifications = async () => {
+		try {
+			const { /** @type Array<Notification> */ data } = await configuradorProvider.get('/notificaciones')
+			return data
+		} catch (error) {
+			throw error
+		}
+	}
 
-  /**
-   * @typedef {Object} AssignNotificationRequest
-   * @property {number} userId
-   * @property {number} notificacionId
-   * @property {number} activo
-   */
+	/**
+	 * @typedef {Object} AssignNotificationRequest
+	 * @property {number} userId
+	 * @property {number} notificacionId
+	 * @property {number} activo
+	 */
 
-  /**
-   * @typedef {Object} NotificationUser
-   * @property {number} id
-   * @property {number} userId
-   * @property {number} notificacionId
-   * @property {boolean} activo
-   */
+	/**
+	 * @typedef {Object} NotificationUser
+	 * @property {number} id
+	 * @property {number} userId
+	 * @property {number} notificacionId
+	 * @property {boolean} activo
+	 */
 
-  /**
-   * Asigna/actualiza la notificación
-   * @param {AssignNotificationRequest} body
-   * @return {Promise<NotificationUser>}
-   */
-  const assignNotification = async (body) => {
-    try {
-      const { /** @type NotificationUser */ data } = await configuradorProvider.post('/notificaciones/usuario', body)
-      return data
-    } catch (error) {
-      throw error
-    }
-  }
+	/**
+	 * Asigna/actualiza la notificación
+	 * @param {AssignNotificationRequest} body
+	 * @return {Promise<NotificationUser>}
+	 */
+	const assignNotification = async (body) => {
+		try {
+			const { /** @type NotificationUser */ data } = await configuradorProvider.post('/notificaciones/usuario', body)
+			return data
+		} catch (error) {
+			throw error
+		}
+	}
+
+	/**
+	 * @typedef {Object} UserNotificationAssignment
+	 * @property {number} id - User ID
+	 * @property {string} nombre - User's first name
+	 * @property {string} apellidos - User's last name
+	 * @property {string} userCode - User's code / username
+	 * @property {number} noEmpleado - Employee number
+	 * @property {boolean} activo - Whether the user has the current notification assigned
+	 */
+
+	/**
+	 * Obtiene la lista de usuarios y su estado de asignación para una notificación
+	 * (Requiere endpoint en el backend: GET /notificaciones/:id/usuarios)
+	 * @param {number} notificationId
+	 * @returns {Promise<Array<UserNotificationAssignment>>} // Retorna la lista de usuarios con su propiedad 'activo'
+	 */
+	const getNotificationUsers = async (notificationId) => {
+		try {
+			const { data } = await configuradorProvider.get(`/notificaciones/${notificationId}/usuarios`)
+			return data
+		} catch (error) {
+			throw error
+		}
+	}
 
 	/**
 	 * @typedef {Object} UserLocations
@@ -227,7 +252,7 @@ export default function configuratorService() {
 	 * @property {number} DefaultReposicion
 	 * @property {string} Email
 	 * @property {number} IdGrupo
-   * @property {string} Telefono
+	 * @property {string} Telefono
 	 * @property {number} IdGrupoDigitalizacion
 	 * @property {Array<UserLocations>} Localidades
 	 * @property {Array<UserAccess>} Accesos
@@ -235,9 +260,9 @@ export default function configuratorService() {
 	 * @property {Array<Notification>} Notificaciones
 	 */
 
-  /**
-   * @typedef {Omit<UserProfileWithAccess, "Accesos">} UserDetailWithoutAccessList
-   */
+	/**
+	 * @typedef {Omit<UserProfileWithAccess, "Accesos">} UserDetailWithoutAccessList
+	 */
 
 	/**
 	 * @typedef {Object} UserDetail
@@ -259,7 +284,7 @@ export default function configuratorService() {
 			const formatedData = replaceAccess(response, Accesos || [])
 			const formatedNotif = replaceNotification(notifResponse, Notificaciones || notificaciones || [])
 
-      /** @type {UserDetail} */
+			/** @type {UserDetail} */
 			const newData = {
 				usuario,
 				accesos: formatedData,
@@ -466,17 +491,17 @@ export default function configuratorService() {
 		}
 	}
 
-  /**
-   * @typedef {Object} Location
-   * @property {number} Codigo
-   * @property {string} Localidad
-   * @property {string} Inactiva
-   */
+	/**
+	 * @typedef {Object} Location
+	 * @property {number} Codigo
+	 * @property {string} Localidad
+	 * @property {string} Inactiva
+	 */
 
-  /**
-   * Obtiene las tiendas y localidades existentes
-   * @returns {Promise<{Localidades: Array<Location>, Tiendas: Array<Store>}>}
-   */
+	/**
+	 * Obtiene las tiendas y localidades existentes
+	 * @returns {Promise<{Localidades: Array<Location>, Tiendas: Array<Store>}>}
+	 */
 	const getLocalities = async () => {
 		try {
 			const { data } = await configuradorProvider.get('/localidades')
@@ -486,21 +511,21 @@ export default function configuratorService() {
 		}
 	}
 
-  /**
-   * @typedef {Object} SetUserShopBody
-   * @property {Array<string>} tiendas Lista de nombre de tiendas a asignar
-   * @example
-   * {
-   *   tiendas: ["TA-M01", "TA-M02"]
-   * }
-   */
+	/**
+	 * @typedef {Object} SetUserShopBody
+	 * @property {Array<string>} tiendas Lista de nombre de tiendas a asignar
+	 * @example
+	 * {
+	 *   tiendas: ["TA-M01", "TA-M02"]
+	 * }
+	 */
 
-  /**
-   * Asigna una lista de tiendas al usuario
-   * @param {number} id
-   * @param {SetUserShopBody} body
-   * @returns {Promise<void>}
-   */
+	/**
+	 * Asigna una lista de tiendas al usuario
+	 * @param {number} id
+	 * @param {SetUserShopBody} body
+	 * @returns {Promise<void>}
+	 */
 	const setUserLocalityShop = async (id, body) => {
 		try {
 			await configuradorProvider.put(`/user/tiendas/${id}`, { tiendas: body })
@@ -523,9 +548,9 @@ export default function configuratorService() {
 		}
 	}
 
-  /**
-   * @returns {Promise<Array<SAPUser>>}
-   */
+	/**
+	 * @returns {Promise<Array<SAPUser>>}
+	 */
 	const getSAPUsers = async () => {
 		try {
 			const { data } = await configuradorProvider.get('/usuarios/sap')
@@ -576,6 +601,7 @@ export default function configuratorService() {
 		createNotification,
 		getNotifications,
 		assignNotification,
+		getNotificationUsers,
 		createUser,
 		updateUser,
 		deleteUser,
@@ -603,7 +629,7 @@ export default function configuratorService() {
 		deleteProyect,
 		setUserLocalityShop,
 		getUserShops,
-    updateNotification,
-    deleteNotification
+		updateNotification,
+		deleteNotification
 	}
 }
