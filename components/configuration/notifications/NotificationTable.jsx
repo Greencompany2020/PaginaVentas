@@ -1,4 +1,4 @@
-import { PencilAltIcon, TrashIcon } from "@heroicons/react/outline";
+import { PencilAltIcon, TrashIcon, UsersIcon } from "@heroicons/react/outline";
 import { v4 } from "uuid";
 
 /**
@@ -14,10 +14,11 @@ import { v4 } from "uuid";
  * @property {(item: NotificationItem) => void} handleSelect
  * @property {() => void} handleShowModal
  * @property {(item: NotificationItem) => void} handleDelete
+ * @property {(item: NotificationItem) => void} handleUsersModal
  */
 
 export default function NotificationTable(props) {
-  const { items, handleSelect, handleShowModal, handleDelete } = props;
+  const { items, handleSelect, handleShowModal, handleDelete, handleUsersModal } = props;
   return (
     <div className="h-[500px] w-full overflow-auto">
       <table className="w-full overflow-auto">
@@ -36,10 +37,24 @@ export default function NotificationTable(props) {
               <td className="p-2">{item.nombre}</td>
               <td className="p-2">{item.medio}</td>
               <td className="flex justify-center space-x-1 p-2">
+                <UsersIcon
+                  width={26}
+                  className="cursor-pointer hover:text-green-500"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSelect(item);
+                    if (handleUsersModal) handleUsersModal(item);
+                  }}
+                  title="Asignar a usuarios"
+                />
                 <PencilAltIcon
                   width={26}
                   className="cursor-pointer hover:text-blue-500"
-                  onClick={handleShowModal}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSelect(item);
+                    handleShowModal();
+                  }}
                 />
                 <TrashIcon
                   width={26}
