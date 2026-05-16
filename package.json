@@ -14,7 +14,7 @@
   "dependencies": {
     "@heroicons/react": "^1.0.5",
     "@reduxjs/toolkit": "^1.8.4",
-    "axios": "^0.28.0",
+    "axios": "^1.16.1",
     "axios-auth-refresh": "^3.3.3",
     "chart.js": "^3.7.0",
     "chartjs-plugin-datalabels": "^2.0.0",
