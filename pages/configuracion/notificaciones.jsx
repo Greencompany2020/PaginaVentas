@@ -14,6 +14,7 @@ import TabButton from '../../components/configuration/TabButton'
 const NotificationsPage = (props) => {
 	const [notifications, setNotifications] = useState([])
 	const [selectedNotification, setSelectedNotification] = useState(null)
+	const [locations, setLocations] = useState([])
 	const service = configuratorService()
 	const sendNotification = useNotification()
 	const [showModal, setShowModal] = useToggle()
@@ -130,8 +131,12 @@ const NotificationsPage = (props) => {
 	useEffect(() => {
 		;(async () => {
 			try {
-				const response = await service.getNotifications()
+				const [response, localitiesResponse] = await Promise.all([
+					service.getNotifications(),
+					service.getLocalities()
+				])
 				setNotifications(response)
+				setLocations(localitiesResponse?.Localidades || [])
 			} catch (error) {
 				sendNotification({
 					type: 'ERROR',
@@ -188,6 +193,7 @@ const NotificationsPage = (props) => {
 					addNewNotification={addNewNotification}
 					updateNotification={updateNotification}
 					handleModal={setShowModal}
+					locations={locations}
 				/>
 			</FormModal>
 
