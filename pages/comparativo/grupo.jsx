@@ -60,6 +60,16 @@ const isWebKey = (k) => {
 	return x.includes('TIENDAENLINEA') || x.includes('WEB')
 }
 
+const isAeroKey = (k) => {
+	const x = String(k || '')
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.toUpperCase()
+		.replace(/\s+/g, '')
+
+	return x.includes('AEROPUERTO')
+}
+
 const isBoolean = (data) => {
 	if (data === 'N') {
 		return false
@@ -125,12 +135,13 @@ function Grupo(props) {
 
 	//Estado del reporte por secciones;
 	const [dataReportSeccions, setDataReportSeccions] = useState(null)
-	const [seccions, setSeccions] = useState(['REGION I', 'REGION II', 'REGION III', 'WEB', 'TOTAL'])
+	const [seccions, setSeccions] = useState(['REGION I', 'REGION II', 'REGION III', 'WEB', 'AEROPUERTO', 'TOTAL'])
 	const [currentRegion, setCurrentRegion] = useState(seccions[0])
 	const [displayMode, setDisplayMode] = useState(isMobile ? config?.mobileReportView : config?.desktopReportView)
 	const [incremento, setIncremento] = useState('compromiso')
 	const [showWeb, setShowWeb] = useState(true)
 	const [fusionOn, setFusionOn] = useState(isBoolean(config?.usarFusion || 'N'))
+	const [showAeropuerto, setShowAeropuerto] = useState(isBoolean(config?.incluirAeropuerto || 'N'))
 
 	const parameters = {
 		fecha: dateHelper.getYesterdayDate(),
@@ -144,7 +155,8 @@ function Grupo(props) {
 		resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
 		mostrarTiendas: 'activas',
 		incluirWeb: isBoolean(config?.incluirWeb || 'N'),
-		usarFusion: isBoolean(config?.usarFusion || 'N')
+		usarFusion: isBoolean(config?.usarFusion || 'N'),
+		incluirAeropuerto: isBoolean(config?.incluirAeropuerto || 'N')
 	}
 	Object.seal(parameters)
 
@@ -167,6 +179,14 @@ function Grupo(props) {
 		useEffect(() => {
 			setFusionOn(!!values.usarFusion)
 		}, [values.usarFusion])
+		return null
+	}
+
+	const WatchIncluirAeropuerto = () => {
+		const { values } = useFormikContext()
+		useEffect(() => {
+			setShowAeropuerto(!!values.incluirAeropuerto)
+		}, [values.incluirAeropuerto])
 		return null
 	}
 
@@ -228,7 +248,7 @@ function Grupo(props) {
 		const cb = Number(params.cbAgnosComparar || 1)
 		const agnosRecortados = agnos.slice(0, cb) // <- clave: elimina el 2º año cuando cb=1
 
-		const { cbAgnosComparar, incluirWeb, acumuladoSemanal, ...rest } = params
+		const { cbAgnosComparar, incluirWeb, acumuladoSemanal, incluirAeropuerto, ...rest } = params
 		setReportDate({ current: params.fecha, dateRange: agnosRecortados })
 		setIncludeSem(!!acumuladoSemanal)
 		setIsDisable(isSecondDateBlock(cb))
@@ -236,18 +256,34 @@ function Grupo(props) {
 		return {
 			...rest,
 			agnosComparar: agnosRecortados,
-			usarFusion: params.incluirWeb && params.usarFusion ? 'Y' : 'N'
+			usarFusion: params.incluirWeb && params.usarFusion ? 'Y' : 'N',
+			mostrarAeropuerto: incluirAeropuerto ? 'Y' : 'N'
 		}
 	}
 
 	const handleExport = (incremento) => {
+		const dataToExport = { ...dataReport }
+		const sheetNames = ['Tiendas frogs']
+		
+		if (!showWeb) {
+			delete dataToExport.tiendaWeb
+		} else {
+			sheetNames.push('Tienda en linea')
+		}
+		
+		if (!showAeropuerto) {
+			delete dataToExport.tiendasAeropuerto
+		} else {
+			sheetNames.push('Tiendas frogs aeropuerto')
+		}
+
 		const template = comGrupo(
 			[
 				`${dateHelper.getWeekDate(reportDate.current)}`,
 				`${dateHelper.getweekRange(reportDate.current)}`,
 				`Acumulado ${dateHelper.getMonthName(reportDate.current)}`
 			],
-			dataReport,
+			dataToExport,
 			[dateHelper.getCurrentYear(reportDate.current), reportDate.dateRange].flat(1),
 			incremento
 		)
@@ -259,8 +295,8 @@ function Grupo(props) {
 			template.getColumns(),
 			template.getRows(),
 			template.style,
-			['Tiendas frogs', 'Tienda en linea'],
-			{ includeWeb: !!showWeb },
+			sheetNames,
+			{ includeWeb: true }, // Forzamos a true porque filtramos la data nosotros
 			legend
 		)
 	}
@@ -284,6 +320,7 @@ function Grupo(props) {
 									<AutoSubmitToken />
 									<WatchIncluirWeb />
 									<WatchUsarFusion />
+									<WatchIncluirAeropuerto />
 									<fieldset className="space-y-2 mb-3">
 										<Input type={'date'} placeholder={reportDate.current} id="fecha" name="fecha" label="Fecha" />
 										<BeetWenYears
@@ -332,6 +369,7 @@ function Grupo(props) {
 											label={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
 										/>
 										<Checkbox id="incluirWeb" name="incluirWeb" label={checkboxLabels.INCLUIR_WEB} />
+										<Checkbox id="incluirAeropuerto" name="incluirAeropuerto" label={checkboxLabels.INCLUIR_AEROPUERTO} />
 										<UsarFusionCheckbox />
 										<Checkbox id="acumuladoSemanal" name="acumuladoSemanal" label={checkboxLabels.ACUMULADO_SEMANAL} />
 										<Checkbox id="resultadosPesos" name="resultadosPesos" label={checkboxLabels.RESULTADO_PESOS} />
@@ -372,6 +410,7 @@ function Grupo(props) {
 										incremento={incremento}
 										webShown={showWeb}
 										fusionOn={fusionOn}
+										aeropuertoShown={showAeropuerto}
 									/>
 								)
 							case 2:
@@ -383,6 +422,7 @@ function Grupo(props) {
 										incremento={incremento}
 										webShown={showWeb}
 										fusionOn={fusionOn}
+										aeropuertoShown={showAeropuerto}
 									/>
 								)
 							case 3:
@@ -395,6 +435,7 @@ function Grupo(props) {
 										incremento={incremento}
 										webShown={showWeb}
 										fusionOn={fusionOn}
+										aeropuertoShown={showAeropuerto}
 									/>
 								)
 							case 4:
@@ -406,6 +447,7 @@ function Grupo(props) {
 										incremento={incremento}
 										webShown={showWeb}
 										fusionOn={fusionOn}
+										aeropuertoShown={showAeropuerto}
 									/>
 								)
 							default:
@@ -417,6 +459,7 @@ function Grupo(props) {
 										incremento={incremento}
 										webShown={showWeb}
 										fusionOn={fusionOn}
+										aeropuertoShown={showAeropuerto}
 									/>
 								)
 						}
@@ -428,7 +471,7 @@ function Grupo(props) {
 }
 
 const Table = (props) => {
-	const { date, data, includeSem, incremento, webShown, fusionOn } = props
+	const { date, data, includeSem, incremento, webShown, fusionOn, aeropuertoShown } = props
 	const dateHelper = DateHelper()
 
 	return (
@@ -436,6 +479,7 @@ const Table = (props) => {
 			{data &&
 				Object.entries(data).map(([key, values]) => {
 					if (!webShown && isWebKey(key)) return null
+					if (!aeropuertoShown && isAeroKey(key)) return null
 					return (
 						<React.Fragment key={v4()}>
 							{getTableName(key)}
@@ -743,7 +787,7 @@ const Table = (props) => {
 }
 
 const TableMovil = (props) => {
-	const { date, data, includeSem, incremento, webShown, fusionOn } = props
+	const { date, data, includeSem, incremento, webShown, fusionOn, aeropuertoShown } = props
 	const dateHelper = DateHelper()
 
 	return (
@@ -751,6 +795,7 @@ const TableMovil = (props) => {
 			{data &&
 				Object.entries(data).map(([key, values]) => {
 					if (!webShown && isWebKey(key)) return null
+					if (!aeropuertoShown && isAeroKey(key)) return null
 					return (
 						<React.Fragment key={v4()}>
 							{getTableName(key)}
@@ -1078,7 +1123,7 @@ const TableMovil = (props) => {
 }
 
 const Stat = (props) => {
-	const { date, data, includeSem, incremento, webShown, fusionOn } = props
+	const { date, data, includeSem, incremento, webShown, fusionOn, aeropuertoShown } = props
 	const dateHelper = DateHelper()
 
 	return (
@@ -1086,6 +1131,7 @@ const Stat = (props) => {
 			{data &&
 				Object.entries(data).map(([key, values]) => {
 					if (!webShown && isWebKey(key)) return null
+					if (!aeropuertoShown && isAeroKey(key)) return null
 					const Items =
 						values &&
 						values.map((item) => {
@@ -1312,10 +1358,8 @@ const Stat = (props) => {
 }
 
 const StatGroup = (props) => {
-	const { date, data, includeSem, region, incremento, webShown, fusionOn } = props
+	const { date, data, includeSem, incremento, region, webShown, fusionOn, aeropuertoShown } = props
 	const dateHelper = DateHelper()
-
-	if (!webShown && isWebKey(region)) return <></>
 
 	if (data && data.hasOwnProperty(region)) {
 		let acumDia = []
