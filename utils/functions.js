@@ -217,6 +217,8 @@ export const getTableName = (name) => {
     return (<h2 className='text-center text-sm font-bold'>Tiendas Frogs - Proyectos</h2>);
   } else if (name?.toLowerCase().includes("skoro")) {
     return (<h2 className='text-center text-sm font-bold'>Tiendas Skoro</h2>);
+  } else if (name?.toLowerCase().includes("aeropuerto")) {
+    return (<h2 className='text-center text-sm font-bold'>Tiendas Frogs Aeropuerto</h2>);
   }
 }
 /**
@@ -423,6 +425,8 @@ export const getShopNameByRegion = region => {
       return "Tiendas frogs";
     case "WEB":
       return "Web";
+    case "AEROPUERTO":
+      return "Aeropuerto";
     default:
       return "Tiendas Frogs"
   }

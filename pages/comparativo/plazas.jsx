@@ -46,6 +46,15 @@ const isWebKey = (k) => {
 	return x.includes('TIENDAENLINEA') || x.includes('WEB')
 }
 
+const isAeropuertoKey = (k) => {
+	const x = String(k || '')
+		.normalize('NFD')
+		.replace(/[\u0300-\u036f]/g, '')
+		.toUpperCase()
+		.replace(/\s+/g, '')
+	return x.includes('AEROPUERTO')
+}
+
 const isBoolean = (data) => (data === 'N' ? false : true)
 
 const Plazas = (props) => {
@@ -67,6 +76,7 @@ const Plazas = (props) => {
 	const [currentRegion, setCurrentRegion] = useState(null)
 	const [displayMode, setDisplayMode] = useState(isMobile ? config?.mobileReportView : config?.desktopReportView)
 	const [showWeb, setShowWeb] = useState(true)
+	const [showAeropuerto, setShowAeropuerto] = useState(isBoolean(config?.incluirAeropuerto || 'N'))
 	const [fusionOn, setFusionOn] = useState(isBoolean(config?.usarFusion || 'N'))
 
 	const parameters = {
@@ -80,6 +90,7 @@ const Plazas = (props) => {
 		mostrarTiendas: config?.cbMostrarTiendas || 'activas',
 		incremento: config?.cbIncremento || 'compromiso',
 		incluirWeb: isBoolean(config?.incluirWeb || 'N'),
+		mostrarAeropuerto: isBoolean(config?.incluirAeropuerto || 'N'),
 		usarFusion: isBoolean(config?.usarFusion || 'N')
 	}
 
@@ -94,6 +105,14 @@ const Plazas = (props) => {
 			}
 		}, [values.incluirWeb, values.usarFusion, setFieldValue])
 
+		return null
+	}
+
+	const WatchIncluirAeropuerto = () => {
+		const { values } = useFormikContext()
+		useEffect(() => {
+			setShowAeropuerto(!!values.mostrarAeropuerto)
+		}, [values.mostrarAeropuerto])
 		return null
 	}
 
@@ -182,9 +201,24 @@ const Plazas = (props) => {
 	}
 
 	const handleExport = () => {
+		const dataToExport = { ...dataReport }
+		const sheetNames = ['Tiendas frogs']
+		
+		if (!showWeb) {
+			delete dataToExport.tiendasWeb
+		} else {
+			sheetNames.push('Tienda en linea')
+		}
+		
+		if (!showAeropuerto) {
+			delete dataToExport.tiendasAeropuerto
+		} else {
+			sheetNames.push('Tiendas frogs aeropuerto')
+		}
+
 		const template = comPlazas(
 			dateHelper.getMonthName(reportDate.current),
-			dataReport,
+			dataToExport,
 			[dateHelper.getCurrentYear(reportDate.current), reportDate.dateRange].flat(1)
 		)
 		const legend = fusionOn
@@ -195,8 +229,8 @@ const Plazas = (props) => {
 			template.getColumns(),
 			template.getRows(),
 			template.style,
-			['Tiendas frogs', 'Tienda en linea'],
-			{ includeWeb: !!showWeb },
+			sheetNames,
+			{ includeWeb: true },
 			legend
 		)
 	}
@@ -219,6 +253,7 @@ const Plazas = (props) => {
 								<Form>
 									<AutoSubmitToken />
 									<WatchIncluirWeb />
+									<WatchIncluirAeropuerto />
 									<WatchUsarFusion /> {/* <<< agregado */}
 									<fieldset className="space-y-2 mb-3">
 										<Input type={'date'} id="fecha" name="fecha" label="Fecha" placeholder={reportDate.current} />
@@ -263,6 +298,7 @@ const Plazas = (props) => {
 											label={checkboxLabels.INCLUIR_VENTAS_EVENTOS}
 										/>
 										<Checkbox id="incluirWeb" name="incluirWeb" label={checkboxLabels.INCLUIR_WEB} />{' '}
+										<Checkbox id="mostrarAeropuerto" name="mostrarAeropuerto" label={checkboxLabels.INCLUIR_AEROPUERTO} />
 										<UsarFusionCheckbox />
 										{/* <<< agregado */}
 										<Checkbox
@@ -295,9 +331,9 @@ const Plazas = (props) => {
 					{(() => {
 						switch (displayMode) {
 							case 1:
-								return <Table data={dataReport} date={reportDate} webShown={showWeb} fusionOn={fusionOn} />
+								return <Table data={dataReport} date={reportDate} webShown={showWeb} aeropuertoShown={showAeropuerto} fusionOn={fusionOn} />
 							case 2:
-								return <Stat data={dataReport} date={reportDate} webShown={showWeb} fusionOn={fusionOn} />
+								return <Stat data={dataReport} date={reportDate} webShown={showWeb} aeropuertoShown={showAeropuerto} fusionOn={fusionOn} />
 							case 3:
 								return (
 									<StatGroup
@@ -305,13 +341,14 @@ const Plazas = (props) => {
 										date={reportDate}
 										region={currentRegion}
 										webShown={showWeb}
+										aeropuertoShown={showAeropuerto}
 										fusionOn={fusionOn}
 									/>
 								)
 							case 4:
-								return <TableMobil data={dataReport} date={reportDate} webShown={showWeb} fusionOn={fusionOn} />
+								return <TableMobil data={dataReport} date={reportDate} webShown={showWeb} aeropuertoShown={showAeropuerto} fusionOn={fusionOn} />
 							default:
-								return <Table data={dataReport} date={reportDate} webShown={showWeb} fusionOn={fusionOn} />
+								return <Table data={dataReport} date={reportDate} webShown={showWeb} aeropuertoShown={showAeropuerto} fusionOn={fusionOn} />
 						}
 					})()}
 				</div>
@@ -321,7 +358,7 @@ const Plazas = (props) => {
 }
 
 const Table = (props) => {
-	const { data, date, webShown, fusionOn } = props
+	const { data, date, webShown, aeropuertoShown, fusionOn } = props
 	const dateHelper = DateHelper()
 	return (
 		<div className="space-y-8">
@@ -329,6 +366,7 @@ const Table = (props) => {
 				Object.keys(data).length > 0 &&
 				Object.entries(data).map(([key, values]) => {
 					if (!webShown && isWebKey(key)) return null
+					if (!aeropuertoShown && isAeropuertoKey(key)) return null
 					return (
 						<table className="table-report" key={v4()} onClick={selectRow}>
 							<caption>{getTableName(key)}</caption>
@@ -447,7 +485,7 @@ const Table = (props) => {
 }
 
 const TableMobil = (props) => {
-	const { data, date, webShown, fusionOn } = props
+	const { data, date, webShown, aeropuertoShown, fusionOn } = props
 	const dateHelper = DateHelper()
 	return (
 		<div className="space-y-8">
@@ -455,6 +493,7 @@ const TableMobil = (props) => {
 				Object.keys(data).length > 0 &&
 				Object.entries(data).map(([key, values]) => {
 					if (!webShown && isWebKey(key)) return null
+					if (!aeropuertoShown && isAeropuertoKey(key)) return null
 					return (
 						<React.Fragment key={v4()}>
 							{getTableName(key)}
@@ -630,7 +669,7 @@ const TableMobil = (props) => {
 }
 
 const Stat = (props) => {
-	const { data, date, webShown, fusionOn } = props
+	const { data, date, webShown, aeropuertoShown, fusionOn } = props
 	const dateHelper = DateHelper()
 	return (
 		<div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -638,6 +677,7 @@ const Stat = (props) => {
 				Object.keys(data).length > 0 &&
 				Object.entries(data).map(([key, val]) => {
 					if (!webShown && isWebKey(key)) return null
+					if (!aeropuertoShown && isAeropuertoKey(key)) return null
 					if (val && val.length > 0) {
 						const Items = val.map((item) => {
 							const acumMes = {
@@ -768,10 +808,11 @@ const Stat = (props) => {
 }
 
 const StatGroup = (props) => {
-	const { data, date, region, webShown, fusionOn } = props
+	const { data, date, region, webShown, aeropuertoShown, fusionOn } = props
 	const dateHelper = DateHelper()
 
 	if (!webShown && isWebKey(region)) return <></>
+	if (!aeropuertoShown && isAeropuertoKey(region)) return <></>
 
 	return (
 		<>

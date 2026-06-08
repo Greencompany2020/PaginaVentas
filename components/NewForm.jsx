@@ -111,6 +111,7 @@ export default function NewForm({ submit, userParams, dashbordParams }) {
 		[inputNames.CON_VENTAS_EVENTOS]: isTrue(userParams?.[inputNames.CON_VENTAS_EVENTOS]),
 		[inputNames.INCLUIR_WEB]: isTrue(userParams?.[inputNames.INCLUIR_WEB]),
 		[inputNames.USAR_FUSION]: isTrue(userParams?.[inputNames.USAR_FUSION]),
+		[inputNames.INCLUIR_AEROPUERTO]: isTrue(userParams?.[inputNames.INCLUIR_AEROPUERTO]),
 		[inputNames.VISTA_DESKTOP]: userParams?.[inputNames.VISTA_DESKTOP] || 1,
 		[inputNames.VISTA_MOBILE]: userParams?.[inputNames.VISTA_MOBILE] || 1
 	}
@@ -310,6 +311,11 @@ export default function NewForm({ submit, userParams, dashbordParams }) {
 								id={inputNames.CON_VENTAS_EVENTOS}
 							/>
 							<CheckBoxInput label={label.INCLUIR_WEB} name={inputNames.INCLUIR_WEB} id={inputNames.INCLUIR_WEB} />
+							<CheckBoxInput
+								label={label.INCLUIR_AEROPUERTO}
+								name={inputNames.INCLUIR_AEROPUERTO}
+								id={inputNames.INCLUIR_AEROPUERTO}
+							/>
 							<UsarFusionCheckbox />
 							<CheckBoxInput
 								label={label.NO_HORAS_VENTAS_PARCIALES}

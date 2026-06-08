@@ -170,7 +170,7 @@ export const isRegionOrPlaza = (val) => {
 	const plazasSet = new Set(concentradoPlazas.map(norm))
 
 	// regiones y totales
-	if (regionesSet.has(x) || /^REGION\s+[IVX]+$/.test(x) || x === 'TOTAL') return 'region'
+	if (regionesSet.has(x) || /^REGION\s+[IVX]+$/.test(x) || x === 'TOTAL' || x === 'AEROPUERTO') return 'region'
 
 	// plazas (incluye COZUMEL por si no estuviera en data)
 	if (plazasSet.has(x) || x === 'COZUMEL') return 'plaza'

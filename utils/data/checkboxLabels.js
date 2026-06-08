@@ -41,6 +41,7 @@ export const checkboxLabels = {
 	INCLUIR_WEB: 'Incluir venta en línea',
 	MOSTRAR_DETALLES: 'Ver detalle por segmento',
 	INCLUIR_VENTA_EN_LINEA: 'Incluir venta en línea',
+	INCLUIR_AEROPUERTO: 'Incluir tiendas aeropuerto',
 	USAR_FUSION: 'Reportar venta en línea con fecha de entrega'
 }
 
@@ -71,7 +72,8 @@ export const inputNames = {
 	PRESUPUESTO_EXTRAORDINARIO: 'presupuestoExtraordinario',
 	INCLUIR_WEB: 'incluirWeb',
 	USAR_FUSION: 'usarFusion',
-	TIPO_VALORES: 'tipoValores'
+	TIPO_VALORES: 'tipoValores',
+	INCLUIR_AEROPUERTO: 'incluirAeropuerto'
 }
 
 export const comboNames = {
