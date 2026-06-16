@@ -80,7 +80,7 @@ const Plazas = (props) => {
 	const [fusionOn, setFusionOn] = useState(isBoolean(config?.usarFusion || 'N'))
 
 	const parameters = {
-		fecha: dateHelper.getYesterdayDate(),
+		fecha: dateHelper.getToday(),
 		conIva: parseNumberToBoolean(config?.conIva || 0),
 		conVentasEventos: parseNumberToBoolean(config?.conVentasEventos || 0),
 		resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
