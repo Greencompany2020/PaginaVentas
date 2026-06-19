@@ -144,7 +144,7 @@ function Grupo(props) {
 	const [showAeropuerto, setShowAeropuerto] = useState(isBoolean(config?.incluirAeropuerto || 'N'))
 
 	const parameters = {
-		fecha: dateHelper.getToday(),
+		fecha: dateHelper.getYesterdayDate(),
 		conIva: parseNumberToBoolean(config?.conIva || 0),
 		incremento: 'compromiso',
 		noHorasVentasParciales: parseNumberToBoolean(config?.noHorasVentasParciales || 0),
