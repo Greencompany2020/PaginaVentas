@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ParametersContainer, Parameters, } from "../../components/containers";
 import { getVentasLayout } from "../../components/layout/VentasLayout";
-import {getCurrentWeekDateRange, getYearFromDate} from "../../utils/dateFunctions";
+import { getCurrentWeekDateRange, getYearFromDate } from "../../utils/dateFunctions";
 import {
   dateRangeTitle,
   spliceData,
@@ -16,39 +16,39 @@ import withAuth from "../../components/withAuth";
 import TitleReport from "../../components/TitleReport";
 import { useNotification } from "../../components/notifications/NotificationsProvider";
 import Stats from "../../components/Stats";
-import { numberWithCommas, numberAbs, isNegative, isRegionOrPlaza, stringFormatNumber, selectRow} from "../../utils/resultsFormated";
+import { numberWithCommas, numberAbs, isNegative, isRegionOrPlaza, stringFormatNumber, selectRow } from "../../utils/resultsFormated";
 import { isMobile } from "react-device-detect";
 import ViewFilter from "../../components/ViewFilter";
 import { v4 } from "uuid";
-import { Formik,Form } from "formik";
-import {Select, DateRange, Checkbox, BeetWenYears} from '../../components/reportInputs';
+import { Formik, Form } from "formik";
+import { Select, DateRange, Checkbox, BeetWenYears } from '../../components/reportInputs';
 import AutoSubmitToken from "../../hooks/useAutoSubmitToken";
 import ExcelButton from "../../components/buttons/ExcelButton";
 import exportExcel from "../../utils/excel/exportExcel";
 import semTiendas from "../../utils/excel/templates/semTiendas";
 
 const getPercentageYear = (currentYear, comparisonYear, dateRange, incremento) => {
-	// En el caso de que se estén comparando 2 años, si el año de comparación
-	// es el último elemento del array, usamos el propio año para acceder al porcentaje.
-	const yearIndex = dateRange.indexOf(comparisonYear);
-	if (dateRange.length === 2 && yearIndex === 1) return comparisonYear
-	// En cambio, si el año a comparar es el único elemento del array,
-	// checamos el tipo de incremento para acceder al porcentaje correspondiente.
-	return incremento === 'compromiso' ? currentYear : comparisonYear
+  // En el caso de que se estén comparando 2 años, si el año de comparación
+  // es el último elemento del array, usamos el propio año para acceder al porcentaje.
+  const yearIndex = dateRange.indexOf(comparisonYear);
+  if (dateRange.length === 2 && yearIndex === 1) return comparisonYear
+  // En cambio, si el año a comparar es el único elemento del array,
+  // checamos el tipo de incremento para acceder al porcentaje correspondiente.
+  return incremento === 'compromiso' ? currentYear : comparisonYear
 }
 
 
 const Tiendas = (props) => {
-  const {config} = props;
+  const { config } = props;
   const sendNotification = useNotification();
 
 
   //Estados de los reportes
   const [beginDate, endDate] = getCurrentWeekDateRange();
-  const [reportDate, setReportDate] = useState({ beginDate, endDate, dateRange: spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)});
+  const [reportDate, setReportDate] = useState({ beginDate, endDate, dateRange: spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1) });
   const [dataReport, setDataReport] = useState(null);
   const [isDisable, setIsDisable] = useState(isSecondDateBlock(config?.cbAgnosComparar || 1));
-	const [incremento, setIncremento] = useState('compromiso')
+  const [incremento, setIncremento] = useState('compromiso')
 
   //Estado del reporte por secciones;
   const [dataReportSeccions, setDataReportSeccions] = useState(null);
@@ -62,7 +62,7 @@ const Tiendas = (props) => {
     fechaFin: endDate,
     tiendas: 0,
     conIva: parseNumberToBoolean(config?.conIva || 0),
-    conVentasEventos:parseNumberToBoolean(config?.conVentasEventos || 0),
+    conVentasEventos: parseNumberToBoolean(config?.conVentasEventos || 0),
     resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
     incremento: config?.cbIncremento || 'compromiso',
     mostrarTiendas: config?.cbMostrarTiendas || 'activas',
@@ -72,9 +72,9 @@ const Tiendas = (props) => {
   }
   Object.seal(parameters);
 
-  const handleSubmit = async values =>{
+  const handleSubmit = async values => {
     try {
-			setIncremento(values.incremento);
+      setIncremento(values.incremento);
       const params = removeParams(values);
       const response = await getSemanalesTiendas(parseParams(params));
       sliceForRegion(response, params.tiendas);
@@ -82,45 +82,51 @@ const Tiendas = (props) => {
 
     } catch (error) {
       sendNotification({
-        type:'ERROR',
-        message: error.response.data.message || error.message
+        type: 'ERROR',
+        message: error.response?.data?.message || error.message
       });
     }
   }
 
   const removeParams = params => {
-    if(params.cbAgnosComparar === 1){
-      const { cbAgnosComparar, agnosComparar: [a], fechaInicio, fechaFin, ...rest} = params;
+    if (Number(params.cbAgnosComparar) === 1) {
+      const { cbAgnosComparar, agnosComparar: [a], fechaInicio, fechaFin, ...rest } = params;
       setReportDate(prev => ({ ...prev, dateRange: [a], beginDate: fechaInicio, endDate: fechaFin }));
       setIsDisable(isSecondDateBlock(cbAgnosComparar));
-      return {...rest, agnosComparar:[a], fechaFin, fechaInicio }
-    }else{
-      const { cbAgnosComparar, fechaInicio, fechaFin, ...rest} = params;
+      return { ...rest, agnosComparar: [a], fechaFin, fechaInicio }
+    } else {
+      const { cbAgnosComparar, fechaInicio, fechaFin, ...rest } = params;
       setReportDate((prev) => ({ ...prev, dateRange: params.agnosComparar, beginDate: fechaInicio, endDate: fechaFin }))
       setIsDisable(isSecondDateBlock(cbAgnosComparar));
       return {
-				...rest,
-				agnosComparar: params.agnosComparar,
-				fechaFin,
-				fechaInicio,
-			};
+        ...rest,
+        agnosComparar: params.agnosComparar,
+        fechaFin,
+        fechaInicio,
+      };
     }
   }
 
-  const sliceForRegion = (data,tiendas) =>{
-
+  const sliceForRegion = (data, tiendas) => {
+    const tiendaId = Number(tiendas);
     let dataSeccions;
-    if(tiendas === 0){
+    if (tiendaId === 0) {
       setCurrentShop('Frogs');
       dataSeccions = ['REGION I', 'REGION II', 'REGION III', 'GRUPO'];
     }
-    else if(tiendas === 2){
-      setCurrentShop('Skoro');
-      dataSeccions = ['SK MAZATLAN', 'SK CULIACAN', 'SK MEXICALI', 'SK CHIHUAHUA', 'SK TIJUANA', 'SIN REGION', 'GRUPO', ];
+    else if (tiendaId === 4) {
+      setCurrentShop('Aero');
+      dataSeccions = ['AERO', 'SIN REGION', 'GRUPO',]; // revisar bien esto
     }
-    else if(tiendas === 3){
+    else if (tiendaId === 2) {
+      setCurrentShop('Skoro');
+      dataSeccions = ['SK MAZATLAN', 'SK CULIACAN', 'SK MEXICALI', 'SK CHIHUAHUA', 'SK TIJUANA', 'SIN REGION', 'GRUPO',];
+    }
+    else if (tiendaId === 3) {
       setCurrentShop('Web');
-      dataSeccions = ['WEB', 'SIN REGION' ,'GRUPO'];
+      dataSeccions = ['WEB', 'SIN REGION', 'GRUPO'];
+    } else {
+      dataSeccions = ['GRUPO'];
     }
 
     setSeccions(dataSeccions);
@@ -133,11 +139,10 @@ const Tiendas = (props) => {
       dateRangeTitle(reportDate.beginDate, reportDate.endDate),
       dataReport,
       [getYearFromDate(reportDate.endDate), reportDate.dateRange].flat(1),
-			incremento
+      incremento
     );
     exportExcel('Semanales Tienda', template.getColums(), template.getRows(), template.style);
   }
-
 
   return (
     <div className=" flex flex-col h-full">
@@ -148,42 +153,43 @@ const Tiendas = (props) => {
             <Parameters>
               <Formik initialValues={parameters} onSubmit={handleSubmit} enableReinitialize>
                 <Form>
-                  <AutoSubmitToken/>
+                  <AutoSubmitToken />
                   <fieldset className="space-y-2 mb-3">
                     <Select id='tiendas' name='tiendas' label='Tiendas'>
                       <option value={0}>Frogs</option>
+                      <option value={4}>Aero</option>
                       <option value={2}>Skoro</option>
                       <option value={3}>Web</option>
                     </Select>
                     <DateRange
                       begindDate={{
-                        id:'fechaInicio',
-                        name:'fechaInicio',
-                        label:'Fecha inicial',
+                        id: 'fechaInicio',
+                        name: 'fechaInicio',
+                        label: 'Fecha inicial',
                         placeholder: reportDate.beginDate
                       }}
                       endDate={{
-                        id:'fechaFin',
-                        name:'fechaFin',
-                        label:'Fecha final',
+                        id: 'fechaFin',
+                        name: 'fechaFin',
+                        label: 'Fecha final',
                         placeholder: reportDate.endDate
                       }}
                     />
                     <BeetWenYears
                       enabledDates={{
-                        id:'cbAgnosComparar',
-                        name:'cbAgnosComparar',
+                        id: 'cbAgnosComparar',
+                        name: 'cbAgnosComparar',
                         label: 'Años a comparar'
                       }}
                       begindDate={{
-                        id:'agnosComparar[0]',
-                        name:'agnosComparar[0]',
-                        label:'Primer año'
+                        id: 'agnosComparar[0]',
+                        name: 'agnosComparar[0]',
+                        label: 'Primer año'
                       }}
                       endDate={{
-                        id:'agnosComparar[1]',
-                        name:'agnosComparar[1]',
-                        label:'Segundo año',
+                        id: 'agnosComparar[1]',
+                        name: 'agnosComparar[1]',
+                        label: 'Segundo año',
                         disabled: isDisable
                       }}
                     />
@@ -215,7 +221,7 @@ const Tiendas = (props) => {
             viewOption={displayMode}
             handleView={setDisplayMode}
             selectOption={currentRegion}
-            handleSelect = {setCurrentRegion}
+            handleSelect={setCurrentRegion}
             options={seccions}
           />
         </div>
@@ -227,25 +233,25 @@ const Tiendas = (props) => {
 
       <section className="p-4 overflow-auto">
         <div className=" overflow-y-auto">
-        {
-          (()=>{
-            switch (displayMode) {
-              case 1:
-                return <Table data={dataReport} date={reportDate} incremento={incremento}/>
+          {
+            (() => {
+              switch (displayMode) {
+                case 1:
+                  return <Table data={dataReport} date={reportDate} incremento={incremento} />
 
-              case 2:
-                return <Stat data={dataReport} date={reportDate} incremento={incremento} />
+                case 2:
+                  return <Stat data={dataReport} date={reportDate} incremento={incremento} />
 
-              case 3:
-                return <StatGroup data={dataReportSeccions} date={reportDate} region={currentRegion}/>
+                case 3:
+                  return <StatGroup data={dataReportSeccions} date={reportDate} region={currentRegion} />
 
-              case 4:
-                return <TableMobil data={dataReport} date={reportDate} incremento={incremento} />
-              default:
-                return <Table data={dataReport} date={reportDate} incremento={incremento} />
-            }
-          })()
-        }
+                case 4:
+                  return <TableMobil data={dataReport} date={reportDate} incremento={incremento} />
+                default:
+                  return <Table data={dataReport} date={reportDate} incremento={incremento} />
+              }
+            })()
+          }
         </div>
       </section>
     </div>
@@ -254,15 +260,15 @@ const Tiendas = (props) => {
 
 
 const Table = (props) => {
-  const {data, date, incremento } = props;
+  const { data, date, incremento } = props;
 
 
-  return(
+  return (
     <table className="table-report" onClick={selectRow}>
       <thead>
         <tr>
           <th rowSpan={3} className='text-center'>Plaza</th>
-          <th colSpan={15 + (date.dateRange.length === 2 ? 8 : 0)} className='text-center'>{ dateRangeTitle(date.beginDate, date.endDate)}</th>
+          <th colSpan={15 + (date.dateRange.length === 2 ? 8 : 0)} className='text-center'>{dateRangeTitle(date.beginDate, date.endDate)}</th>
         </tr>
         <tr>
           <th rowSpan={2}>Comp</th>
@@ -313,50 +319,50 @@ const Table = (props) => {
       </thead>
       <tbody>
         {
-          data && data.map(item =>(
+          data && data.map(item => (
             <tr key={v4()} data-row-format={isRegionOrPlaza(item.plaza)}>
               <td data-type-format="text" className="priority-cell">{item.plaza}</td>
-              <td data-type-format="number">{ numberWithCommas(item['compromiso'+ getYearFromDate(date.endDate)])}</td>
-              <td data-type-format="number" className="priority-cell">{ numberWithCommas(item['ventasActuales'+ getYearFromDate(date.endDate)])}</td>
+              <td data-type-format="number">{numberWithCommas(item['compromiso' + getYearFromDate(date.endDate)])}</td>
+              <td data-type-format="number" className="priority-cell">{numberWithCommas(item['ventasActuales' + getYearFromDate(date.endDate)])}</td>
               {
                 date.dateRange.map(year => (
                   <React.Fragment key={v4()}>
                     <td data-porcent-format={
-											isNegative(item['porcentaje' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])
-										}>{ numberAbs(item['porcentaje' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])}</td>
-                    <td>{ numberWithCommas(item['ventasActuales' + year])}</td>
+                      isNegative(item['porcentaje' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])
+                    }>{numberAbs(item['porcentaje' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])}</td>
+                    <td>{numberWithCommas(item['ventasActuales' + year])}</td>
                   </React.Fragment>
                 ))
               }
-              <td className="priority-cell">{ numberWithCommas(item['operacionesComp'+ getYearFromDate(date.endDate)])}</td>
-              <td className="priority-cell">{ numberWithCommas(item['operacionesActual'+ getYearFromDate(date.endDate)])}</td>
+              <td className="priority-cell">{numberWithCommas(item['operacionesComp' + getYearFromDate(date.endDate)])}</td>
+              <td className="priority-cell">{numberWithCommas(item['operacionesActual' + getYearFromDate(date.endDate)])}</td>
               {
                 date.dateRange.map(year => (
                   <React.Fragment key={v4()}>
                     <td data-porcent-format={
-											isNegative(item['porcentajeOperaciones' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])
-										}>{numberAbs(item['porcentajeOperaciones' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])}</td>
-                    <td>{ numberWithCommas(item['operacionesActual' + year])}</td>
+                      isNegative(item['porcentajeOperaciones' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])
+                    }>{numberAbs(item['porcentajeOperaciones' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])}</td>
+                    <td>{numberWithCommas(item['operacionesActual' + year])}</td>
                   </React.Fragment>
                 ))
               }
-              <td className="priority-cell">{ numberWithCommas(item['promedioComp'+ getYearFromDate(date.endDate)])}</td>
-              <td className="priority-cell">{ numberWithCommas(item['promedioActual'+ getYearFromDate(date.endDate)])}</td>
+              <td className="priority-cell">{numberWithCommas(item['promedioComp' + getYearFromDate(date.endDate)])}</td>
+              <td className="priority-cell">{numberWithCommas(item['promedioActual' + getYearFromDate(date.endDate)])}</td>
               {
                 date.dateRange.map(year => (
                   <React.Fragment key={v4()}>
                     <td data-porcent-format={
-											isNegative(item['porcentajePromedios' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])
-										}>{ numberAbs(item['porcentajePromedios' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])}</td>
-                    <td>{ numberWithCommas(item['promedioActual' + year])}</td>
+                      isNegative(item['porcentajePromedios' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])
+                    }>{numberAbs(item['porcentajePromedios' + getPercentageYear(getYearFromDate(date.beginDate), year, date.dateRange, incremento)])}</td>
+                    <td>{numberWithCommas(item['promedioActual' + year])}</td>
                   </React.Fragment>
                 ))
               }
-              <td className="priority-cell">{ numberWithCommas(item['articulosActual'+ getYearFromDate(date.endDate)])}</td>
+              <td className="priority-cell">{numberWithCommas(item['articulosActual' + getYearFromDate(date.endDate)])}</td>
               {
                 date.dateRange.map(year => (
                   <React.Fragment key={v4()}>
-                    <td data-porcent-format={isNegative(item['articulosPorcentaje' + year])}>{ numberAbs(item['articulosPorcentaje' + year])}</td>
+                    <td data-porcent-format={isNegative(item['articulosPorcentaje' + year])}>{numberAbs(item['articulosPorcentaje' + year])}</td>
                     <td>{numberWithCommas(item['articulosActual' + year])}</td>
                   </React.Fragment>
                 ))
@@ -369,10 +375,10 @@ const Table = (props) => {
   )
 }
 
-const TableMobil = props =>{
-  const {data, date, incremento } = props;
+const TableMobil = props => {
+  const { data, date, incremento } = props;
 
-  return(
+  return (
     <>
       <div className="space-y-8">
         <table className="table-report-mobile" onClick={selectRow}>
@@ -654,9 +660,9 @@ const Stat = props => {
   )
 }
 
-const StatGroup = props =>{
+const StatGroup = props => {
   const { data, date, region, incremento } = props;
-  if(data &&  data.hasOwnProperty(region)){
+  if (data && data.hasOwnProperty(region)) {
     const comp = data[region].map(item => (
       {
         columnTitle: item.plaza,
