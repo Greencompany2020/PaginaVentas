@@ -23,7 +23,7 @@ import { Input, Checkbox } from '../../components/reportInputs'
 import ExcelButton from '../../components/buttons/ExcelButton'
 import { getVentaGlobalMarca } from '../../services/VentaGlobalService' // <-- NUEVO
 import { checkboxLabels } from '../../utils/data'
-import { spliteArrDate, parseNumberToBoolean } from '../../utils/functions'
+import { parseNumberToBoolean } from '../../utils/functions'
 import DateHelper from '../../utils/dateHelper'
 
 // === Plugin para etiquetas “listas” fuera del gráfico (evita solapes)
@@ -143,8 +143,7 @@ function Marca({ config }) {
 	const [loading, setLoading] = useState(false)
 	const [dataReport, setDataReport] = useState(null)
 	const [reportDate, setReportDate] = useState({
-		current: dateHelper.getYesterdayDate(),
-		dateRange: spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)
+		current: dateHelper.getYesterdayDate()
 	})
 
 	const initialParams = {
