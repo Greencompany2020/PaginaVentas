@@ -53,27 +53,6 @@ export default function NewForm({ submit, userParams, dashbordParams }) {
 	const toYesNo = (val) => (val == true ? 'Y' : 'N')
 
 	/**
-	 * Esta funcion se encarga de separar los años del comparativo,
-	 * revisa si el el valor en el array separado es un numero y lo convierte
-	 * de lo contrario retorna un falso
-	 * @param {*} val
-	 * @returns
-	 */
-	const separate = (val) => {
-		if (val && typeof val == 'string') {
-			const arrYears = val.split(',')
-			return {
-				val1: !isNaN(arrYears[0]) ? Number([arrYears[0]]) : false,
-				val2: !isNaN(arrYears[1]) ? Number([arrYears[1]]) : false
-			}
-		}
-		return null
-	}
-
-	//Obtiene el valor de los años comparativos del usuario, si no devuelve un objeto vacio
-	const agnos = separate(userParams?.[comboNames.AGNOSCOMPARATIVOS])
-
-	/**
 	 * Evalua si la propiedad esta habilidata para  el acceso,
 	 * evalua los diferentes tipos de datos para retornar verdadero o falso
 	 * @param {*} param
@@ -106,8 +85,6 @@ export default function NewForm({ submit, userParams, dashbordParams }) {
 		[inputNames.CON_IVA]: isTrue(userParams?.[inputNames.CON_IVA]),
 		[inputNames.ACUMULADO_SEMANAL]: isTrue(userParams?.[inputNames.ACUMULADO_SEMANAL]),
 		[inputNames.RESULTADOS_PESOS]: isTrue(userParams?.[inputNames.RESULTADOS_PESOS]),
-		[comboNames.CBAGNOSCOMPARAR_AGNOS.AGNO1]: agnos?.val1 || currentYear,
-		[comboNames.CBAGNOSCOMPARAR_AGNOS.AGNO2]: agnos?.val2 || currentYear,
 		[inputNames.CON_VENTAS_EVENTOS]: isTrue(userParams?.[inputNames.CON_VENTAS_EVENTOS]),
 		[inputNames.INCLUIR_WEB]: isTrue(userParams?.[inputNames.INCLUIR_WEB]),
 		[inputNames.USAR_FUSION]: isTrue(userParams?.[inputNames.USAR_FUSION]),
@@ -115,27 +92,6 @@ export default function NewForm({ submit, userParams, dashbordParams }) {
 		[inputNames.VISTA_DESKTOP]: userParams?.[inputNames.VISTA_DESKTOP] || 1,
 		[inputNames.VISTA_MOBILE]: userParams?.[inputNames.VISTA_MOBILE] || 1
 	}
-
-	//Este estado guarda que controles estan activos o inactivos
-	const [disables, setDisables] = useState({
-		[comboNames.CBAGNOSCOMPARAR_AGNOS.AGNO2]: userParams?.[comboNames.CBAGNOSCOMPARAR] !== 2
-	})
-
-	/**
-	 * Esquema de validacion de YUP, solo aplica para algunos valores
-	 */
-	const validationSchema = Yup.object().shape({
-		[comboNames.CBAGNOSCOMPARAR_AGNOS.AGNO1]: Yup.number()
-			.integer()
-			.typeError('El valor de año debe ser entero, los caracteres no son permitidos')
-			.min(2013, 'El año debe ser mayor o igual a 2013')
-			.max(currentYear, `El año debe ser menor o igual a ${currentYear}`),
-		[comboNames.CBAGNOSCOMPARAR_AGNOS.AGNO2]: Yup.number('El valor de año debe ser entero')
-			.integer('El valor de año debe ser entero')
-			.typeError('El valor de año debe ser entero, los caracteres no son permitidos')
-			.min(2013, 'El año debe ser mayor o igual a 2013')
-			.max(currentYear, `El año debe ser menor o igual a ${currentYear}`)
-	})
 
 	/**
 	 * Esta funcion remplaza los parametros del objeto segun el tipo de datos
@@ -173,71 +129,11 @@ export default function NewForm({ submit, userParams, dashbordParams }) {
 	}
 
 	/**
-	 * Esta funcion se encarga de aplicar reglas especiales a los valores
-	 * @param {} values
-	 */
-	const appliedRules = (values) => {
-		const valuesWithRules = {}
-
-		//Este for evalua los valores del objeto y aplica las reglas
-		for (const item in values) {
-			//Obtiene el valor del objeto
-			const value = values[item]
-
-			//Si el combo de 'Años a comparar' es dos suma concatena los valores de agno1 y agno2
-			if (item === comboNames.CBAGNOSCOMPARAR) {
-				const { agno1, agno2, ...rest } = values
-				if (value == 2) {
-					Object.assign(valuesWithRules, {
-						[comboNames.AGNOSCOMPARATIVOS]: `${String(agno1).trim()},${String(agno2).trim()}`
-					})
-				} else {
-					Object.assign(valuesWithRules, { [comboNames.AGNOSCOMPARATIVOS]: `${String(agno1).trim()}` })
-				}
-			}
-
-			//Retira campos no necesarios agno1 y agno2
-			else if (item !== comboNames.CBAGNOSCOMPARAR_AGNOS.AGNO1 || item !== comboNames.CBAGNOSCOMPARAR_AGNOS.AGNO2) {
-				const { agno1, agno2, ...rest } = values
-				Object.assign(valuesWithRules, { ...rest })
-			}
-
-			//Si el campo no cumple ninguna condicion lo pasa
-			else {
-				Object.assign(valuesWithRules, { [item]: value })
-			}
-		}
-
-		return valuesWithRules
-	}
-
-	/**
-	 * Esta funcion recoge los valores que se estan cambiando
-	 * funciona para evaluar algunos casos especiales, por ejemplo el año comparativo 2
-	 * @param {*} evt
-	 */
-	const handleOnchange = (evt) => {
-		const { name, value } = evt.target
-		//Evalua segun el nombre del control
-		switch (name) {
-			//Si combo 'Años a compara' es 1 esntonces inhabilita el año 2
-			case comboNames.CBAGNOSCOMPARAR:
-				if (value == 1) {
-					setDisables((prev) => ({ ...prev, [comboNames.CBAGNOSCOMPARAR_AGNOS.AGNO2]: true }))
-				} else {
-					setDisables((prev) => ({ ...prev, [comboNames.CBAGNOSCOMPARAR_AGNOS.AGNO2]: false }))
-				}
-				break
-		}
-	}
-
-	/**
 	 * Esta funcion se ejecuta cuando onSubmit es activado
 	 * @param {*} values
 	 */
 	const handleOnSubmit = async (values) => {
-		const temp = appliedRules(values)
-		const params = validateValuesTypes(temp)
+		const params = validateValuesTypes(values)
 		await submit(params)
 	}
 
@@ -245,10 +141,9 @@ export default function NewForm({ submit, userParams, dashbordParams }) {
 		<Formik
 			initialValues={initialValues}
 			onSubmit={handleOnSubmit}
-			validationSchema={validationSchema}
 			enableReinitialize
 		>
-			<Form className="space-y-4 flex flex-col p-4" onChange={handleOnchange}>
+			<Form className="space-y-4 flex flex-col p-4">
 				<WatchIncluirWeb />
 				<section>
 					<h4 className="font-bold mb-2">Parametros</h4>
@@ -265,25 +160,6 @@ export default function NewForm({ submit, userParams, dashbordParams }) {
 									</option>
 								))}
 							</SelectInput>
-							<div className="w-full flex items-center space-x-2">
-								<div className="flex-1">
-									<TextInput
-										type="number"
-										label={label.CBAGNOSCOMPARAR_AGNOS.AGNO1}
-										name={comboNames.CBAGNOSCOMPARAR_AGNOS.AGNO1}
-										id={comboNames.CBAGNOSCOMPARAR_AGNOS.AGNO1}
-									/>
-								</div>
-								<div className="flex-1">
-									<TextInput
-										type="number"
-										label={label.CBAGNOSCOMPARAR_AGNOS.AGNO2}
-										name={comboNames.CBAGNOSCOMPARAR_AGNOS.AGNO2}
-										id={comboNames.CBAGNOSCOMPARAR_AGNOS.AGNO2}
-										disabled={disables[comboNames.CBAGNOSCOMPARAR_AGNOS.AGNO2]}
-									/>
-								</div>
-							</div>
 							<SelectInput label={label.CBINCREMENTO} name={comboNames.CBINCREMENTO} id={comboNames.CBINCREMENTO}>
 								{comboValues.CBINCREMENTO.map((item, i) => (
 									<option key={v4()} value={item.value}>

@@ -33,10 +33,17 @@ const Acumulado = (props) => {
   const {config} = props;
   const sendNotification = useNotification();
 
+  const currentYear = new Date().getFullYear();
+  const defaultAgnosComparar = [currentYear - 1, currentYear - 2];
+  const defaultCb = Number(config?.cbAgnosComparar ?? 1);
+
   const [dataReport, setDataReport] = useState(null);
-  const [reportDate, setReportDate] = useState({current:getCurrentDate(true) , dateRange:spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)});
+  const [reportDate, setReportDate] = useState({
+    current: getCurrentDate(true),
+    dateRange: defaultCb === 2 ? defaultAgnosComparar : [defaultAgnosComparar[0]]
+  });
   const [endWeek, setEndWeek] = useState( parseNumberToBoolean(config?.incluirFinSemanaAnterior || 0));
-  const [isDisable, setIsDisable] = useState(isSecondDateBlock(config?.cbAgnosComparar || 1));
+  const [isDisable, setIsDisable] = useState(isSecondDateBlock(defaultCb));
 	const [incremento, setIncremento] = useState(config?.incremento || 'compromiso')
 
   const parameters = {
@@ -48,8 +55,8 @@ const Acumulado = (props) => {
     incremento: config?.incremento || 'compromiso',
     mostrarTiendas: config?.mostrarTiendas || 'activas',
     tipoCambioTiendas: parseNumberToBoolean(config?.tipoCambioTiendas || 0),
-    agnosComparar: spliteArrDate(config?.agnosComparativos, config?.cbAgnosComparar || 1),
-    cbAgnosComparar: config?.cbAgnosComparar || 1,
+    agnosComparar: defaultAgnosComparar,
+    cbAgnosComparar: defaultCb,
   }
 
   const handleSubmit = async values => {

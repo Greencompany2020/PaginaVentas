@@ -25,7 +25,7 @@ import { Input, Checkbox } from '../../components/reportInputs'
 import { isMobile } from 'react-device-detect'
 import ExcelButton from '../../components/buttons/ExcelButton'
 
-import { spliteArrDate, isSecondDateBlock, parseNumberToBoolean } from '../../utils/functions'
+import { parseNumberToBoolean } from '../../utils/functions'
 import { getVentaGlobalSegmento } from '../../services/VentaGlobalService'
 import { checkboxLabels, comboValues } from '../../utils/data'
 import DateHelper from '../../utils/dateHelper'
@@ -157,8 +157,7 @@ function Segmento({ config }) {
 	const [loading, setLoading] = useState(false)
 	const [dataReport, setDataReport] = useState(null)
 	const [reportDate, setReportDate] = useState({
-		current: dateHelper.getYesterdayDate(),
-		dateRange: spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)
+		current: dateHelper.getYesterdayDate()
 	})
 	const [currentRegion] = useState('TOTAL')
 	const [incremento] = useState('compromiso')

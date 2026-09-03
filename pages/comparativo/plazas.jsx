@@ -62,13 +62,17 @@ const Plazas = (props) => {
 	const sendNotification = useNotification()
 	const dateHelper = DateHelper()
 
+	const currentYear = new Date().getFullYear()
+	const defaultAgnosComparar = [currentYear - 1, currentYear - 2]
+	const defaultCb = Number(config?.cbAgnosComparar ?? 1)
+
 	//Estados de los reportes
 	const [dataReport, setDataReport] = useState(null)
 	const [reportDate, setReportDate] = useState({
 		current: dateHelper.getYesterdayDate(),
-		dateRange: spliteArrDate(config.agnosComparativos, config?.cbAgnosComparar || 1)
+		dateRange: defaultCb === 2 ? defaultAgnosComparar : [defaultAgnosComparar[0]]
 	})
-	const [isDisable, setIsDisable] = useState(isSecondDateBlock(config?.cbAgnosComparar || 1))
+	const [isDisable, setIsDisable] = useState(isSecondDateBlock(defaultCb))
 
 	//Estado del reporte por secciones;
 	const [dataReportSeccions, setDataReportSeccions] = useState(null)
@@ -85,8 +89,8 @@ const Plazas = (props) => {
 		conVentasEventos: parseNumberToBoolean(config?.conVentasEventos || 0),
 		resultadosPesos: parseNumberToBoolean(config?.resultadosPesos || 0),
 		tipoCambioTiendas: parseNumberToBoolean(config?.tipoCambioTiendas || 0),
-		agnosComparar: spliteArrDate(config?.agnosComparativos, config?.cbAgnosComparar || 1),
-		cbAgnosComparar: config?.cbAgnosComparar || 1,
+		agnosComparar: defaultAgnosComparar,
+		cbAgnosComparar: defaultCb,
 		mostrarTiendas: config?.cbMostrarTiendas || 'activas',
 		incremento: config?.cbIncremento || 'compromiso',
 		incluirWeb: isBoolean(config?.incluirWeb || 'N'),
